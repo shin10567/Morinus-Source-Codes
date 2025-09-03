@@ -1,4 +1,4 @@
-# Morinus-8.1.0+-by-Shin10567-Unofficial-Fork-
+# Morinus 8.1.0+ by Shin10567(Unofficial-Fork)
 Fixes / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
 Removals / Cleanups
