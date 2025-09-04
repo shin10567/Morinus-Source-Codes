@@ -40,6 +40,6 @@
 - Settings: selections can be saved without requiring “Automatic Save”.
 - Updated several fixed star names.
 --------------------------------------------------------------------------------------------------------------------------
-- 8.4.0: Bug fixes: shows LoF position in the Speculum
+- 8.4.0: Bug fixes & shows LoF position in the Speculum
 - 8.4.1: Speeds: the calculation formula has been updated
 - 8.4.2: Heliacal Rising/Setting: this module no longer reflects the chart’s altitude (prevents inaccurate heliacal rising/setting results at higher altitudes)
