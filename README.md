@@ -1,5 +1,4 @@
-[README.md](https://github.com/user-attachments/files/22136389/README.md)
-## [8.4.1] Updated Version from 8.1.0 
+## [8.4.2] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
