@@ -40,13 +40,13 @@
 - Settings: selections can be saved without requiring “Automatic Save”.
 - Updated several fixed star names.
 --------------------------------------------------------------------------------------------------------------------------
-- 8.4.0: Bug fixes & shows LoF position in the Speculum
+- 8.4.0: Bug fixes & shows LoF position in the Speculum. To reduce ephemeris differences relative to Zet 9, reverted to the Morinus 6.0.3 ephemeris.
 - 8.4.1: Speeds: the calculation formula has been updated
 - 8.4.2: Heliacal Rising/Setting: this module no longer reflects the chart’s altitude (prevents inaccurate heliacal rising/setting results at higher altitudes)
 #### 8.4.3 
 - Rename: “Find Time and Place” → “Find Time” (the feature does not actually search locations).
 - Planetary Hour: now respects the chart’s birth data and time zone.
 - Rise/Set Times: now respects the chart’s birth data and time zone.
-- Exact Transits: updated the notation when a retrograde planet enters a different sign. & fixed an Ayanamsa bug.
+- Exact Transits: updated the notation when a retrograde planet enters a different sign & fixed an Ayanamsa bug.
 - Primary Directions: fixed bugs with Antiscia and Contra-antiscia & fixed Primary Directions for the Lot of Fortune (LoF).
 - Various other known bug fixes.
