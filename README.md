@@ -48,5 +48,5 @@
 - Planetary Hour: now respects the chart’s birth data and time zone.
 - Rise/Set Times: now respects the chart’s birth data and time zone.
 - Exact Transits: updated the notation when a retrograde planet enters a different sign; fixed an Ayanamsa bug.
-- Primary Directions: fixed bugs with Antiscia and Contra-antiscia; fixed Primary Directions for the Lot of Fortune (LoF).
+- Primary Directions: fixed bugs with Antiscia and Contra-antiscia & fixed Primary Directions for the Lot of Fortune (LoF).
 - Various other known bug fixes.
