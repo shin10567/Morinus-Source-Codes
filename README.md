@@ -1,4 +1,4 @@
-## [8.4.5] Updated Version from 8.1.0 
+## [8.4.6] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -57,3 +57,5 @@
 - Fixed bugs in Profection chart.
 #### 8.4.5
 - Angular Directions of Fixed Stars: now respects the Primary Keys option
+#### 8.4.6
+- Paranatellonta bug fixes.
