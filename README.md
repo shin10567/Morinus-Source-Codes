@@ -54,4 +54,6 @@
 - Primary Directions: fixed bugs with Antiscia and Contra-antiscia & fixed Primary Directions for the Lot of Fortune (LoF).
 - Various other known bug fixes.
 #### 8.4.4
-- Profection chart bug fixes.
+- Fixed bugs in Profection chart.
+#### 8.4.5
+- Angular Directions of Fixed Stars: now respects the Primary Keys option
