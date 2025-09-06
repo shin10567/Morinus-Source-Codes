@@ -27,7 +27,7 @@
 - Heliacal Rising/Setting: new module.
 - Paranatellonta: new module.
 - Circumambulation: new module.
-- Angular Directions of Fixed Stars(Naibod only): new module.
+- Angular Directions of Fixed Stars(Naibod Only): new module.
 
 ### Secondary Progressions
 - Displays Real Date and native Age.
