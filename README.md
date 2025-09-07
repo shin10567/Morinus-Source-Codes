@@ -1,4 +1,4 @@
-## [8.4.6] Updated Version from 8.1.0 
+## [8.4.7] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -39,6 +39,8 @@
 ### Fixed Stars
 - Settings: selections can be saved without requiring “Automatic Save”.
 - Updated several fixed star names.
+
+##### The settings are set to how I use them, so feel free to change anything to your liking.
 --------------------------------------------------------------------------------------------------------------------------
 #### 8.4.0
 - Bug fixes & shows LoF position in the Speculum. To reduce ephemeris differences relative to Zet 9, reverted to the Morinus 6.0.3 ephemeris.
@@ -60,3 +62,6 @@
 #### 8.4.6
 - Paranatellonta bug fixes.
 - Various other bug fixes.
+#### 8.4.7
+- Paranatellonta: now bolded when they share the same angle
+- Monthly Profections: the 12 steps now divide the year evenly.
