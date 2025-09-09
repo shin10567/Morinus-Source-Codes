@@ -1,4 +1,4 @@
-## [8.4.7] Updated Version from 8.1.0 
+## [8.4.8] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -65,3 +65,7 @@
 #### 8.4.7
 - Paranatellonta: now bolded when they share the same angle
 - Monthly Profections: the 12 steps now divide the year evenly.
+#### 8.4.8
+- Fixed color rendering bugs.
+- Solar/Lunar Revolutions: Primary directions now support "Both" (view direct & converse together).
+- The Positions view of Revolution charts now includes Dodecatemoria.
