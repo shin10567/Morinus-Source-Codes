@@ -1,4 +1,4 @@
-## [8.4.8] Updated Version from 8.1.0 
+## [8.4.9] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -40,7 +40,7 @@
 - Settings: selections can be saved without requiring “Automatic Save”.
 - Updated several fixed star names.
 
-##### The settings are set to how I use them, so feel free to change anything to your liking.
+#### The settings are set to how I use them, so feel free to change anything to your liking.
 --------------------------------------------------------------------------------------------------------------------------
 #### 8.4.0
 - Bug fixes & shows LoF position in the Speculum. To reduce ephemeris differences relative to Zet 9, reverted to the Morinus 6.0.3 ephemeris.
@@ -69,3 +69,7 @@
 - Fixed color rendering bugs.
 - Solar/Lunar Revolutions: Primary directions now support "Both" (view direct & converse together).
 - The Positions view of Revolution charts now includes Dodecatemoria.
+#### 8.4.9
+- Menus are now case-sensitive.
+- Fixed a bug where the Solar Revolution chart could hide behind the natal chart
+- Added a popup in Lunar Revolution chart with +1 Month / -1 Month controls.
