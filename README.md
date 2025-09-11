@@ -1,4 +1,4 @@
-## [8.4.9] Updated Version from 8.1.0 
+## [8.5.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -41,7 +41,9 @@
 - Updated several fixed star names.
 
 #### The settings are set to how I use them, so feel free to change anything to your liking.
+
 --------------------------------------------------------------------------------------------------------------------------
+
 #### 8.4.0
 - Bug fixes & shows LoF position in the Speculum. To reduce ephemeris differences relative to Zet 9, reverted to the Morinus 6.0.3 ephemeris.
 #### 8.4.1
@@ -73,3 +75,7 @@
 - Menus are now case-sensitive.
 - Fixed a bug where the Solar Revolution chart could hide behind the natal chart
 - Added a popup in Lunar Revolution chart with +1 Month / -1 Month controls.
+#### 8.5.1
+- Font updates.
+- Angle at Birth is now bolded based on apparent magnitude and time offset: mag < 0 → ±8 min, 0 ≤ mag < 1 → ±6 min, 1 ≤ mag < 1.5 → ±5 min, mag ≥ 1.5 → ±4 min.
+- Various other bug fixes.
