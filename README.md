@@ -1,4 +1,4 @@
-## [8.5.1] Updated Version from 8.1.0 
+## [8.5.2] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -79,3 +79,5 @@
 - Font updates.
 - Angle at Birth is now bolded based on apparent magnitude and time offset: mag < 0 → ±8 min, 0 ≤ mag < 1 → ±6 min, 1 ≤ mag < 1.5 → ±5 min, mag ≥ 1.5 → ±4 min.
 - Various other bug fixes.
+#### 8.5.2
+- Primary Directions bug fixes.
