@@ -1,4 +1,4 @@
-## [8.5.2] Updated Version from 8.1.0 
+## [8.5.3] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -81,3 +81,5 @@
 - Various other bug fixes.
 #### 8.5.2
 - Primary Directions bug fixes.
+#### 8.5.3
+- Rename: “Find Time” → “Find Time and Place” (the feature DOES search locations. I mistakenly renamed it earlier.).
