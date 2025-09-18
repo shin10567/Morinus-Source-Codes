@@ -1,0 +1,935 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Morinus</title>
+  <style type="text/css">
+  </style>
+</head>
+<body alink="#f0f0f0" bgcolor="#c0c0c0" link="#0000ff" text="#000000"
+ vlink="#ff0000">
+<h1>Morinus</h1>
+<br>
+<h2>Honlapok</h2>
+<ul>
+  <li class="MsoNormal" style=""><span style="">https://sites.google.com/site/pymorinus/</span><span
+ style="">&nbsp;<o:p></o:p></span></li>
+  <li class="MsoNormal" style=""><span style="">https://sites.google.com/site/tradmorinus/morinus</span></li>
+  <li class="MsoNormal" style=""><span style="">https://sites.google.com/site/pymorinus7/</span></li>
+  <li class="MsoNormal" style="">https://sourceforge.net/p/morinus/</li>
+</ul>
+<p>
+Morinus egy k&ouml;nnyen haszn&aacute;lhat&oacute; asztrol&oacute;gia
+szoftver, GPLv3 licensszel. A sv&aacute;jci efemerid&aacute;t
+haszn&aacute;lja, teh&aacute;t nagyon pontos (Kr.e.5000 - Kr.u.5000).
+Minden olyan Oper&aacute;ci&oacute;s rendszeren fut, ahol a Python
+&eacute;s a wxPython el&eacute;rhető(Linux, Windows, MacOS).</p>
+<h2>Jellemzők</h2>
+<ul>
+  <li>Horoszk&oacute;p sz&aacute;m&iacute;t&aacute;s nagy
+pontoss&aacute;ggal Kr.e.5000 &eacute;s Kr.u.5000 k&ouml;z&ouml;tt </li>
+  <li>Helys&eacute;g Adatb&aacute;zis </li>
+  <li>Pozici&oacute;k (Speculum) </li>
+  <li>Időkeres&eacute;s bolyg&oacute;pozici&oacute;kb&oacute;l </li>
+  <li>Grafikus Efemerida (Tropikus vagy Sziderikus) </li>
+  <li>Vegyes adatok (Csillagidő, Ekliptika hajl&aacute;sa, ...) </li>
+  <li>12 H&aacute;zrendszer </li>
+  <li>Horoszk&oacute;pok t&ouml;bbf&eacute;le st&iacute;lusban
+(T&eacute;m&aacute;k) </li>
+  <li>Szinasztria </li>
+  <li>F&eacute;nysz&ouml;gek </li>
+  <li>V&aacute;laszthat&oacute; Trad&iacute;cion&aacute;lis
+F&eacute;nysz&ouml;gek </li>
+  <li>Felezőpontok </li>
+  <li>Felkel&eacute;si időpontok </li>
+  <li>Almutenek(az Arabok &eacute;s Ibn Ezra szerint(Pontok,
+Horoszk&oacute;p, T&eacute;ma)) </li>
+  <li>V&aacute;laszthat&oacute; egy&eacute;ni vagy
+m&eacute;lt&oacute;s&aacute;g szerinti sz&iacute;nek </li>
+  <li>Sebess&eacute;gek </li>
+  <li>V&aacute;laszthat&oacute; &aacute;ll&oacute;csillagok(max. 40,
+800-b&oacute;l) </li>
+  <li>Antiscia </li>
+  <li>Zodiak&aacute;lis Parallelek </li>
+  <li>30-fokos Szalag(Horary) </li>
+  <li>Szerencseker&eacute;k (t&ouml;bb fajta) </li>
+  <li>Arab Pontok </li>
+  <li>Nappal/&Eacute;jszaka orbisz </li>
+  <li>Syzygy(Prenat&aacute;lis Lun&aacute;ci&oacute;) (a Vegyes
+T&aacute;bl&aacute;zatban) </li>
+  <li>Mund&aacute;n Szerencseker&eacute;k(a Mund&aacute;n
+Poz&iacute;ci&oacute;k t&aacute;bl&aacute;zatban) </li>
+  <li>Planet&aacute;ris &Oacute;r&aacute;k </li>
+  <li>Topocentrikus Poz&iacute;ci&oacute;k </li>
+  <li>Ayanamsha </li>
+  <li>N&eacute;gysz&ouml;g(K&ouml;z&eacute;pkori) horoszk&oacute;p </li>
+  <li>Profekci&oacute;k (zodiak&aacute;lis, mund&aacute;n;
+Gregori&aacute;nus, GMT) </li>
+  <li>Ment&eacute;s k&eacute;pk&eacute;nt (Fekete-feh&eacute;r vagy
+sz&iacute;nes) </li>
+  <li>Tranzitok (d&aacute;tumra, h&oacute;napra) </li>
+  <li>Revol&uacute;ci&oacute;k </li>
+  <li>Precesszi&oacute; &eacute;s nut&aacute;ci&oacute; javitott
+szol&aacute;r revol&uacute;ci&oacute;k, ha egy ayanamsa ki van
+v&aacute;lasztva </li>
+  <li>Nap tranzitjai </li>
+  <li>Szekunder direkci&oacute;k (val&oacute;di szol&aacute;ris idő,
+k&ouml;z&eacute;pidő) </li>
+  <li>Elekci&oacute;k </li>
+  <li>Az &aacute;ll&oacute;csillagok, antiscia, szerencseker&eacute;k,
+terminusok &eacute;s a dekan&aacute;tusok v&aacute;laszthat&oacute;
+mutat&aacute;sa a horoszk&oacute;pokban </li>
+  <li>Primer Direkci&oacute;k (mund&aacute;n, zodiak&aacute;lis)
+    <ul>
+      <li>Placidus(semiarcus) (vagy Ptolemaiosz) </li>
+      <li>Placidus(sarkmagass&aacute;g alatt) (csak zodiak&aacute;lis,
+sz&eacute;less&eacute;ggel vagy an&eacute;lk&uuml;l) </li>
+      <li>Regiomontanus </li>
+      <li>Campanus </li>
+    </ul>
+  </li>
+  <li>Csak Zodiak&aacute;lis: Terminusok, &Aacute;ll&oacute;csillagok,
+syzygy (Primer Direkci&oacute;k) </li>
+  <li>Zodiak&aacute;lis Parallelek (Primer Direkci&oacute;k) </li>
+  <li>Topocentrikus Poz&iacute;ci&oacute;k (Primer Direkci&oacute;k) </li>
+  <li>A Hold m&aacute;sodlagos mozg&aacute;sa (Primer Direkci&oacute;k)
+  </li>
+  <li>Felhaszn&aacute;l&oacute; &aacute;ltal defini&aacute;lt pont
+(Primer Direkci&oacute;k) </li>
+  <li>Felhaszn&aacute;l&oacute; &aacute;ltal defini&aacute;lt pont2
+(Primer Direkci&oacute;k) </li>
+  <li>Felhaszn&aacute;l&oacute; &aacute;ltal defini&aacute;lt pontok
+Speculumja(Primer Direkci&oacute;k) </li>
+  <li>Primer Kulcsok(statikus, dinamikus) </li>
+  <li>PDk a horoszk&oacute;pban </li>
+  <li>M&aacute;sodperc-felbont&aacute;s&uacute;
+idől&eacute;ptet&eacute;s (Primer Direkci&oacute;k) </li>
+  <li>Konverz Primer Direkci&oacute;k regressz&iacute;v Nappal is időre
+v&aacute;lthat&oacute;ak Val&oacute;di Szol&aacute;ris &Iacute;v
+eset&eacute;n </li>
+  <li>Primer Direkci&oacute;k szol&aacute;r &eacute;s lun&aacute;r
+revoluci&oacute;kban </li>
+  <li>Angol, magyar, olasz, francia, orosz &eacute;s spanyol nyelvek </li>
+</ul>
+<p>Az opci&oacute;k-men&uuml;ben be&aacute;ll&iacute;that&oacute; a:</p>
+<ul>
+  <li>Megjelen&iacute;t&eacute;s </li>
+  <li>Szimb&oacute;lumok </li>
+  <li>Dignit&aacute;sok </li>
+  <li>Kisebb Dignit&aacute;sok(Triplicit&aacute;sok, Terminusok,
+Dekan&aacute;tusok) </li>
+  <li>Almutenek </li>
+  <li>Ayanamsha </li>
+  <li>Sz&iacute;nek </li>
+  <li>H&aacute;zrendszerek </li>
+  <li>Holdcsom&oacute;pontok </li>
+  <li>Hat&oacute;k&ouml;r&ouml;k </li>
+  <li>Primer Direkci&oacute;k </li>
+  <li>Primer Kulcsok </li>
+  <li>PDk a horoszk&oacute;pban </li>
+  <li>Szerencseker&eacute;k </li>
+  <li>Arab Pontok(szerkesztő) </li>
+  <li>Syzygy </li>
+  <li>&Aacute;ll&oacute;csillagok </li>
+  <li>Nyelvek </li>
+</ul>
+<p>A horoszk&oacute;pok &eacute;s az opci&oacute;k elmenthetőek
+&eacute;s visszat&ouml;lthetőek &eacute;s jobb-klikkel b&aacute;rmelyik
+ablakon(kiv&eacute;ve a radix&eacute;t, mert annak van saj&aacute;t
+men&uuml;je) egy előugr&oacute; men&uuml;t kapunk. A Primer
+Direkci&oacute;k sz&ouml;veg-f&aacute;jlba is menthető.</p>
+<br>
+<img src="tables.png" alt="popup menu (t&aacute;bl&aacute;zatok)">
+<img src="tablepd.png" alt="popup menu (pd t&aacute;bl&aacute;zat)"><img
+ src="charts.png" alt="popup menu (horoszk&oacute;pok)">
+<h2>A Primer Direkci&oacute;kr&oacute;l</h2>
+<p>
+Csak az akt&iacute;v elemeket(radiobuttons, checkboxes) sz&aacute;molja
+a program. (Pl.: ha csak a Terminusokat akarjuk l&aacute;tni, akkor
+v&aacute;lasszuk ki a "Zodiak&aacute;lis"-radiobutton-t, majd
+v&aacute;lasszuk ki csak a Terminusokat a Promisszorok oszlopban,
+nyomjunk OK-t majd F12-t)
+A k&ouml;zbeeső h&aacute;zcs&uacute;csok a kiv&aacute;lasztott PD-nek
+megfelelően lesznek sz&aacute;m&iacute;tva(pl.: Regiomontanus
+h&aacute;zcs&uacute;csok Regiomontanus PD-k eset&eacute;n).
+Jelenleg a PDk a k&ouml;zbeeső h&aacute;zcs&uacute;csokhoz megegyeznek
+a Placidus(sarkmagass&aacute;galatt) &eacute;s a Placidus(semiarcus)
+eset&eacute;ben.
+A Regiomontanus/Campanus-PD legyen kiv&aacute;lasztva az
+Opci&oacute;k/PD-Dial&oacute;gus-ban hogy Regiomontanus-speculumot
+kapjunk a Poz&iacute;ci&oacute;-tabl&aacute;zatban.
+Az Opci&oacute;k/Terminusok dial&oacute;gusablakban kiv&aacute;lasztott
+Terminust haszn&aacute;lja a program a PDk-ben.
+A Placidus(sarkmagass&aacute;galatt) csak egy
+approxim&aacute;ci&oacute; a Placidus(semiarcus)-hoz.
+PDk az Asc, MC-hez megegyeznek mindegyik rendszerben(Placidus,
+Regiomontanus, ...).
+Mund&aacute;n PDkben az aspektusokat nem az Ekliptik&aacute;n, hanem a
+h&aacute;zakban sz&aacute;m&iacute;tjuk.
+Csak a felezőpontok, a mund&aacute;n aspektu&aacute;lis
+direkci&oacute;k(a conjunctio-n &eacute;s az oppozicio-n
+k&iacute;v&uuml;l) &eacute;s a direkci&oacute;k
+h&aacute;zcs&uacute;csokhoz k&uuml;l&ouml;nb&ouml;znek a Regiomontanus
+&eacute;s a Campanus PDk eset&eacute;n. A program nem tudja J-B Morin
+aspektus korrekci&oacute;j&aacute;t(Regiomontanus PDk).
+Bianchini k&uuml;l&ouml;nb&ouml;ző sz&eacute;less&eacute;geket
+rendelt(a promisszor sz&eacute;less&eacute;g&eacute;ből
+sz&aacute;m&iacute;tva) az
+aspektusokhoz(conjunctio:promisszorsz&eacute;less&eacute;ge,
+sextil:promisszorsz&eacute;less&eacute;ge/2, quadrat:0,
+trigon:-promisszorsz&eacute;less&eacute;ge/2,
+oppositio:-promisszorsz&eacute;less&eacute;ge) &eacute;s mind&iacute;g
+haszn&aacute;lta a szignifik&aacute;tor
+sz&eacute;less&eacute;g&eacute;t is.
+Ha a "Topocentrikus" ki lett v&aacute;lasztva a
+Megjelen&iacute;t&eacute;s I dial&oacute;gusban, akkor a topocentrikus
+poz&iacute;ci&oacute;kat hasznalja a program a PDk eset&eacute;ben.
+Ha a "Szek. Mozg&aacute;s"(szekunder mozg&aacute;s, val&oacute;s idejű
+Hold) ki lett v&aacute;lasztva, akkor a Hold PD-i korrig&aacute;lva
+lesznek.
+Ha a "Felhaszn&aacute;l&oacute;i" ki van jel&ouml;lve, akkor az
+Ekliptikai koordin&aacute;t&aacute;k &aacute;ltal megadott pontot fogja
+a program a kiv&aacute;lasztott szignifik&aacute;torokhoz
+dirig&aacute;lni. P&eacute;ld&aacute;ul 16Bak 25perc 46mp
+eset&eacute;n: 286-ot kell be&iacute;rni a Hossz&uacute;s&aacute;g
+Fok-mezőj&eacute;be. A program "Felhaszn&aacute;l&oacute;i"-t fog
+mutatni a PD-list&aacute;kban.
+Ha a "Felhaszn&aacute;l&oacute;i2" ki van jel&ouml;lve, akkor az
+Ekliptikai koordin&aacute;t&aacute;k &aacute;ltal megadott ponthoz
+fogja a program a kiv&aacute;lasztott promisszorokat dirig&aacute;lni.
+P&eacute;ld&aacute;ul 16Bak 25perc 46mp eset&eacute;n: 286-ot kell
+be&iacute;rni a Hossz&uacute;s&aacute;g Fok-mezőj&eacute;be. A program
+"Felhaszn&aacute;l&oacute;i2"-t fog mutatni a PD-list&aacute;kban.
+Ha csak a Felhaszn&aacute;l&oacute;i-pont van kiv&aacute;lasztva a
+Primer Direkci&oacute;k dial&oacute;gusban akkor a
+Felhaszn&aacute;l&oacute;i-pont speculum-j&aacute;t fogja a Felh.
+Speculum mutatni.
+Ha csak a Felhaszn&aacute;l&oacute;i2-pont van kiv&aacute;lasztva a
+Primer Direkci&oacute;k dial&oacute;gusban akkor a
+Felhaszn&aacute;l&oacute;i2-pont speculum-j&aacute;t fogja a Felh.
+Speculum mutatni.
+Ha mind a Felhaszn&aacute;l&oacute;i-pont &eacute;s a
+Felhszn&aacute;l&oacute;i2-pont ki van v&aacute;lasztva a Primer
+Direkci&oacute;k dial&oacute;gusban akkor a
+Felhaszn&aacute;l&oacute;i-pont speculum-j&aacute;t fogja a Felh.
+Speculum mutatni.
+Az ayanamsha csak a Terminusokra van hat&aacute;ssal a PDk-ben,
+teh&aacute;t pl. a "Felhaszn&aacute;l&oacute;i" vagy a
+"Felhaszn&aacute;l&oacute;i2"-pontra sem.
+A program előnyben r&eacute;szes&iacute;ti az Asc, MC-t a Desc,IC-vel
+szemben. Ez azt jelenti, hogy ha "Hold --&gt; DESC" hi&aacute;nyzik,
+akkor v&aacute;lasszuk ki az oppozici&oacute; aspektust &eacute;s a
+megfelelő zodiak&aacute;lis opci&oacute;t: "oppozici&oacute; Hold
+--&gt; Asc"-nak kellene megjelennie.
+A mund&aacute;n FelezőPontok-at Makransky Rapt-Parallel algorithmusa
+alapj&aacute;n, a zodiak&aacute;lis(sz&eacute;less&eacute;ggel)
+FelezőPontokat R&uuml;diger Plantiko algorithmusa alapj&aacute;n
+sz&aacute;molja a program.
+Az utols&oacute; h&aacute;rom oszlop(Megjelenit&eacute;s II) Placidus
+PDk eset&eacute;n a Placidus(sarkmagass&aacute;g)-hoz tartoznak.
+</p>
+<h2>PDs In Chart (Zodiacal)</h2>
+<p>
+<b>Preliminary astronomical remarks</b>
+Speaking of Zodiacal PDs in Chart and Ingresses (transits on the first
+ones), according to some generous
+mails Martin Gansten sent me, as I understood no real method came us
+from the ancient masters to draw
+them. Hints only. And as I know, solely in recent times, thanks to
+computerized procedures, the students had
+the possibility to deal with them. Under the astronomical viewpoint, in
+the temporal gap PDs express their
+effects (400 minutes after the birth to cover 100 years in the real
+time), changes in the celestial planetary
+positions (i.e in the signs) are not appreciable: about 25' for Sun and
+inner planets, very less for the outer
+celestial bodies. Only the Moon is able to move in zodiac up to about
+4&deg;. So, the zodiacal positions drawn for
+the planets in these charts are reckoned thanks to certain symbolic or
+pseudo astronomic criterions.
+Available in its options, Morinus offers three different methods: the
+first is the most common in use, the
+second coincides with the first unless the starting planetary
+positions, the third is a wholly new method. To
+avoid confusion in the terminology (the same adjectives could be used
+for the charts and for the planets
+utilized to cast them) in the options they are labeled "Celestial"
+instead of "Zodiacal". What follows is the
+technical viewpoint of the writer and to do involves necessarily other
+persons' opinion.
+</p>
+<p>
+<b>First option (from the planets)</b><br>
+M. Gansten quoted me the basic principle of PD as formulated by
+Ptolemy: "For a place is similar and the
+same position in the same direction with reference both to the horizon
+and to the meridian". So, moving the
+celestial sphere, ASC and MC move as usually in zodiac. The planets are
+kept in their native mundane
+positions "to shares the same proportional relationship to the horizon
+and meridian which they had at the
+birth" instead, and thanks to the trigonometric formulas that tie OA/OD
+to the celestial longitude, their
+position in the PDs charts is then reckoned. This is the a first way to
+satisfy the Ptolemaic indications, but
+being this ecliptic projection "mundo referred" it has a disadvantage.
+For "simple" geometric, trigonometric
+and astronomical reasons, the formulas involved are valid for points
+lying on the ecliptic only, i.e. without
+latitude, with the consequence that for small arcs of directions the
+planets jump suddenly from their native
+positions to others quite far, yielding a technique not Radix
+compatible.
+</p>
+<p>
+<b>Second option (from their ecliptic feet)</b><br>
+We have a second possibility to satisfy Ptolemy. Keeping the same above
+method, the native zodiacal
+planetary projections can be used as starting point. In such a way the
+technique is Radix compatible. Starting
+from the birth, the planets move smoothly from their native positions
+in zodiac without jumps due to the
+latitude. <br>
+The two above variants must be accepted as they are, as symbolic
+techniques dictated by the wishes of the
+tradition. Any effort to frame them in one astronomical context is
+senseless and fated to fail. We have seen,
+for example, that the first is discontinuous at the Radix. On the other
+end the second does not respect the
+basic astronomical principle for which two real celestial objects, with
+latitude, after an equatorial rotation of
+the celestial sphere see their ecliptic feet vary their mutual zodiacal
+distance.<br>
+Under an astronomical, conceptual viewpoint, a further problem joins
+the two previous methods. We
+remember that for both of them, flowing the time, the planetary
+positions in zodiac are dependent from their
+forced, immutable placing in the local space. This enforcement,
+necessary to respect the tradition, may
+generate perplexity to astronomical eyes because the zodiacal positions
+"are what they are", regardless to
+the observing geographical point. In other words, what happens with the
+two above methods is that for two
+horoscopes cast at the same time for two different points on the Earth,
+the PDs in Chart positions do not
+coincide. It is like if two persons, born in the same instant, one in
+Rome the other at New York, had the Sun
+in different positions: the first at 15&deg;Aries, the second at
+17&deg;Aries (of course we do not consider here the
+negligible parallax consequences).
+</p>
+<p>
+<b>Third option (full pseudo-astronomic)</b><br>
+So, to satisfy a more plausible astronomical scenery, a third option
+arose. Starting from the true equatorial
+planetary positions, we detect the PDs pseudo-zodiac (the whole
+ecliptic, "frozen" in the position it had at the
+birth) and thanks to a true coordinate system transformation
+(equatorial to ecliptic) we reckon the zodiacal
+positions. Of course, doing so the zodiacal positions of our planets
+are not related with the mundane, local
+positions any longer. It's interesting to note an unusual detail: the
+intersection axis between such a pseudozodiac
+and the equatorial plane, rotates on the last one in the time, with the
+consequence that the Aries-Libra
+Points do not coincide with the Equinoctial Points any more.
+</p>
+<p>
+<b>Differences between the three methods</b><br>
+Compared to the first, the second technique generally does not imply
+appreciable differences but for the two
+celestial bodies having an high inclination of the orbit (Mercury, with
+an orbital inclination = 7&deg;, and Pluto, with
+an orbital inclination = 17&deg;). The third technique starts from the
+Radix positions with a DA=0 and moves the
+planets roughly in the amount of one/few degrees per year. Therefore
+the differences with the two previous
+methods increase up to several degrees increasing the directional arc.
+Thanks to the double charts, PDs and
+Radix, and to the possibility to open Morinus in multiple instances,
+the student will be able to compare easily
+the three methods, appreciate their differences, note their
+limits/benefits.
+</p>
+<p>
+<b>Secondary motion</b><br>
+The *astronomical* (not mathematical) option for the second motion is
+available. It was possible to limit this
+option to the Moon only, but we preferred to extend its effects to all
+the planets as well. An astronomical
+second motion means that the true geocentric astronomical positions are
+reckoned, without any
+compromise. The secondary motion is not involved the first two methods:
+for this reason this option is active
+for the third pseudo-astronomic method, only.
+</p>
+<p>
+<b>Domification</b><br>
+Just like the Profections charts, thanks to criterions of calculus
+oriented towards a global astronomical base,
+for the three methods the position of the cusps is not limited to the
+four cardinal points but is available for all
+of them (full domification, identical for the three methods).The
+students accustomed to work only with ASC,
+MC, DES and IC may neglect the others cusps. In these charts the
+positions in the houses have the ordinary
+problem related with the latitude. This flaw is everywhere in the
+astrological flat graphics, is unavoidable
+and due to the tridimensional celestial sphere context. The user is
+informed that casting PD charts with the
+third method, sometimes, changing the arc of direction, smoothly and
+with continuity, the positions in the
+houses may change. Accepting the pseudo-astronomic premises, this is
+completely natural. Note these
+terrestrial positions must not be understood as mundane positions
+related with the diurnal motion the PDs
+come from: they alter little over a period of 100 symbolic years while
+the true mundane ones change widely
+and quickly in the 400 minutes after the birth.
+</p>
+<p>
+<b>User Guide</b><br>
+Options menu:<br>
+</p>
+<ul>
+  <li>Options\PDs in chart\Celestial\-Choose one of the three available
+methods </li>
+</ul>
+Tables menu:<br>
+Tables\Primary directions\-Recall the tabled PDs as usually, according
+to their settings
+Once the tabled PDs are showed, right mouse click on one row. We have
+three possibilities:<br>
+<ul>
+  <li>PDs in chart: celestial (accepted from one zodiacal PD row, only)
+  </li>
+  <li>PDs in chart: terrestrial (accepted from one mundane PD row,
+only) </li>
+  <li>Ingresses (accepted from one zodiacal PD row and valid for the
+Celestial only: transit for the hit-date over
+the Radix and the PDs) </li>
+</ul>
+The chosen chart will be displayed for the same date in the PD row the
+user clicked on, but a stepper dialog
+popup permits to set different date/arc/type of direction (Direct or
+Converse). Take care to click on the "Show"
+radio button. Clicking "OK" the stepper will be closed. For the PDs in
+charts only (not for the Ingresses), a
+further right mouse click in the window permits to show single graph,
+comparison graph, speculum and
+square chart.
+<p></p>
+<p>
+[Roberto]
+</p>
+<h2>PDs In Chart (Mundane)</h2>
+<p>
+<b>Preliminary astronomical remarks</b><br>
+Generally PDs are given in tabled look. When promissor and
+significator, or their aspects, are in the same
+mundane position (with a lot of variants, with or without latitude) the
+current techniques give the related arc of
+direction and, according to the analogical key, the hit date. The
+question is: it's possible, in such a moment,
+to see the full, mundane astronomical context? In other words: it's
+possible to cast a chart, of course in
+graphic mode, with the full set of the planets in daily motion, seen as
+promissors, versus the radix set of the
+planets regarded as significators? Keeping between them the geometrical
+ratios? The answer is positive.
+So, after the Zodiacal PDs in Chart, the Mundane ones have been added.
+These charts do not show the
+zodiacal signs. They show the "local space", instead, i.e. the
+astrological houses. The reference system is
+based on the two main lines of the geographic natal point: ASC-DES and
+MC-IC. The reference system itself
+is normalized in manner to have the two axes in orthogonal position and
+all the twelve places 30&deg; wide. The
+planetary placing is according to the mundane positions, different from
+the positions the planets have in the
+houses in the common zodiacal charts. According to the selected PDs
+type (Options\Primary direction menu)
+the mundane positions could be reckoned in agreement with five
+different possibilities: Placidus(semiarc),
+PlacidusUTP, Regiomontanus, Campanus and Topocentric, but we preferred
+to limit the choice to the type of
+tabled PDs Morinus offers at the moment. To note the pure, full
+astronomical nature of these charts, the
+same true astronomical properties the standard, zodiacal charts have
+(see the note on the speculum below).
+According to the terminology used for the Zodiacal charts (labeled
+"Celestial"), these charts are named
+"Terrestrial". Of course they are cast starting "from the planets",
+with their latitude, and show in chart the
+tabled, traditional Mundane PDs. Note that the double option available
+for the "Celestial" (From the planets or
+From their ecliptic feet) is not possible here, because the traditional
+Zodiacal PDs framework does not permit
+an overall representation correlated with a synthetic
+(pseudo-astronomical) view.
+</p>
+<p>
+<b>Option for the secondary motion</b><br>
+This option affects the charts in global mode. In this way the charts
+are not perfectly compatible with tabled
+PDs but, marking the lunar sec. motion in "Options\Primary directions"
+menu, the differences will be very,
+very small. Under (about) 25' with the max. arcs (100&deg;) for Sun and
+inferior planets. For the superior planets
+the difference is very smaller. Terrestrial reckoned without secondary
+motion would be in full agreement with
+the tabled PDs if the lunar sec. motion in "Options\Primary directions"
+menu is not chosen. A thin question
+remains: are these charts a good approximation of the traditional
+mundane PDs or vice versa? The answer
+to the reader :-)
+</p>
+<p>
+<b>Domification</b><br>
+In Terrestrial double charts (radix and PD), under the astronomical
+viewpoint only the radix domification has
+a meaning. The reason is the axes ASC-DES and MC-IC are steady in the
+local space. They are the
+reference system and can't rotate respect to ... themselves. In the
+tabled PDs, their use as promissors is
+possible applying them the mathematical formulas used for any other
+celestial object that lies on the
+Celestial Sphere. The movement of the cardinal points in the role of
+promissors, in the Terrestrial charts
+should be a mathematical trick: we preferred to avoid this
+non-astronomical feature.
+</p>
+<p>
+<b>User Guide</b><br>
+Options menu:<br>
+</p>
+<ul>
+  <li>Options\PDs in chart\Terrestrial\-Choose if with or without
+secondary motion </li>
+</ul>
+Tables menu:<br>
+Tables\Primary directions\-Recall the tabled PDs as usually, according
+to their settings. Once the tabled PDs are showed, right mouse click on
+one row and follow the instructions given above for the Zodiacal PDs in
+chart.<br>
+<p></p>
+<p>
+[Roberto]
+</p>
+<h2>Note on the Speculum</h2>
+<p>
+For each type of chart, generally we have a partner speculum. For the
+standard zodiacal charts (radix) each
+parameter in the speculum is a real astronomical parameter. For other
+charts the speculum may shows
+fictitious parameters. In our opinion this does not authorize to
+consider one technique better than others
+according to the content of the related speculum because, starting from
+an astronomical context, the
+astrology bases its analysis appealing to the analogy and symbolism
+laws, too. Anyway, even if some more
+detail should be important, summarily, for each chart we have: <br>
+Radix: True astronomical speculum<br>
+Transits: True astronomical speculum<br>
+Revolutions: True astronomical speculum<br>
+Sec. directions: True astronomical speculum<br>
+Elections: True astronomical speculum<br>
+Zodiacal Profections: Fictitious speculum. The long. only is moved.
+Other parameters unchanged <br>
+Placidian Profections: Fictitious speculum. The mundane parameters are
+prescribed. Reckoned the longitude <br>
+Mundane: True astronomical speculum<br>
+Ter. PDs inCh. with sec.m.: True astronomical speculum<br>
+Ter. PDs inCh. without s.m.: Fictitious speculum. The mundane
+parameters have almost the astronomical values<br>
+Cel.PDs inCh.(Ptolemy): Fictitious speculum. The mundane parameters are
+prescribed. Reckoned the longitude<br>
+Cel.PDs inCh.(Pse-Ast): Fictitious speculum. Only the equatorial
+coordinates have astronomical values<br>
+</p>
+<p>
+[Roberto]
+</p>
+<h2>Almutenek</h2>
+<p>
+Jelenleg az Almuten-sz&aacute;m&iacute;t&aacute;s az Arabok &eacute;s
+Ibn Ezra szerint t&ouml;rt&eacute;nik.
+H&aacute;rom fajta Almuten van:
+</p>
+<ul>
+  <li>Pontok(pl.: a bolyg&oacute;k&eacute;, arabpontok&eacute;) </li>
+  <li>Horoszk&oacute;p </li>
+  <li>T&eacute;ma </li>
+</ul>
+<p></p>
+<p>
+Mind a h&aacute;rom almuten az Opci&oacute;k/Almutenek/Horoszk&oacute;p
+dial&oacute;gusbeli Esszenci&aacute;lis
+be&aacute;ll&iacute;t&aacute;soknak megfelelően
+sz&aacute;m&iacute;t&oacute;dik &eacute;s az Akcident&aacute;lis
+be&aacute;ll&iacute;t&aacute;sokat is figyelembe veszi a program a
+Horoszk&oacute;p Almuten eset&eacute;ben(ha a "Haszn&aacute;ld" ki van
+v&aacute;lasztva).
+A Horoszk&oacute;p Almuten a bolyg&oacute;k &ouml;t hyleg&aacute;lis
+helyen(Nap, Hold, Asc, Szerencseker&eacute;k, Syzygy) levő uralma/ereje
+szerint sz&aacute;m&iacute;t&oacute;dik.
+Az "&Ouml;szes Ural." a sz&aacute;moknak az oszlopon bel&uuml;li
+sz&aacute;m&aacute;b&oacute;l j&ouml;n(pl.: 3+2 kettőt jelent mert a
+triplicit&aacute;s &eacute;s a terminus k&eacute;t uralmat jelent).
+Sok asztrol&oacute;gus csak az Esszenci&aacute;lis
+be&aacute;ll&iacute;t&aacute;sokat haszn&aacute;lta a Horoszk&oacute;p
+Almuten sz&aacute;m&iacute;t&aacute;saikban. A program nem tudja
+megmondani, hogy melyik bolyg&oacute; a Horoszk&oacute;p Almutenje,
+mert lehet egy olyan bolyg&oacute; amelynek csak a m&aacute;sodik
+legnagyobb a pontsz&aacute;ma, de egzakt aspektust vet az ascendensre,
+ekkor ezt a bolyg&oacute;t v&aacute;lasszuk a Horoszk&oacute;p
+Almutenj&eacute;nek.
+B&aacute;rmelyik opci&oacute; kiz&aacute;rhat&oacute; a
+sz&aacute;m&iacute;t&aacute;sb&oacute;l, ha null&aacute;ra
+&aacute;ll&iacute;tjuk.
+Amennyire tudom, Ibn Ezra haszn&aacute;lta az akcident&aacute;lis
+be&aacute;ll&iacute;t&aacute;sokat(kiv&eacute;ve a Nap/&Oacute;ra
+ur&aacute;t). Nap-f&aacute;zisok: csak keleti poz&iacute;ci&oacute;k
+&eacute;s csak a Mars, Jupiter &eacute;s Szaturnusz eset&eacute;ben:
+18-30 fok a Napt&oacute;l[Gyenge], 30-40[K&ouml;zepes], 40-80[Erős],
+80-100[K&ouml;zepes], 100-120[Gyenge]. Robert Zoller haszn&aacute;lja a
+Nap/&Oacute;ra ur&aacute;t.
+Az Esszenci&aacute;lis be&aacute;ll&iacute;t&aacute;sokr&oacute;l: ha
+Egy&Uacute;r(Nappal/&Eacute;jjel) van kiv&aacute;lasztva, akkor csak
+egy bolyg&oacute; kapja meg a triplicit&aacute;s pontsz&aacute;mot
+&eacute;s nappali horoszk&oacute;p eset&eacute;ben az első
+triplicit&aacute;s &uacute;r lesz ez a bolyg&oacute;, &eacute;jjeli
+eset&eacute;ben a m&aacute;sodik(teh&aacute;t az első &eacute;s a
+m&aacute;sodik triplicit&aacute;s &uacute;r felcser&eacute;lődik
+&eacute;jjeli horoszk&oacute;p eset&eacute;ben). A "Haszn.
+nappal/&eacute;jjel orbisz" eset&eacute;n az Arab Pontok szerkesztőbeli
+orbiszt haszn&aacute;lja a program, ha mind az Egy&Uacute;r mind a
+"Haszn. nappal/&eacute;jjel orbisz" ki van v&aacute;lasztva.
+</p>
+<p>
+T&eacute;ma Almuten p&eacute;lda Schoener-től, (Anyagi Almuten):
+</p>
+<ul>
+  <li>M&aacute;sodik h&aacute;z cs&uacute;csa </li>
+  <li>M&aacute;sodik h&aacute;z cs&uacute;cs&aacute;nak a jegy szerinti
+ura </li>
+  <li>Bolyg&oacute;k a m&aacute;sodik h&aacute;zban </li>
+  <li>Szerencseker&eacute;k </li>
+  <li>Szerencseker&eacute;k jegy szerinti ura </li>
+  <li>Anyagiak arab pontja </li>
+  <li>Anyagiak arab pontja jegy szerinti ura </li>
+  <li>Jupiter, mint &aacute;ltal&aacute;nos szignifik&aacute;tor </li>
+</ul>
+<p></p>
+<p>
+Az Opci&oacute;k/Almutenek/T&eacute;ma szerkesztőben
+k&eacute;sz&iacute;thetj&uuml;k el ezt(&eacute;s m&aacute;s) almutent.
+Ezekből a hossz&uacute;s&aacute;gokb&oacute;l egy
+t&aacute;bl&aacute;zatot mutat a program a
+T&aacute;bl&aacute;zatok/Almutenek/T&eacute;m&aacute;k men&uuml;ben.
+M&aacute;r l&eacute;tező T&eacute;ma Almuteneket nem lehet
+m&oacute;dos&iacute;tani. Amikor kiv&aacute;lasztunk egy Almutent a
+combobox(leg&ouml;rd&uuml;lő lista)-b&oacute;l, a neve &eacute;s a
+sorai betoltődnek a szerkesztőbe. A szerkesztőt lehet
+m&oacute;dos&iacute;tani(n&eacute;v &eacute;s
+sorok(SorHozz&aacute;ad&aacute;sa,
+SorElt&aacute;vol&iacute;t&aacute;sa, MindentT&ouml;r&ouml;l)), nem
+lesz hat&aacute;sa a m&aacute;r l&eacute;tező T&eacute;ma Almutenre. Az
+&uacute;j T&eacute;ma Almutent a Hozz&aacute;ad gombra klikkelve
+adhatjuk hozz&aacute;.
+Csak a h&eacute;t bolyg&oacute;t haszn&aacute;lja a program az almuten
+sz&aacute;m&iacute;t&aacute;sokban.
+</p>
+<h2>Profekci&oacute;k</h2>
+<p>
+A PDk ut&aacute;n a tradicion&aacute;lis asztrol&oacute;gia a
+profekci&oacute;kat aj&aacute;nlja. H&aacute;rom fajta profekci&oacute;
+van: &eacute;vi, havi &eacute;s napi (az utols&oacute; kettőből
+t&ouml;bb fajta is van).
+A legfontosabb az &eacute;vi. A tradicion&aacute;lis &eacute;vi
+zodiak&aacute;lis profekci&oacute;k a radix pozici&oacute;kat mozgatja
+&eacute;vente egy jeggyel.
+A Placiduszi &eacute;ves Profekci&oacute;k
+te&oacute;ri&aacute;j&aacute;t Giuseppe Bezza (Cielo e Terra iskola,
+Italy) dolgozta ki. A radix ASC az &oacute;ramutat&oacute;
+j&aacute;r&aacute;s&aacute;nak megfelelően mozog a t&eacute;rben
+&eacute;vente egy placidus-h&aacute;zat. A sz&aacute;mit&aacute;sok
+minden asztron&oacute;miai objektumra megt&ouml;rt&eacute;nnek, az
+aszton&oacute;miai param&eacute;tereiknek megfelelően. A k&ouml;vető
+&eacute;s hanyatl&oacute; h&aacute;zakat nem szokt&aacute;k
+haszn&aacute;lni. Az &eacute;gi szf&eacute;ra teljes ferde
+forg&aacute;s&aacute;nak k&ouml;sz&ouml;nhetően, Morinus k&eacute;pes a
+teljes profekt&aacute;lt h&aacute;zcs&uacute;csokat is
+sz&aacute;mitani.
+A program lehetőv&eacute; teszi a mund&aacute;n &eacute;s
+zodiak&aacute;lis Placiduszi profekci&oacute;k k&ouml;z&ouml;tti
+v&aacute;laszt&aacute;st. Az első esetben a lok&aacute;lis horizontnak
+megfelelő bolyg&oacute;pozici&oacute;kat haszn&aacute;lja a program, a
+m&aacute;sodik esetben az ekliptikai bolyg&oacute;pozici&oacute;kat,
+vagyis a jegyeknek megfelelőket. Term&eacute;szetesen a sarki
+ter&uuml;letekre nem lehets&eacute;gesek a Placiduszi
+profekci&oacute;k. Ezek eset&eacute;ben, egy folytonos
+profekt&aacute;lt mozg&aacute;s lett megval&oacute;sitva,
+k&ouml;nnyebb&eacute; t&eacute;ve az asztrol&oacute;giai analizist. A
+technika teljes meg&eacute;rt&eacute;se v&eacute;gett javasoljuk a
+dupla(&ouml;sszehasonlit&oacute;) horoszk&oacute;pok
+haszn&aacute;lat&aacute;t, a sz&uuml;let&eacute;si adatokkal kezdve.
+N&ouml;velj&uuml;k az &eacute;vet, amig el nem &eacute;rj&uuml;k a
+12.-et, ahol a ciklus befejeződik &eacute;s &uacute;j kezdődik. Az időt
+v&aacute;ltoztatva, n&eacute;zz&uuml;k a radix ascendenst a k&uuml;lső
+horoszk&oacute;phoz viszonyitva.
+</p>
+<p>
+[Roberto]
+</p>
+<p>
+A jelenleg el&eacute;rhető zodiak&aacute;lis &eacute;vi
+profekci&oacute;k megegyeznek a tradicion&aacute;lis &eacute;vi
+30-fokos zodiak&aacute;lis profekci&oacute;kkal.
+</p>
+<h2>&Aacute;ltal&aacute;nos Megjegyz&eacute;sek</h2>
+<p>
+Seg&iacute;ts&eacute;get mind&iacute;g a k&eacute;rdőjelre, majd egy
+elemre(sz&ouml;veg, bek&eacute;rő-mező(edit-box)) klikkentve kaphatunk
+egy dial&oacute;gusablakban.
+Az asztrol&oacute;giai szimb&oacute;lumok a Morinus.ttf f&aacute;jlban
+vannak defini&aacute;lva. Ez tartalmazza a
+szimb&oacute;lumokat(truetype fontok) &eacute;s pl. a Fontforge(Linux)
+&eacute;s pl. Fontographer(Windows) programokkkal szerkeszthető.
+Jelenleg a wxPython nem tud true-type(ttf) fontokat
+megjelen&iacute;teni, ez&eacute;rt haszn&aacute;ljuk a PIL-t.
+A /Res/placedb.dat f&aacute;jl tartalmazza a
+helys&eacute;g-adatb&aacute;zist &eacute;s az
+opci&oacute;-f&aacute;jlok az Opts k&ouml;nyvt&aacute;rban az elmentett
+opci&oacute;kat.
+A /Res/Morinus.jpg f&aacute;jlt t&ouml;lti be a program. Ez
+b&aacute;rmilyen k&eacute;p lehet: &aacute;tnevezhetj&uuml;k
+b&aacute;rmelyik .jpg-nket Morinus.jpg-re &eacute;s
+fel&uuml;l&iacute;rhatjuk az eredetit. A .hor, placedb.dat &eacute;s az
+opci&oacute; f&aacute;jlok sima f&aacute;jlok teh&aacute;t
+p&eacute;ld&aacute;ul email-ben is elk&uuml;ldhetőek.
+</p>
+<p>
+A fixstars.cat f&aacute;jl nem azonos az AstroDienst-&eacute;vel, mert
+a duplik&aacute;lt &aacute;ll&oacute;csillagok t&ouml;r&ouml;lve
+lettek(a nomenklat&uacute;ra n&eacute;v sz&aacute;m&iacute;t).
+A fixstars.cat egy sora &iacute;gy n&eacute;z ki:
+</p>
+<code>
+Vega
+,alLyr,ICRS,18,36,56.3364,38,47,01.291,1.3402,28.747,-13.9,0.12893,
+0.03, 38, 3238
+</code>
+<p></p>
+<p>
+ahol Vega a tradicion&aacute;lis n&eacute;v &eacute;s alLyr a
+nomenklat&uacute;ra n&eacute;v. Sok &aacute;ll&oacute;csillagnak nincs
+tradicion&aacute;lis neve.
+A nomenklat&uacute;ra n&eacute;v egy g&ouml;r&ouml;g betűből &eacute;s
+egy konstell&aacute;ci&oacute;b&oacute;l j&ouml;n: alpha Lyra.
+A program a nomenklat&uacute;ra nevet haszn&aacute;lja. A fixstars.cat
+f&aacute;jlt lehet szerkeszteni: meg lehet v&aacute;ltoztatni a sorok
+sorrendj&eacute;t vagy a tradicion&aacute;lis nevet.
+P&eacute;ld&aacute;ul: a Vega-t az &Aacute;ll&oacute;csillagok
+dial&oacute;gusablak tetej&eacute;n akarjuk l&aacute;tni: mozgassuk(ne
+m&aacute;soljuk) a sort a f&aacute;jl tetej&eacute;re.
+</p>
+<p>
+Kor&aacute;bban a program aszerint, hogy a f&ouml;ldrajzi hely keletre
+vagy nyugatra van-e Greenwichtől adta GMT-hez(keletre) vagy vonta ki
+GMT-ből(nyugatra) a megadott z&oacute;naidőt.
+Ez nem igaz, ha a hely nyugatra van Greenwichtől, de a GMT+1(+1:00)
+időz&oacute;n&aacute;ban van(Spanyolorsz&aacute;g, nyugat
+Franciaorsz&aacute;g &eacute;s Africa egy kis r&eacute;sze).
+Ez&eacute;rt ker&uuml;lt a programba GMT+/GMT- (z&oacute;na).
+Mostant&oacute;l a felhaszn&aacute;l&oacute;nak kell megadnia. </p>
+<p>
+Online keres&eacute;s: (Horoszk&oacute;p/Uj(vagy Adatok)/Helys&eacute;g
+dialogus) a program a GeoNames online adatb&aacute;zist
+haszn&aacute;lja. Van egy cs&uacute;szka ami az online lista
+m&eacute;ret&eacute;t szab&aacute;lyozza. Min&eacute;l nagyobb az
+&eacute;rt&eacute;k, ann&aacute;l hosszabb ideig fog tartani a lista
+felt&ouml;lt&eacute;se. Abban az esetben, ha csak egy
+telep&uuml;l&eacute;s van a megadott n&eacute;ven, akkor az adatok
+azonnal beir&oacute;dnak a mezőkbe &eacute;s nem lesz online lista
+megjelenitve.
+</p>
+<p>
+Tradicion&aacute;lis aspektusok: conjunctio, sextil, quadrat, trigon,
+oppositio. Nem hatnak &aacute;t a jegyeken(pl.: 29 Kos &eacute;s 1Bika
+nem conjunctio, 29Nyilas &eacute;s 1Bika nem trigon, mert nem
+ugyanolyan eleműek a jegyek). Egzakt(Partilis) aspektusok ugyanazon a
+fokon vannak(pl.: 15fok 59perc Bak &eacute;s 16fok 01perc Taurus nem
+partilis(egzakt) trigon). Az "Egzakt" az Orbiszok menűben nem lesz
+figyelembe v&eacute;ve. (Ha a Trad&iacute;cion&aacute;lis checkbox ki
+lett v&aacute;lasztva)
+</p>
+<p>
+Ha a topocentrikus opci&oacute; ki van v&aacute;lasztva, akkor
+mindenhol a topocentrikus poz&iacute;ci&oacute;kat mutatja &eacute;s
+haszn&aacute;lja a program(T&aacute;bl&aacute;zatok,
+Horoszk&oacute;pok(radix, revol&uacute;ci&oacute;k, ...), PDk).
+</p>
+<p>
+Mund&aacute;n Szerencseker&eacute;k a mund&aacute;n Placidus PDkben:
+RA(Szk) = OA(asc)+RA(Hold)-OA(Nap); DECL(SzK) = Hold
+deklin&aacute;ci&oacute;ja.
+</p>
+<p>
+A mund&aacute;n poz&iacute;ci&oacute;k(mund&aacute;n = a bolyg&oacute;k
+sz&eacute;less&eacute;g&eacute;t is figyelembe veszi)
+t&aacute;bl&aacute;zat a bolyg&oacute;k mund&aacute;n
+poz&iacute;ci&oacute;it mutatja(a h&aacute;zakban). Pl.: Szaturnus
+12.26. Ez azt jelenti, hogy a 12. h&aacute;zban van &eacute;s a
+h&aacute;z 26%-&aacute;n&aacute;l a h&aacute;z elej&eacute;ről
+sz&aacute;molva.
+</p>
+<p>
+Az Arab Pontokat a k&ouml;vetkezők&eacute;ppen sz&aacute;m&iacute;tjuk:
+Pont = A+(B-C). Ha a "Nappali" ki van v&aacute;lasztva, akkor a
+megadott formula csak nappali k&eacute;pletekre &eacute;rv&eacute;nyes
+&eacute;s &eacute;jjeli k&eacute;pletek eset&eacute;n meg lesz
+ford&iacute;tva: Pont = A+(C-B). Az Arab Pontok
+t&aacute;bl&aacute;zatban ez l&aacute;that&oacute; lesz. Az Ascendens
+be&aacute;ll&iacute;that&oacute;: pl.: ha HC6 akkor az Asc a HC6 lesz,
+a m&aacute;sodik h&aacute;zcs&uacute;cs a Desc &eacute;s &iacute;gy
+tov&aacute;bb. A "!" jelenti valami ur&aacute;t: pl.: HC6! a hatodik
+h&aacute;zcs&uacute;cs ur&aacute;t jelenti. Csak a h&eacute;t
+bolyg&oacute;t veszi figyelembe a program. A programban
+be&aacute;ll&iacute;that&oacute; egy nappal/&eacute;jszaka orbisz. A
+civil alkonyat p&eacute;ld&aacute;ul az, ahol &uacute;js&aacute;got
+lehet a szabadban olvasni, pedig a Nap a horizont alatt van. Ez az
+orbisz max. 6 fok a horizont alatt.
+</p>
+<p>
+Csak betűk, sz&aacute;mok, k&ouml;tőjel('-') &eacute;s space(' ') -ből
+&aacute;ll&oacute; sz&ouml;veget beirva fog a program keresni a
+Opci&oacute;k/&Aacute;ll&oacute;csillagok dialogusban.
+</p>
+<p>
+Teli Hold syzygy eset&eacute;ben a Megjelen&iacute;t&eacute;s I
+dial&oacute;gusban v&aacute;laszthatjuk ki, hogy melyik
+poz&iacute;ci&oacute;t haszn&aacute;ljuk.
+</p>
+<p>
+A peregrin sz&iacute;nt t&ouml;bb helyen is haszn&aacute;lja a program:
+p&aacute;rhuzamos jel a PDk-ben, Szerencseker&eacute;k(ha a
+sz&iacute;nek m&eacute;ltos&aacute;g szerintiek), Egzakt Tranzitok.
+</p>
+<p>
+Időkeres&eacute;s: Geocentrikus pozici&oacute;kat &eacute;s tropikus
+hossz&uacute;s&aacute;gokat(fokok: 0-360) v&aacute;r a program.
+Jelenleg a horoszk&oacute;pok London-ra
+sz&aacute;mit&oacute;dnak(Asc/MC hamarosan j&ouml;n). A
+pozici&oacute;kat Kr.e.5000-Kr.u.5000 k&ouml;z&ouml;tt keresi a
+program, ha megtal&aacute;lta a Sv&aacute;jci Efemerid&aacute;t,
+k&uuml;l&ouml;nben Kr.e.3000-Kr.u.3000 k&ouml;z&ouml;tt.
+A keres&eacute;s 1/1/1(1.&eacute;v janu&aacute;r 1)-től indul, ha a
+Kr.e. nincs kiv&aacute;lasztva, -1/1/1-től ha ki van &eacute;s maximum
+egy horoszk&oacute;pot tal&aacute;l meg naponta.
+Haszn&aacute;ld(percek, szekundumok, retrogr&aacute;d): ha nincsenek
+kiv&aacute;lasztva, akkor nem fognak sz&aacute;mitani: pl.: megadott
+bolyg&oacute;pozici&oacute; 239d 7m 49s. Pl.: a 239 0m 0s vagy pl.: 239
+37m 34s pozici&oacute;kat is meg fogja tal&aacute;lni a program, mert
+csak a fokokat(degree) fogja ellenőrizni. Ha a retrogr&aacute;d nincs
+kiv&aacute;lasztva, akkor a bolyg&oacute;k csak a
+hossz&uacute;s&aacute;gi fokuk alapj&aacute;n lesznek keresve, nem fog
+sz&aacute;mitani, hogy retrogr&aacute;dok-e vagy nem.
+Approxim&aacute;ci&oacute;: a megadott percet(minute) fogja a program
+hozz&aacute;adni a megadott bolyg&oacute;pozici&oacute;khoz.
+Pl.: egy bolyg&oacute; hossz&uacute;s&aacute;gi foka 239d 27m 49s
+&eacute;s az approxim&aacute;ci&oacute;-minute 20, akkor a (239d 7m 49s
+- 239d 47m 49s) tartom&aacute;nybeli pozici&oacute;kat fogja a program
+keresni. Ez a tartom&aacute;ny minden bolyg&oacute;ra
+sz&aacute;mit&oacute;dik.
+J-B Morin k&eacute;plete eset&eacute;ben a Mars
+hossz&uacute;s&aacute;ga 98fok 7perc 28szek. Ha az
+approxim&aacute;ci&oacute; 30 &eacute;s a "Haszn&aacute;ld" ki van
+v&aacute;lsztva, akkor pl. 20perc levonhat&oacute; vagy
+hozz&aacute;adhat&oacute; a Mars hossz&uacute;s&aacute;g&aacute;hoz,
+Morin k&eacute;plet&eacute;t m&eacute;g mindig meg fogja
+t&aacute;l&aacute;lni a program. Term&eacute;szetesen a t&ouml;bbi
+bolyg&oacute; hossz&uacute;s&aacute;gai is
+megv&aacute;ltoztathat&oacute;ak igy, mert ez a tartom&aacute;ny minden
+bolyg&oacute;ra sz&aacute;mit&oacute;dik.
+Az approxim&aacute;ci&oacute; r&eacute;gebbi -kev&eacute;sb&eacute;
+pontos- efemerid&aacute;k alapj&aacute;n sz&aacute;mitott
+bolyg&oacute;pozici&oacute;k eset&eacute;n hasznos.
+A Cancel-gomb nem t&ouml;rli a m&aacute;r megtal&aacute;lt időpontok
+list&aacute;j&aacute;t.
+</p>
+<p>
+Probl&eacute;ma eset&eacute;n z&aacute;rjuk be a programot &eacute;s
+t&ouml;r&ouml;lj&uuml;k le az opci&oacute;-f&aacute;jlokat, majd
+ind&iacute;tsuk &uacute;jra a programot.
+</p>
+<p>
+Netbook computerek est&eacute;ben a f&uuml;ggőleges felbont&aacute;s
+csak 600. Jelenleg enn&eacute;l csak a Primer Direkci&oacute;k
+dial&oacute;gus nagyobb, de a netbook opci&oacute;
+kijel&ouml;l&eacute;s&eacute;vel a Megjelenit&eacute;s I-ben egy
+egyszerűbb(r&ouml;videbb) PD dial&oacute;gust fogunk kapni. A
+Kiv&aacute;laszt&aacute;s/T&ouml;rl&eacute;s gombok, a Mind, a
+Campanus-PDk, az &Aacute;ll&oacute;csillagok-gomb &eacute;s a
+Felező-Pontok nem lesznek mutatva. Ha a Mind volt kiv&aacute;lasztva
+mielőtt a netbook-ot kijel&ouml;lt&uuml;k volna, akkor a program az
+első PD-be&aacute;llit&aacute;st(Mund&aacute;n) fogja
+kiv&aacute;lasztani. Ha a Campanus-PDk volt kiv&aacute;lasztva mielőtt
+a netbook-ot kijel&ouml;lt&uuml;k volna, akkor a program az első
+PD-rendszert fogja kiv&aacute;lasztani (Placidus(semiarcus)).
+</p>
+<p>
+Az Automatikus Ment&eacute;s, Ment&eacute;s, Visszat&ouml;lt&eacute;s
+Opci&oacute;k men&uuml;k az Opci&oacute;k menedzsel&eacute;s&eacute;re
+val&oacute;k.
+Ha az Automatikus Ment&eacute;s ki van v&aacute;lasztva, akkor a
+program minden opci&oacute;k-be&aacute;ll&iacute;t&aacute;s
+v&aacute;ltoztat&aacute;s ut&aacute;n azonnal elmenti a
+v&aacute;ltoztat&aacute;sokat. Ha nincs kiv&aacute;lasztva az
+Automatikus Ment&eacute;s &eacute;s megv&aacute;ltoztattuk az
+opci&oacute;k-be&aacute;ll&iacute;t&aacute;sokat, akkor b&aacute;rmikor
+elmenthetj&uuml;k őket a Ment&eacute;s men&uuml;re klikkelve(ha nem
+mentj&uuml;k el a be&aacute;ll&iacute;t&aacute;sokat mielőtt
+bez&aacute;rjuk a programot, akkor a megv&aacute;ltoztatott
+opci&oacute;k nem mentődnek el).
+A megv&aacute;ltoztatott opci&oacute;k az opci&oacute;-f&aacute;jlokba
+mentődnek el.
+A Visszat&ouml;lt&eacute;s men&uuml;re kattitva b&aacute;rmikor
+t&ouml;r&ouml;lhetj&uuml;k a megv&aacute;ltoztatott/elmentett
+opci&oacute;-be&aacute;ll&iacute;t&aacute;sokat. (pl.:
+v&aacute;ltoztassuk meg a radix horoszk&oacute;p
+Keret-sz&iacute;n&eacute;t pirosra, nyomjunk Rendben-t, l&aacute;tjuk a
+piros keretet, majd nyomjunk Visszat&ouml;lt&eacute;st).
+</p>
+<p>
+V&aacute;lassz ki egy nyelvet a Nyelvek dial&oacute;gusban, majd nyomj
+Ok(Rendben)-t &eacute;s mentsd el az opci&oacute;kat. Ind&iacute;tsd
+ujra a programot. A visszat&ouml;lt&eacute;s vagy a Morinus.opt
+f&aacute;jl t&ouml;rl&eacute;se mindent
+vissza&aacute;ll&iacute;t(ind&iacute;tsd &uacute;jra a programot, hogy
+az alap nyelvet haszn&aacute;lja a program).
+</p>
+<p>
+Morinusnak nincsek installja. &Aacute;ltal&aacute;ban a Windows
+programoknak van: ha r&aacute;klikkel&uuml;nk az .exe f&aacute;jlra az
+installer elindul &eacute;s megk&eacute;rdezi, hogy hova m&aacute;solja
+a programot(pl. C:/Program Files...) &eacute;s egy ikont helyez el a
+desktopon. Ezeknek a programoknak uninstallerj&uuml;k is van. Az
+adatok(pl. &uacute;tvonal(C:/Program Files...)) be&iacute;r&oacute;dnak
+a Windows-Registrybe az install&aacute;l&aacute;s alatt. Morinus nem
+istall&aacute;l&oacute;dik fel a rendszer&uuml;nkre. A
+MorinusWinHun.zip f&aacute;jl let&ouml;lt&eacute;se &eacute;s
+kicsomagol&aacute;sa ut&aacute;n egy MorinusWinHun k&ouml;nyvt&aacute;r
+keletkezik. A morinus.exe f&aacute;jlra klikkelve elindul a program,
+teh&aacute;t nincs installer. A MorinusWinHun k&ouml;nyvt&aacute;r
+t&ouml;rl&eacute;se megfelel az uninstallnak. Term&eacute;szetesen
+csin&aacute;lhatunk egy linket a morinus.exe-re &eacute;s kirakhatjuk a
+desktopra, &iacute;gy lesz egy Morinus-ikonunk a desktopunkon.
+Ez&eacute;rt Windows-on a D:\ dr&aacute;jv haszn&aacute;lat&aacute;t
+javaslom pl.: D:\MorinusWinHun vagy D:\Asztrologia\MorinusWinHun.
+</p>
+<p>
+Minim&aacute;lis javasolt k&eacute;pernyőfelbont&aacute;s: 1024*768.
+</p>
+</body>
+</html>

@@ -1,0 +1,37 @@
+﻿20/09/2013
+
+	- Añadida funcionalidad Aspectos de planetas a estrellas fijas (según orbe de cada estrella)
+
+27/08/2013
+	- Proyecto creado en sourceforge.
+
+	- Versión 8.0.0 provisional subida al repositorio Git.
+
+	- Creado icono para Morinus.
+
+	- He contactado con todos los antiguos traductores.
+
+	- Actualización de los créditos del programa (mtexts.py).
+
+13/06/2013
+	- Tabla Dodecatemoria con el grado exacto y longitud de cada dodecatemoria.
+
+	- Tamaño optimizado de la ventana Tabla>Antiscia y Tabla>Dodecatemoria. 
+
+
+12/06/2013
+ 	- Añadido "Interpretación" al Menú Cartas. Todavía no hace nada.
+
+	- Background de fondo cambiado.
+
+	- El menú Tablas>Posiciones ahora muestra los datos de las 12 casas.
+
+	- Número límite de estrellas fijas aumentado de 40 a 900.
+
+	- Añadida opción de Dodecatemorias en el menú Apariencia 1.
+
+	- El gráfico ya visualiza dodecatemorias. :D
+
+	- Corregido bug del menú Tablas>Antiscia por error de traducción al español en el archivo de lenguaje.
+
+	- Tema de colores modificado.

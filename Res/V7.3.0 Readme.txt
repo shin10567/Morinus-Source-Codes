@@ -1,0 +1,59 @@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				MORINUS V 7.X.X
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		          CHANGED FILES compared to V 6.2 
+
+* antisciawnd
+* appearance2dlg
+* campanianpd
+* chart
+* customerpd
+* customerwnd
+* files
+* morin
+* mtexts
+* options
+* planets
+* positionswnd
+* positionswnd2
+* regiospec
+* helpEng
+* helpIta
+* helpS in other languages non translated yet (Copy of helpEng)
+
+Unless the last two, the points where the files were modified are easily
+identifiable thanks to the following label:
+
+# ###########################
+# Roberto Detail – V 7.X.X
+Change
+# ###########################
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		          NEW FILES compared to V 6.2 
+
+* defaultlocdlg
+* firdaria
+* firdariadlg
+* firdariaframe
+* firdariawnd
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Lucca, Italy, August 30th 2013,
+Roberto Luporini
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+

@@ -1,0 +1,59 @@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				MORINUS V 7.X.X
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	            FILES MODIFICATI rispetto alla V 6.2
+
+* antisciawnd
+* appearance2dlg
+* campanianpd
+* chart
+* customerpd
+* customerwnd
+* files
+* morin
+* mtexts
+* options
+* planets
+* positionswnd
+* positionswnd2
+* regiospec
+* helpEng
+* helpIta
+* help in altre lingue non ancora tradotte (Copia di helpEng)
+
+Ad eccezione degli ultimi due, i punti nei quali i file sono stati modificati
+sono facilmente individuabili in base alla seguente segnalazione:
+
+# ###########################
+# Roberto Dettaglio – V 7.X.X
+Modifica
+# ###########################
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	             NUOVI FILES rispetto alla V 6.2
+
+* defaultlocdlg
+* firdaria
+* firdariadlg
+* firdariaframe
+* firdariawnd
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Lucca, 30 Agosto 2013,
+Roberto Luporini
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
