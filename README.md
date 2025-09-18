@@ -1,4 +1,4 @@
-## [8.5.3] Updated Version from 8.1.0 
+## [8.5.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -12,9 +12,9 @@
 
 ### Restored / Enhanced
 - Arabic Parts (Settings): legacy options restored:
-  - Reference other Lots as the base.
-  - Use exact-degree references.
-  - Added a "Modify" button for quick edits.
+	- Reference other Lots as the base.
+	- Use exact-degree references.
+	- Added a "Modify" button for quick edits.
 - Primary Directions are now show 150 years.
 - Speculum: now shows "Lot of Fortune"
 
@@ -83,3 +83,6 @@
 - Primary Directions bug fixes.
 #### 8.5.3
 - Rename: “Find Time” → “Find Time and Place” (the feature DOES search locations. I mistakenly renamed it earlier.).
+#### 8.5.4
+- Updated Swiss Ephemeris data to DE431 (2023).
+- Primary Directions: Fixed an issue where switching the Node setting could shift other bodies’ direction dates.
