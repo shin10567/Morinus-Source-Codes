@@ -1,10 +1,10 @@
+import datetime
 import wx
+import intvalidator
+import rangechecker
+import util
 import mtexts
 
-# ##################################
-# Roberto V 7.3.0
-# All texts txtsxxx -> txts
-# ##################################
 
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
@@ -15,7 +15,7 @@ wx.HelpProvider.Set(provider)
 #---------------------------------------------------------------------------
 
 
-class FirdariaDlg(wx.Dialog):
+class GraphEphemDlg(wx.Dialog):
 	def __init__(self, parent):
         # Instead of calling wx.Dialog.__init__ we precreate the dialog
         # so we can set an extra style that must be set before
@@ -23,28 +23,35 @@ class FirdariaDlg(wx.Dialog):
         # method.
 #		pre = wx.PreDialog()
 #		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-#		pre.Create(parent, -1, mtexts.txts['Firdaria'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre.Create(parent, -1, mtexts.txts['Ephemeris'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
-		wx.Dialog.__init__(self, None, -1, mtexts.txts['Firdaria'], size=wx.DefaultSize)
+		wx.Dialog.__init__(self, None, -1, mtexts.txts['Ephemeris'], size=wx.DefaultSize)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
+		#main horizontal sizer
+		mhsizer = wx.BoxSizer(wx.HORIZONTAL)
 
 		#Time
-		sfirdaria =wx.StaticBox(self, label=mtexts.txts['Nocturnal'])
-		firdariasizer = wx.StaticBoxSizer(sfirdaria, wx.VERTICAL)
-		vsizer = wx.BoxSizer(wx.VERTICAL)
-		self.bonrb = wx.RadioButton(self, -1, mtexts.txts['Bonatus'], style=wx.RB_GROUP)
-		vsizer.Add(self.bonrb, 0, wx.ALIGN_LEFT, 5)
-		self.birrb = wx.RadioButton(self, -1, mtexts.txts['AlBiruni'])
-		vsizer.Add(self.birrb, 0, wx.ALIGN_LEFT, 5)
+		rnge = 3000
+		checker = rangechecker.RangeChecker()
+		if checker.isExtended():
+			rnge = 5000
+		self.syear =wx.StaticBox(self, label=mtexts.txts['Year'])
+		yearsizer = wx.StaticBoxSizer(self.syear, wx.VERTICAL)
+		self.year = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, rnge), size=(50,-1))
+		yearsizer.Add(self.year, 0, wx.GROW|wx.ALIGN_CENTER|wx.ALL, 5)
+		if checker.isExtended():
+			self.year.SetHelpText(mtexts.txts['HelpYear'])
+		else:
+			self.year.SetHelpText(mtexts.txts['HelpYear2'])
+		self.year.SetMaxLength(4)
 
-		firdariasizer.Add(vsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-
-		mvsizer.Add(firdariasizer, 0, wx.GROW|wx.ALIGN_CENTER|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
+		mhsizer.Add(yearsizer, 1, wx.GROW|wx.ALIGN_CENTER|wx.ALL, 5)
+		mvsizer.Add(mhsizer, 0, wx.GROW|wx.ALIGN_CENTER|wx.ALL, 5)
 
 		btnsizer = wx.StdDialogButtonSizer()
 
@@ -69,21 +76,10 @@ class FirdariaDlg(wx.Dialog):
 
 		btnOk.SetFocus()
 
-
-	def fill(self, opts):
-		if opts.isfirbonatti:
-			self.bonrb.SetValue(True)
-		else:
-			self.birrb.SetValue(True)
+		now = datetime.datetime.now()
+		self.year.SetValue(str(now.year))
 
 
-	def check(self, opts):
-		changed = self.bonrb.GetValue() != opts.isfirbonatti
-
-		if changed:
-			opts.isfirbonatti = self.bonrb.GetValue()
-
-		return changed
 
 
 

@@ -29,8 +29,8 @@ class FixStarsWnd(commonwnd.CommonWnd):
 		self.SPACE_TITLEY = 0
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM)*(self.LINE_HEIGHT))
 		self.TABLE_WIDTH = (self.SMALL_CELL_WIDTH+self.BIG_CELL_WIDTH+(self.COLUMN_NUM-1)*self.CELL_WIDTH)
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
@@ -71,7 +71,7 @@ class FixStarsWnd(commonwnd.CommonWnd):
 
 		#Title
 		draw.rectangle(((BOR+self.SMALL_CELL_WIDTH, BOR),(BOR+self.SMALL_CELL_WIDTH+self.TITLE_WIDTH, BOR+self.TITLE_HEIGHT)), outline=(tableclr), fill=(self.bkgclr))
-		txt = (mtexts.txts['Name'], mtexts.txts['Nomencl']+'.', mtexts.txts['Longitude'], mtexts.txts['Latitude'], mtexts.txts['Rectascension'], mtexts.txts['Declination'])
+		txt = (mtexts.txts['Name'], mtexts.txts['Nomencl'], mtexts.txts['Longitude'], mtexts.txts['Latitude'], mtexts.txts['Rectascension'], mtexts.txts['Declination'])
 
 		summa = 0
 		offs = (self.BIG_CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
@@ -87,9 +87,9 @@ class FixStarsWnd(commonwnd.CommonWnd):
 		for i in range(len(self.chart.fixstars.data)):
 			self.drawline(draw, x, y+i*self.LINE_HEIGHT, tableclr, i)
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawline(self, draw, x, y, clr, idx):
@@ -125,7 +125,7 @@ class FixStarsWnd(commonwnd.CommonWnd):
 					lona = self.chart.fixstars.data[idx][i-OFFS]-self.chart.ayanamsha
 					lona = util.normalize(lona)
 					d,m,s = util.decToDeg(lona)
-				sign = d/chart.Chart.SIGN_DEG
+				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
 				wsp,hsp = draw.textsize(' ', self.fntText)
 				txtsign = self.signs[sign]
@@ -151,6 +151,3 @@ class FixStarsWnd(commonwnd.CommonWnd):
 				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
 			summa += offs[i]
-
-
-

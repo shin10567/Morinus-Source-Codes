@@ -36,15 +36,15 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 		self.TABLE_WIDTH = (self.LONGITUDE_CELL_WIDTH+(self.COLUMN_NUM)*(self.CELL_WIDTH)+self.DEGREEWINS_CELL_WIDTH)
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+(self.LINE_NUM*self.LINE_HEIGHT+2*self.DLINE_HEIGHT))
 
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)
-		self.fntText = ImageFont.truetype(common.common.abc, self.FONT_SIZE)
-		self.fntLargeText = ImageFont.truetype(common.common.abc, 5*self.FONT_SIZE/4)
-		self.fntBigText = ImageFont.truetype(common.common.abc, 3*self.FONT_SIZE/2)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
+		self.fntLargeText = ImageFont.truetype(common.common.abc, int(5*self.FONT_SIZE/4))
+		self.fntBigText = ImageFont.truetype(common.common.abc, int(3*self.FONT_SIZE/2))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)	
 		self.signs = common.common.Signs1
 		if not self.options.signs:
@@ -207,9 +207,9 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 					draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), pltxt, fill=clr, font=self.fntMorinus)
 					draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev+wpl+wsp, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawLong(self, draw, x, y, lon, clr):
@@ -219,7 +219,7 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 
 		d,m,s = util.decToDeg(lon)
 
-		sign = d/chart.Chart.SIGN_DEG
+		sign = int(d/chart.Chart.SIGN_DEG)
 		pos = d%chart.Chart.SIGN_DEG
 		wsp,hsp = draw.textsize(' ', self.fntText)
 		wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)

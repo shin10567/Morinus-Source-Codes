@@ -43,10 +43,10 @@ class RowsListCtrl(wx.ListCtrl):
 
 		items = self.rowsdata.items()
 		for key, data in items:
-			index = self.InsertStringItem(sys.maxint, data[0])
-			self.SetStringItem(index, RowsListCtrl.TYPE, data[0])
-			self.SetStringItem(index, RowsListCtrl.VALUE, data[1])
-			self.SetStringItem(index, RowsListCtrl.RULERSHIP, data[2])
+			index = self.InsertItem(sys.maxsize, data[0])
+			self.SetItem(index, RowsListCtrl.TYPE, data[0])
+			self.SetItem(index, RowsListCtrl.VALUE, data[1])
+			self.SetItem(index, RowsListCtrl.RULERSHIP, data[2])
 			self.SetItemData(index, key)
 
 		self.SetColumnWidth(RowsListCtrl.TYPE, 160)#wx.LIST_AUTOSIZE)
@@ -73,7 +73,8 @@ class RowsListCtrl(wx.ListCtrl):
 
 
 	def OnItemSelected(self, event):
-		self.currentItem = event.m_itemIndex
+		#self.currentItem = event.m_itemIndex
+		self.currentItem = event.Selection
 		event.Skip()
 
 
@@ -96,9 +97,9 @@ class RowsListCtrl(wx.ListCtrl):
 #			dlgm.Destroy()#
 #			return
 
-		self.InsertStringItem(num, item[RowsListCtrl.TYPE])
+		self.InsertItem(num, item[RowsListCtrl.TYPE])
 		for i in range(1, len(item)):
-			self.SetStringItem(num, i, item[i])
+			self.SetItem(num, i, item[i])
 
 		self.currentItem = num
 		self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
@@ -236,15 +237,15 @@ class AlmutenTopicalsDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, mtexts.txts['TopicalAlmutens'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre = wx.PreDialog()
+#		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#		pre.Create(parent, -1, mtexts.txts['TopicalAlmutens'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
-
+#		self.PostCreate(pre)
+		wx.Dialog.__init__(self, None, -1, mtexts.txts['TopicalAlmutens'], size=wx.DefaultSize)
 		self.tpcls = None
 		if opts.topicals != None:
 			self.tpcls = copy.deepcopy(opts.topicals)
@@ -263,7 +264,8 @@ class AlmutenTopicalsDlg(wx.Dialog):
 			num = len(self.tpcls)
 			for i in range(num):
 				self.namestxt.append(self.tpcls[i][0])
-		self.namescb = wx.ComboBox(self, -1, '', size=(230, -1), choices='', style=wx.CB_DROPDOWN|wx.CB_READONLY)
+		#self.namescb = wx.ComboBox(self, -1, '', size=(230, -1), choices='', style=wx.CB_DROPDOWN|wx.CB_READONLY)
+		self.namescb = wx.ComboBox(self, -1, value="", pos=wx.DefaultPosition,size=wx.DefaultSize, choices=[], style=0, validator=wx.DefaultValidator,name='')
 		hsizer.Add(self.namescb, 0, wx.ALL, 5)
 		hsubsizer = wx.BoxSizer(wx.HORIZONTAL)
 		ID_Add = wx.NewId()

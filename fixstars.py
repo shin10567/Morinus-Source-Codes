@@ -15,7 +15,7 @@ class FixStars:
 		self.data = []
 
 		i = 0
-		for k in names.iterkeys():
+		for k in names.keys():
 			self.data.append(['', '', 0.0, 0.0, 0.0, 0.0])
 			ret, name, dat, serr = astrology.swe_fixstar_ut(','+k, tjd_ut, flag)
 
@@ -27,8 +27,13 @@ class FixStars:
 				nam = snam[0].strip()
 				nomnam = snam[1].strip()
 
+			# ★ pyd가 laSco를 'Mula'로 돌려줘도 표시명은 'Shaula'로 강제 통일
+			if nomnam == u'laSco' or nam == u'Mula':
+				nam = u'Shaula'
+
 			self.data[i][FixStars.NAME] = nam
 			self.data[i][FixStars.NOMNAME] = nomnam
+
 			self.data[i][FixStars.LON] = dat[0]
 			self.data[i][FixStars.LAT] = dat[1]
 			ra, decl, dist = astrology.swe_cotrans(dat[0], dat[1], 1.0, -obl)

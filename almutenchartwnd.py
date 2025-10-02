@@ -60,18 +60,18 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 			self.TTABLE_WIDTH = (self.ASMALL_CELL_WIDTH+(self.TCOLUMN_NUM)*(self.ACELL_WIDTH))
 			self.TTABLE_OFFSET = self.LINE_HEIGHT
 
-			self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.ETABLE_HEIGHT+self.ATABLE_OFFSET+self.ATABLE_HEIGHT+self.TTABLE_OFFSET+self.TTABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+			self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.ETABLE_HEIGHT+self.ATABLE_OFFSET+self.ATABLE_HEIGHT+self.TTABLE_OFFSET+self.TTABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 		else:
-			self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.ETABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+			self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.ETABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.ETABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.ETABLE_WIDTH+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)
-		self.fntText = ImageFont.truetype(common.common.abc, self.FONT_SIZE)
-		self.fntLargeText = ImageFont.truetype(common.common.abc, 5*self.FONT_SIZE/4)
-		self.fntBigText = ImageFont.truetype(common.common.abc, 3*self.FONT_SIZE/2)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
+		self.fntLargeText = ImageFont.truetype(common.common.abc, int(5*self.FONT_SIZE/4))
+		self.fntBigText = ImageFont.truetype(common.common.abc, int(3*self.FONT_SIZE/2))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)	
 		self.signs = common.common.Signs1
 		if not self.options.signs:
@@ -503,9 +503,9 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 				w,h = draw.textsize(txt, fnt)
 				draw.text((x+self.ASMALL_CELL_WIDTH+i*self.ACELL_WIDTH+(self.ACELL_WIDTH-w)/2, y+5*self.LINE_HEIGHT+(self.ELINE_HEIGHT-h)/2), txt, fill=txtclr, font=fnt)
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawLong(self, draw, x, y, lon, clr):
@@ -515,7 +515,7 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 
 		d,m,s = util.decToDeg(lon)
 
-		sign = d/chart.Chart.SIGN_DEG
+		sign = int(d/chart.Chart.SIGN_DEG)
 		pos = d%chart.Chart.SIGN_DEG
 		wsp,hsp = draw.textsize(' ', self.fntText)
 		wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)

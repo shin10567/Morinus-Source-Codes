@@ -15,7 +15,7 @@ provider = wx.SimpleHelpProvider()
 wx.HelpProvider.Set(provider)
 
 #---------------------------------------------------------------------------
-
+# daimon = 原等于守护神
 
 class PartsListCtrl(wx.ListCtrl):
     def _deg_to_text(self, absdeg):
@@ -97,22 +97,22 @@ class PartsListCtrl(wx.ListCtrl):
 
     def Populate(self):
         self.InsertColumn(PartsListCtrl.INDEXCOL, u'#', format=wx.LIST_FORMAT_CENTER)
-        self.InsertColumn(PartsListCtrl.ACTIVE, mtexts.txts.get('Active', 'Active'), format=wx.LIST_FORMAT_CENTER)
+        self.InsertColumn(PartsListCtrl.ACTIVE, mtexts.txts['Active'], format=wx.LIST_FORMAT_CENTER)
         self.InsertColumn(PartsListCtrl.NAME, mtexts.txts['Name'])
         self.InsertColumn(PartsListCtrl.FORMULA, mtexts.txts['Formula'])
         self.InsertColumn(PartsListCtrl.DIURNAL, mtexts.txts['Diurnal'], format=wx.LIST_FORMAT_CENTER)
         
         items = self.partsdata.items()
         for key, data in items:
-            index = self.InsertStringItem(sys.maxint, data[0])
-            self.SetStringItem(index, PartsListCtrl.NAME, data[0])
-            self.SetStringItem(index, PartsListCtrl.FORMULA, data[1])
-            self.SetStringItem(index, PartsListCtrl.DIURNAL, data[2])
+            index = self.InsertItem(sys.maxsize, data[0])
+            self.SetItem(index, PartsListCtrl.NAME, data[0])
+            self.SetItem(index, PartsListCtrl.FORMULA, data[1])
+            self.SetItem(index, PartsListCtrl.DIURNAL, data[2])
             self.SetItemData(index, key)
             # Active/Index 표시
             active = self.parts_active.get(key, True)
-            self.SetStringItem(index, PartsListCtrl.ACTIVE, u'On' if active else u'Off')
-            self.SetStringItem(index, PartsListCtrl.INDEXCOL, u'R%d' % (index+1))
+            self.SetItem(index, PartsListCtrl.ACTIVE, mtexts.txts['On'] if active else mtexts.txts['Off'])
+            self.SetItem(index, PartsListCtrl.INDEXCOL, u'R%d' % (index+1))
         self.SetColumnWidth(PartsListCtrl.INDEXCOL, 50)
         self.SetColumnWidth(PartsListCtrl.ACTIVE, 65)
         self.SetColumnWidth(PartsListCtrl.NAME, 160)#wx.LIST_AUTOSIZE)
@@ -138,14 +138,24 @@ class PartsListCtrl(wx.ListCtrl):
 
 
     def OnItemSelected(self, event):
-        self.currentItem = event.m_itemIndex
+        # Phoenix/Classic 모두 안전하게
         try:
-            key = self.GetItemData(self.currentItem)
-            self.GetParent().activeckb.SetValue(self.parts_active.get(key, True))
-        except:
-            pass
-        event.Skip()
+            idx = event.GetIndex()
+        except AttributeError:
+            idx = getattr(event, 'm_itemIndex', -1)
 
+        if idx is None:
+            idx = -1
+        self.currentItem = idx
+
+        if idx >= 0:
+            try:
+                key = self.GetItemData(idx)
+                self.GetParent().activeckb.SetValue(self.parts_active.get(key, True))
+            except Exception:
+                pass
+
+        event.Skip()
 
     def OnColClick(self,event):
         event.Skip()
@@ -153,31 +163,31 @@ class PartsListCtrl(wx.ListCtrl):
     def _renumber_rows(self):
         # 현재 표시 순서대로 R번호 갱신
         for row in range(self.GetItemCount()):
-            self.SetStringItem(row, PartsListCtrl.INDEXCOL, u'R%d' % (row+1))
+            self.SetItem(row, PartsListCtrl.INDEXCOL, u'R%d' % (row+1))
 
     def _refresh_active_for_row(self, row):
         if row < 0 or row >= self.GetItemCount():
             return
         key = self.GetItemData(row)
         active = self.parts_active.get(key, True)
-        self.SetStringItem(row, PartsListCtrl.ACTIVE, u'On' if active else u'Off')
+        self.SetItem(row, PartsListCtrl.ACTIVE, mtexts.txts['On'] if active else mtexts.txts['Off'])
 
     def AddFullItem(self, name, disp_formula, diurnal, codes, triplet, active=True):
         num = self.GetItemCount()
         if num >= PartsListCtrl.MAX_ARABICPARTS_NUM:
             return False
-        index = self.InsertStringItem(num, name)
-        self.SetStringItem(index, PartsListCtrl.NAME, name)
-        self.SetStringItem(index, PartsListCtrl.FORMULA, disp_formula)
-        self.SetStringItem(index, PartsListCtrl.DIURNAL, diurnal)
+        index = self.InsertItem(num, name)
+        self.SetItem(index, PartsListCtrl.NAME, name)
+        self.SetItem(index, PartsListCtrl.FORMULA, disp_formula)
+        self.SetItem(index, PartsListCtrl.DIURNAL, diurnal)
         key = (max(self.partsdata.keys())+1) if len(self.partsdata) else 1
         self.SetItemData(index, key)
         self.partsdata[key] = (name, disp_formula, diurnal)
         self.parts_codes[key] = codes
         self.parts_refdeg[key] = triplet
         self.parts_active[key] = bool(active)
-        self.SetStringItem(index, PartsListCtrl.ACTIVE, u'On' if active else u'Off')
-        self.SetStringItem(index, PartsListCtrl.INDEXCOL, u'R%d' % (index+1))
+        self.SetItem(index, PartsListCtrl.ACTIVE, mtexts.txts['On'] if active else mtexts.txts['Off'])
+        self.SetItem(index, PartsListCtrl.INDEXCOL, u'R%d' % (index+1))
         self.currentItem = index
         self.EnsureVisible(self.currentItem)
         self.SetItemState(self.currentItem, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
@@ -212,9 +222,9 @@ class PartsListCtrl(wx.ListCtrl):
             dlgm.Destroy()#
             return
 
-        self.InsertStringItem(num, item[PartsListCtrl.NAME])
+        self.InsertItem(num, item[PartsListCtrl.NAME])
         for i in range(1, len(item)):
-            self.SetStringItem(num, i, item[i])
+            self.SetItem(num, i, item[i])
 
         self.currentItem = num
         self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
@@ -396,7 +406,7 @@ class RefDegDlg(wx.Dialog):
                     pass
                 cb = wx.ComboBox(self, -1, choices[init_idx], choices=choices, style=wx.CB_DROPDOWN|wx.CB_READONLY)
 
-                hs.Add(wx.StaticText(self, -1, 'Ref: '), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+                hs.Add(wx.StaticText(self, -1, mtexts.txts['RefColon']), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
                 hs.Add(cb, 0, wx.ALL, 5)
                 self.rows.append(('RE', cb))
 
@@ -427,15 +437,15 @@ class ArabicPartsDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-        pre = wx.PreDialog()
-        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-        pre.Create(parent, -1, mtexts.txts['ArabicParts'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#        pre = wx.PreDialog()
+#        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#        pre.Create(parent, -1, mtexts.txts['ArabicParts'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-        self.PostCreate(pre)
-
+#        self.PostCreate(pre)
+        wx.Dialog.__init__(self, None, -1, mtexts.txts['ArabicParts'], size=wx.DefaultSize)
         #main vertical sizer
         mvsizer = wx.BoxSizer(wx.VERTICAL)
         #main horizontal sizer
@@ -539,7 +549,7 @@ class ArabicPartsDlg(wx.Dialog):
         btnAdd = wx.Button(self, ID_Add, mtexts.txts['Add'])
         vsizer.Add(btnAdd, 0, wx.GROW|wx.ALL, 5)
         ID_Modify = wx.NewId()
-        btnModify = wx.Button(self, ID_Modify, "Modify")
+        btnModify = wx.Button(self, ID_Modify, mtexts.txts["Modify"])
         vsizer.Add(btnModify, 0, wx.GROW|wx.ALL, 5)
         ID_Remove = wx.NewId()
         btnRemove = wx.Button(self, ID_Remove, mtexts.txts['Remove'])
@@ -717,8 +727,8 @@ class ArabicPartsDlg(wx.Dialog):
         # 리스트 컨트롤의 "Formula" 칼럼 텍스트를 실제값으로 교체
         formula_text = self._format_formula_text(a_sel, b_sel, c_sel, triplet)
         try:
-            self.li.SetStringItem(row, self.li.NAME, name)
-            self.li.SetStringItem(row, self.li.FORMULA, formula_text)
+            self.li.SetItem(row, self.li.NAME, name)
+            self.li.SetItem(row, self.li.FORMULA, formula_text)
         except:
             # 칼럼 인덱스 이름이 다르면 네 파일의 상수에 맞춰 조정
             pass
@@ -815,9 +825,9 @@ class ArabicPartsDlg(wx.Dialog):
         disp_formula = self._format_formula_text(a_sel, b_sel, c_sel, vals)
 
         # 리스트 셀 텍스트 갱신: 이름/공식/Diurnal
-        self.li.SetStringItem(i, self.li.NAME, new_name)
-        self.li.SetStringItem(i, self.li.FORMULA, disp_formula)
-        self.li.SetStringItem(i, self.li.DIURNAL, diur_text)
+        self.li.SetItem(i, self.li.NAME, new_name)
+        self.li.SetItem(i, self.li.FORMULA, disp_formula)
+        self.li.SetItem(i, self.li.DIURNAL, diur_text)
 
         # partsdata 튜플도 함께 갱신(저장 시 직렬화에 쓰임)
         self.li.partsdata[key] = (new_name, disp_formula, diur_text)
@@ -873,7 +883,9 @@ class ArabicPartsDlg(wx.Dialog):
             self.changed = True
             self.removed = True
         dlg.Destroy()
+
     def _OnRowSelected(self, event):
+        # (기존)
         i = getattr(self.li, 'currentItem', -1)
         try:
             i = event.GetIndex()
@@ -881,10 +893,21 @@ class ArabicPartsDlg(wx.Dialog):
             pass
         if i is None or i < 0:
             return
-        # 이름 텍스트박스 채우기
+
+        # ★ 핵심 1: 리스트의 현재 행을 직접 갱신
+        self.li.currentItem = i
+
+        # (기존) 이름/주야(diurnal) UI 싱크
         self.name.SetValue(self.li.getColumnText(i, self.li.NAME))
-        # Diurnal 체크박스 채우기
         self.diurnalckb.SetValue(bool(self.li.getColumnText(i, self.li.DIURNAL)))
+
+        # ★ 핵심 2: Active 체크박스도 선택 행 상태로 동기화
+        key = self.li.GetItemData(i)
+        self.activeckb.SetValue(self.li.parts_active.get(key, True))
+
+        # ★ 권장: 리스트의 자체 핸들러도 돌게 해 이벤트 전파
+        event.Skip()
+
 
     def OnRemoveAll(self):
         if self.GetItemCount() == 0:

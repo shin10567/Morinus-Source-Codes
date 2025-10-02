@@ -81,7 +81,8 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 		self.load(names)
 		self.Populate()
 
-		items = self.fixstardata.iteritems()
+		#items = self.fixstardata.iteritems()
+		items = self.fixstardata.items()
 		for k, v in items:
 			for i in range(len(sels)):
 				if sels[i]:
@@ -99,7 +100,8 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 		cnt = 0
 		for key, data in items:
 			cnt += 1
-			index = self.InsertStringItem(sys.maxint, data[0])
+			#index = self.InsertStringItem(sys.maxint, data[0])
+			index = self.InsertStringItem(sys.maxsize, data[0])
 			self.SetStringItem(index, FixStarListCtrl.NUM, str(cnt)+'.')
 			self.SetStringItem(index, FixStarListCtrl.NAME, data[0])
 			self.SetStringItem(index, FixStarListCtrl.NOMNAME, data[1])
@@ -110,23 +112,26 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 		self.SetColumnWidth(FixStarListCtrl.NOMNAME, 80)
 
 
+	#def OnItemActivated(self, evt):
+		#self.ToggleItem(evt.m_itemIndex)
 	def OnItemActivated(self, evt):
-		self.ToggleItem(evt.m_itemIndex)
-
+		self.ToggleItem(evt.GetIndex())
 
 #	def OnCheckItem(self, index, flag):
 #		data = self.GetItemData(index)
 
 
 	def OnDeselectAll(self):
-		items = self.fixstardata.iteritems()
+		#items = self.fixstardata.iteritems()
+		items = self.fixstardata.items()
 		for k, v in items:
 			if self.IsChecked(k-1):
 				self.CheckItem(k-1, False)
 
 
 	def OnSelectAll(self):
-		items = self.fixstardata.iteritems()
+		#items = self.fixstardata.iteritems()
+		items = self.fixstardata.items()
 		for k, v in items:
 			if not self.IsChecked(k-1):
 				self.CheckItem(k-1, True)
@@ -148,18 +153,21 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 
 class FixStarsPDDlg(wx.Dialog):
 	def __init__(self, parent, options, pdfixstarssel, ephepath):#, inittxt):
-        # Instead of calling wx.Dialog.__init__ we precreate the dialog
-        # so we can set an extra style that must be set before
-        # creation, and then we create the GUI object using the Create
-        # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, mtexts.txts['FixStars'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
-
-        # This next step is the most important, it turns this Python
-        # object into the real wrapper of the dialog (instead of pre)
-        # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
+		# Instead of calling wx.Dialog.__init__ we precreate the dialog
+		# so we can set an extra style that must be set before
+		# creation, and then we create the GUI object using the Create
+		# method.
+		#pre = wx.PreDialog()
+		#pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+		#pre.Create(parent, -1, mtexts.txts['FixStars'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+		wx.Dialog.__init__(self, parent, id=wx.ID_ANY,
+						title=mtexts.txts['FixStars'],
+						style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+		# This next step is the most important, it turns this Python
+		# object into the real wrapper of the dialog (instead of pre)
+		# as far as the wxPython extension is concerned.
+		#self.PostCreate(pre)
 
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
@@ -221,7 +229,8 @@ class FixStarsPDDlg(wx.Dialog):
 
 	def getSelections(self):
 		sels = []
-		keys = self.li.fixstardata.iterkeys()
+		#keys = self.li.fixstardata.iterkeys()
+		keys = self.li.fixstardata.keys()
 		for k in keys:
 			sels.append(self.li.IsChecked(k-1))
 

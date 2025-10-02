@@ -22,19 +22,19 @@ class CustomerDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, titletxt, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre = wx.PreDialog()
+#		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#		pre.Create(parent, -1, titletxt, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
-
+#		self.PostCreate(pre)
+		wx.Dialog.__init__(self, None, -1, titletxt, size=wx.DefaultSize)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 
-		fgsizer = wx.FlexGridSizer(2, 4)
+		fgsizer = wx.FlexGridSizer(2, 4,9,24)
 
 		self.scustomer =wx.StaticBox(self, label='')
 		customersizer = wx.StaticBoxSizer(self.scustomer, wx.VERTICAL)

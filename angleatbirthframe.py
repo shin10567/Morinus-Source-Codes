@@ -3,6 +3,7 @@
 import wx
 import angleatbirthdlg
 import angleatbirthwnd
+import mtexts
 
 class AngleAtBirthFrame(wx.Frame):
     def __init__(self, parent, title, horoscope, options):

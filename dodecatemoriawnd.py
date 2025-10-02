@@ -24,7 +24,7 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 		self.mainfr = mainfr
 		self.bw = self.options.bw
 		self.ID_DODEK_CONV = wx.NewId()
-		self.pmenu.Append(self.ID_DODEK_CONV, "Dodecatemoria Calculator", "Convert ecliptic longitude or sign+DMS to dodecatemoria")
+		self.pmenu.Append(self.ID_DODEK_CONV, mtexts.txts["DodecatemoriaCalculator"],mtexts.txts["Converteclipticlongitude"])
 		self.Bind(wx.EVT_MENU, self.on_open_dodek_converter, id=self.ID_DODEK_CONV)
 		wx.CallAfter(self.on_open_dodek_converter, None)
 		self.FONT_SIZE = int(21*self.options.tablesize) #Change fontsize to change the size of the table!
@@ -55,15 +55,15 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+self.LINE_NUM*(self.LINE_HEIGHT))
 		self.TABLE_WIDTH = (self.SMALL_CELL_WIDTH+self.COLUMN_NUM*(self.CELL_WIDTH))
 	
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 	
 		self.clrs = [self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil]
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)
-		self.fntSymbol = ImageFont.truetype(common.common.symbols, 3*self.FONT_SIZE/2)
-		self.fntText = ImageFont.truetype(common.common.abc, self.FONT_SIZE)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+		self.fntSymbol = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/2))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
 		self.signs = common.common.Signs1
 		if not self.options.signs:
 			self.signs = common.common.Signs2
@@ -134,9 +134,9 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 			self.drawline(draw, x, y+i*self.LINE_HEIGHT, txts[j], tableclr, data[j], j, ascmc)
 			i += 1
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawline(self, draw, x, y, txt, clr, data, idx, AscMC):
@@ -188,7 +188,7 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 					lona = util.normalize(lona)
 					d,m,s = util.decToDeg(lona)
 
-				sign = d/chart.Chart.SIGN_DEG
+				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
 				wsp,hsp = draw.textsize(' ', self.fntText)
 				wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)
@@ -221,8 +221,3 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 	def _on_dodek_close(self, evt):
 		self._dlg_dodek.Destroy()
 		self._dlg_dodek = None
-
-
-
-
-

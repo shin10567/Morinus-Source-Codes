@@ -291,7 +291,7 @@ class Chart:
 		self.nolat = nolat
 
 		d = astrology.swe_deltat(time.jd)
-		rflag, self.obl, serr = astrology.swe_calc(time.jd+d, astrology.SE_ECL_NUT, 0)
+		serr, self.obl  = astrology.swe_calc(time.jd+d, astrology.SE_ECL_NUT, 0)
 		#true obliquity of the ecliptic
 		#mean
 		#nutation in long
@@ -311,6 +311,7 @@ class Chart:
 		if self.options.ayanamsha != 0:
 			astrology.swe_set_sid_mode(self.options.ayanamsha-1, 0, 0)
 			self.ayanamsha = astrology.swe_get_ayanamsa_ut(self.time.jd)
+			pflag |= astrology.SEFLG_SIDEREAL
 
 		if self.options.topocentric:
 			pflag += astrology.SEFLG_TOPOCTR
@@ -1031,9 +1032,9 @@ class Chart:
 						appltxt = 'sepa'
 						if self.aspmatrix[j][i].appl:
 							appltxt = 'appl'
-						print '%s - %s: type=%d diff=%f %s par=%s %s\n' % (planets[i], planets[j], self.aspmatrix[j][i].typ, self.aspmatrix[j][i].dif, appltxt, partxt[plel], extxt)
+						print ('%s - %s: type=%d diff=%f %s par=%s %s\n' % (planets[i], planets[j], self.aspmatrix[j][i].typ, self.aspmatrix[j][i].dif, appltxt, partxt[plel], extxt))
 
-		print '\n'
+		print ('\n')
 
 		hname = ('Asc', '2', '3', 'X', '11', '12')
 		hnum = 6
@@ -1046,7 +1047,7 @@ class Chart:
 					appltxt = 'sepa'
 					if self.aspmatrixH[j][i].appl:
 						appltxt = 'appl'
-					print '%s - %s: type=%d %s diff=%f  %s\n' % (planets[i], hname[j], self.aspmatrixH[j][i].typ, appltxt, self.aspmatrixH[j][i].dif, extxt)
+					print ('%s - %s: type=%d %s diff=%f  %s\n' % (planets[i], hname[j], self.aspmatrixH[j][i].typ, appltxt, self.aspmatrixH[j][i].dif, extxt))
 
 
 

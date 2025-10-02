@@ -9,17 +9,24 @@ import common, commonwnd as cw
 from PIL import Image, ImageDraw, ImageFont
 import astrology
 from phasiswnd import PHASIS_EMPTY  # '—' 기호 그대로 사용
+import mtexts
+import chart
+import intvalidator
+import rangechecker
+import datetime, math
+
 # ====== UI Wnd (FixStarsWnd 스타일) ======
 class CircumWnd(cw.CommonWnd):
 
     def _planet_color(self, pid):
-        # (bw면 흑백 고정)
+        """사용자 설정 '행성별 색' 팔레트를 최우선으로 사용하고, 없으면 존비 팔레트로 폴백."""
+        # 흑백 모드면 텍스트색(또는 검정)으로
         if getattr(self, 'bw', False):
-            return (0, 0, 0)
+            return self.clTxt
 
-        # pid를 숫자 인덱스로 최대한 안전하게 변환
+        # 0) pid → 내부 인덱스 해석 (숫자/이름/객체/딕셔너리 모두 허용)
         objidx = None
-        # dict/객체 내부에서 꺼내기
+        # a) dict/객체에서 꺼내기
         if isinstance(pid, dict):
             for k in ('pid','num','id','index','ipl','planet_pid'):
                 if k in pid:
@@ -28,45 +35,81 @@ class CircumWnd(cw.CommonWnd):
             for k in ('pid','num','id','index','ipl'):
                 if hasattr(pid, k):
                     pid = getattr(pid, k); break
-
-        # 숫자 시도
+        # b) 숫자 시도
         try:
             objidx = int(pid)
         except Exception:
             objidx = None
-
-        # 이름 → astrology 상수
+        # c) 이름 → 인덱스 (영문/다국어 라벨 모두)
         if objidx is None and isinstance(pid, (str, bytes)):
+            if isinstance(pid, bytes):
+                pid = pid.decode('utf-8','ignore')
+            key = pid.strip().lower()
             name_map = {
-                'sun': astrology.SE_SUN, 'moon': astrology.SE_MOON,
-                'mercury': astrology.SE_MERCURY, 'venus': astrology.SE_VENUS,
-                'mars': astrology.SE_MARS, 'jupiter': astrology.SE_JUPITER,
+                mtexts.txts.get('Sun','Sun').lower():      astrology.SE_SUN,
+                mtexts.txts.get('Moon','Moon').lower():    astrology.SE_MOON,
+                mtexts.txts.get('Mercury','Mercury').lower(): astrology.SE_MERCURY,
+                mtexts.txts.get('Venus','Venus').lower():  astrology.SE_VENUS,
+                mtexts.txts.get('Mars','Mars').lower():    astrology.SE_MARS,
+                mtexts.txts.get('Jupiter','Jupiter').lower(): astrology.SE_JUPITER,
+                mtexts.txts.get('Saturn','Saturn').lower():   astrology.SE_SATURN,
+                mtexts.txts.get('Uranus','Uranus').lower():   astrology.SE_URANUS,
+                mtexts.txts.get('Neptune','Neptune').lower(): astrology.SE_NEPTUNE,
+                mtexts.txts.get('Pluto','Pluto').lower():     astrology.SE_PLUTO,
+                'sun': astrology.SE_SUN, 'moon': astrology.SE_MOON, 'mercury': astrology.SE_MERCURY,
+                'venus': astrology.SE_VENUS, 'mars': astrology.SE_MARS, 'jupiter': astrology.SE_JUPITER,
                 'saturn': astrology.SE_SATURN, 'uranus': astrology.SE_URANUS,
                 'neptune': astrology.SE_NEPTUNE, 'pluto': astrology.SE_PLUTO,
             }
-            key = pid.strip().lower()
             objidx = name_map.get(key, None)
-
-        # 최종 폴백
         if objidx is None:
-            objidx = 0
+            objidx = astrology.SE_SUN  # 안전 폴백
 
-        # 색 선택: 개인색 or 존비 팔레트
-        if getattr(self.options, 'useplanetcolors', False) and hasattr(self.options, 'clrindividual'):
-            idx = max(0, min(objidx, len(self.options.clrindividual)-1))
-            clr = tuple(self.options.clrindividual[idx])
-        else:
+        # 1) 사용자 행성 팔레트(개별색) 최우선
+        #    프로젝트마다 속성명이 다를 수 있어 폭넓게 탐색
+        palettes = []
+        for attr in ('clrplanets','clrindividual','pcolors','planet_colors'):
+            if hasattr(self.options, attr):
+                palettes.append(getattr(self.options, attr))
+        # common 쪽에 전역 팔레트가 있으면 후보에 추가
+        try:
+            if hasattr(common, 'common'):
+                for attr in ('PLANET_COLORS','planet_colors','clrPlanets'):
+                    if hasattr(common.common, attr):
+                        palettes.append(getattr(common.common, attr))
+        except Exception:
+            pass
+
+        for pal in palettes:
             try:
-                dign = int(self.chart.dignity(objidx))
+                if pal is None:
+                    continue
+                # 리스트/튜플 형태
+                if isinstance(pal, (list, tuple)) and 0 <= objidx < len(pal):
+                    c = pal[objidx]
+                    if isinstance(c, (list, tuple)) and len(c) >= 3:
+                        return (int(c[0]), int(c[1]), int(c[2]))
+                # 딕셔너리 형태 (키가 인덱스/이름 둘 다일 수 있음)
+                if isinstance(pal, dict):
+                    key_try = objidx
+                    if key_try in pal and isinstance(pal[key_try], (list, tuple)) and len(pal[key_try]) >= 3:
+                        c = pal[key_try]
+                        return (int(c[0]), int(c[1]), int(c[2]))
             except Exception:
-                dign = 0
-            pal = [self.options.clrdomicil, self.options.clrexal,
+                continue
+
+        # 2) 위 팔레트가 없으면: 존비/엑잘트/페레그린/카수스/엑실 팔레트로 폴백
+        try:
+            dign = int(self.chart.dignity(objidx))
+        except Exception:
+            dign = 0
+        pal2 = [self.options.clrdomicil, self.options.clrexal,
                 self.options.clrperegrin, self.options.clrcasus,
                 self.options.clrexil]
-            i = dign if 0 <= dign < len(pal) else 0
-            clr = tuple(pal[i])
+        i = dign if 0 <= dign < len(pal2) else 0
+        c = pal2[i]
+        return (int(c[0]), int(c[1]), int(c[2]))
 
-        return clr
 
     def _aspect_color(self, glyph_or_val):
         """Aspect 글리프/값에 맞는 사용자 색을 돌려준다."""
@@ -204,7 +247,7 @@ class CircumWnd(cw.CommonWnd):
                 'conj':'CONJUNCTIO','sext':'SEXTIL','square':'QUADRAT','trine':'TRIGON','opp':'OPPOSITIO'
             }
             try:
-                key = name_map.get(unicode(a).lower(), None)
+                key = name_map.get(str(a).lower(), None)
                 if key and hasattr(chart.Chart, key):
                     idx = getattr(chart.Chart, key)
                     return common.common.Aspects[idx]
@@ -266,6 +309,117 @@ class CircumWnd(cw.CommonWnd):
         if sidx is None: return u""
         sidx = max(0, min(sidx, len(self.signs)-1))
         return self.signs[sidx]
+    def getExt(self):
+        return u"Circum.bmp"
+
+    def drawBkg(self):
+        BOR = cw.CommonWnd.BORDER
+        img  = Image.new('RGB',
+                         (getattr(self,'WIDTH', BOR+self.TITLE_W+BOR),
+                          getattr(self,'HEIGHT', BOR+self.HEAD_H+self.LINE_H+BOR)),
+                         self.clBkg)
+        draw = ImageDraw.Draw(img)
+
+        # ─ 헤더 박스
+        draw.rectangle(((BOR, BOR), (BOR + self.TITLE_W, BOR + self.HEAD_H)),
+                       outline=self.clTbl, fill=self.clBkg)
+
+        heads = (mtexts.txts["Age"], mtexts.txts["Degree"],
+                 mtexts.txts["TermLord"], mtexts.txts["Participator"], mtexts.txts["Date"])
+
+        x = BOR
+        for i, h in enumerate(heads):
+            w = self.COL_W[i]
+            tw, th = draw.textsize(h, self.f_txt)
+            draw.text((x + (w - tw)/2, BOR + (self.HEAD_H - th)/2), h, fill=self.clTxt, font=self.f_txt)
+            x += w
+
+        # 표 본문
+        y = BOR + self.HEAD_H + self.SPACE_TITLEY
+        table_h = self.HEAD_H + self.SPACE_TITLEY + max(1, len(self.rows)) * self.LINE_H
+
+        for row in self.rows if self.rows else [{}]:
+            x = BOR
+
+            # 1) Age
+            age_txt = row.get('age', u"")
+            w  = self.W_AGE
+            tw, th = draw.textsize(age_txt, self.f_txt)
+            draw.text((x + (w - tw)/2, y + (self.LINE_H - th)/2), age_txt, fill=self.clTxt, font=self.f_txt)
+            x += w
+
+            # 2) Asc (기호 + dms)
+            sign_g = self._glyph_sign(row.get('asc_sign'))
+            dms    = row.get('asc_dms', u"")
+            tw1, th1 = draw.textsize(sign_g, self.f_sym)
+            tw2, th2 = draw.textsize(dms,    self.f_txt)
+            totw = tw1 + (self.FONT_SIZE//3) + tw2
+            draw.text((x + (self.W_ASC - totw)/2, y + (self.LINE_H - th1)/2),
+                      sign_g, fill=self.clTxt, font=self.f_sym)
+            draw.text((x + (self.W_ASC - totw)/2 + tw1 + (self.FONT_SIZE//3),
+                       y + (self.LINE_H - th2)/2),
+                      dms, fill=self.clTxt, font=self.f_txt)
+            x += self.W_ASC
+
+            # 3) Term Lord
+            pid = row.get('term_pid', None)
+            g2  = self._glyph_planet(pid) if hasattr(self, '_glyph_planet') else u""
+            tw2, th2 = draw.textsize(g2, self.f_sym)
+            draw.text((x + (self.W_TRM - tw2)/2, y + (self.LINE_H - th2)/2),
+                      g2, fill=self._planet_color(pid), font=self.f_sym)
+            x += self.W_TRM
+
+            # 4) Participator (aspect glyph + planet glyph)
+            part = row.get('part', None)
+            if part:
+                g1 = part.get('aspect_g', u"")
+                pid = part.get('pid', None)
+                g2 = self._glyph_planet(pid) if hasattr(self, '_glyph_planet') else u""
+                w  = self.W_PAR
+                tw1, th1 = draw.textsize(g1, self.f_sym)
+                tw2, th2 = draw.textsize(g2, self.f_sym)
+                gap = (self.FONT_SIZE//3) if (g1 and g2) else 0
+                tot = tw1 + gap + tw2
+                base = x + (w - tot)/2
+                if g1:
+                    draw.text((base, y + (self.LINE_H - th1)/2),
+                              g1, fill=self._aspect_color(g1), font=self.f_sym)
+                    base += tw1 + gap
+                if g2:
+                    draw.text((base, y + (self.LINE_H - th2)/2),
+                              g2, fill=self._planet_color(pid), font=self.f_sym)
+            else:
+                w = self.W_PAR
+                tw, th = draw.textsize(PHASIS_EMPTY, self.f_txt)
+                draw.text((x + (w - tw)/2, y + (self.LINE_H - th)/2),
+                          PHASIS_EMPTY, fill=self.clTxt, font=self.f_txt)
+            x += self.W_PAR
+
+            # 5) Date
+            dt = row.get('date', None)
+            if isinstance(dt, datetime.date):
+                date_txt = u"%04d.%02d.%02d" % (dt.year, dt.month, dt.day)
+            else:
+                date_txt = u""
+            w = self.W_DATE
+            tw, th = draw.textsize(date_txt, self.f_txt)
+            draw.text((x + (w - tw)/2, y + (self.LINE_H - th)/2),
+                      date_txt, fill=self.clTxt, font=self.f_txt)
+
+            y += self.LINE_H
+
+        # 외곽 테두리
+        draw.rectangle(((BOR, BOR), (BOR + self.TITLE_W, BOR + table_h)),
+                       outline=self.clTbl)
+
+        # wx 버퍼로
+        wxImg = wx.Image(img.size[0], img.size[1])
+        wxImg.SetData(img.tobytes())
+        self.buffer = wx.Bitmap(wxImg)
+        try:
+            self.Refresh(False); self.Update()
+        except:
+            pass
 
     # 파일 상단이 파이썬2라면 basestring 호환
     try:
@@ -292,30 +446,10 @@ class CircumWnd(cw.CommonWnd):
                     pid = getattr(pid, k); break
 
         # 이미 1글자 심볼
-        if isinstance(pid, basestring):
-            s = pid.strip()
-            if len(s) == 1:
-                return s  # 이미 글리프
-            # '3' 같은 문자열 숫자
-            try:
-                pid_int = int(s)
-            except Exception:
-                # 이름 → 상수
-                name_map = {
-                    'sun': astrology.SE_SUN, 'moon': astrology.SE_MOON,
-                    'mercury': astrology.SE_MERCURY, 'venus': astrology.SE_VENUS,
-                    'mars': astrology.SE_MARS, 'jupiter': astrology.SE_JUPITER,
-                    'saturn': astrology.SE_SATURN, 'uranus': astrology.SE_URANUS,
-                    'neptune': astrology.SE_NEPTUNE, 'pluto': astrology.SE_PLUTO,
-                    'nn': getattr(astrology, 'SE_TRUE_NODE', getattr(astrology, 'SE_MEAN_NODE', None)),
-                    'node': getattr(astrology, 'SE_TRUE_NODE', getattr(astrology, 'SE_MEAN_NODE', None)),
-                }
-                pid_int = name_map.get(s.lower(), None)
-        else:
-            try:
-                pid_int = int(pid)
-            except Exception:
-                pid_int = None
+        try:
+            pid_int = int(pid)
+        except Exception:
+            pid_int = None
 
         # 숫자 인덱스 처리
         if isinstance(pid_int, int):
@@ -327,6 +461,34 @@ class CircumWnd(cw.CommonWnd):
                     return getattr(common.common, 'NNode', u'☊')
             except Exception:
                 pass
+        # --- [추가] 다국어 행성 이름 문자열 → 글리프 매핑 ---
+        if isinstance(pid, (str, bytes)):
+            if isinstance(pid, bytes):
+                pid = pid.decode('utf-8', 'ignore')
+
+            name = pid.strip().lower()
+
+            # 현재 UI 언어의 라벨을 전부 수집(영/한/중 ... 어떤 문자열로 와도 매칭되게)
+            name_map = {
+                mtexts.txts.get('Sun','Sun').lower():      0,
+                mtexts.txts.get('Moon','Moon').lower():    1,
+                mtexts.txts.get('Mercury','Mercury').lower(): 2,
+                mtexts.txts.get('Venus','Venus').lower():  3,
+                mtexts.txts.get('Mars','Mars').lower():    4,
+                mtexts.txts.get('Jupiter','Jupiter').lower(): 5,
+                mtexts.txts.get('Saturn','Saturn').lower():   6,
+                mtexts.txts.get('Uranus','Uranus').lower():   7,
+                mtexts.txts.get('Neptune','Neptune').lower(): 8,
+                mtexts.txts.get('Pluto','Pluto').lower():     9,
+            }
+            idx = name_map.get(name, None)
+            if idx is not None and 0 <= idx < len(self.planets):
+                return self.planets[idx]
+
+            # 이미 1글자 심볼이면 그대로 사용(예방용)
+            if len(pid) == 1:
+                return pid
+        # --- [추가 끝] ---
 
         return u""
     def getExt(self):
@@ -341,7 +503,7 @@ class CircumWnd(cw.CommonWnd):
         # ─ 헤더 박스 (FixStarsWnd 스타일)  :contentReference[oaicite:6]{index=6}
         draw.rectangle(((BOR, BOR),(BOR + self.TITLE_W, BOR + self.HEAD_H)),
                        outline=self.clTbl, fill=self.clBkg)
-        heads = (u"Age", u"Degree", u"Term Lord", u"Participator", u"Date")
+        heads = (mtexts.txts["Age"], mtexts.txts["Degree"], mtexts.txts["TermLord"], mtexts.txts["Participator"], mtexts.txts["Date"])
         x = BOR
         for i, h in enumerate(heads):
             w = self.COL_W[i]
@@ -444,9 +606,9 @@ class CircumWnd(cw.CommonWnd):
         draw.rectangle(((BOR, BOR), (BOR + self.TITLE_W, BOR + table_h)), outline=self.clTbl)
 
         # wx 버퍼로
-        wxImg = wx.EmptyImage(img.size[0], img.size[1])
+        wxImg = wx.Image(img.size[0], img.size[1])
         wxImg.SetData(img.tobytes())
-        self.buffer = wx.BitmapFromImage(wxImg)
+        self.buffer = wx.Bitmap(wxImg)
         try:
             self.Refresh(False); self.Update()
         except:
@@ -455,9 +617,9 @@ class CircumWnd(cw.CommonWnd):
 
 class CircumFrame(wx.Frame):
     def __init__(self, parent, title, horoscope, options, key=ca.DEFAULT_KEY_Y_PER_DEG, rows=60):
-        t = u"Circumambulation"
+        t = mtexts.txts['Circumambulation']
         try:
-            t = title.replace(mtexts.typeList[horoscope.htype], u"Circumambulation")
+            t = title.replace(mtexts.typeList[horoscope.htype], mtexts.txts['Circumambulation'])
         except:
             pass
         wx.Frame.__init__(self, parent, -1, t, wx.DefaultPosition, wx.Size(900, 520))
@@ -467,13 +629,124 @@ class CircumFrame(wx.Frame):
         self.rows_n    = rows
 
         panel = wx.Panel(self)
-        vbox = wx.BoxSizer(wx.VERTICAL)
+        # ---- 상단 툴바: PD와 동일한 컨트롤만(아이콘 없음) ----
+        self.tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
+        self.tb.SetToolBitmapSize((24,24))
+        # 툴바 전체 왼쪽 마진(픽셀) — 10~14 사이가 무난
+        try:
+            self.tb.SetMargins(12, 0)   # (left=12px, top=0px)
+        except Exception:
+            pass
+
+        # 픽셀 간격 유틸(툴바 컨트롤 사이 간격을 PD와 유사하게 고정)
+        def _tb_spacer(w):
+            st = wx.StaticText(self.tb, -1, u'')
+            st.SetMinSize((w, -1))
+            self.tb.AddControl(st)
+
+        # 연도 범위(확장 모드면 5000년)
+        rnge = 3000
+        try:
+            checker = rangechecker.RangeChecker()
+            if checker.isExtended():
+                rnge = 5000
+        except Exception:
+            pass
+        _tb_spacer(12)  # 툴바 맨 왼쪽과 첫 필드 사이 여백 12px
+
+        t = self.horoscope.time  # 원 시각
+
+        # 날짜(YYYY MM DD)
+        self.year = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(0, rnge),
+                                size=(50,-1), style=wx.TE_READONLY)
+        self.year.SetMaxLength(4)
+        self.year.SetValue(str(getattr(t, 'origyear', getattr(t, 'year', 0))))
+        self.tb.AddControl(self.year); _tb_spacer(6)
+
+        self.month = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(1, 12),
+                                size=(30,-1), style=wx.TE_READONLY)
+        self.month.SetMaxLength(2)
+        self.month.SetValue(str(getattr(t, 'origmonth', getattr(t, 'month', 1))).zfill(2))
+        self.tb.AddControl(self.month); _tb_spacer(6)
+
+        self.day = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(1, 31),
+                            size=(30,-1), style=wx.TE_READONLY)
+        self.day.SetMaxLength(2)
+        self.day.SetValue(str(getattr(t, 'origday', getattr(t, 'day', 1))).zfill(2))
+        self.tb.AddControl(self.day)
+
+        # 날짜-시간 사이 간격
+        _tb_spacer(12)  # ← 공백 없이 붙었으면 스페이스가 누락된 것, 반드시 한 칸 띄워줘
+
+        # 시간(hh:mm:ss)
+        self.hour = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(0, 23),
+                                size=(30,-1), style=wx.TE_READONLY)
+        self.hour.SetMaxLength(2)
+        self.hour.SetValue(str(getattr(t, 'hour', 0)))
+        self.tb.AddControl(self.hour)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, ':'))
+
+        self.minute = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(0, 59),
+                                size=(30,-1), style=wx.TE_READONLY)
+        self.minute.SetMaxLength(2)
+        self.minute.SetValue(str(getattr(t, 'minute', 0)).zfill(2))
+        self.tb.AddControl(self.minute)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, ':'))
+
+        self.sec = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(0, 59),
+                            size=(30,-1), style=wx.TE_READONLY)
+        self.sec.SetMaxLength(2)
+        self.sec.SetValue(str(getattr(t, 'second', 0)).zfill(2))
+        self.tb.AddControl(self.sec)
+
+        # 시간-라벨 사이 간격
+        _tb_spacer(12)
+
+        # '생시보정:' (다국어)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, mtexts.txts.get('Rectification', u'Rectification')))
+        self.tb.AddControl(wx.StaticText(self.tb, -1, ':'))
+        _tb_spacer(6)
+
+        # 보정 콤보
+        self.recttypes = ('1s', '5s', '10s', '1m', '5m', '10m')
+        self.rectcb = wx.ComboBox(self.tb, -1, self.recttypes[0], size=(64,-1),
+                                choices=self.recttypes, style=wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.rectcb.SetSelection(0)
+        self.tb.AddControl(self.rectcb)
+
+        # 콤보-± 간격
+        _tb_spacer(8)
+
+        # + / -
+        self.btnIncr = wx.Button(self.tb, -1, '+', size=(40,30))
+        self.tb.AddControl(self.btnIncr); _tb_spacer(4)
+        self.btnDecr = wx.Button(self.tb, -1, '-', size=(40,30))
+        self.tb.AddControl(self.btnDecr)
+
+        # ± - 계산 간격
+        _tb_spacer(10)
+
+        # 계산(다국어)
+        self.btnCalc = wx.Button(self.tb, -1, mtexts.txts.get('Calculate', u'Calculate'), size=(-1,30))
+        self.tb.AddControl(self.btnCalc)
+
+        # 이벤트
+        self.Bind(wx.EVT_BUTTON, self.onIncr, id=self.btnIncr.GetId())
+        self.Bind(wx.EVT_BUTTON, self.onDecr, id=self.btnDecr.GetId())
+        self.Bind(wx.EVT_BUTTON, self.onCalc, id=self.btnCalc.GetId())
+
+        self.tb.Realize()
 
         self.table = CircumWnd(panel, self.horoscope, self.options, mainfr=self)
-        vbox.Add(self.table, 1, wx.EXPAND|wx.ALL, 8)
+
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(self.table, 1, wx.EXPAND | wx.ALL, 6)
 
         panel.SetSizer(vbox)
+        self.table.SetFocus()
+
         self.populate()
+
 
     def on_refresh(self, evt):
         try:
@@ -493,7 +766,7 @@ class CircumFrame(wx.Frame):
             )
         except ValueError as e:
             wx.MessageBox(unicode(e) if hasattr(e, '__unicode__') else u"%s" % e,
-                        u"Circumambulation", wx.OK | wx.ICON_INFORMATION)
+                        mtexts.txts['Circumambulation'], wx.OK | wx.ICON_INFORMATION)
             try: self.Close(True)
             except: pass
             try: self.Destroy()
@@ -507,5 +780,48 @@ class CircumFrame(wx.Frame):
         self.SetSize((660, 560))      # ← 기본 표시 크기(가로폭 축소)
         self.Layout()
         self.CentreOnScreen()
+    # ----- 시간 필드/보정 유틸 -----
+    def _get_fields(self):
+        return (int(self.year.GetValue()), int(self.month.GetValue()), int(self.day.GetValue()),
+                int(self.hour.GetValue()), int(self.minute.GetValue()), int(self.sec.GetValue()))
 
+    def _set_fields(self, y, m, d, h, mi, s):
+        self.year.SetValue(str(y))
+        self.month.SetValue(str(m).zfill(2))
+        self.day.SetValue(str(d).zfill(2))
+        self.hour.SetValue(str(h))
+        self.minute.SetValue(str(mi).zfill(2))
+        self.sec.SetValue(str(s).zfill(2))
+
+    def _adjust_time(self, seconds):
+        y, m, d, h, mi, s = self._get_fields()
+        try:
+            base = datetime.datetime(y, m, d, h, mi, s)
+            base = base + datetime.timedelta(seconds=seconds)
+            self._set_fields(base.year, base.month, base.day, base.hour, base.minute, base.second)
+        except Exception:
+            pass
+
+    def onIncr(self, evt=None):
+        idx = self.rectcb.GetCurrentSelection()
+        step = (1, 5, 10, 60, 300, 600)[idx if 0 <= idx < 6 else 0]
+        self._adjust_time(step)
+
+    def onDecr(self, evt=None):
+        idx = self.rectcb.GetCurrentSelection()
+        step = (1, 5, 10, 60, 300, 600)[idx if 0 <= idx < 6 else 0]
+        self._adjust_time(-step)
+
+    def onCalc(self, evt=None):
+        # 필드 → Time/Chart 갱신
+        y, m, d, h, mi, s = self._get_fields()
+        ot = self.horoscope.time
+        new_time = chart.Time(y, m, d, h, mi, s,
+                            ot.bc, ot.cal, ot.zt, ot.plus, ot.zh, ot.zm,
+                            ot.daylightsaving, self.horoscope.place)
+        self.horoscope = chart.Chart(self.horoscope.name, self.horoscope.male,
+                                    new_time, self.horoscope.place, self.horoscope.htype,
+                                    self.horoscope.notes, self.horoscope.options)
+        # 테이블 재계산/표시
+        self.populate()
 

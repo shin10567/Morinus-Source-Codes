@@ -5,7 +5,7 @@ from __future__ import division
 import os, math, datetime
 import io 
 import astrology, chart, houses, mtexts
-
+import mtexts
 ASPECTS = (0, 60, 90, 120, 180)
 DEFAULT_KEY_Y_PER_DEG = 1.0  # years per equatorial degree (OA)
 DAYS_PER_YEAR = 365.2421897
@@ -256,8 +256,8 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
     phi_limit = 90.0 - eps_deg  # ≈ 66.56° 부근
     # 경계 근처의 수치 진동을 막기 위해 아주 소폭(0.01°) 안쪽에서 컷
     if abs(phi) >= (phi_limit - 0.01):
-        raise ValueError(u"Polar latitude: absolute latitude {0:.2f} deg. >= limit {1:.2f} deg. Circumambulation is undefined at this latitude!"
-                         .format(abs(phi), phi_limit))
+        raise ValueError(mtexts.txts['CircumPolarLatErr'].format(abs(phi), phi_limit))
+
     jd_limit = jd0 + max_age_years * DAYS_PER_YEAR
 
     rows = []

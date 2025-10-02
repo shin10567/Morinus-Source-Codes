@@ -1,9 +1,9 @@
-import  wx
+import wx
 import string
 import mtexts
 
 
-class FloatValidator(wx.Validator):
+class IntValidator(wx.Validator):
 	def __init__(self, minim=None, maxim=None):
 		wx.Validator.__init__(self)
 		self.minim = minim
@@ -11,7 +11,7 @@ class FloatValidator(wx.Validator):
 		self.Bind(wx.EVT_CHAR, self.OnChar)
 
 	def Clone(self):
- 		return FloatValidator(self.minim, self.maxim)
+ 		return IntValidator(self.minim, self.maxim)
 
 	def TransferToWindow(self):
 		return True
@@ -24,16 +24,13 @@ class FloatValidator(wx.Validator):
 		val = tc.GetValue()
 
 		if (val == ''):
-			dlgm = wx.MessageDialog(None, mtexts.txts['FieldsCannotBeEmpty'], mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+			dlgm = wx.MessageDialog(None, mtexts.txts['NumFieldsCannotBeEmpty'], mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 			dlgm.ShowModal()		
 			dlgm.Destroy()
 			return False
 
-		if ((self.minim != None and float(val) < self.minim) or (self.maxim != None and float(val) >= self.maxim)):
-			s = mtexts.txts['RangeError2']
-			if (self.maxim != None):
-				s = mtexts.txts['RangeError3'] + '%2.1f' % self.maxim
-			dlgm = wx.MessageDialog(None, s, mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+		if ((self.minim != None and int(val) < self.minim) or (self.maxim != None and int(val) > self.maxim)):
+			dlgm = wx.MessageDialog(None, mtexts.txts['RangeError'], mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 			dlgm.ShowModal()
 			dlgm.Destroy()
 			return False	
@@ -50,18 +47,11 @@ class FloatValidator(wx.Validator):
 			event.Skip()
 			return
 
-		tc = self.GetWindow()
-		val = tc.GetValue()
-		dot = False
-		for x in val:
-			if x == '.':
-				dot = True
-
-		if (chr(key) in string.digits or ((not dot) and chr(key) == '.')):
+		if chr(key) in string.digits:
 			event.Skip()
 			return
 
-		if  not wx.Validator.IsSilent():
+		if not wx.Validator.IsSilent():
 			wx.Bell()
 
 

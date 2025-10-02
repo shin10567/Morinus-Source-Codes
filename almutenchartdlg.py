@@ -20,15 +20,15 @@ class AlmutenChartDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, mtexts.txts['AlmutenOfTheChart'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre = wx.PreDialog()
+#		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#		pre.Create(parent, -1, mtexts.txts['AlmutenOfTheChart'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
-
+#		self.PostCreate(pre)
+		wx.Dialog.__init__(self, None, -1, mtexts.txts['AlmutenOfTheChart'], size=wx.DefaultSize)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 		#main horizontal sizer
@@ -56,7 +56,7 @@ class AlmutenChartDlg(wx.Dialog):
 
 		self.sscores = wx.StaticBox(self, label=mtexts.txts['RulershipScores'])
 		scoressizer = wx.StaticBoxSizer(self.sscores, wx.VERTICAL)
-		gsizer = wx.GridSizer(5, 2)
+		gsizer = wx.GridSizer(5, 2,9,24)
 		label = wx.StaticText(self, -1, mtexts.txts['Domicil']+':')
 		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		self.domicil = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 5), size=(40, -1))
@@ -111,7 +111,7 @@ class AlmutenChartDlg(wx.Dialog):
 		housessizer = wx.StaticBoxSizer(self.shouses, wx.HORIZONTAL)
 
 		self.houselabels = []
-		gsizer = wx.GridSizer(6, 2)
+		gsizer = wx.GridSizer(6, 2,9,24)
 		self.houselabels.append(wx.StaticText(self, -1, mtexts.txts['HC1']+':'))
 		gsizer.Add(self.houselabels[0], 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		self.hc1 = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 12), size=(40, -1))
@@ -151,7 +151,7 @@ class AlmutenChartDlg(wx.Dialog):
 
 		housessizer.Add(gsizer, 0, wx.ALL, 5)
 
-		gsizer = wx.GridSizer(6, 2)
+		gsizer = wx.GridSizer(6, 2,9,24)
 		self.houselabels.append(wx.StaticText(self, -1, mtexts.txts['HC7']+':'))
 		gsizer.Add(self.houselabels[6], 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		self.hc7 = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 12), size=(40, -1))
@@ -198,7 +198,7 @@ class AlmutenChartDlg(wx.Dialog):
 		phasessizer = wx.StaticBoxSizer(self.sphase, wx.HORIZONTAL)
 
 		self.phaselabels = []
-		gsizer = wx.GridSizer(3, 2)
+		gsizer = wx.GridSizer(3, 2,9,24)
 		self.phaselabels.append(wx.StaticText(self, -1, mtexts.txts['Strong']+':'))
 		gsizer.Add(self.phaselabels[0], 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		self.strong = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 5), size=(40, -1))
@@ -227,7 +227,7 @@ class AlmutenChartDlg(wx.Dialog):
 		dayhoursizer = wx.StaticBoxSizer(self.sdayhour, wx.HORIZONTAL)
 
 		self.dayhourlabels = []
-		gsizer = wx.GridSizer(2, 2)
+		gsizer = wx.GridSizer(2, 2,9,24)
 		self.dayhourlabels.append(wx.StaticText(self, -1, mtexts.txts['Day']+':'))
 		gsizer.Add(self.dayhourlabels[0], 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		self.dayruler = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 10), size=(40, -1))

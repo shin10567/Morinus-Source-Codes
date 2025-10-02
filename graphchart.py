@@ -27,7 +27,7 @@ class GraphChart:
 		self.options = opts
 		self.bw = bw
 		self.planetaryday = planetaryday
-		self.buffer = wx.EmptyBitmap(self.w, self.h)
+		self.buffer = wx.Bitmap(self.w, self.h)
 		self.bdc = wx.BufferedDC(None, self.buffer)
 		self.chartsize = min(self.w, self.h)
 		self.maxradius = self.chartsize/2
@@ -249,15 +249,15 @@ class GraphChart:
 
 		self.smallsymbolSize = 2*self.symbolSize/3
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.symbolSize)
-		self.fntSmallMorinus = ImageFont.truetype(common.common.symbols, self.smallsymbolSize)
-		self.fntMorinusSigns = ImageFont.truetype(common.common.symbols, self.signSize)
-		self.fntAspects = ImageFont.truetype(common.common.symbols, self.symbolSize/2)
-		self.fntText = ImageFont.truetype(common.common.abc, self.symbolSize/2)
-		self.fntAntisText = ImageFont.truetype(common.common.abc, self.symbolSize)
-		self.fntSmallText = ImageFont.truetype(common.common.abc, self.symbolSize/4)
-		self.fntBigText = ImageFont.truetype(common.common.abc, self.symbolSize/4*3)
-		self.fntMorinus2 = ImageFont.truetype(common.common.symbols, self.symbolSize/4*3)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.symbolSize))
+		self.fntSmallMorinus = ImageFont.truetype(common.common.symbols, int(self.smallsymbolSize))
+		self.fntMorinusSigns = ImageFont.truetype(common.common.symbols, int(self.signSize))
+		self.fntAspects = ImageFont.truetype(common.common.symbols, int(self.symbolSize/2))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.symbolSize/2))
+		self.fntAntisText = ImageFont.truetype(common.common.abc, int(self.symbolSize))
+		self.fntSmallText = ImageFont.truetype(common.common.abc, int(self.symbolSize/4))
+		self.fntBigText = ImageFont.truetype(common.common.abc, int(self.symbolSize/4*3))
+		self.fntMorinus2 = ImageFont.truetype(common.common.symbols, int(self.symbolSize/4*3))
 		self.deg_symbol = u'\u00b0'
 
 		self.arsigndiff = (0, -1, -1, 2, -1, 3, 4, -1, -1, -1, 6)
@@ -296,9 +296,9 @@ class GraphChart:
 		self.drawSigns()
 
 		#Convert back from PIL
-		wxImg = wx.EmptyImage(self.img.size[0], self.img.size[1])
+		wxImg = wx.Image(self.img.size[0], self.img.size[1])
 		wxImg.SetData(self.img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 		self.bdc = wx.BufferedDC(None, self.buffer)
 
 		self.drawAscMC(self.chart.houses.ascmc, self.rBase, self.rASCMC, self.rArrow)
@@ -377,9 +377,9 @@ class GraphChart:
 			elif self.options.showfixstars == options.Options.CANTIS:
 				self.drawAntis(self.chart, self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.pshiftantis, self.rAntis)
 
-		wxImg = wx.EmptyImage(self.img.size[0], self.img.size[1])
+		wxImg = wx.Image(self.img.size[0], self.img.size[1])
 		wxImg.SetData(self.img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 		return self.buffer
 
@@ -390,7 +390,7 @@ class GraphChart:
 			bkgclr = (255,255,255)
 		self.bdc.SetBackground(wx.Brush(bkgclr))
 		self.bdc.Clear()
-		self.bdc.BeginDrawing()
+#		self.bdc.BeginDrawing()
 
 		self.bdc.SetBrush(wx.Brush(bkgclr))	
 
@@ -561,7 +561,7 @@ class GraphChart:
 			self.bdc.SetPen(pen)
 			self.drawLines(GraphChart.DEG1, asclon, self.rOuter0, self.rOuter1)
 
-		self.bdc.EndDrawing()
+		#self.bdc.EndDrawing()
 
 
 	def drawSigns(self):
@@ -1388,7 +1388,7 @@ class GraphChart:
 		#We only shift forward at 360-0
 		shifted = self.doShift(pnum-1, 0, pshift, order, mixed, rPlanet, True)
 
- 		if shifted:
+		if shifted:
 			for i in range(pnum):
 				self.doArrange(pnum, pshift, order, mixed, rPlanet, True)
 
@@ -1735,7 +1735,7 @@ class GraphChart:
 		#We only shift forward at 360-0
 		shifted = self.doShiftAntis(pnum-1, 0, pshift, order, mixed, rPlanet, True)
 
- 		if shifted:
+		if shifted:
 			for i in range(pnum):
 				self.doArrange(pnum, pshift, order, mixed, rPlanet, True)
 		#check if beyond (not overlapping but beyond)

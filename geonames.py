@@ -1,13 +1,13 @@
 import json
+import urllib.request as urllib2
 import urllib
-import urllib2
 
 #Csaba's code
 
 class Geonames:
 	NAME, LON, LAT, COUNTRYCODE, COUNTRYNAME, ALTITUDE, GMTOFFS = range(0, 7)
 	username='morinus'
-	langs = ("en", "hu", "it", "fr", "ru", "es")
+	langs = ("en", "hu", "it", "fr", "ru", "es","en","en","en")
 
 	def __init__(self, city, maxnum, langid):
 		self.city = city
@@ -17,13 +17,13 @@ class Geonames:
 
 
 	def fetch_values_from_page(self, url, params, key):
-		url = url % urllib.urlencode(params)
+		url = url % urllib.parse.urlencode(params)
 
 		try:
 			page = urllib2.urlopen(url)
 			doc = json.loads(page.read())
 			values = doc.get(key, None)
-		except Exception, e:
+		except Exception as e:
 			values = None
 #			print(e)
 

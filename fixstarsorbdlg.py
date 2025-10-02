@@ -32,23 +32,33 @@ class FixStarsOrbDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-        pre = wx.PreDialog()
-        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-        pre.Create(parent, -1, mtexts.txts['Orbis'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#        pre = wx.PreDialog()
+#        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#        pre.Create(parent, -1, mtexts.txts['Orbis'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-        self.PostCreate(pre)
-
+#        self.PostCreate(pre)
+        wx.Dialog.__init__(self, None, -1, mtexts.txts['Orbis'], size=wx.DefaultSize)
         #main vertical sizer
         mvsizer = wx.BoxSizer(wx.VERTICAL)
 
         #Orbs
         sorbs =wx.StaticBox(self, label='')
         orbssizer = wx.StaticBoxSizer(sorbs, wx.HORIZONTAL)
-        self.fsnames = self.fixstars.keys()
-        self.fscb = wx.ComboBox(self, -1, self.fsnames[0], size=(100, -1), choices=self.fsnames, style=wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.fsnames = list(self.fixstars)
+
+        #self.fscb = wx.ComboBox(self, -1, self.fsnames[0], size=(100, -1), choices=self.fsnames, style=wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.fscb = wx.ComboBox(
+            self,
+            -1,
+            self.fsnames[0],
+            size=(100, -1),
+            choices=self.fsnames,
+            style=wx.CB_DROPDOWN|wx.CB_READONLY
+        )
+
         orbssizer.Add(self.fscb, 1, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         self.fsorbstxt = wx.TextCtrl(self, -1, '', validator=floatvalidator.FloatValidator(0.0, 6.0), size=(50, -1))
         self.fsorbstxt.SetValue(str(self.fixstars[self.fsnames[0]]))

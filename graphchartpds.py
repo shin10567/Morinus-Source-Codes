@@ -9,6 +9,8 @@ import options
 import common
 import util
 import mtexts
+from PIL import Image, ImageDraw, ImageFont
+import io
 
 
 class GraphChartPDs:
@@ -28,13 +30,31 @@ class GraphChartPDs:
 		self.w, self.h = size
 		self.options = opts
 		self.bw = bw
-		self.buffer = wx.EmptyBitmap(self.w, self.h)
-		self.bdc = wx.BufferedDC(None, self.buffer)
+
+		# size가 wx.Size / tuple 섞여 올 수 있으니 정수로 정규화
+		if hasattr(size, "GetWidth"):
+			self.w, self.h = int(size.GetWidth()), int(size.GetHeight())
+		else:
+			self.w, self.h = int(size[0]), int(size[1])
+
+		self.buffer = wx.Bitmap(self.w, self.h)
+
+		self.memdc = wx.MemoryDC(self.buffer)
+		# ↓↓↓ 추가
+		try:
+			# 안티알리아싱 지원 DC (지원 안 되면 MemoryDC 사용)
+			self.bdc = wx.GCDC(self.memdc)
+		except Exception:
+			self.bdc = self.memdc
+		# ↑↑↑ 추가
+
 		self.chartsize = min(self.w, self.h)
+
 		self.maxradius = self.chartsize/2
-		self.center = wx.Point(self.w/2, self.h/2)
+		self.center = wx.Point(int(self.w/2), int(self.h/2))  # ← 정수화
 
 		self.arrowlen = 0.04
+
 		self.symbolSize = self.maxradius/16
 
 		#Radix (innermost)
@@ -81,18 +101,24 @@ class GraphChartPDs:
 		self.rLineIng = self.rPDsline0+0.02*self.maxradius
 
 		#Fonts
-		self.smallsymbolSize = 2*self.symbolSize/3
+		# PIL truetype size는 반드시 int. 또한 fontSize 속성을 사전에 정의해 준다.
 
+		self.symbolSize = max(8, int(round(self.symbolSize)))  # 기반 심볼 크기
+		
 		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.symbolSize)
-		self.fntSmallMorinus = ImageFont.truetype(common.common.symbols, self.smallsymbolSize)
-		self.fntMorinusSigns = ImageFont.truetype(common.common.symbols, self.signSize)
-		self.fntText = ImageFont.truetype(common.common.abc, self.symbolSize/2)
-		self.fntSmallText = ImageFont.truetype(common.common.abc, self.symbolSize/4)
-		self.fntSmallText2 = ImageFont.truetype(common.common.abc, self.symbolSize/3)
-		self.fntBigText = ImageFont.truetype(common.common.abc, self.symbolSize/4*3)
-		self.fntMorinus2 = ImageFont.truetype(common.common.symbols, self.symbolSize/4*3)
-		self.fntRetr = ImageFont.truetype(common.common.symbols, self.symbolSize/2)
+		self.fontSize = max(8, int(round(self.symbolSize/2)))  # ← 새로 정의 (기존 None 방지)
+		self.fntTxt = ImageFont.truetype(common.common.abc, self.fontSize)  # font → abc
+		
+		self.fntMorinusSigns = ImageFont.truetype(common.common.symbols, int(round(self.signSize)))
+
+		self.fntText       = ImageFont.truetype(common.common.abc, self.fontSize)
+		self.fntSmallText  = ImageFont.truetype(common.common.abc, max(6, int(round(self.symbolSize/4))))
+		self.fntSmallText2 = ImageFont.truetype(common.common.abc, max(6, int(round(self.symbolSize/3))))
+		self.fntBigText    = ImageFont.truetype(common.common.abc, int(round(self.symbolSize*0.75)))
+		self.fntMorinus2   = ImageFont.truetype(common.common.symbols, int(round(self.symbolSize*0.75)))
+		self.fntRetr       = ImageFont.truetype(common.common.symbols, int(round(self.symbolSize/2)))
 		self.deg_symbol = u'\u00b0'
+
 
 #		self.hsystem = {'P':mtexts.txts['HSPlacidus'], 'K':mtexts.txts['HSKoch'], 'R':mtexts.txts['HSRegiomontanus'], 'C':mtexts.txts['HSCampanus'], 'E':mtexts.txts['HSEqual'], 'W':mtexts.txts['HSWholeSign'], 'X':mtexts.txts['HSAxial'], 'M':mtexts.txts['HSMorinus'], 'H':mtexts.txts['HSHorizontal'], 'T':mtexts.txts['HSPagePolich'], 'B':mtexts.txts['HSAlcabitus'], 'O':mtexts.txts['HSPorphyrius']}
 
@@ -107,8 +133,11 @@ class GraphChartPDs:
 
 		self.drawAscMC(self.chartRadix.houses.ascmc, self.rEarth, self.rASCMC, self.rArrow)
 		self.drawAscMC(self.chartPDs.houses.ascmc, self.rAscMCPDsBeg, self.rASCMCPDs, self.rArrowPDs, True)
-
-		#Convert to PIL (truetype-font is not supported in wxPython)
+		# Convert to PIL (truetype-font is not supported in wxPython)
+		try:
+			self.memdc.SelectObject(wx.NullBitmap)
+		except Exception:
+			pass
 		wxImag = self.buffer.ConvertToImage()
 		self.img = Image.new('RGB', (wxImag.GetWidth(), wxImag.GetHeight()))
 		self.img.frombytes(wxImag.GetData())
@@ -127,10 +156,14 @@ class GraphChartPDs:
 		self.drawPlanets(self.chartIngress, self.pshiftIng, self.rPlanetsIng, self.rPosDegIng, self.rPosMinIng, self.rRetrIng)
 
 		#Convert back from PIL
-		wxImg = wx.EmptyImage(self.img.size[0], self.img.size[1])
+		wxImg = wx.Image(self.img.size[0], self.img.size[1])          # EmptyImage → Image
 		wxImg.SetData(self.img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
-		self.bdc = wx.BufferedDC(None, self.buffer)
+		self.buffer = wx.Bitmap(wxImg)                                # BitmapFromImage → Bitmap(wxImg)
+		self.memdc = wx.MemoryDC(self.buffer)                         # DC 다시 붙이기
+		try:
+			self.bdc = wx.GCDC(self.memdc)
+		except Exception:
+			self.bdc = self.memdc
 
 		self.drawPlanetLines(self.pshift, self.chartRadix.planets.planets, self.chartRadix.fortune.fortune, self.r0, self.rLine)
 		self.drawPlanetLines(self.pshiftPDs, self.chartPDs.planets.planets, self.chartPDs.fortune.fortune, self.r30, self.rLinePDs)
@@ -138,16 +171,18 @@ class GraphChartPDs:
 
 		return self.buffer
 
-
 	def drawCircles(self):
 		bkgclr = self.options.clrbackground
 		if self.bw:
 			bkgclr = (255,255,255)
 		self.bdc.SetBackground(wx.Brush(bkgclr))
 		self.bdc.Clear()
-		self.bdc.BeginDrawing()
+		# Phoenix에서는 BeginDrawing 없음. (Classic 호환용이면 hasattr 체크)
+		# if hasattr(self.bdc, "BeginDrawing"):
+		#     self.bdc.BeginDrawing()
 
 		self.bdc.SetBrush(wx.Brush(bkgclr))	
+
 
 		(cx, cy) = self.center.Get()
 
@@ -251,7 +286,9 @@ class GraphChartPDs:
 		self.drawLines(GraphChartPDs.DEG10, asclon, self.r30, self.r10)
 		self.drawLines(GraphChartPDs.DEG10, asclon, self.r0, self.r10Inner)
 
-		self.bdc.EndDrawing()
+		# Phoenix에서는 EndDrawing 없음.
+		# if hasattr(self.bdc, "EndDrawing"):
+		#     self.bdc.EndDrawing()
 
 
 	def drawSigns(self):
@@ -287,7 +324,7 @@ class GraphChartPDs:
 		self.bdc.SetPen(pen)
 		asc = self.chartRadix.houses.ascmc[houses.Houses.ASC]
 		if self.options.ayanamsha != 0 and self.options.hsys == 'W':
-			asc = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC]-self.chartRadix.ayanamsha)
+			asc = util.normalize(self.chartRadix.houses.ascmc[houses.Houses.ASC]-self.chartRadix.ayanamsha)
 		for i in range (1, houses.Houses.HOUSE_NUM+1):
 			dif = math.radians(util.normalize(asc-chouses.cusps[i]))
 			x1 = cx+math.cos(math.pi+dif)*r1
@@ -715,6 +752,7 @@ class GraphChartPDs:
 			pnum += 1
 
 		#arrange in order, initialize
+		#arrange in order, initialize
 		for i in range(pnum):
 			order[i] = pls[i]
 			
@@ -727,19 +765,23 @@ class GraphChartPDs:
 					tmp = mixed[i]
 					mixed[i] = mixed[i+1]
 					mixed[i+1] = tmp
-		
 		#doArrange arranges consecutive two planets only(0 and 1, 1 and 2, ...), this is why we need to do it pnum+1 times
-		for i in range(pnum+1):
-			self.doArrange(pnum, pshift, order, mixed, rPlanet)
+		# 인접쌍 정리는 여러 번 돌려야 하지만, 상한을 둔다.
+		max_passes = min(pnum + 5, 20)
+		for _ in range(max_passes):
+			if not self.doArrange(pnum, pshift, order, mixed, rPlanet):
+				break
 
 		#Arrange 360-0 transition also
 		#We only shift forward at 360-0
 		shifted = self.doShift(pnum-1, 0, pshift, order, mixed, rPlanet, True)
 
- 		if shifted:
-			for i in range(pnum):
-				self.doArrange(pnum, pshift, order, mixed, rPlanet, True)
-
+		if shifted:
+			max_passes = min(pnum + 5, 20)
+			for _ in range(max_passes):
+				if not self.doArrange(pnum, pshift, order, mixed, rPlanet, True):
+					break
+					
 		#check if beyond (not overlapping but beyond)
 		else:
 			if order[pnum-1] > 300.0 and order[0] < 60.0:
@@ -771,13 +813,13 @@ class GraphChartPDs:
 
 
 	def doArrange(self, pnum, pshift, order, mixed, rPlanet, forward = False):
-		shifted = False
-
+		"""인접 쌍을 한 번씩만 정리하고, 이번 패스에서 무엇이라도 움직였는지 True/False 반환"""
+		shifted_any = False
 		for i in range(pnum-1):
-			shifted = self.doShift(i, i+1, pshift, order, mixed, rPlanet, forward)
+			if self.doShift(i, i+1, pshift, order, mixed, rPlanet, forward):
+				shifted_any = True
+		return shifted_any
 
-		if shifted:
-			self.doArrange(pnum, pshift, order, mixed, rPlanet, forward)
 
 
 	def doShift(self, p1, p2, pshift, order, mixed, rPlanet, forward = False):
@@ -800,18 +842,25 @@ class GraphChartPDs:
 		else:
 			w2, h2 = self.fntMorinus.getsize(common.common.fortune)
 
-		while (self.overlap(x1, y1, w1, h1, x2, y2, w2, h2)):
+		# 겹침 해소 반복에 상한
+		iter_limit = 5000  # 최악 방지; 필요시 옵션화 가능
+		iters = 0
+		step = 0.1  # 기존 로직 유지(필요하면 symbolSize 기반으로 가변화 가능)
+
+		while self.overlap(x1, y1, w1, h1, x2, y2, w2, h2):
+			if iters >= iter_limit:
+				break
 			if not forward:
-				pshift[mixed[p1]] -= 0.1
-			pshift[mixed[p2]] += 0.1
+				pshift[mixed[p1]] -= step
+			pshift[mixed[p2]] += step
 
 			x1 = cx+math.cos(math.pi+math.radians(self.chartRadix.houses.ascmc[houses.Houses.ASC]-order[p1]-pshift[mixed[p1]]))*rPlanet
 			y1 = cy+math.sin(math.pi+math.radians(self.chartRadix.houses.ascmc[houses.Houses.ASC]-order[p1]-pshift[mixed[p1]]))*rPlanet
 			x2 = cx+math.cos(math.pi+math.radians(self.chartRadix.houses.ascmc[houses.Houses.ASC]-order[p2]-pshift[mixed[p2]]))*rPlanet
 			y2 = cy+math.sin(math.pi+math.radians(self.chartRadix.houses.ascmc[houses.Houses.ASC]-order[p2]-pshift[mixed[p2]]))*rPlanet
 
-			if not shifted:
-				shifted = True
+			shifted = True
+			iters += 1
 
 		return shifted
 
@@ -825,4 +874,38 @@ class GraphChartPDs:
 
 		return False
 
+	def getBitmap(self):
+		"""
+		Returns a wx.Bitmap of the rendered chart.
+		Handles both wx.MemoryDC buffer and possible PIL image fallback.
+		"""
+		# 1) MemoryDC가 buffer를 잡고 있으면 먼저 해제 (Windows GDI 락 방지)
+		try:
+			if getattr(self, 'memdc', None):
+				self.memdc.SelectObject(wx.NullBitmap)
+		except Exception:
+			pass
+
+		# 2) 우선순위: self.buffer → self.bmp → self.img(PIL) → 빈 비트맵
+		if hasattr(self, 'buffer') and isinstance(self.buffer, wx.Bitmap):
+			return self.buffer
+
+		if hasattr(self, 'bmp') and isinstance(self.bmp, wx.Bitmap):
+			return self.bmp
+
+		if hasattr(self, 'img'):
+			# PIL.Image → wx.Bitmap 변환
+			bio = io.BytesIO()
+			try:
+				self.img.save(bio, format='PNG')
+				bio.seek(0)
+				wx_img = wx.Image(bio, type=wx.BITMAP_TYPE_PNG)
+				return wx.Bitmap(wx_img)
+			except Exception:
+				pass
+
+		# 3) 최후의 안전망: 크기 알고 있으면 그걸로 빈 비트맵
+		w = max(1, int(getattr(self, 'w', 1)))
+		h = max(1, int(getattr(self, 'h', 1)))
+		return wx.Bitmap(w, h)
 

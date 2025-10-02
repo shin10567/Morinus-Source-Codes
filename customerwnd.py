@@ -47,16 +47,16 @@ class CustomerWnd(commonwnd.CommonWnd):
 		self.TABLE_HEIGHT = ((self.LINE_NUM)*(self.LINE_HEIGHT))
 		self.TABLE_WIDTH = ((self.COLUMN_NUM+1)*(self.CELL_WIDTH))
 	
-		self.WIDTH = (BOR+self.TABLE_WIDTH+BOR)
-		self.HEIGHT = (BOR+self.TABLE_HEIGHT+BOR)
+		self.WIDTH = int(BOR+self.TABLE_WIDTH+BOR)
+		self.HEIGHT = int(BOR+self.TABLE_HEIGHT+BOR)
 
 		self.SetBackgroundColour(self.options.clrbackground)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)
-		self.fntSymbol = ImageFont.truetype(common.common.symbols, 3*self.FONT_SIZE/2)
-		self.fntText = ImageFont.truetype(common.common.abc, self.FONT_SIZE)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+		self.fntSymbol = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/2))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)	
 		self.signs = common.common.Signs1
 		if not self.options.signs:
@@ -95,9 +95,9 @@ class CustomerWnd(commonwnd.CommonWnd):
 		else:
 			self.drawregiomontan(draw, x, y, tableclr)
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawplacidian(self, draw, x, y, clr):
@@ -130,7 +130,7 @@ class CustomerWnd(commonwnd.CommonWnd):
 
 				d,m,s = util.decToDeg(lon)
 
-				sign = d/chart.Chart.SIGN_DEG
+				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
 				wsp,hsp = draw.textsize(' ', self.fntText)
 				wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)
@@ -225,7 +225,7 @@ class CustomerWnd(commonwnd.CommonWnd):
 
 				d,m,s = util.decToDeg(lon)
 
-				sign = d/chart.Chart.SIGN_DEG
+				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
 				wsp,hsp = draw.textsize(' ', self.fntText)
 				wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)
@@ -289,8 +289,3 @@ class CustomerWnd(commonwnd.CommonWnd):
 		draw.line((x, y, x, y+self.TABLE_HEIGHT), fill=clr)
 		draw.line((x+self.CELL_WIDTH, y, x+self.CELL_WIDTH, y+self.TABLE_HEIGHT), fill=clr)
 		draw.line((x+2*self.CELL_WIDTH, y, x+2*self.CELL_WIDTH, y+self.TABLE_HEIGHT), fill=clr)
-
-
-
-
-

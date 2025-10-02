@@ -31,7 +31,7 @@ class ElectionStepperDlg(wx.Dialog):
 		sb = wx.StaticBox(self, label='')
 		sbsizer = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
-		gsizer = wx.FlexGridSizer(6, 2)
+		gsizer = wx.FlexGridSizer(6, 2,9,24)
 
 		label = wx.StaticText(self, -1, mtexts.txts['Year'])
 		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)

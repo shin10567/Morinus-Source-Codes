@@ -6,6 +6,7 @@ import re  # ← 추가
 import commonwnd
 import Image, ImageDraw, ImageFont   # ← fixstars와 동일한 PIL 사용
 from angleatbirth import compute_contacts
+import mtexts
 
 class AngleAtBirthWnd(commonwnd.CommonWnd):
 
@@ -133,7 +134,7 @@ class AngleAtBirthWnd(commonwnd.CommonWnd):
                     outline=tableclr, fill=self.bkgclr)
 
         # 헤더 텍스트 중앙정렬
-        heads = (u"\u0394T", u"Fixed Star", u"Angle", u"Exact Time")
+        heads = (u"\u0394T", mtexts.txts["FixedStar"], mtexts.txts["Angle"], mtexts.txts["ExactTime"])
         col_w = (self.W_DT, self.W_STAR, self.W_ANG, self.W_TIME)
         x = BOR
         for i, h in enumerate(heads):
@@ -162,9 +163,9 @@ class AngleAtBirthWnd(commonwnd.CommonWnd):
         draw.rectangle(((BOR, BOR), (BOR + self.TITLE_WIDTH, BOR + table_height)), outline=tableclr)
 
         # wx로 전송
-        wxImg = wx.EmptyImage(img.size[0], img.size[1])
+        wxImg = wx.Image(img.size[0], img.size[1])
         wxImg.SetData(img.tobytes())
-        self.buffer = wx.BitmapFromImage(wxImg)
+        self.buffer = wx.Bitmap(wxImg)
         self.Refresh()
 
     def _drawline(self, draw, x, y, clr, txtclr, idx):

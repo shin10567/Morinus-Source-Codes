@@ -50,17 +50,17 @@ class AspectsWnd(commonwnd.CommonWnd):
 
 		self.TABLE_WIDTH = (self.COLUMN_NUM*(self.SQUARE_SIZE+self.SPACE))
 	
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, 4*self.FONT_SIZE/5)
-		self.fntSymbol = ImageFont.truetype(common.common.symbols, 3*self.FONT_SIZE/2)
-		self.fntAspects = ImageFont.truetype(common.common.symbols, self.FONT_SIZE/2)
-		self.fntText = ImageFont.truetype(common.common.abc, 2*self.FONT_SIZE/3)
-		self.fntText2 = ImageFont.truetype(common.common.abc, self.FONT_SIZE/3)
-		self.fntText3 = ImageFont.truetype(common.common.abc, self.FONT_SIZE/2)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(4*self.FONT_SIZE/5))
+		self.fntSymbol = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/2))
+		self.fntAspects = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE/2))
+		self.fntText = ImageFont.truetype(common.common.abc, int(2*self.FONT_SIZE/3))
+		self.fntText2 = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/3))
+		self.fntText3 = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/2))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)
 		self.arsigndiff = (0, -1, -1, 2, -1, 3, 4, -1, -1, -1, 6)
 		self.hidx = (1, 2, 3, 10, 11, 12)
@@ -315,9 +315,9 @@ class AspectsWnd(commonwnd.CommonWnd):
 					draw.text((x+(self.SQUARE_SIZE+self.SPACE)*i+(self.SQUARE_SIZE-w)/2, y+(self.SQUARE_SIZE+self.SPACE)*kk+self.SQUARE_SIZE-h-self.YOFFSET), txt, fill=clr, font=fnt)
 					kk += 1
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawSquare(self, draw, x, y, tableclr):
@@ -382,6 +382,3 @@ class AspectsWnd(commonwnd.CommonWnd):
 				res = True
 
 		return res
-
-
-

@@ -4,6 +4,7 @@ import math
 import astrology
 import chart
 import os
+import mtexts
 # 안전 문자열 변환(내장 unicode 호출 없이)
 _U = type(u'')
 _B = type('')
@@ -78,7 +79,7 @@ def utext(x):
     except Exception:
         return u"%s" % (x,)
 
-import __builtin__ as builtins
+import builtins
 
 DEG = math.pi/180.0
 RAD = 180.0/math.pi
@@ -168,8 +169,8 @@ def _radec_from_row(row, jd_ut):
             return None
 
     # 1) RA/Dec 우선 사용
-    ra  = _f(row[4]) if len(row) > 4 else None
-    dec = _f(row[5]) if len(row) > 5 else None
+    ra  = row[4]
+    dec = row[5]
     if ra is not None and dec is not None:
         if abs(dec) <= 1.8:   # rad → deg
             dec *= RAD
@@ -180,8 +181,8 @@ def _radec_from_row(row, jd_ut):
         return ra, dec
 
     # 2) 없으면 (λ,β) → (RA,Dec)
-    lam = _f(row[2]) if len(row) > 2 else None
-    bet = _f(row[3]) if len(row) > 3 else None
+    lam = row[2]
+    bet = row[3]
     if lam is None or bet is None:
         return None, None
 
@@ -227,7 +228,7 @@ def _fmt_time_chart_local(ch, jd_ut):
         # 방정시(EoT): Morinus 내부 변환을 역으로 적용 → LMT - te
         te_days = 0.0
         try:
-            ret, te, serr = astrology.swe_time_equ(jd_ut)
+            serr, te = astrology.swe_time_equ(jd_ut)
             te_days = te
             if abs(te_days) > 0.5:  # 혹시 분 단위로 오는 빌드 방어
                 te_days = te / 1440.0

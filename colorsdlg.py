@@ -16,7 +16,7 @@ class ColorsDlg(wx.Dialog):
 		#In Chart
 		schart = wx.StaticBox(self, label=mtexts.txts["Chart"])
 		chartsizer = wx.StaticBoxSizer(schart, wx.VERTICAL)
-		gsizer = wx.GridSizer(6, 2)
+		gsizer = wx.GridSizer(6, 2,9,24)
 		ID_BTN_Frame = wx.NewId()
 		self.baseid = ID_BTN_Frame
 		label = wx.StaticText(self, -1, mtexts.txts['Frame']+':')
@@ -56,7 +56,7 @@ class ColorsDlg(wx.Dialog):
 		#Dignities
 		dignities = wx.StaticBox(self, label=mtexts.txts["Dignities"])
 		digsizer = wx.StaticBoxSizer(dignities, wx.VERTICAL)
-		gsizer = wx.GridSizer(6, 2)
+		gsizer = wx.GridSizer(6, 2,9,24)
 
 		self.digtxts = []
 
@@ -97,7 +97,7 @@ class ColorsDlg(wx.Dialog):
 		#Individuals
 		planetsbox = wx.StaticBox(self, label=mtexts.txts["Individual"])
 		planetssizer = wx.StaticBoxSizer(planetsbox, wx.VERTICAL)
-		gsizer = wx.GridSizer(12, 2)
+		gsizer = wx.GridSizer(12, 2,9,24)
 
 		self.pltxts = []
 
@@ -181,7 +181,7 @@ class ColorsDlg(wx.Dialog):
 		#Aspects
 		aspects = wx.StaticBox(self, label=mtexts.txts["Aspects"])
 		aspectsizer = wx.StaticBoxSizer(aspects, wx.VERTICAL)
-		gsizer = wx.GridSizer(11, 2)
+		gsizer = wx.GridSizer(11, 2,9,24)
 		ID_BTN_Conjunctio = wx.NewId()
 		label = wx.StaticText(self, -1, mtexts.txts['Conjunctio']+':')
 		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
@@ -285,47 +285,44 @@ class ColorsDlg(wx.Dialog):
 
 		self.arBtn = [self.btnFrame, self.btnSigns, self.btnAscMC, self.btnHouses, self.btnHouseNumbers, self.btnPositions, self.btnDomicil, self.btnExal, self.btnPeregrin, self.btnCasus, self.btnExil, self.btnSun, self.btnMoon, self.btnMercury, self.btnVenus, self.btnMars, self.btnJupiter, self.btnSaturn, self.btnUranus, self.btnNeptune, self.btnPluto, self.btnNodes, self.btnLoF, self.btnConjunctio, self.btnSemisextil, self.btnSemiquadrat, self.btnSextil, self.btnQuintile, self.btnQuadrat, self.btnTrigon, self.btnSesquiquadrat, self.btnBiquintile, self.btnQuinqunx, self.btnOppositio, self.btnBackground, self.btnTable, self.btnTexts]
 
-		wx.EVT_BUTTON(self, ID_BTN_Frame, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Signs, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_AscMC, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Houses, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_HouseNumbers, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Positions, self.onBtn)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnFrame)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSigns)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnAscMC)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnHouses)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnHouseNumbers)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnPositions)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnDomicil)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnExal)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnPeregrin)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnCasus)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnExil)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSun)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnMoon)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnMercury)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnVenus)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnMars)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnJupiter)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSaturn)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnUranus)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnNeptune)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnPluto)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnNodes)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnLoF)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnConjunctio)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSemisextil)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSemiquadrat)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSextil)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnQuintile)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnQuadrat)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnTrigon)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnSesquiquadrat)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnBiquintile)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnQuinqunx)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnOppositio)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnBackground)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnTable)
+		self.Bind(wx.EVT_BUTTON, self.onBtn,self.btnTexts)
 
-		wx.EVT_BUTTON(self, ID_BTN_Domicil, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Exal, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Peregrin, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Casus, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Exil, self.onBtn)
-
-		wx.EVT_BUTTON(self, ID_BTN_Sun, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Moon, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Mercury, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Venus, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Mars, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Jupiter, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Saturn, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Uranus, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Neptune, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Pluto, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Nodes, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_LoF, self.onBtn)
-
-		wx.EVT_BUTTON(self, ID_BTN_Conjunctio, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Semisextil, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Semiquadrat, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Sextil, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Quintile, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Quadrat, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Trigon, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Sesquiquadrat, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Biquintile, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Quinqunx, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Oppositio, self.onBtn)
-
-		wx.EVT_BUTTON(self, ID_BTN_Background, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Table, self.onBtn)
-		wx.EVT_BUTTON(self, ID_BTN_Texts, self.onBtn)
 
 		btnsizer = wx.StdDialogButtonSizer()
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
 import datetime
-import swisseph as swe
+import sweastrology as swe
 import os
 import houses
 import common  # Morinus의 ephe 경로 사용 (common.common.ephepath)
@@ -42,7 +42,7 @@ def _ensure_swisseph_path():
         try:
             if os.path.isdir(p) and any(fn.lower().startswith(('sepl_', 'sef', 'semo', 'sea'))
                                         for fn in os.listdir(p)):
-                swe.set_ephe_path(p)
+                swe.swe_set_ephe_path(p)
                 return
         except Exception:
             continue
@@ -68,13 +68,13 @@ def _norm360(x):
 def _sun_coord_deg(jd_ut, equatorial=False):
     _ensure_swisseph_path()
     """equatorial=True면 적경(°), False면 황경(°) 반환"""
-    flags = swe.FLG_SWIEPH | (swe.FLG_EQUATORIAL if equatorial else 0)
+    flags = astrology.SEFLG_SWIEPH | (astrology.SEFLG_EQUATORIAL if equatorial else 0)
     try:
-        vals, _ = swe.calc_ut(jd_ut, swe.SUN, flags)
+        vals, _ = swe.swe_calc_ut(jd_ut, astrology.SE_SUN, flags)
     except Exception:
         # 파일(ephe) 없으면 내부 알고리즘(MOSEPH)로 재시도 → 파일 불필요
-        flags = swe.FLG_MOSEPH | (swe.FLG_EQUATORIAL if equatorial else 0)
-        vals, _ = swe.calc_ut(jd_ut, swe.SUN, flags)
+        flags = astrology.SEFLG_MOSEPH | (astrology.SEFLG_EQUATORIAL if equatorial else 0)
+        vals, _ = swe.swe_calc_ut(jd_ut, astrology.SE_SUN, flags)
     lon = vals[0]
     return _norm360(lon)
 
@@ -325,7 +325,7 @@ def _ra_dec_star_ofdate_from_code(code, jd_ut):
     # 고유운동: 세기→연 환산 반영
     ra1, de1 = _apply_proper_motion_j2000(ra0, de0, jd_ut, pmra, pmde)
     # TT = UT + ΔT
-    jd_tt = jd_ut + swe.deltat(jd_ut)
+    jd_tt = jd_ut + swe.swe_deltat(jd_ut)
     ra2, de2 = _j2000_to_ofdate(ra1, de1, jd_tt)
     return ra2, de2, db[code].get('name', code)
 
@@ -485,7 +485,7 @@ def _get_ramc0_deg(horoscope):
     # 2) Fallback: LST(그리니치 항성시 + 경도)로 계산
     jd_ut = float(getattr(horoscope, "jd_ut", getattr(horoscope, "jdut", 0.0)))
     lon_deg = float(getattr(horoscope, "lon", getattr(horoscope, "longitude", 0.0)))
-    sid_hours = swe.sidtime(jd_ut)  # Greenwich sidereal time [hours]
+    sid_hours = swe.swe_sidtime(jd_ut)  # Greenwich sidereal time [hours]
     lst_deg = (sid_hours * 15.0 + lon_deg) % 360.0
     return lst_deg
 
@@ -692,7 +692,7 @@ def _star_ofdate_ra_dec(star_name, jd_ut):
         ra2000, dec2000 = ra_cat, dec_cat
 
     # TT≈UT 가정(전통 PD 해상도엔 충분)
-    jd_tt = jd_ut + swe.deltat(jd_ut)
+    jd_tt = jd_ut + swe.swe_deltat(jd_ut)
     ra_d, dec_d = _j2000_to_ofdate(ra2000, dec2000, jd_tt)
 
     info = u"{0}, {1}".format(star_name, u"" if mag is None else u"{0}".format(mag)).strip()
@@ -810,7 +810,7 @@ def _cat_lookup_equ_generic(star_name, path=None):
 
 def _date_string_from_jd(jd_ut, chrt, options):
     gregflag = _calendar_flag(chrt, options)  # 1=Greg, 0=Jul
-    y, m, d, frac = swe.revjul(jd_ut, gregflag)  # UTC 기준
+    y, m, d, frac = swe.swe_revjul(jd_ut, gregflag)  # UTC 기준
     hh = int(frac * 24.0)
     mm = int((frac * 24.0 - hh) * 60.0)
     return u"{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d} UTC".format(y, m, d, hh, mm)

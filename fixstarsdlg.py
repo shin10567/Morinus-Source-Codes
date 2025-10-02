@@ -57,7 +57,7 @@ class FixStars:
             for i in range(1, cnt+1):
                 ret, name, dat, serr = astrology.swe_fixstar_ut(str(i), self.jd, 0)
                 d, m, s = util.decToDeg(dat[0])
-                sign = d/chart.Chart.SIGN_DEG
+                sign = int(d/chart.Chart.SIGN_DEG)
                 lon = d%chart.Chart.SIGN_DEG
                 lontxt = str(lon)+FixStars.signtxts[sign]+' '+(str(m)).zfill(2)+"' "+(str(s)).zfill(2)+'"'
                 d, m, s = util.decToDeg(dat[1])
@@ -123,9 +123,9 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
         self.Populate()
 
         nset = set()
-        items = self.fixstardata.iteritems()
+        items = self.fixstardata.items()
         for k, v in items:
-            for nomname in names.iterkeys():
+            for nomname in names.keys():
                 if v[1] == nomname and nomname not in nset:
                     if len(nset) >= FixStarListCtrl.MAX_SEL_NUM:
                         break
@@ -148,12 +148,12 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
         cnt = 0
         for key, data in items:
             cnt += 1
-            index = self.InsertStringItem(sys.maxint, data[0])
-            self.SetStringItem(index, FixStarListCtrl.NUM, str(cnt)+'.')
-            self.SetStringItem(index, FixStarListCtrl.NAME, data[0])
-            self.SetStringItem(index, FixStarListCtrl.NOMNAME, data[1])
-            self.SetStringItem(index, FixStarListCtrl.LON, data[2])
-            self.SetStringItem(index, FixStarListCtrl.LAT, data[3])
+            index = self.InsertStringItem(sys.maxsize, data[0])
+            self.SetItem(index, FixStarListCtrl.NUM, str(cnt)+'.')
+            self.SetItem(index, FixStarListCtrl.NAME, data[0])
+            self.SetItem(index, FixStarListCtrl.NOMNAME, data[1])
+            self.SetItem(index, FixStarListCtrl.LON, data[2])
+            self.SetItem(index, FixStarListCtrl.LAT, data[3])
             self.SetItemData(index, key)
 
         self.SetColumnWidth(FixStarListCtrl.NUM, 60)
@@ -176,7 +176,7 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 
     def OnDeselectAll(self):
         self.initchecking = True
-        items = self.fixstardata.iteritems()
+        items = self.fixstardata.items()
         for k, v in items:
             if self.IsChecked(k-1):
                 self.CheckItem(k-1, False)
@@ -212,15 +212,15 @@ class FixStarsDlg(wx.Dialog):
         # creation, and then we create the GUI object using the Create
         # method.
 
-        pre = wx.PreDialog()
-        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-        pre.Create(parent, -1, mtexts.txts['FixStars'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#        pre = wx.PreDialog()
+#        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#        pre.Create(parent, -1, mtexts.txts['FixStars'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-        self.PostCreate(pre)
-
+#        self.PostCreate(pre)
+        wx.Dialog.__init__(self, None, -1, mtexts.txts['FixStars'], size=wx.DefaultSize)
         #main vertical sizer
         mvsizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -234,7 +234,7 @@ class FixStarsDlg(wx.Dialog):
         starssizer.Add(self.li, 0, wx.ALIGN_CENTER|wx.ALL, 5)
         self.li.fill(names)
 
-        fgsizer = wx.FlexGridSizer(1, 2)
+        fgsizer = wx.FlexGridSizer(1, 2,9,24)
         ID_DeselectAll = wx.NewId()
         btnDeselectAll = wx.Button(self, ID_DeselectAll, mtexts.txts['DeselectAll'])
         fgsizer.Add(btnDeselectAll, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
@@ -257,7 +257,7 @@ class FixStarsDlg(wx.Dialog):
         self.search =wx.StaticBox(self, label=mtexts.txts['Search'])
         searchsizer = wx.StaticBoxSizer(self.search, wx.VERTICAL)
 
-        fgsizer = wx.FlexGridSizer(1, 2)
+        fgsizer = wx.FlexGridSizer(1, 2,9,24)
         hsubsizer = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(self, -1, mtexts.txts['Name']+':')
         hsubsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
@@ -360,7 +360,7 @@ class FixStarsDlg(wx.Dialog):
         changed = False
 
         self.selnames = []
-        items = self.li.fixstardata.iteritems()
+        items = self.li.fixstardata.items()
         for k, v in items:
             if self.li.IsChecked(k-1):
                 self.selnames.append(v[1])

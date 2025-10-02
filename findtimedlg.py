@@ -5,14 +5,24 @@ import rangechecker
 import findtime
 import mtexts
 import util
-
-import thread
+import geonames
+import _thread
 import wx.lib.newevent
+import json
+import urllib.request as urllib2
+import urllib
+import astrology
+import chart
+import os
+import pickle
+import options
+import math
+import options
 
 (FTReadyEvent, EVT_FTREADY) = wx.lib.newevent.NewEvent()
 (FTDataReadyEvent, EVT_FTDATAREADY) = wx.lib.newevent.NewEvent()
 (FTYearEvent, EVT_FTYEAR) = wx.lib.newevent.NewEvent()
-ftlock = thread.allocate_lock()
+ftlock = _thread.allocate_lock()
 
 class AbortFindTime:
 	def __init__(self):
@@ -26,6 +36,7 @@ class ResListCtrl(wx.ListCtrl):
 	NUM = 0
 	DATE = 1
 	TIME = 2
+	LOC = 3
 	COLNUM = TIME+1
 
 	def __init__(self, parent, ID, pos=wx.DefaultPosition, size=wx.DefaultSize, style=0):
@@ -41,10 +52,12 @@ class ResListCtrl(wx.ListCtrl):
 		self.InsertColumn(ResListCtrl.NUM, '')
 		self.InsertColumn(ResListCtrl.DATE, mtexts.txts['Date'])
 		self.InsertColumn(ResListCtrl.TIME, mtexts.txts['Time'])
+		self.InsertColumn(ResListCtrl.LOC,  mtexts.txts['Location'])
 
 		self.SetColumnWidth(ResListCtrl.NUM, 50)#wx.LIST_AUTOSIZE)
-		self.SetColumnWidth(ResListCtrl.DATE, 150)
-		self.SetColumnWidth(ResListCtrl.TIME, 150)
+		self.SetColumnWidth(ResListCtrl.DATE, 100)
+		self.SetColumnWidth(ResListCtrl.TIME, 100)
+		self.SetColumnWidth(ResListCtrl.LOC, 150)
 
 		self.currentItem = -1
 
@@ -62,7 +75,7 @@ class ResListCtrl(wx.ListCtrl):
 
 
 	def OnItemSelected(self, event):
-		self.currentItem = event.m_itemIndex
+		self.currentItem = event.GetIndex()
 		event.Skip()
 
 
@@ -73,9 +86,10 @@ class ResListCtrl(wx.ListCtrl):
 	def OnAdd(self, item):
 		num = self.GetItemCount()+1
 		numtxt = str(num)+'.'
-		self.InsertStringItem(num-1, numtxt)
-		self.SetStringItem(num-1, 1, item[0])
-		self.SetStringItem(num-1, 2, item[1])
+		self.InsertItem(num-1, numtxt)
+		self.SetItem(num-1, 1, item[0])
+		self.SetItem(num-1, 2, item[1])
+		self.SetItem(num-1, 3, item[2])
 
 		self.currentItem = 0#num-1
 		self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
@@ -146,7 +160,7 @@ class FindTimeDlg(wx.Dialog):
 		#Planets
 		splanets =wx.StaticBox(self, label='')
 		splanetssizer = wx.StaticBoxSizer(splanets, wx.VERTICAL)
-		gsizer = wx.GridSizer(7, 5)
+		gsizer = wx.GridSizer(7, 5,9,24)
 
 		label = wx.StaticText(self, -1, mtexts.txts['Sun']+':')
 		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
@@ -397,7 +411,7 @@ class FindTimeDlg(wx.Dialog):
 
 		sangles = wx.StaticBox(self, label='')
 		sanglessizer = wx.StaticBoxSizer(sangles, wx.VERTICAL)
-		gsizer = wx.GridSizer(2, 4)
+		gsizer = wx.GridSizer(2, 4,9,24)
 		self.asctxt = wx.StaticText(self, -1, mtexts.txts['Asc']+':')
 		gsizer.Add(self.asctxt, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		self.ascdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 359), size=(40,-1))
@@ -467,7 +481,7 @@ class FindTimeDlg(wx.Dialog):
 
 		sforce = wx.StaticBox(self, label='')
 		sforcesizer = wx.StaticBoxSizer(sforce, wx.VERTICAL)
-		gsizer = wx.GridSizer(2, 3)
+		gsizer = wx.GridSizer(2, 3,9,24)
 		self.fyear = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(1, rnge), size=(50,-1))
 		if checker.isExtended():
 			self.fyear.SetHelpText(mtexts.txts['HelpYear'])
@@ -582,10 +596,19 @@ class FindTimeDlg(wx.Dialog):
 		self.btnShow = wx.Button(self, List_Show_ID, mtexts.txts['Show'])
 		self.btnShow.Enable(False)
 
+		List_Open_ID = wx.NewId()
+		self.btnOpen = wx.Button(self, List_Open_ID, mtexts.txts['Open'])
+
+		List_Save_ID = wx.NewId()
+		self.btnSave = wx.Button(self, List_Save_ID, mtexts.txts['Save'])
+		self.btnSave.Enable(False)
+
+
 		hbtnsizer = wx.BoxSizer(wx.HORIZONTAL)
 		hbtnsizer.Add(self.btnStart, 1, wx.GROW|wx.ALIGN_CENTER_HORIZONTAL, 5)
 		hbtnsizer.Add(self.btnShow, 1, wx.GROW|wx.ALIGN_CENTER_HORIZONTAL, 5)
-
+		hbtnsizer.Add(self.btnOpen, 1, wx.GROW|wx.ALIGN_CENTER_HORIZONTAL, 5)
+		hbtnsizer.Add(self.btnSave, 1, wx.GROW|wx.ALIGN_CENTER_HORIZONTAL, 5)
 		vvvsizer.Add(hbtnsizer, 0, wx.GROW|wx.ALIGN_CENTER_HORIZONTAL, 5)
 
 		mhsizer.Add(vvvsizer, 0, wx.GROW|wx.ALIGN_CENTER_HORIZONTAL, 0)
@@ -621,7 +644,7 @@ class FindTimeDlg(wx.Dialog):
 		self.usesecckb.SetValue(True)
 		self.useretrckb.SetValue(True)
 
-		self.useascmcckb.SetValue(False)
+		self.useascmcckb.SetValue(True)
 		self.enableAscMC(self.useascmcckb.GetValue())
 		self.enableForce(self.useascmcckb.GetValue())
 
@@ -635,6 +658,8 @@ class FindTimeDlg(wx.Dialog):
 
 		self.Bind(wx.EVT_BUTTON, self.OnStart, id=self.btnStart.GetId())
 		self.Bind(wx.EVT_BUTTON, self.OnShow, id=self.btnShow.GetId())
+		self.Bind(wx.EVT_BUTTON, self.OnOpen, id=self.btnOpen.GetId())
+		self.Bind(wx.EVT_BUTTON, self.OnSave, id=self.btnSave.GetId())
 
 		self.Bind(wx.EVT_BUTTON, self.onOK, id=btnOk.GetId())
 
@@ -648,6 +673,7 @@ class FindTimeDlg(wx.Dialog):
 		self.suffix = ''
 		self.found = False
 		self.ar = None
+		self.sundeg.SetValue('122')
 
 
 	def onUseMin(self, event):
@@ -854,7 +880,7 @@ class FindTimeDlg(wx.Dialog):
 			self.ar = None
 		self.ftready = False
 		self.abort = AbortFindTime()
-		thId = thread.start_new_thread(self.calcCharts, (self.bc, ftdata, ftdatause, ftdataascmc, ftdataapprox, self))
+		thId = _thread.start_new_thread(self.calcCharts, (self.bc, ftdata, ftdatause, ftdataascmc, ftdataapprox, self))
 
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer)
@@ -903,16 +929,82 @@ class FindTimeDlg(wx.Dialog):
 
 		if self.found:
 			self.btnShow.Enable(True)
-
+			self.btnSave.Enable(True)
 
 	def OnFTDataReady(self, event):
 		#update wnd
-		self.OnAdd(event.attr1)
+		place = chart.Place('London, GBR', 0, 6, 0, False, 51, 31, 0, True, 10)
+
+		h, m, s = util.decToDeg(event.attr1[3])
+		time = chart.Time(event.attr1[0], event.attr1[1], event.attr1[2], h, m, s, self.bcckb.GetValue(), chart.Time.GREGORIAN, chart.Time.GREENWICH, True, 0, 0, False, place)
+		#Calc obliquity
+		d = astrology.swe_deltat(time.jd)
+		serr, obl = astrology.swe_calc(time.jd+d, astrology.SE_ECL_NUT, 0)
+
+		if self.useascmcckb.GetValue() and self.forceckb.GetValue():
+			if (not self.Validate()):
+				return
+
+		if not self.checkAsc():
+			return
+
+		arplac = [0.0, 0.0, False] #mclon, asclon, use
+		if self.useascmcckb.GetValue():
+			arplac[0] = float(self.mcdeg.GetValue())+float(self.mcmin.GetValue())/60.0+float(self.mcsec.GetValue())/3600.0
+			arplac[1] = float(self.ascdeg.GetValue())+float(self.ascmin.GetValue())/60.0+float(self.ascsec.GetValue())/3600.0
+			arplac[2] = True
+
+		if self.ar == None:
+			self.ar = []
+		self.ar.append(event.attr1)
+
+		if self.forceckb.GetValue():
+			t = float(self.fhour.GetValue())+float(self.fmin.GetValue())/60.0+float(self.fsec.GetValue())/3600.0
+			it = (int(self.fyear.GetValue()), int(self.fmonth.GetValue()), int(self.fday.GetValue()), t)
+		else:
+			it = self.ar[self.li.currentItem]
+
+		if arplac[2]:
+			#calc GMTMidnight:
+			timeMidnight = chart.Time(time.year, time.month, time.day, 0, 0, 0, self.bcckb.GetValue(), chart.Time.GREGORIAN, chart.Time.GREENWICH, True, 0, 0, False, place)
+			place = self.parent.calcPlace(time.time, timeMidnight.sidTime, arplac[0], arplac[1], obl[0])
+
+
+#		self.horoscope = chart.Chart('Search', True, time, place, chart.Chart.RADIX, '', self.options)
+
+	#def get_elevation(self, longitude, latitude):
+		# "http://api.geonames.org/findNearby?lang=en&charset=UNICODE&lat=%3.1f&lng=%3.1f&cities=cities15000&featureClass=P&featureCode=PPLC&username=morinus"
+		url = "http://api.geonames.org/findNearbyJSON?%s"
+
+		params = {
+			"username" : 'morinus',
+			#"lang" : "en",
+			"lng" : place.lon,
+			"lat" : place.lat,
+			"featureClass" : "P"
+			}
+
+		url = url % urllib.parse.urlencode(params)
+		place = ""
+		values = ""
+		try:
+			page = urllib2.urlopen(url)
+			doc = json.loads(page.read())
+
+			for item in doc['geonames']:
+				place = item['toponymName']
+				values = place
+				place = item['countryName']
+				values = values+", "+place
+
+		except Exception as e:
+			values = ""
+
+		self.OnAdd(event.attr1,values)
 		if self.ar == None:
 			self.ar = []
 		self.ar.append(event.attr1)
 		self.found = True
-
 
 	def OnFTYear(self, event):
 		signtxt = ''
@@ -920,15 +1012,184 @@ class FindTimeDlg(wx.Dialog):
 			signtxt = '-'
 		self.suffix = signtxt+str(event.attr1)
 
-
-	def OnAdd(self, fnd):
+	def OnAdd(self, fnd,locstr):
 		datstr = str(fnd[0])+'.'+str(fnd[1])+'.'+str(fnd[2])
 		h, m, s = util.decToDeg(fnd[3])
 		timstr = str(h).zfill(2)+':'+str(m).zfill(2)+':'+str(s).zfill(2)
-		item = [datstr, timstr]
-
+		#locstr = "Found Loc"
+		item = [datstr, timstr,locstr]
 		self.li.OnAdd(item)
 
+
+	def OnOpen(self, event):
+		dlg = wx.FileDialog(self, mtexts.txts['OpenHor'], '', '', mtexts.txts['HORFiles'], wx.FD_OPEN)
+		self.fpathhors = u'Hors'
+		if os.path.isdir(self.fpathhors):
+			dlg.SetDirectory(self.fpathhors)
+		else:
+			dlg.SetDirectory(u'.')
+
+		if dlg.ShowModal() == wx.ID_OK:
+			dpath = dlg.GetDirectory()
+			fpath = dlg.GetPath()
+
+			if not fpath.endswith(u'.hor'):
+				fpath+=u'.hor'
+
+			chrt = self.subLoad(fpath, dpath)
+
+			if chrt != None:
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[0].data[0] + 1e-8)
+				self.sundeg.SetValue(str(dC))
+				self.sunmin.SetValue(str(mC))
+				self.sunsec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[1].data[0] + 1e-8)
+				self.moondeg.SetValue(str(dC))
+				self.moonmin.SetValue(str(mC))
+				self.moonsec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[2].data[0] + 1e-8)
+				self.mercurydeg.SetValue(str(dC))
+				self.mercurymin.SetValue(str(mC))
+				self.mercurysec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[3].data[0] + 1e-8)
+				self.venusdeg.SetValue(str(dC))
+				self.venusmin.SetValue(str(mC))
+				self.venussec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[4].data[0] + 1e-8)
+				self.marsdeg.SetValue(str(dC))
+				self.marsmin.SetValue(str(mC))
+				self.marssec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[5].data[0] + 1e-8)
+				self.jupiterdeg.SetValue(str(dC))
+				self.jupitermin.SetValue(str(mC))
+				self.jupitersec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.planets.planets[6].data[0] + 1e-8)
+				self.saturndeg.SetValue(str(dC))
+				self.saturnmin.SetValue(str(mC))
+				self.saturnsec.SetValue(str(sC))
+
+				dC, mC, sC = util.decToDeg(chrt.houses.cusps[1] + 1e-8)
+				self.ascdeg.SetValue(str(dC))
+				self.ascmin.SetValue(str(mC))
+				self.ascsec.SetValue(str(sC))
+				dC, mC, sC = util.decToDeg(chrt.houses.cusps[10] + 1e-8)
+				self.mcdeg.SetValue(str(dC))
+				self.mcmin.SetValue(str(mC))
+				self.mcsec.SetValue(str(sC))
+
+		dlg.Destroy()#
+#bcckb.GetValue()
+	def OnSave(self, event):
+		dlg = wx.FileDialog(self, mtexts.txts['SaveHor'], '', "Search.hor", mtexts.txts['HORFiles'], wx.FD_SAVE)
+		#if os.path.isdir(self.fpathhors):
+		#	dlg.SetDirectory(self.fpathhors)
+		#else:
+		dlg.SetDirectory(u'hors')
+
+		if dlg.ShowModal() == wx.ID_OK:
+			dpath = dlg.GetDirectory()
+			fpath = dlg.GetPath()
+
+			if not fpath.endswith(u'.hor'):
+				fpath+=u'.hor'
+			#Check if fpath already exists!?
+			if os.path.isfile(fpath):
+				dlgm = wx.MessageDialog(self, mtexts.txts['FileExists'], mtexts.txts['Message'], wx.YES_NO|wx.YES_DEFAULT|wx.ICON_QUESTION)
+				if dlgm.ShowModal() == wx.ID_NO:
+					dlgm.Destroy()#
+					return
+				dlgm.Destroy()#
+
+			place = chart.Place('London, GBR', 0, 6, 0, False, 51, 31, 0, True, 10)
+
+			fnd = self.ar[self.li.currentItem]
+			h, m, s = util.decToDeg(fnd[3])
+			time = chart.Time(fnd[0], fnd[1], fnd[2], h, m, s, self.bc, chart.Time.GREGORIAN, chart.Time.GREENWICH, True, 0, 0, False, place)
+			#Calc obliquity
+			d = astrology.swe_deltat(time.jd)
+			serr, obl = astrology.swe_calc(time.jd+d, astrology.SE_ECL_NUT, 0)
+
+			arplac = [0.0, 0.0, False] #mclon, asclon, use
+			if self.useascmcckb.GetValue():
+				arplac[0] = float(self.mcdeg.GetValue())+float(self.mcmin.GetValue())/60.0+float(self.mcsec.GetValue())/3600.0
+				arplac[1] = float(self.ascdeg.GetValue())+float(self.ascmin.GetValue())/60.0+float(self.ascsec.GetValue())/3600.0
+				arplac[2] = True
+
+			if arplac[2]:
+				#calc GMTMidnight:
+				timeMidnight = chart.Time(time.year, time.month, time.day, 0, 0, 0, self.bc, chart.Time.GREGORIAN, chart.Time.GREENWICH, True, 0, 0, False, place)
+				place = self.calcPlace(time.time, timeMidnight.sidTime, arplac[0], arplac[1], obl[0])
+
+			url = "http://api.geonames.org/findNearbyJSON?%s"
+
+			params = {
+				"username" : 'morinus',
+				#"lang" : "en",
+				"lng" : place.lon,
+				"lat" : place.lat,
+				"featureClass" : "P"
+				}
+
+			url = url % urllib.parse.urlencode(params)
+			place1 = ""
+			try:
+				page = urllib2.urlopen(url)
+				doc = json.loads(page.read())
+
+				for item in doc['geonames']:
+					place1 = item['toponymName']
+					values = place1
+					place1 = item['countryName']
+					values = values+", "+place1
+
+			except Exception as e:
+				values = None
+
+			place.place=values
+
+			opts = options.Options()
+			self.horoscope = chart.Chart('Search', True, time, place, chart.Chart.RADIX, '', opts)
+
+			try:
+				f = open(fpath, 'wb')
+				pickle.dump(self.horoscope.name, f)
+				pickle.dump(self.horoscope.male, f)
+				pickle.dump(self.horoscope.htype, f)
+				pickle.dump(self.horoscope.time.bc, f)
+				pickle.dump(self.horoscope.time.origyear, f)
+				pickle.dump(self.horoscope.time.origmonth, f)
+				pickle.dump(self.horoscope.time.origday, f)
+				pickle.dump(self.horoscope.time.hour, f)
+				pickle.dump(self.horoscope.time.minute, f)
+				pickle.dump(self.horoscope.time.second, f)
+				pickle.dump(self.horoscope.time.cal, f)
+				pickle.dump(self.horoscope.time.zt, f)
+				pickle.dump(self.horoscope.time.plus, f)
+				pickle.dump(self.horoscope.time.zh, f)
+				pickle.dump(self.horoscope.time.zm, f)
+				pickle.dump(self.horoscope.time.daylightsaving, f)
+				pickle.dump(self.horoscope.place.place, f)
+				pickle.dump(self.horoscope.place.deglon, f)
+				pickle.dump(self.horoscope.place.minlon, f)
+				pickle.dump(self.horoscope.place.seclon, f)
+				pickle.dump(self.horoscope.place.east, f)
+				pickle.dump(self.horoscope.place.deglat, f)
+				pickle.dump(self.horoscope.place.minlat, f)
+				pickle.dump(self.horoscope.place.seclat, f)
+				pickle.dump(self.horoscope.place.north, f)
+				pickle.dump(self.horoscope.place.altitude, f)
+				pickle.dump(self.horoscope.notes, f)
+				self.fpathhors = dpath
+				self.fpath = fpath
+#				self.handleCaption(True)
+				f.close()
+				self.dirty = False
+			except IOError:
+				dlgm = wx.MessageDialog(self, mtexts.txts['FileError'], mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+				dlgm.ShowModal()
+				dlgm.Destroy()#
+
+		dlg.Destroy()#
 
 	def OnShow(self, event):
 #		self.Close()
@@ -953,7 +1214,6 @@ class FindTimeDlg(wx.Dialog):
 
 		self.parent.showFindTime(self.bcckb.GetValue(), it, arplac)
 
-
 	def checkAsc(self):
 		res = True
 		if self.useascmcckb.GetValue():
@@ -965,40 +1225,40 @@ class FindTimeDlg(wx.Dialog):
 
 		return res
 
-
 	def onOK(self, event):
-		self.Close()
-		self.SetReturnCode(wx.ID_OK)
-
+		#self.Close()
+		#self.SetReturnCode(wx.ID_OK)
+		self.Destroy()
+		self = None
 
 	def fill(self):
-		self.saturndeg.SetValue(str(0))
-		self.saturnmin.SetValue(str(0))
-		self.saturnsec.SetValue(str(0))
-		self.jupiterdeg.SetValue(str(0))
-		self.jupitermin.SetValue(str(0))
-		self.jupitersec.SetValue(str(0))
-		self.marsdeg.SetValue(str(0))
-		self.marsmin.SetValue(str(0))
-		self.marssec.SetValue(str(0))
-		self.sundeg.SetValue(str(0))
-		self.sunmin.SetValue(str(0))
-		self.sunsec.SetValue(str(0))
-		self.venusdeg.SetValue(str(0))
-		self.venusmin.SetValue(str(0))
-		self.venussec.SetValue(str(0))
-		self.mercurydeg.SetValue(str(0))
-		self.mercurymin.SetValue(str(0))
-		self.mercurysec.SetValue(str(0))
-		self.moondeg.SetValue(str(0))
-		self.moonmin.SetValue(str(0))
-		self.moonsec.SetValue(str(0))
+		self.sundeg.SetValue(str(324))
+		self.sunmin.SetValue(str(3))
+		self.sunsec.SetValue(str(29))
+		self.moondeg.SetValue(str(267))
+		self.moonmin.SetValue(str(27))
+		self.moonsec.SetValue(str(4))
+		self.mercurydeg.SetValue(str(311))
+		self.mercurymin.SetValue(str(58))
+		self.mercurysec.SetValue(str(27))
+		self.venusdeg.SetValue(str(277))
+		self.venusmin.SetValue(str(37))
+		self.venussec.SetValue(str(45))
+		self.marsdeg.SetValue(str(317))
+		self.marsmin.SetValue(str(17))
+		self.marssec.SetValue(str(10))
+		self.jupiterdeg.SetValue(str(263))
+		self.jupitermin.SetValue(str(14))
+		self.jupitersec.SetValue(str(31))
+		self.saturndeg.SetValue(str(22))
+		self.saturnmin.SetValue(str(10))
+		self.saturnsec.SetValue(str(59))
 
-		self.ascdeg.SetValue(str(0))
+		self.ascdeg.SetValue(str(346))
 		self.ascmin.SetValue(str(0))
-		self.ascsec.SetValue(str(0))
-		self.mcdeg.SetValue(str(0))
-		self.mcmin.SetValue(str(0))
+		self.ascsec.SetValue(str(29))
+		self.mcdeg.SetValue(str(262))
+		self.mcmin.SetValue(str(38))
 		self.mcsec.SetValue(str(0))
 
 		self.fyear.SetValue(str(1))
@@ -1012,9 +1272,108 @@ class FindTimeDlg(wx.Dialog):
 		self.approxmin.SetValue(str(0))
 		self.approxsec.SetValue(str(0))
 
+	def subLoad(self, fpath, dpath, dontclose = False):
+		chrt = None
 
+		try:
+			f = open(fpath, 'rb')
+			name = pickle.load(f)
+			male = pickle.load(f)
+			htype = pickle.load(f)
+			bc = pickle.load(f)
+			year = pickle.load(f)
+			month = pickle.load(f)
+			day = pickle.load(f)
+			hour = pickle.load(f)
+			minute = pickle.load(f)
+			second = pickle.load(f)
+			cal = pickle.load(f)
+			zt = pickle.load(f)
+			plus = pickle.load(f)
+			zh = pickle.load(f)
+			zm = pickle.load(f)
+			daylightsaving = pickle.load(f)
+			place = pickle.load(f)
+			deglon = pickle.load(f)
+			minlon = pickle.load(f)
+			seclon = pickle.load(f)
+			east = pickle.load(f)
+			deglat = pickle.load(f)
+			minlat = pickle.load(f)
+			seclat = pickle.load(f)
+			north = pickle.load(f)
+			altitude = pickle.load(f)
+			notes = pickle.load(f)
+			# f.close()
 
+#			if (not self.splash) and (not dontclose):
+#				self.closeChildWnds()
+			opts = options.Options()
+			place = chart.Place(place, deglon, minlon, 0, east, deglat, minlat, seclat, north, altitude)
+			time = chart.Time(year, month, day, hour, minute, second, bc, cal, zt, plus, zh, zm, daylightsaving, place)
+			chrt = chart.Chart(name, male, time, place, htype, notes, opts)
+		except IOError:
+			dlgm = wx.MessageDialog(self, mtexts.txts['FileError'], mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+			dlgm.ShowModal()
+			dlgm.Destroy()#
 
+		return chrt
 
+	def calcPlace(self, gmt, gmst0, mclon, asclon, obl):
+		robl = math.radians(obl)
+		deltaGMST = gmt*1.00273790927949
+		gmstNat = util.normalizeTime(gmst0+deltaGMST)
 
+		ramc = 0.0
+		if mclon == 90.0:
+			ramc = 90.0
+		elif mclon == 270.0:
+			ramc = 270.0
+		else:
+			rmclon = math.radians(mclon)
+			X = math.degrees(math.atan(math.tan(rmclon)*math.cos(robl)))
+			if mclon >= 0.0 and mclon < 90.0:
+				ramc = X
+			elif mclon > 90.0 and mclon < 270.0:
+				ramc = X+180.0
+			elif mclon > 270.0 and mclon < 360.0:
+				ramc = X+360.0
 
+		lmstNat = ramc/15.0
+
+		lonInTime = gmstNat-lmstNat
+
+		if not (-12.0 <= lonInTime and lonInTime <= 12.0):
+			if lonInTime < -12.0:
+				lonInTime += 24.0
+			elif lonInTime > 12.0:
+				lonInTime -= 24.0
+
+		lon = 0.0
+		east = False
+		if lonInTime == 0.0:
+			lon = 0.0
+		elif 0.0 < lonInTime and lonInTime <= 12.0: #West
+			lon = lonInTime*15.0
+		elif -12.0 <= lonInTime and lonInTime < 0.0: #East
+			lon = lonInTime*15.0
+			east = True
+
+		#Lat
+		rasclon = math.radians(asclon)
+		rramc = math.radians(ramc)
+
+		lat = 30.0#
+		north = True
+		if math.sin(robl) != 0.0:
+			lat = math.degrees(math.atan(-(math.cos(rramc)*(1/math.tan(rasclon))+math.sin(rramc)*math.cos(robl))/math.sin(robl)))
+			if lat < 0.0:
+				north = False
+
+		lon = math.fabs(lon)
+		lat = math.fabs(lat)
+
+		ld, lm, ls = util.decToDeg(lon)
+		lad, lam, las = util.decToDeg(lat)
+
+		return chart.Place('Place', ld, lm, ls, east, lad, lam, las, north, 10)
