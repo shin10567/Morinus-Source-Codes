@@ -8,7 +8,7 @@ import wx, datetime
 import Image, ImageDraw, ImageFont
 import common, commonwnd
 import zodiacalreleasing as zr
-
+import mtexts
 # ───────────────────────────── ZR 메인 Wnd ─────────────────────────────
 class ZRWnd(commonwnd.CommonWnd):
     def __init__(self, parent, horoscope, options, mainfr, id=-1, size=wx.DefaultSize):
@@ -79,8 +79,8 @@ class ZRWnd(commonwnd.CommonWnd):
             import mtexts
             return [mtexts.txts['zodiac'][i] for i in range(12)]
         except:
-            return [u"Aries",u"Taurus",u"Gemini",u"Cancer",u"Leo",u"Virgo",
-                    u"Libra",u"Scorpio",u"Sagittarius",u"Capricorn",u"Aquarius",u"Pisces"]
+            return [[mtexts.txts["Aries"], mtexts.txts["Taurus"], mtexts.txts["Gemini"], mtexts.txts["Cancer"], mtexts.txts["Leo"], mtexts.txts["Virgo"],
+                          mtexts.txts["Libra"], mtexts.txts["Scorpio"], mtexts.txts["Sagittarius"], mtexts.txts["Capricornus"], mtexts.txts["Aquarius"], mtexts.txts["Pisces"]]]
 
     # 내부
     def _chart_dt(self):
@@ -110,7 +110,7 @@ class ZRWnd(commonwnd.CommonWnd):
         draw = ImageDraw.Draw(img)
 
         # [A] info (세로줄 없음): "Start sign: <기호>" → <기호> 클릭으로 팝업
-        label  = u"Start Sign:"
+        label  = mtexts.txts["StartSign"]
         glyph  = self.signs[self.start_sign_idx]  # ← antisciawnd와 같은 소스
         lw, lh = draw.textsize(label, self.fntText)
         gw, gh = draw.textsize(glyph, self.fntMor)
@@ -128,7 +128,7 @@ class ZRWnd(commonwnd.CommonWnd):
         head_y = BOR + self.INFO_H
         draw.rectangle(((BOR, head_y), (BOR+self.TITLE_W, head_y+self.HEAD_H)),
                        fill=bkg)
-        heads = (u"Lv.", u"Sign", u"Start", u"Length")
+        heads = (u"Lv.", mtexts.txts["Signs"], mtexts.txts["Start"], mtexts.txts["Length"])
         x = BOR
         for i,h in enumerate(heads):
             tw, th = draw.textsize(h, self.fntText)
@@ -200,8 +200,8 @@ class ZRWnd(commonwnd.CommonWnd):
         draw.rectangle(((BOR, BOR), (BOR+self.TITLE_W, BOR+self.TABLE_H)), outline=tbl)
 
         # wx 비트맵
-        wxImg = wx.EmptyImage(img.size[0], img.size[1]); wxImg.SetData(img.tobytes())
-        self.buffer = wx.BitmapFromImage(wxImg)
+        wxImg = wx.Image(img.size[0], img.size[1]); wxImg.SetData(img.tobytes())
+        self.buffer = wx.Bitmap(wxImg)
         self.Refresh()
 
     # ── 마우스 ──
@@ -212,7 +212,8 @@ class ZRWnd(commonwnd.CommonWnd):
             return (pt[0]+vx*px, pt[1]+vy*py)
 
     def _onLeftDown(self, evt):
-        ux, uy = self._calc_unscrolled(evt.GetPositionTuple())
+        #ux, uy = self._calc_unscrolled(evt.GetPositionTuple())
+        ux, uy = self._calc_unscrolled(tuple(evt.GetPosition()))
         # Start sign 클릭?
         if hasattr(self, "_bbox_start"):
             x1,y1,x2,y2 = self._bbox_start
@@ -236,11 +237,12 @@ class ZRWnd(commonwnd.CommonWnd):
 
         l2row = self.rows[row]
         dlg = ZRDrillDlg(self, l2row, self.signs, self.fntText, self.fntMor, mainfr=self.mainfr)
-        dlg.CentreOnScreen()
+        #dlg.CentreOnScreen()
         dlg.ShowModal(); dlg.Destroy()
 
     def _onMotion(self, evt):
-        ux, uy = self._calc_unscrolled(evt.GetPositionTuple())
+        #ux, uy = tuple(self._calc_unscrolled(evt.GetPositionTuple()))
+        ux, uy = tuple(self._calc_unscrolled(evt.GetPosition()))
         hand = False
         if hasattr(self, "_bbox_start"):
             x1,y1,x2,y2 = self._bbox_start
@@ -253,23 +255,24 @@ class ZRWnd(commonwnd.CommonWnd):
                 row = int((y - (self.INFO_H + self.HEAD_H)) // self.LINE_HEIGHT)
                 if 0 <= row < len(self.row_lv) and self.row_lv[row]==2:
                     hand = True
-        self.SetCursor(wx.StockCursor(wx.CURSOR_HAND) if hand else wx.NullCursor)
+
+        self.SetCursor(wx.Cursor(wx.CURSOR_HAND) if hand else wx.NullCursor)
         evt.Skip()
 
 # ───────────────────────────── Start 팝업 ─────────────────────────────
 class ZRStartDlg(wx.Dialog):
     def __init__(self, parent, sign_names):
-        wx.Dialog.__init__(self, parent, title=u"Start Sign")
+        wx.Dialog.__init__(self, parent, title= mtexts.txts["StartSign"])
         v = wx.BoxSizer(wx.VERTICAL)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        row.Add(wx.StaticText(self, -1, u"Start Sign:"), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8)
+        row.Add(wx.StaticText(self, -1, mtexts.txts["StartSign"]), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8)
         self.cmb = wx.ComboBox(self, -1, choices=sign_names, style=wx.CB_READONLY)
         self.cmb.SetSelection(0)
         row.Add(self.cmb, 0)
         v.Add(row, 0, wx.ALL, 10)
         btns = wx.StdDialogButtonSizer()
-        btns.AddButton(wx.Button(self, wx.ID_OK, u"Compute"))
-        btns.AddButton(wx.Button(self, wx.ID_CANCEL))
+        btns.AddButton(wx.Button(self, wx.ID_OK, mtexts.txts["Compute"]))
+        btns.AddButton(wx.Button(self, wx.ID_CANCEL, mtexts.txts["Cancel"])) 
         btns.Realize()
         v.Add(btns, 0, wx.ALIGN_RIGHT|wx.ALL, 10)
         self.SetSizerAndFit(v)
@@ -278,12 +281,11 @@ class ZRStartDlg(wx.Dialog):
         return int(self.cmb.GetSelection())
 
 # ───────────────────────────── L3/L4 팝업 ─────────────────────────────
-
 class ZRDrillDlg(wx.Dialog):
     """선택한 L2의 L3/L4 표를 그리는 팝업(저장 가능)."""
     def __init__(self, parent, l2row, signs, fntText, fntMor, mainfr):
-        wx.Dialog.__init__(self, parent, title=u"Zodiacal Releasing",
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, parent, title=mtexts.txts['ZodiacalReleasing'],
+                        style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 
         # 메인 패널(그림 렌더; CommonWnd 상속)
         self.panel = ZRDrillWnd(self, l2row, signs, fntText, fntMor, mainfr=mainfr)
@@ -296,6 +298,8 @@ class ZRDrillDlg(wx.Dialog):
         # 너가 요청한 작은 가로폭 + 리사이즈 가능/최소 크기
         self.SetInitialSize((400, 560))
         self.SetMinSize((200, 200))
+        pos = self.GetPosition()
+        self.SetPosition((pos[0] +300, pos[1]-75));
 
     def _onChar(self, evt):
         code = evt.GetKeyCode()
@@ -355,6 +359,8 @@ class ZRDrillWnd(commonwnd.CommonWnd):
         self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
         self.drawBkg()
+#        pos = self.GetPosition()
+#        self.SetPosition((pos[0] +300, pos[1]-75));
 
     def getExt(self):
         return u"ZR.bmp"
@@ -365,7 +371,8 @@ class ZRDrillWnd(commonwnd.CommonWnd):
             days_dec = float(td.days) + (td.seconds + getattr(td, 'microseconds', 0)/1e6) / 86400.0
             if days_dec < 0:
                 return u"-"
-            return u"%.2f Days" % (days_dec,)
+            unit = mtexts.txts['Day'] if abs(days_dec) == 1 else mtexts.txts['Days']
+            return u"%.2f %s" % (days_dec, unit)
         except:
             return u"-"
 
@@ -382,7 +389,7 @@ class ZRDrillWnd(commonwnd.CommonWnd):
         # 헤더
         head_y = BOR
         draw.rectangle(((BOR, head_y),(BOR+self.TITLE_W, head_y+self.HEAD_H)), outline=tbl, fill=bkg)
-        heads = (u"Lv.", u"Sign", u"Start", u"Length")
+        heads = (u"Lv.", mtexts.txts["Signs"], mtexts.txts["Start"], mtexts.txts["Length"])
         x = BOR
         for i,h in enumerate(heads):
             tw, th = draw.textsize(h, self.fntText)
@@ -441,6 +448,6 @@ class ZRDrillWnd(commonwnd.CommonWnd):
         # 외곽
         draw.rectangle(((BOR,BOR),(BOR+self.TITLE_W,BOR+self.TABLE_H)), outline=tbl)
 
-        wxImg = wx.EmptyImage(img.size[0], img.size[1]); wxImg.SetData(img.tobytes())
-        self.buffer = wx.BitmapFromImage(wxImg)
+        wxImg = wx.Image(img.size[0], img.size[1]); wxImg.SetData(img.tobytes())
+        self.buffer = wx.Bitmap(wxImg)
         self.Refresh()

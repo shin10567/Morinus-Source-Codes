@@ -14,7 +14,7 @@ class ZRFrame(wx.Frame):
         t = title
         if mtexts:
             try:
-                t = title.replace(mtexts.typeList[horoscope.htype], u"Zodiacal Releasing")
+                t = title.replace(mtexts.typeList[horoscope.htype], mtexts.txts["ZodiacalReleasing"])
             except:
                 t = u"Zodiacal Releasing"
         wx.Frame.__init__(self, parent, -1, t, wx.DefaultPosition, wx.Size(380, 480))
@@ -27,8 +27,8 @@ class ZRFrame(wx.Frame):
         if mtexts and 'zodiac' in mtexts.txts:
             sign_names = [mtexts.txts['zodiac'][i] for i in range(12)]
         else:
-            sign_names = [u"Aries", u"Taurus", u"Gemini", u"Cancer", u"Leo", u"Virgo",
-                          u"Libra", u"Scorpio", u"Sagittarius", u"Capricorn", u"Aquarius", u"Pisces"]
+            sign_names = [mtexts.txts["Aries"], mtexts.txts["Taurus"], mtexts.txts["Gemini"], mtexts.txts["Cancer"], mtexts.txts["Leo"], mtexts.txts["Virgo"],
+                          mtexts.txts["Libra"], mtexts.txts["Scorpio"], mtexts.txts["Sagittarius"], mtexts.txts["Capricornus"], mtexts.txts["Aquarius"], mtexts.txts["Pisces"]]
 
         dlg = ZRStartDlg(self, sign_names)
         dlg.CentreOnScreen()

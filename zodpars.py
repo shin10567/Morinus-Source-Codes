@@ -25,8 +25,3 @@ class ZodPars(zodparsbase.ZodParsBase):
 			if (p == astrology.SE_SUN) or (abs(pl.speculums[0][planets.Planet.LAT]) < 1e-8):
 				onEcl = True
 			self.pars.append(self.getEclPoints(pl.speculums[0][planets.Planet.LONG], pl.speculums[0][planets.Planet.DECL], onEcl))
-
-
-
-
-

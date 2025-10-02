@@ -14,10 +14,11 @@ Zodiacal releasing calculator (Python 2.7, wxClassic)
 """
 from __future__ import division
 import datetime
+import mtexts
 
 # 0..11 = Aries..Pisces
-SIGN_NAMES = [u'Aries', u'Taurus', u'Gemini', u'Cancer', u'Leo', u'Virgo',
-              u'Libra', u'Scorpio', u'Sagittarius', u'Capricorn', u'Aquarius', u'Pisces']
+SIGN_NAMES = [mtexts.txts['Aries'], mtexts.txts['Taurus'], mtexts.txts['Gemini'], mtexts.txts['Cancer'], mtexts.txts['Leo'], mtexts.txts['Virgo'],
+              mtexts.txts['Libra'], mtexts.txts['Scorpio'], mtexts.txts['Sagittarius'], mtexts.txts['Capricornus'], mtexts.txts['Aquarius'], mtexts.txts['Pisces']]
 
 WEIGHTS = [15, 8, 20, 25, 19, 20, 8, 15, 12, 27, 30, 12]
 
@@ -113,21 +114,24 @@ def build_drill(parent_row):
     return (l3, l4)
 
 def fmt_length(row):
-    """Short human-readable length for the UI."""
     td = row['end'] - row['start']
     secs = td.total_seconds()
     days = secs / 86400.0
+
     if row['level'] == 1:
         yrs = days / 365.0
-        return u'%.0f Years' % (yrs,)
+        unit = mtexts.txts['Year'] if abs(yrs) == 1 else mtexts.txts['Years']
+        return u'%.0f %s' % (yrs, unit)
+
     if row['level'] == 2:
-        # 30일 = 1달 기준으로, 전체 일수를 달+잔여 일로 분해
-        total_days = int(round(days))   # 소수 일은 반올림
+        total_days = int(round(days))
         months = total_days // 30
-        rem_days = total_days - months * 30
-        return u'%d Months' % (months,)
+        unit = mtexts.txts['Month'] if abs(months) == 1 else mtexts.txts['Months']
+        return u'%d %s' % (months, unit)
+
     if row['level'] in (3, 4):
-        return u"%.1f Days" % (days,)
+        unit = mtexts.txts['Day'] if abs(days) == 1 else mtexts.txts['Days']
+        return u"%.1f %s" % (days, unit)
 
 def fmt_date(dt):
     # strftime은 year<1900에서 ValueError를 내므로 수동 포맷

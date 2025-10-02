@@ -1,4 +1,4 @@
-## [8.5.4] Updated Version from 8.1.0 
+## [9.0.0] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -40,7 +40,7 @@
 - Settings: selections can be saved without requiring “Automatic Save”.
 - Updated several fixed star names.
 
-#### The settings are set to how I use them, so feel free to change anything to your liking.
+### The settings are set to how I use them, so feel free to change anything to your liking.
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -86,3 +86,20 @@
 #### 8.5.4
 - Updated Swiss Ephemeris data to DE431 (2023).
 - Primary Directions: Fixed an issue where switching the Node setting could shift other bodies’ direction dates.
+--------------------------------------------------------------------------------------------------------------------------
+### 9.0.0
+- Code updates (tested and working in this environment):
+	- Python: 3.7.9 (32-bit)
+	- OS: Windows 10 10.0.26100
+	- pip / setuptools: pip 21.3.1 / setuptools 59.8.0
+	- wxPython: 4.0.7.post2 (Phoenix), wxWidgets 3.0.5 / msw
+	- Pillow: 9.5.0
+	- NumPy: 1.21.6
+- Font update: Rolled back to the FreeSans font previously used by Morinus.
+- Multilingual support: English, Hungarian, Spanish, Italian, French, Russian, Chinese (Simplified), Chinese (Traditional), and Korean supported (fonts changed for Chinese and Korean).
+- UI additions: Added time and birth-time rectification controls at the top of Circumambulations and Angular Directions of Fixed Stars.
+- Bug fix: Resolved an issue where PDs in Chart was not displayed.
+- Bug fix (ayanamsa & nodes interaction): Fixed planetary positions changing when node options were modified after setting the ayanamsa.
+- Speculum: Added dodecatemoria notation.
+- English mtexts (menus): Corrected inconsistent phrasings.
+- Arabic Parts settings: Fixed a bug where the Active flag applied only to the first item.

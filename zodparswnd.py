@@ -47,14 +47,14 @@ class ZodParsWnd(commonwnd.CommonWnd):
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+self.LINE_NUM*(self.LINE_HEIGHT))
 		self.TABLE_WIDTH = (self.SMALL_CELL_WIDTH+self.COLUMN_NUM*(self.CELL_WIDTH))
 	
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)
-		self.fntSymbol = ImageFont.truetype(common.common.symbols, 3*self.FONT_SIZE/2)
-		self.fntText = ImageFont.truetype(common.common.abc, self.FONT_SIZE)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+		self.fntSymbol = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/2))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
 		self.signs = common.common.Signs1
 		if not self.options.signs:
 			self.signs = common.common.Signs2
@@ -118,9 +118,9 @@ class ZodParsWnd(commonwnd.CommonWnd):
 			self.drawline(draw, x, y+ii*self.LINE_HEIGHT, i, txts, self.pars[i].pts, tableclr)
 			ii += 1
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawline(self, draw, x, y, idx, txt, data, clr):
@@ -192,7 +192,7 @@ class ZodParsWnd(commonwnd.CommonWnd):
 				lona = util.normalize(lona)
 				d,m,s = util.decToDeg(lona)
 
-			sign = d/chart.Chart.SIGN_DEG
+			sign = int(d/chart.Chart.SIGN_DEG)
 			pos = d%chart.Chart.SIGN_DEG
 			wsp,hsp = draw.textsize(' ', self.fntText)
 			wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)
@@ -203,7 +203,3 @@ class ZodParsWnd(commonwnd.CommonWnd):
 			draw.text((x+self.SMALL_CELL_WIDTH+summa+offset+w+wsp, y+(self.LINE_HEIGHT-hsg)/2), self.signs[sign], fill=clr, font=self.fntMorinus)
 
 			summa += offs[i]
-
-
-
-

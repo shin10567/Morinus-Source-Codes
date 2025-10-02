@@ -61,6 +61,3 @@ class ZodParsBase:
 				return Points(True, ((lon1, PARALLEL), (lon2, CONTRAPARALLEL), (lon3, PARALLEL), (lon4, CONTRAPARALLEL)))
 
 		return Points(False, ((-1.0, PARALLEL), (-1.0, PARALLEL), (-1.0, PARALLEL), (-1.0, PARALLEL)))
-
-
-

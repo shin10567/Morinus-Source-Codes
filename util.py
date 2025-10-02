@@ -277,7 +277,8 @@ def subtractHour(y, m, d, h):
 
 def checkDate(year, month, day):
 	try:	
-		datetime.datetime(year, month, day, 0, 0, 0)
+#		datetime.datetime(year, month, day, 0, 0, 0)
+		datetime.datetime(int(year), int(month), int(day), 0, 0, 0)
 
 	except ValueError:
 		return False
