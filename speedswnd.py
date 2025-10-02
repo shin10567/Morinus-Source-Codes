@@ -36,7 +36,7 @@ def _mean_abs_lon_speed_wflags(ipl, jd_ut, pflag, days=DYN_MEAN_DAYS, step=DYN_M
 	for k in range(n):
 		j = jd_ut - half + k*step
 		# swe_calc_ut returns (rflag, (lon,lat,dist,lonspd,latspd,distspd), serr)
-		rf, res, serr = astrology.swe_calc_ut(j, ipl, pflag)
+		serr, res  = astrology.swe_calc_ut(j, ipl, pflag)
 		vals.append(abs(res[3]))
 	if not vals:
 		return 0.0
@@ -121,8 +121,8 @@ class SpeedsWnd(commonwnd.CommonWnd):
 		self.TABLE_WIDTH = (self.SMALL_CELL_WIDTH+self.COLUMN_NUM*(self.CELL_WIDTH))
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM*(self.LINE_HEIGHT)))
 	
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
@@ -178,9 +178,9 @@ class SpeedsWnd(commonwnd.CommonWnd):
 			self.drawline(draw, x, y+ii*self.LINE_HEIGHT, tableclr, i)
 			ii += 1
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawline(self, draw, x, y, clr, idx):
@@ -220,7 +220,7 @@ class SpeedsWnd(commonwnd.CommonWnd):
 					ipl = _idx_to_ipl(idx, self.options)
 					jd_ut = self.chart.time.jd
 					pflag = _build_pflag_for_speeds(self.options)
-				        mu = _mean_abs_lon_speed_wflags(ipl, jd_ut, pflag)  # days=300, step=5 (함수 기본값)
+					mu = _mean_abs_lon_speed_wflags(ipl, jd_ut, pflag)  # days=300, step=5 (함수 기본값)
 					pct = (abs(cur)/mu*100.0) if mu > 0.0 else 0.0
 					txt = u"{:.0f}%".format(pct)
 					w,h = draw.textsize(txt, self.fntText)
@@ -239,8 +239,3 @@ class SpeedsWnd(commonwnd.CommonWnd):
 					draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=tclr, font=self.fntText)
 
 			summa += offs[i]
-
-
-
-
-

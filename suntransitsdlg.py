@@ -20,15 +20,15 @@ class SunTransitsDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, mtexts.txts['SunTransits'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre = wx.PreDialog()
+#		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#		pre.Create(parent, -1, mtexts.txts['SunTransits'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
-
+#		self.PostCreate(pre)
+		wx.Dialog.__init__(self, None, -1, mtexts.txts['SunTransits'], size=wx.DefaultSize)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 		#main horizontal sizer
@@ -74,7 +74,7 @@ class SunTransitsDlg(wx.Dialog):
 		label = wx.StaticText(self, -1, mtexts.txts['StartingDate'])
 		vsubsizer = wx.BoxSizer(wx.VERTICAL)
 		vsubsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
-		fgsizer = wx.FlexGridSizer(2, 3)
+		fgsizer = wx.FlexGridSizer(2, 3,9,24)
 		label = wx.StaticText(self, -1, mtexts.txts['Year']+':')
 		vsizer = wx.BoxSizer(wx.VERTICAL)
 		vsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)

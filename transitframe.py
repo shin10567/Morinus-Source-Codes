@@ -12,11 +12,11 @@ import regiomontanpd
 import campanianpd
 import primdirsrevlistframe
 import wx.lib.newevent
-import thread
+import _thread
 import mtexts
 
 (PDReadyEvent, EVT_PDREADY) = wx.lib.newevent.NewEvent()
-pdlock = thread.allocate_lock()
+pdlock = _thread.allocate_lock()
 
 
 class TransitFrame(wx.Frame):
@@ -56,7 +56,7 @@ class TransitFrame(wx.Frame):
 		self.positionsmenu = self.selmenu.Append(self.ID_Positions, mtexts.txts['Positions'], '', wx.ITEM_RADIO)
 		self.squaremenu = self.selmenu.Append(self.ID_Square, mtexts.txts['Square'], '', wx.ITEM_RADIO)
 
-		self.pmenu.AppendMenu(self.ID_Selection, mtexts.txts['Windows'], self.selmenu)
+		self.pmenu.Append(self.ID_Selection, mtexts.txts['Windows'], self.selmenu)
 
 		if self.chart.htype == chart.Chart.SOLAR or self.chart.htype == chart.Chart.LUNAR:
 			self.pdselmenu = wx.Menu()
@@ -65,13 +65,13 @@ class TransitFrame(wx.Frame):
 			self.pdbothmenu = self.pdselmenu.Append(self.ID_PDBoth, mtexts.txts['Both'], '')
 			self.pdtoradix = self.pdselmenu.Append(self.ID_PDToRadix, mtexts.txts['PDToRadix'], '', wx.ITEM_CHECK)
 			self.pdtoradix.Enable(False)
-			self.pmenu.AppendMenu(self.ID_PrimaryDirections, mtexts.txts['PrimaryDirs'], self.pdselmenu)
+			self.pmenu.Append(self.ID_PrimaryDirections, mtexts.txts['PrimaryDirs'], self.pdselmenu)
 
 		self.pmenu.Append(self.ID_SaveAsBitmap, mtexts.txts['SaveAsBmp'], mtexts.txts['SaveChart'])
 		self.mbw = self.pmenu.Append(self.ID_BlackAndWhite, mtexts.txts['BlackAndWhite'], mtexts.txts['ChartBW'], wx.ITEM_CHECK)
 		
 		self.SetMinSize((200,200))
-
+		self.SetPosition((130, 130));
 		self.Bind(wx.EVT_RIGHT_UP, self.onPopupMenu)
 
 		self.Bind(wx.EVT_MENU, self.onChart, id=self.ID_Chart)
@@ -98,6 +98,7 @@ class TransitFrame(wx.Frame):
 			self.compoundmenu.Check()
 
 		self.Bind(EVT_PDREADY, self.OnPDReady)
+		self.Bind(wx.EVT_CLOSE, self.OnClose)
 
 
 	def onPopupMenu(self, event):
@@ -180,7 +181,7 @@ class TransitFrame(wx.Frame):
 		self.pds = None
 		self.pdready = False
 		self.abort = primdirs.AbortPD()
-		thId = thread.start_new_thread(self.calcPDs, (pdrange, direction, self))
+		thId = _thread.start_new_thread(self.calcPDs, (pdrange, direction, self))
 
 		self.timer = wx.Timer(self)
 		self.Bind(wx.EVT_TIMER, self.OnTimer)
@@ -228,7 +229,7 @@ class TransitFrame(wx.Frame):
 
 				pdw.Show(True)
 			else:
- 				dlgm = wx.MessageDialog(self, mtexts.txts['NoPDsWithSettings'], mtexts.txts['Information'], wx.OK|wx.ICON_INFORMATION)
+				dlgm = wx.MessageDialog(self, mtexts.txts['NoPDsWithSettings'], mtexts.txts['Information'], wx.OK|wx.ICON_INFORMATION)
 				dlgm.ShowModal()
 				dlgm.Destroy()#
 
@@ -236,12 +237,25 @@ class TransitFrame(wx.Frame):
 			del self.pds
 
 		del self.abort
-
-
-
-
-
-
-
-
-
+	def OnClose(self, evt):
+		try:
+			if hasattr(self, "abort") and self.abort:
+				self.abort.aborting()
+		except Exception:
+			pass
+		try:
+			if hasattr(self, "timer") and self.timer:
+				self.timer.Stop()
+				del self.timer
+		except Exception:
+			pass
+		try:
+			if hasattr(self, "progbar") and self.progbar:
+				self.progbar.Destroy()
+				del self.progbar
+		except Exception:
+			pass
+		try:
+			self.Destroy()
+		finally:
+			evt.Skip()

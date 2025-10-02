@@ -28,15 +28,15 @@ class TimeSpaceDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, title, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre = wx.PreDialog()
+#		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#		pre.Create(parent, -1, title, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
-
+#		self.PostCreate(pre)
+		wx.Dialog.__init__(self, None, -1, title, size=wx.DefaultSize)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 		#main horizontal sizer
@@ -53,7 +53,7 @@ class TimeSpaceDlg(wx.Dialog):
 		self.timeckb = wx.CheckBox(self, -1, mtexts.txts['BC'])
 		vsizer.Add(self.timeckb, 0, wx.ALIGN_LEFT|wx.LEFT|wx.RIGHT|wx.TOP, 5)
 
-		fgsizer = wx.FlexGridSizer(2, 3)
+		fgsizer = wx.FlexGridSizer(2, 3,9,24)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
 		self.yearlabel = wx.StaticText(self, -1, mtexts.txts['Year']+':')
 		vvsizer.Add(self.yearlabel, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
@@ -117,7 +117,7 @@ class TimeSpaceDlg(wx.Dialog):
 		vvsubsizer.Add(timesizer, 0, wx.GROW|wx.ALIGN_LEFT|wx.RIGHT, 5)###
 
 		#Place
-		fgsizer = wx.FlexGridSizer(2, 4)
+		fgsizer = wx.FlexGridSizer(2, 4,9,24)
 		vsizer = wx.BoxSizer(wx.VERTICAL)
 
 		self.splace =wx.StaticBox(self, label='')
@@ -207,7 +207,7 @@ class TimeSpaceDlg(wx.Dialog):
 		self.pluscb = wx.ComboBox(self, -1, TimeSpaceDlg.PLUSCHOICES[0], size=(50, -1), choices=TimeSpaceDlg.PLUSCHOICES, style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		hhsizer.Add(self.pluscb, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		zonesizer.Add(hhsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-		fgsizer = wx.FlexGridSizer(1, 2)
+		fgsizer = wx.FlexGridSizer(1, 2,9,24)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
 		self.zhourlabel = wx.StaticText(self, -1, mtexts.txts['Hour']+':')
 		vvsizer.Add(self.zhourlabel, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)

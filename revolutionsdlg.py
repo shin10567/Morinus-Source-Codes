@@ -27,7 +27,7 @@ class RevolutionYearStepper(wx.Dialog):
     set_year(int) -> None : 연도 설정 및 재계산 콜백
     """
     def __init__(self, parent, get_year_cb, set_year_cb):
-        wx.Dialog.__init__(self, parent, -1, "Revolution Year",
+        wx.Dialog.__init__(self, parent, -1, mtexts.txts["Revolution"]+ " "+mtexts.txts["Year"],
                         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         # (선택) parent가 TopLevel이면 효과: 부모 위에만 뜸
         try:
@@ -38,11 +38,11 @@ class RevolutionYearStepper(wx.Dialog):
         self.get_year = get_year_cb
         self.set_year = set_year_cb
 
-        self.lbl = wx.StaticText(self, -1, "Year: %s" % (self.get_year(),))
+        self.lbl = wx.StaticText(self, -1, (mtexts.txts["Year"]+": %s") % (self.get_year(),))
         # 버튼 세로 높이 키우기: 최소 높이 36px
-        self.btn_prev = wx.Button(self, -1, "-1 Year")
+        self.btn_prev = wx.Button(self, -1, "-1 "+mtexts.txts["Year"])
         self.btn_prev.SetMinSize((-1, 45))
-        self.btn_next = wx.Button(self, -1, "+1 Year")
+        self.btn_next = wx.Button(self, -1, "+1 "+mtexts.txts["Year"])
         self.btn_next.SetMinSize((-1, 45))
 
         # 라벨 폰트 약간 키우기(선택)
@@ -75,7 +75,7 @@ class RevolutionYearStepper(wx.Dialog):
         self.SetAcceleratorTable(accel)
 
     def _refresh(self):
-        self.lbl.SetLabel("Year: %s" % (self.get_year(),))
+        self.lbl.SetLabel( (mtexts.txts["Year"]+": %s") % (self.get_year(),))
         self.Layout()
         self.Fit()
 
@@ -95,7 +95,7 @@ class RevolutionMonthStepper(wx.Dialog):
     set_ym_cb(year:int, month:int) -> None
     """
     def __init__(self, parent, get_ym_cb, set_ym_cb):
-        wx.Dialog.__init__(self, parent, -1, "Revolution Month",
+        wx.Dialog.__init__(self, parent, -1, mtexts.txts["Revolution"]+ " "+mtexts.txts["Month"],
                            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         try:
             self.SetWindowStyleFlag(self.GetWindowStyleFlag() | wx.FRAME_FLOAT_ON_PARENT)
@@ -108,16 +108,16 @@ class RevolutionMonthStepper(wx.Dialog):
 
         # 라벨 2줄 (가운데 정렬)
         y, m = self.get_ym()
-        self.lbl_year  = wx.StaticText(self, -1, "Year: %s"   % y)
-        self.lbl_month = wx.StaticText(self, -1, "Month: %02d" % m)
+        self.lbl_year  = wx.StaticText(self, -1, (mtexts.txts["Year"]+": %s")   % y)
+        self.lbl_month = wx.StaticText(self, -1, (mtexts.txts["Month"]+": %02d") % m)
 
         vlabel = wx.BoxSizer(wx.VERTICAL)
         vlabel.Add(self.lbl_year,  0, wx.ALIGN_CENTER | wx.BOTTOM, 2)
         vlabel.Add(self.lbl_month, 0, wx.ALIGN_CENTER | wx.TOP,    2)
 
         # 버튼(+가 왼쪽, 두툼)
-        self.btn_next = wx.Button(self, -1, "+1 Month"); self.btn_next.SetMinSize((-1, 45))
-        self.btn_prev = wx.Button(self, -1, "-1 Month"); self.btn_prev.SetMinSize((-1, 45))
+        self.btn_next = wx.Button(self, -1, "+1 "+mtexts.txts["Month"]); self.btn_next.SetMinSize((-1, 45))
+        self.btn_prev = wx.Button(self, -1, "-1 "+mtexts.txts["Month"]); self.btn_prev.SetMinSize((-1, 45))
 
         row = wx.BoxSizer(wx.HORIZONTAL)
         row.Add(self.btn_next, 0, wx.ALL, 8)  # +가 왼쪽
@@ -139,8 +139,8 @@ class RevolutionMonthStepper(wx.Dialog):
 
     def _refresh_labels(self):
         y, m = self.get_ym()
-        self.lbl_year.SetLabel("Year: %s"   % y)
-        self.lbl_month.SetLabel("Month: %02d" % m)
+        self.lbl_year.SetLabel((mtexts.txts["Year"]+": %s")   % y)
+        self.lbl_month.SetLabel((mtexts.txts["Month"]+": %02d") % m)
         self.Layout()
         self.Fit()
 
@@ -166,14 +166,15 @@ class RevolutionsDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-        pre = wx.PreDialog()
-        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-        pre.Create(parent, -1, mtexts.txts['Revolutions'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#        pre = wx.PreDialog()
+#        pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#        pre.Create(parent, -1, mtexts.txts['Revolutions'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-        self.PostCreate(pre)
+#        self.PostCreate(pre)
+        wx.Dialog.__init__(self, None, -1, mtexts.txts['Revolutions'], size=wx.DefaultSize)
         # 팝업이 뜨기 '직전'의 top window를 기억해 둔다(대개 리턴 차트 프레임).
         self._prev_top = wx.GetActiveWindow()
         if not isinstance(self._prev_top, wx.TopLevelWindow) or self._prev_top is self:
@@ -201,7 +202,7 @@ class RevolutionsDlg(wx.Dialog):
         label = wx.StaticText(self, -1, mtexts.txts['StartingDate'])
         vsubsizer = wx.BoxSizer(wx.VERTICAL)
         vsubsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
-        fgsizer = wx.FlexGridSizer(2, 3)
+        fgsizer = wx.FlexGridSizer(2, 3,9,24)
         label = wx.StaticText(self, -1, mtexts.txts['Year']+':')
         vsizer = wx.BoxSizer(wx.VERTICAL)
         vsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
@@ -355,10 +356,3 @@ class RevolutionsDlg(wx.Dialog):
         self.year.SetValue(str(year))
         self.month.SetValue(str(month))
         self.day.SetValue(str(day))
-
-
-
-
-
-
-

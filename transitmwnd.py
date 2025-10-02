@@ -49,17 +49,17 @@ class TransitMonthWnd(commonwnd.CommonWnd):
 		self.SPACE_TITLEY = 0
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM)*(self.LINE_HEIGHT))
 		self.TABLE_WIDTH = self.TITLE_WIDTH
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
-		self.RETRYOFFS = 2*self.FONT_SIZE/5
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.RETRYOFFS = int(2*self.FONT_SIZE/5)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)
-		self.fntAspects = ImageFont.truetype(common.common.symbols, 3*self.FONT_SIZE/4)
-		self.fntSigns = ImageFont.truetype(common.common.symbols, 3*self.FONT_SIZE/4)
-		self.fntText = ImageFont.truetype(common.common.abc, self.FONT_SIZE)
-		self.fntRText = ImageFont.truetype(common.common.abc, self.FONT_SIZE*3/4)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+		self.fntAspects = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/4))
+		self.fntSigns = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/4))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
+		self.fntRText = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE*3/4))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)
 		self.signs = common.common.Signs1
 		if not self.options.signs:
@@ -128,9 +128,9 @@ class TransitMonthWnd(commonwnd.CommonWnd):
 			self.drawline(draw, x, y+j*self.LINE_HEIGHT, tableclr, i)
 			j += 1
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawline(self, draw, x, y, clr, idx):
@@ -312,11 +312,3 @@ class TransitMonthWnd(commonwnd.CommonWnd):
 				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
 			summa += offs[i]
-
-
-
-
-
-
-
-

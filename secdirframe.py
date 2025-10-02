@@ -7,7 +7,7 @@ import wx
 import astrology
 import chart
 import wx.grid as gridlib
-import swisseph as swe
+import sweastrology as swe
 import planets as pl
 import util
 import math
@@ -80,7 +80,7 @@ def _decl_from_ecl(lon_deg, lat_deg, jd_ut):
     return dec_deg
 
 def _fmt_deg(x):
-    sign = u'+' if x >= 0 else u'−'
+    sign = u'+' if x >= 0 else u'-'
     ax = abs(x)
     d = int(ax)
     m = int((ax - d) * 60)
@@ -99,7 +99,7 @@ def _fmt_lon(x):
 
 def _fmt_lat(x):
     txt, sign = _fmt_deg(x)
-    return (u'+' if sign=='+' else u'−') + txt  # include sign explicitly
+    return (u'+' if sign=='+' else u'-') + txt  # include sign explicitly
 
 def _dodecatemoria(lon_deg):
     # 12th-part: sign*30 + (lon%30)*12, wrap 360
@@ -111,7 +111,7 @@ def _dodecatemoria(lon_deg):
 def _decl_txt(lon_deg, lat_deg, jd_ut):
     dec = _decl_from_ecl(lon_deg, lat_deg, jd_ut)
     txt, sign = _fmt_deg(dec)
-    return (u'+' if dec >= 0 else u'−') + txt
+    return (u'+' if dec >= 0 else u'-') + txt
 
 NAIBOD_YEAR_DAYS = 365.2422
 
@@ -137,16 +137,18 @@ class SecDirFrame(transitframe.TransitFrame):
             if not self.GetStatusBar():
                 self.CreateStatusBar(2)
                 self.SetStatusWidths([-1, -1])
-            self.SetStatusText("Age: %d" % age_years_int, 0)
-            self.SetStatusText("Real date: %04d.%02d.%02d" % (y, m, d), 1)
+            self.SetStatusText("%s: %d" % (mtexts.txts['Age'], age_years_int), 0)
+            self.SetStatusText("%s: %04d.%02d.%02d" % (mtexts.txts['Real'], y, m, d), 1)
         except Exception:
             pass
 
 
         base = self.GetTitle()
-        tag  = " | Age: %d | Real: %04d.%02d.%02d" % (age_years_int, y, m, d)
-        if " | Age:" in base:
-            base = base.split(" | Age:")[0]
+        tag = " | %s: %d | %s: %04d.%02d.%02d" % (mtexts.txts['Age'], age_years_int, mtexts.txts['Real'], y, m, d)
+        marker = " | " + mtexts.txts['Age'] + ":"
+        if marker in base:
+            base = base.split(marker)[0]
+
         self.SetTitle(base + tag)
 
     def __init__(self, parent, title, chrt, radix, options):
@@ -171,20 +173,20 @@ class SecProgPosWnd(commonwnd.CommonWnd):
     - Ecliptic: 360° 값을 "dd°mm' <사인기호>"로 변환하여 중앙정렬(숫자=f_text, 기호=f_sym로 분리 렌더)
     - 나머지 칸은 텍스트 폰트로 중앙정렬
     """
-    COLS = (u"Planet", u"Longitude", u"Latitude", u"Dodecatemorion", u"Declination")
+    COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Latitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Declination"])
 
     ROWS = [
-        (u"Saturn",      astrology.SE_SATURN),
-        (u"Jupiter",     astrology.SE_JUPITER),
-        (u"Mars",        astrology.SE_MARS),
-        (u"Sun",         astrology.SE_SUN),
-        (u"Venus",       astrology.SE_VENUS),
-        (u"Mercury",     astrology.SE_MERCURY),
-        (u"Moon",        astrology.SE_MOON),
-        (u"Uranus",      astrology.SE_URANUS),
-        (u"Neptune",     astrology.SE_NEPTUNE),
-        (u"Pluto",       astrology.SE_PLUTO),
-        (u"North Node",  getattr(astrology, "SE_TRUE_NODE", astrology.SE_MEAN_NODE)),
+        ("Saturn",      astrology.SE_SATURN),
+        ("Jupiter",     astrology.SE_JUPITER),
+        ("Mars",        astrology.SE_MARS),
+        ("Sun",         astrology.SE_SUN),
+        ("Venus",       astrology.SE_VENUS),
+        ("Mercury",     astrology.SE_MERCURY),
+        ("Moon",        astrology.SE_MOON),
+        ("Uranus",      astrology.SE_URANUS),
+        ("Neptune",     astrology.SE_NEPTUNE),
+        ("Pluto",       astrology.SE_PLUTO),
+        ("NorthNode",  getattr(astrology, "SE_TRUE_NODE", astrology.SE_MEAN_NODE)),
     ]
 
     def __init__(self, parent, prg_chart, options, mainfr, id=-1, size=wx.DefaultSize):
@@ -270,7 +272,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
             ecl_sign = self.signs[si]
 
             # Latitude(+/−dd°mm′ss″)
-            sign = u'+' if lat >= 0 else u'−'
+            sign = u'+' if lat >= 0 else u'-'
             ld, lm, ls = util.decToDeg(abs(lat))
             lat_txt = u"%s%02d°%02d′%02d″" % (sign, ld, lm, ls)
 
@@ -291,7 +293,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
                 lam = math.radians(lon); bet = math.radians(lat)
                 sin_dec = math.sin(bet)*math.cos(er) + math.cos(bet)*math.sin(er)*math.sin(lam)
                 dec_deg = math.degrees(math.asin(max(-1.0, min(1.0, sin_dec))))
-            sgn = u'+' if dec_deg >= 0 else u'−'
+            sgn = u'+' if dec_deg >= 0 else u'-'
             ddg, dmm, dss = util.decToDeg(abs(dec_deg))
             dec_txt = u"%s%02d°%02d′%02d″" % (sgn, ddg, dmm, dss)
 
@@ -311,7 +313,8 @@ class SecProgPosWnd(commonwnd.CommonWnd):
         head_y = BOR
         draw.rectangle(((BOR, head_y), (BOR + self.TITLE_W, head_y + self.HEAD_H)), fill=bkg)
         x = BOR
-        for i, h in enumerate(self.COLS):
+        COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Latitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Declination"])
+        for i, h in enumerate(COLS):
             tw, th = draw.textsize(h, self.f_text)
             draw.text((x + (self.COL_W[i]-tw)/2, head_y + (self.HEAD_H-th)/2), h, fill=txt, font=self.f_text)
             x += self.COL_W[i]
@@ -396,8 +399,8 @@ class SecProgPosWnd(commonwnd.CommonWnd):
         draw.rectangle(((BOR,BOR),(BOR + self.TITLE_W, BOR + self.TABLE_H)), outline=tbl)
 
         # wx 비트맵으로 보내기
-        wxImg = wx.EmptyImage(self.WIDTH, self.HEIGHT); wxImg.SetData(img.tobytes())
-        self.buffer = wx.BitmapFromImage(wxImg)
+        wxImg = wx.Image(self.WIDTH, self.HEIGHT); wxImg.SetData(img.tobytes())
+        self.buffer = wx.Bitmap(wxImg)
         self.Refresh()
 
     # 데이터 갱신용(필요 시 호출)
@@ -443,7 +446,8 @@ class SecProgPosFrame(wx.Frame):
         self.peer_dialog = None
         self.Bind(wx.EVT_CLOSE, self._on_close)  # ← 표 X 누르면 다이얼로그도 닫기
         self.Show()
-
+        pos = self.GetPosition()
+        self.SetPosition((pos[0] +330, pos[1]+40));
     # 외부에서 차트 바뀔 때 호출
     def change_chart(self, prg_chart):
         self.horoscope = prg_chart

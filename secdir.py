@@ -81,9 +81,3 @@ class SecDir:
 #			print '%d:%02d:%02d' % (hour,minute,second)
 
 		return y, m, d, hour, minute, second
-
-
-
-
-
-

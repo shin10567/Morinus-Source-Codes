@@ -39,8 +39,8 @@ class StripWnd(commonwnd.CommonWnd):
 		self.TABLE_HEIGHT = (self.LONGTIC+self.DEG_OFFS+self.FONT_SIZE+self.YOFFS)
 		self.TABLE_WIDTH = chart.Chart.SIGN_DEG*self.TICSTEP
 	
-		self.WIDTH = (BOR+self.TABLE_WIDTH+BOR)
-		self.HEIGHT = (BOR+self.TABLE_HEIGHT+BOR)
+		self.WIDTH = int(BOR+self.TABLE_WIDTH+BOR)
+		self.HEIGHT = int(BOR+self.TABLE_HEIGHT+BOR)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
@@ -159,9 +159,9 @@ class StripWnd(commonwnd.CommonWnd):
 			draw.text((x+pos-w/2+bshift[i], y), txt, fill=clr, font=fnt)
 			draw.line((x+pos, y+self.YOFFS, x+pos+bshift[i], y+self.FONT_SIZE+self.YPLANETS_OFFS), fill=clr)
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def arrange(self):
@@ -360,5 +360,3 @@ class StripWnd(commonwnd.CommonWnd):
 
 	def overlap(self, x1, w1, x2, w2):
 		return (x1 <= x2 and x2 <= x1+w1+self.BSPACE) or (x2 <= x1 and x1 <= x2+w2+self.BSPACE)
-
-

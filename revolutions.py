@@ -168,6 +168,3 @@ class Revolutions:
         self.t[3] = h
         self.t[4] = m
         self.t[5] = s
-
-
-

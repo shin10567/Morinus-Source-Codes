@@ -22,7 +22,7 @@ class SecMotion:
 		if not direct and arc > 0.0:
 			arc *= -1
 
- 		flag = astrology.SEFLG_SWIEPH+astrology.SEFLG_SPEED
+		flag = astrology.SEFLG_SWIEPH+astrology.SEFLG_SPEED
 		if topo:
 			flag += astrology.SEFLG_TOPOCTR
 

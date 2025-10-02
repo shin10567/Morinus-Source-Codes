@@ -378,11 +378,11 @@ class Transits:
 		for tr in ls:
 			d, m, s = util.decToDeg(tr.time)
 			if tr.objtype == Transit.PLANET:
-				print 'day %d: %s %s %s house:%d %d:%02d:%02d' % (tr.day, planets[tr.plt], asps[tr.aspect], planets[tr.obj], tr.house+1, d, m, s)
+				print ('day %d: %s %s %s house:%d %d:%02d:%02d' % (tr.day, planets[tr.plt], asps[tr.aspect], planets[tr.obj], tr.house+1, d, m, s))
 			elif tr.objtype == Transit.ASCMC:
-				print 'day %d: %s %s %s house:%d %d:%02d:%02d' % (tr.day, planets[tr.plt], asps[tr.aspect], ascmc[tr.obj], tr.house+1, d, m, s)
+				print ('day %d: %s %s %s house:%d %d:%02d:%02d' % (tr.day, planets[tr.plt], asps[tr.aspect], ascmc[tr.obj], tr.house+1, d, m, s))
 			else:
-				print 'day %d: %s %s house:%d %d:%02d:%02d' % (tr.day, planets[tr.plt], signs[tr.obj], tr.house+1, d, m, s)
+				print ('day %d: %s %s house:%d %d:%02d:%02d' % (tr.day, planets[tr.plt], signs[tr.obj], tr.house+1, d, m, s))
 	
 	
 	

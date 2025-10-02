@@ -21,15 +21,15 @@ class TransitMonthDlg(wx.Dialog):
         # so we can set an extra style that must be set before
         # creation, and then we create the GUI object using the Create
         # method.
-		pre = wx.PreDialog()
-		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
-		pre.Create(parent, -1, mtexts.txts['Transit'].capitalize(), pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+#		pre = wx.PreDialog()
+#		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+#		pre.Create(parent, -1, mtexts.txts['Transit'].capitalize(), pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
         # This next step is the most important, it turns this Python
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
-		self.PostCreate(pre)
-
+#		self.PostCreate(pre)
+		wx.Dialog.__init__(self, None, -1, mtexts.txts['Transit'], size=wx.DefaultSize)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -41,7 +41,7 @@ class TransitMonthDlg(wx.Dialog):
 		self.stime =wx.StaticBox(self, label='')
 		timesizer = wx.StaticBoxSizer(self.stime, wx.VERTICAL)
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		fgsizer = wx.FlexGridSizer(1, 2)
+		fgsizer = wx.FlexGridSizer(1, 2,9,24)
 		label = wx.StaticText(self, -1, mtexts.txts['Year']+':')
 		vsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.year = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, rnge), size=(50,-1))

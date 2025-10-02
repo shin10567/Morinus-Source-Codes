@@ -16,7 +16,7 @@ class SymbolsDlg(wx.Dialog):
 		#Uranus
 		bmpuranus = [None, None]
 		for i in range(len(common.common.Uranus)):
-			bmpuranus[i] = wx.EmptyBitmap(SIZE, SIZE)
+			bmpuranus[i] = wx.Bitmap(SIZE, SIZE)
 			bdc = wx.BufferedDC(None, bmpuranus[i])
 			bdc.SetBackground(wx.Brush(bkg))
 			bdc.Clear()
@@ -25,14 +25,14 @@ class SymbolsDlg(wx.Dialog):
 			img.frombytes(wxImag.GetData())
 			draw = ImageDraw.Draw(img)
 			draw.text((DIFF/2, DIFF/2), common.common.Uranus[i], fill=(0,0,0), font=fntMorinus)
-			wxImg = wx.EmptyImage(img.size[0], img.size[1])
+			wxImg = wx.Image(img.size[0], img.size[1])
 			wxImg.SetData(img.tobytes())
-			bmpuranus[i] = wx.BitmapFromImage(wxImg)
+			bmpuranus[i] = wx.Bitmap(wxImg)
 
 		#Pluto
 		bmppluto = [None, None, None, None]
 		for i in range(len(common.common.Pluto)):
-			bmppluto[i] = wx.EmptyBitmap(SIZE, SIZE)
+			bmppluto[i] = wx.Bitmap(SIZE, SIZE)
 			bdc = wx.BufferedDC(None, bmppluto[i])
 			bdc.SetBackground(wx.Brush(bkg))
 			bdc.Clear()
@@ -41,9 +41,9 @@ class SymbolsDlg(wx.Dialog):
 			img.frombytes(wxImag.GetData())
 			draw = ImageDraw.Draw(img)
 			draw.text((DIFF/2, DIFF/2), common.common.Pluto[i], fill=(0,0,0), font=fntMorinus)
-			wxImg = wx.EmptyImage(img.size[0], img.size[1])
+			wxImg = wx.Image(img.size[0], img.size[1])
 			wxImg.SetData(img.tobytes())
-			bmppluto[i] = wx.BitmapFromImage(wxImg)
+			bmppluto[i] = wx.Bitmap(wxImg)
 
 		#Signs
 		#Docs say that on Win9X StaticBitmaps can't be bigger than 64*64
@@ -51,7 +51,7 @@ class SymbolsDlg(wx.Dialog):
 		bmpsigns = [[None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None]]
 		for i in range(len(txt)):
 			for j in range(len(txt[i])):
-				bmpsigns[i][j] = wx.EmptyBitmap(SIZE, SIZE)
+				bmpsigns[i][j] = wx.Bitmap(SIZE, SIZE)
 				bdc = wx.BufferedDC(None, bmpsigns[i][j])
 				bdc.SetBackground(wx.Brush(bkg))
 				bdc.Clear()
@@ -60,9 +60,9 @@ class SymbolsDlg(wx.Dialog):
 				img.frombytes(wxImag.GetData())
 				draw = ImageDraw.Draw(img)
 				draw.text((DIFF/2, DIFF/2), txt[i][j], fill=(0,0,0), font=fntMorinus)
-				wxImg = wx.EmptyImage(img.size[0], img.size[1])
+				wxImg = wx.Image(img.size[0], img.size[1])
 				wxImg.SetData(img.tobytes())
-				bmpsigns[i][j] = wx.BitmapFromImage(wxImg)
+				bmpsigns[i][j] = wx.Bitmap(wxImg)
 
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
@@ -71,7 +71,7 @@ class SymbolsDlg(wx.Dialog):
 
 		suranus = wx.StaticBox(self, label='')
 		uranussizer = wx.StaticBoxSizer(suranus, wx.VERTICAL)
-		fgsizer = wx.FlexGridSizer(2, 2)
+		fgsizer = wx.FlexGridSizer(2, 2,9,24)
 		self.uranus1 = wx.RadioButton(self, -1, "", style=wx.RB_GROUP)
 		fgsizer.Add(self.uranus1, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 		sbmpuranus1 = wx.StaticBitmap(self, -1, bmpuranus[0])
@@ -87,7 +87,7 @@ class SymbolsDlg(wx.Dialog):
 
 		spluto = wx.StaticBox(self, label='')
 		plutosizer = wx.StaticBoxSizer(spluto, wx.VERTICAL)
-		fgsizer = wx.FlexGridSizer(4, 2)
+		fgsizer = wx.FlexGridSizer(4, 2,9,24)
 		self.pluto1 = wx.RadioButton(self, -1, "", style=wx.RB_GROUP)
 		fgsizer.Add(self.pluto1, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 		sbmppluto1 = wx.StaticBitmap(self, -1, bmppluto[0])
@@ -112,11 +112,11 @@ class SymbolsDlg(wx.Dialog):
 
 		ssigns = wx.StaticBox(self, label='')
 		signssizer = wx.StaticBoxSizer(ssigns, wx.VERTICAL)
-		fgsizer = wx.FlexGridSizer(2, 2)
+		fgsizer = wx.FlexGridSizer(2, 2,9,24)
 		self.signs1 = wx.RadioButton(self, -1, "", style=wx.RB_GROUP)
 		fgsizer.Add(self.signs1, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
-		subfgsizer = wx.FlexGridSizer(3, 4)
+		subfgsizer = wx.FlexGridSizer(3, 4,9,24)
 		for i in range(len(txt[0])):
 			bmp = wx.StaticBitmap(self, -1, bmpsigns[0][i])
 			subfgsizer.Add(bmp, 0, wx.ALIGN_LEFT)
@@ -126,7 +126,7 @@ class SymbolsDlg(wx.Dialog):
 		self.signs2 = wx.RadioButton(self, -1, "")
 		fgsizer.Add(self.signs2, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
-		subfgsizer = wx.FlexGridSizer(3, 4)
+		subfgsizer = wx.FlexGridSizer(3, 4,9,24)
 		for i in range(len(txt[1])):
 			bmp = wx.StaticBitmap(self, -1, bmpsigns[1][i])
 			subfgsizer.Add(bmp, 0, wx.ALIGN_LEFT)

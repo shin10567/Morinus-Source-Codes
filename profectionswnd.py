@@ -55,8 +55,8 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 		self.TABLE_WIDTH = ((self.COLUMN_NUM-1)*(self.BIG_CELL_WIDTH)+self.CELL_WIDTH)
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM*(self.LINE_HEIGHT)))
 	
-		self.WIDTH = (commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
-		self.HEIGHT = (commonwnd.CommonWnd.BORDER+2*self.LINE_HEIGHT+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
+		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH+commonwnd.CommonWnd.BORDER)
+		self.HEIGHT = int(commonwnd.CommonWnd.BORDER+2*self.LINE_HEIGHT+self.TABLE_HEIGHT+commonwnd.CommonWnd.BORDER)
 
 		self.SetVirtualSize((self.WIDTH, self.HEIGHT))
 
@@ -158,9 +158,9 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 		for i in range(self.LINE_NUM):
 			self.drawline(draw, x, y+i*self.LINE_HEIGHT, tableclr, self.pcharts[i], self.age, i)
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 
 	def drawline(self, draw, x, y, clr, pcharts, age, idx):
@@ -205,7 +205,7 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 					lon -= self.chart.ayanamsha
 					lon = util.normalize(lon)
 				d,m,s = util.decToDeg(lon)
-				sign = d/chart.Chart.SIGN_DEG
+				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
 				wsp,hsp = draw.textsize(' ', self.fntText)
 				wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)
@@ -216,8 +216,3 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 				draw.text((x+summa+offset+w+wsp, y+(self.LINE_HEIGHT-hsg)/2), self.signs[sign], fill=tclr, font=self.fntMorinus)
 
 			summa += offs[i]
-
-
-
-
-

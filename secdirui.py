@@ -1,6 +1,7 @@
 
 # -*- coding: utf-8 -*-
 import wx
+import mtexts
 
 class SecDirDialog(wx.Dialog):
     """
@@ -14,38 +15,38 @@ class SecDirDialog(wx.Dialog):
         set_calendar(is_julian: bool)  # no-op, for compatibility
     """
     def __init__(self, parent, on_calculate, on_step_year=None):
-        wx.Dialog.__init__(self, parent, title=u"Secondary Progressions",
+        wx.Dialog.__init__(self, parent, title=mtexts.txts["SecondaryProgressions"],
                            style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         self.on_calculate = on_calculate
         self.on_step_year = on_step_year
 
         # Title
-        title = wx.StaticText(self, wx.ID_ANY, u"Positions for Date")
+        title = wx.StaticText(self, wx.ID_ANY, mtexts.txts["PositionForDate"])
         f = title.GetFont(); f.SetPointSize(f.GetPointSize()+2); f.SetWeight(wx.FONTWEIGHT_BOLD); title.SetFont(f)
 
         # Labels
-        self.lbl_age  = wx.StaticText(self, wx.ID_ANY, u"Age: 0")
-        self.lbl_prog = wx.StaticText(self, wx.ID_ANY, u"Progressed: ----.--.--")
+        self.lbl_age  = wx.StaticText(self, wx.ID_ANY, mtexts.txts["Age"]+": 0")
+        self.lbl_prog = wx.StaticText(self, wx.ID_ANY, mtexts.txts["Progressed"]+": ----.--.--")
 
         # Date inputs
         grid = wx.FlexGridSizer(2, 6, 6, 6)   # ← 빠진 생성줄 복구(중요)
 
         # (Growable 열 제거: 입력칸이 가로로 퍼지지 않게)
-        grid.Add(wx.StaticText(self, wx.ID_ANY, u"Year:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Year"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.year = wx.SpinCtrl(self, wx.ID_ANY, min=-5000, max=5000, initial=2000); self.year.SetMinSize((60, -1))
         grid.Add(self.year, 0, 0)
 
-        grid.Add(wx.StaticText(self, wx.ID_ANY, u"Month:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Month"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.month = wx.SpinCtrl(self, wx.ID_ANY, min=1, max=12, initial=1); self.month.SetMinSize((48, -1))
         grid.Add(self.month, 0, 0)
 
-        grid.Add(wx.StaticText(self, wx.ID_ANY, u"Day:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Days"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.day = wx.SpinCtrl(self, wx.ID_ANY, min=1, max=31, initial=1); self.day.SetMinSize((48, -1))
         grid.Add(self.day, 0, 0)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)
-        self.btn_calc = wx.Button(self, wx.ID_ANY, u"Calculate")
-        btn_close     = wx.Button(self, wx.ID_CLOSE, u"Close")
+        self.btn_calc = wx.Button(self, wx.ID_ANY, mtexts.txts["Calculate"])
+        btn_close     = wx.Button(self, wx.ID_CLOSE, mtexts.txts["Close"])
         btns.AddStretchSpacer(1)
         btns.Add(self.btn_calc, 0, 0, 0)
         btns.Add(btn_close, 0, wx.LEFT, 8)
@@ -77,7 +78,7 @@ class SecDirDialog(wx.Dialog):
            progressed_tuple: (Y,M,D) progressed astrologic date to display (optional)
         """
         try:
-            self.lbl_age.SetLabel(u"Age: %d" % int(age_int))
+            self.lbl_age.SetLabel(mtexts.txts["Age"]+": %d" % int(age_int))
         except Exception:
             pass
         try:
@@ -91,7 +92,7 @@ class SecDirDialog(wx.Dialog):
         try:
             if progressed_tuple and len(progressed_tuple) == 3:
                 py, pm, pd = [int(x) for x in progressed_tuple]
-                self.lbl_prog.SetLabel(u"Progressed: %04d.%02d.%02d" % (py, pm, pd))
+                self.lbl_prog.SetLabel(mtexts.txts["Progressed"]+": %04d.%02d.%02d" % (py, pm, pd))
         except Exception:
             pass
 

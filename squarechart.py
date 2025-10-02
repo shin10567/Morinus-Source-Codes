@@ -21,7 +21,7 @@ class SquareChart:
 		self.options = opts
 		self.w, self.h = size
 		self.bw = bw
-		self.buffer = wx.EmptyBitmap(self.w, self.h)
+		self.buffer = wx.Bitmap(self.w, self.h)
 		self.bdc = wx.BufferedDC(None, self.buffer)
 		self.chartsize = min(self.w, self.h)
 		self.maxradius = self.chartsize/2
@@ -30,11 +30,11 @@ class SquareChart:
 		self.symbolSize = self.maxradius/16
 		self.smallSize = self.maxradius/18
 		self.fontSize = self.symbolSize
-		self.fntMorinus = ImageFont.truetype(common.common.symbols, self.symbolSize)
-		self.fntMorinusSmall = ImageFont.truetype(common.common.symbols, self.smallSize)
-		self.fntText = ImageFont.truetype(common.common.abc, self.fontSize)
-		self.fntTextSmall = ImageFont.truetype(common.common.abc, 3*self.fontSize/4)
-		self.fntTextSmaller = ImageFont.truetype(common.common.abc, self.fontSize/2)
+		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.symbolSize))
+		self.fntMorinusSmall = ImageFont.truetype(common.common.symbols, int(self.smallSize))
+		self.fntText = ImageFont.truetype(common.common.abc, int(self.fontSize))
+		self.fntTextSmall = ImageFont.truetype(common.common.abc, int(3*self.fontSize/4))
+		self.fntTextSmaller = ImageFont.truetype(common.common.abc, int(self.fontSize/2))
 		self.signs = common.common.Signs1
 		if not self.options.signs:
 			self.signs = common.common.Signs2
@@ -62,7 +62,7 @@ class SquareChart:
 		self.bdc.SetBackground(wx.Brush(bkgclr))
 		self.bdc.SetBrush(wx.Brush(bkgclr))
 		self.bdc.Clear()
-		self.bdc.BeginDrawing()
+#		self.bdc.BeginDrawing()
 
 		(cx, cy) = self.center.Get()
 
@@ -135,7 +135,7 @@ class SquareChart:
 		w = h = radius+1
 		self.bdc.DrawRectangle(x, y, w, h)
 
-		self.bdc.EndDrawing()
+		#self.bdc.EndDrawing()
 
 		wxImag = self.buffer.ConvertToImage()
 		img = Image.new('RGB', (wxImag.GetWidth(), wxImag.GetHeight()))
@@ -206,7 +206,7 @@ class SquareChart:
 
 			d,m,s = util.decToDeg(lon)
 
-			sign = d/chart.Chart.SIGN_DEG
+			sign = int(d/chart.Chart.SIGN_DEG)
 			pos = d%chart.Chart.SIGN_DEG
 
 			txt = (str(pos)).rjust(2)+self.deg_symbol
@@ -272,7 +272,7 @@ class SquareChart:
 							t = 'S'
 						draw.text((x+wpl2, y+lhoffs[i]+self.fontSize/2), t, fill=clrpl, font=self.fntTextSmaller)
 
-				sign = d/chart.Chart.SIGN_DEG
+				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
 
 				txtdeg = (str(pos)).zfill(2)+self.deg_symbol
@@ -286,9 +286,9 @@ class SquareChart:
 
 				lhoffs[i] += lh
 
-		wxImg = wx.EmptyImage(img.size[0], img.size[1])
+		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
-		self.buffer = wx.BitmapFromImage(wxImg)
+		self.buffer = wx.Bitmap(wxImg)
 
 		return self.buffer
 
@@ -335,8 +335,3 @@ class SquareChart:
 			mixed.reverse()
 
 		return tuple(inhouse), tuple(mixed)
-		
-
-
-
-
