@@ -103,5 +103,5 @@
 - Speculum: Added dodecatemoria notation.
 - English mtexts (menus): Corrected inconsistent phrasings.
 - Arabic Parts settings: Fixed a bug where the Active flag applied only to the first item.
-### 9.0.1
+#### 9.0.1
 - Bugfix: solar revolution not displayed with Ayanamsha enabled.
