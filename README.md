@@ -1,4 +1,4 @@
-## [9.0.0] Updated Version from 8.1.0 
+## [9.0.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
