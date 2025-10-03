@@ -27,29 +27,31 @@ class TriplicitiesDlg(wx.Dialog):
 		tripssizer = wx.StaticBoxSizer(strips, wx.VERTICAL)
 		num = len(self.trips)
 		subnum = len(self.trips[0])
-		gsizer = wx.FlexGridSizer(num+1, 2, 0, 0)
-		#Caption
-		label = wx.StaticText(self, -1, '')
-		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-		hsizercap = wx.BoxSizer(wx.HORIZONTAL)
+		gsizer = wx.FlexGridSizer(0, 4, 0, 0)
+
+		# Caption row: [blank] [Primary] [Secondary] [Particip.]
+		blank = wx.StaticText(self, -1, "")
+		gsizer.Add(blank, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5)
+
 		for i in range(subnum):
-			label = wx.StaticText(self, -1, mtexts.triptypes[i])
-			hsizercap.Add(label, 0, wx.ALIGN_LEFT|wx.ALL, 22)
-		gsizer.Add(hsizercap, 0, wx.ALIGN_LEFT|wx.TOP, 2)
+			cap = wx.StaticText(self, -1, mtexts.triptypes[i])
+			gsizer.Add(cap, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5)
 
 		for i in range(num):
-			label = wx.StaticText(self, -1, mtexts.triplicities[i]+':')
-			gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-			hsizer = wx.BoxSizer(wx.HORIZONTAL)
-			for j in range(subnum):
-				chstxt = mtexts.pls
-				if j == 2:
-					chstxt = mtexts.pls3
-				self.trips[i][j] = wx.ComboBox(self, -1, chstxt[self.tripsval[options.seltrip][i][j]], size=(90, -1), choices=chstxt, style=wx.CB_DROPDOWN|wx.CB_READONLY)
-				self.trips[i][j].SetSelection(self.tripsval[options.seltrip][i][j])
-				hsizer.Add(self.trips[i][j], 0, wx.ALIGN_LEFT|wx.ALL, 5)
+			row_label = wx.StaticText(self, -1, mtexts.triplicities[i]+':')
+			gsizer.Add(row_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
-			gsizer.Add(hsizer, 0, wx.ALIGN_LEFT|wx.TOP, 2)
+			for j in range(subnum):
+				chstxt = mtexts.pls if j != 2 else mtexts.pls3
+				self.trips[i][j] = wx.ComboBox(
+					self, -1,
+					chstxt[self.tripsval[options.seltrip][i][j]],
+					size=(90, -1), choices=chstxt,
+					style=wx.CB_DROPDOWN|wx.CB_READONLY
+				)
+				self.trips[i][j].SetSelection(self.tripsval[options.seltrip][i][j])
+				gsizer.Add(self.trips[i][j], 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5)
+
 
 		tripssizer.Add(gsizer, 0, wx.ALIGN_LEFT|wx.TOP, 2)
 

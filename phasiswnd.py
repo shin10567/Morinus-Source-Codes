@@ -9,6 +9,7 @@ import mtexts
 from phasiscalc import (PLANET_IDS, PLANET_NAMES, visibility_flags_around,
                         is_outer)
 import mtexts
+import chart  # ← 추가
 # 라벨 매핑을 '지연 평가'로 바꾼다
 def get_PHASE_LABELS():
     return {
@@ -225,7 +226,10 @@ class PhasisWnd(commonwnd.CommonWnd):
 
         # 참조 기준일 (정오/자정 보정 없이 달력 날짜만 사용)
         jd0 = self.chart.time.jd
-        calflag = _get_cal_flag(self.chart, self.options, jd0)
+        # 차트 설정을 그대로 따른다 (GREGORIAN ↔ JULIAN)
+        calflag = (astrology.SE_GREG_CAL
+                if getattr(self.chart.time, 'cal', chart.Time.GREGORIAN) == chart.Time.GREGORIAN
+                else astrology.SE_JUL_CAL)
         y0, m0, d0, _ = astrology.swe_revjul(jd0, calflag)
 
         # 라벨 우선순위 (가까운 날짜가 1순위, 동률 시 이 순으로 선택)

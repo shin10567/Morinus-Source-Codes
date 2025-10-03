@@ -1,4 +1,4 @@
-## [9.0.1] Updated Version from 8.1.0 
+## [9.0.2] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -100,8 +100,11 @@
 - UI additions: Added time and birth-time rectification controls at the top of Circumambulations and Angular Directions of Fixed Stars.
 - Bug fix: Resolved an issue where PDs in Chart was not displayed.
 - Bug fix (Ayanamsha & nodes interaction): Fixed planetary positions changing when node options were modified after setting the Ayanamsha.
-- Speculum: Added dodecatemoria notation.
+- Speculum: Added Dodecatemoria notation.
 - English mtexts (menus): Corrected inconsistent phrasings.
 - Arabic Parts settings: Fixed a bug where the Active flag applied only to the first item.
 #### 9.0.1
 - Bugfix: solar revolution not displayed with Ayanamsha enabled.
+#### 9.0.2
+- Bugfix: Heliacal Risings/Setting calender bug fix.
+- Triplicity option header fix
