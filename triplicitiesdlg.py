@@ -34,7 +34,7 @@ class TriplicitiesDlg(wx.Dialog):
 		hsizercap = wx.BoxSizer(wx.HORIZONTAL)
 		for i in range(subnum):
 			label = wx.StaticText(self, -1, mtexts.triptypes[i])
-			hsizercap.Add(label, 0, wx.ALIGN_LEFT|wx.ALL, 25)
+			hsizercap.Add(label, 0, wx.ALIGN_LEFT|wx.ALL, 22)
 		gsizer.Add(hsizercap, 0, wx.ALIGN_LEFT|wx.TOP, 2)
 
 		for i in range(num):
