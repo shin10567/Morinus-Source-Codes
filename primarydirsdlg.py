@@ -267,12 +267,23 @@ class PrimDirsDlg(wx.Dialog):
 		fgsizer.Add(vsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vsizer = wx.BoxSizer(wx.VERTICAL)
+
 		label = wx.StaticText(self, -1, mtexts.txts['Significators'])
 		vsizer.Add(label, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
-		self.sigascckb = wx.CheckBox(self, -1, mtexts.txts['Asc'])
+
+		# Asc / Dsc / MC / IC (각각 개별 토글)
+		self.sigascckb  = wx.CheckBox(self, -1, mtexts.txts['Asc'])
 		vsizer.Add(self.sigascckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
-		self.sigmcckb  = wx.CheckBox(self, -1, mtexts.txts['MC'])
+
+		self.sigdascckb = wx.CheckBox(self, -1, mtexts.txts['Dsc'])
+		vsizer.Add(self.sigdascckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
+
+		self.sigmcckb   = wx.CheckBox(self, -1, mtexts.txts['MC'])
 		vsizer.Add(self.sigmcckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
+
+		self.sigicckb   = wx.CheckBox(self, -1, mtexts.txts['IC'])
+		vsizer.Add(self.sigicckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
+
 		self.sighousecuspsckb = wx.CheckBox(self, -1, mtexts.txts['HouseCusps'])
 		vsizer.Add(self.sighousecuspsckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
 
@@ -595,7 +606,7 @@ class PrimDirsDlg(wx.Dialog):
 
 
 	def onSignificatorsDes(self, event):
-		ckbs = [self.sigascckb, self.sigmcckb]
+		ckbs = [self.sigascckb, self.sigdascckb, self.sigmcckb, self.sigicckb]
 		for i in range(len(ckbs)):
 			ckbs[i].SetValue(False)
 
@@ -607,7 +618,7 @@ class PrimDirsDlg(wx.Dialog):
 
 
 	def onSignificatorsSel(self, event):
-		ckbs = [self.sigascckb, self.sigmcckb]
+		ckbs = [self.sigascckb, self.sigdascckb, self.sigmcckb, self.sigicckb]
 		for i in range(len(ckbs)):
 			ckbs[i].SetValue(True)
 
@@ -665,10 +676,11 @@ class PrimDirsDlg(wx.Dialog):
 		self.secmotionckb.SetValue(options.pdsecmotion)
 		self.secmotionitercb.SetStringSelection(mtexts.smiterList[options.pdsecmotioniter])
 
-		#Significators
-		ckbs = [self.sigascckb, self.sigmcckb]
-		for i in range(len(ckbs)):
-			ckbs[i].SetValue(options.sigascmc[i])
+		# Significators (Asc, Dsc, MC, IC)
+		ckbs = [self.sigascckb, self.sigdascckb, self.sigmcckb, self.sigicckb]
+		vals = getattr(options, 'sigangles', [True, True, True, True])  # 안전 가드
+		for i in range(4):
+			ckbs[i].SetValue(vals[i])
 
 		self.sighousecuspsckb.SetValue(options.sighouses)
 
@@ -837,11 +849,20 @@ class PrimDirsDlg(wx.Dialog):
 			options.ascmchcsasproms = self.ascmchcsaqspromsckb.GetValue()
 			changed = True
 
-		ckbs = [self.sigascckb, self.sigmcckb]
-		for i in range(len(ckbs)):
-			if ckbs[i].GetValue() != options.sigascmc[i]:
-				options.sigascmc[i] = ckbs[i].GetValue()
+		# 4개 각도 저장(Asc, Dsc, MC, IC)
+		ckbs = [self.sigascckb, self.sigdascckb, self.sigmcckb, self.sigicckb]
+		for i in range(4):
+			if ckbs[i].GetValue() != options.sigangles[i]:
+				options.sigangles[i] = ckbs[i].GetValue()
 				changed = True
+
+		# 구옵션(sigascmc)도 동기화(역호환: Asc/Dsc 묶음, MC/IC 묶음)
+		asc_group = options.sigangles[0] or options.sigangles[1]
+		mc_group  = options.sigangles[2] or options.sigangles[3]
+		if [asc_group, mc_group] != options.sigascmc:
+			options.sigascmc = [asc_group, mc_group]
+			changed = True
+
 
 		if self.sighousecuspsckb.GetValue() != options.sighouses:
 			options.sighouses = self.sighousecuspsckb.GetValue()

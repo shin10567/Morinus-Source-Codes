@@ -530,22 +530,23 @@ class PrimDirs:
 			return
 
 		#MC
-		if self.options.sigascmc[1]:
+		if self.options.sigangles[2]:
 			if idp == astrology.SE_MOON and self.options.pdsecmotion:
 				for itera in range(self.options.pdsecmotioniter+1):
 					ra, adlat = self.calcSM(idp, ra-self.ramc)
 
 			self.create(True, idp, PrimDir.NONE, PrimDir.MC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ra-self.ramc)
 
-			# to IC
+		# IC
+		if self.options.sigangles[3]:
 			if idp == astrology.SE_MOON and self.options.pdsecmotion:
 				for itera in range(self.options.pdsecmotioniter+1):
 					ra, adlat = self.calcSM(idp, ra-self.raic)
 
 			self.create(True, idp, PrimDir.NONE, PrimDir.IC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ra-self.raic)
 
-		#Asc
-		if self.options.sigascmc[0]:
+		# Asc
+		if self.options.sigangles[0]:
 			ao = ra-adlat
 			if idp == astrology.SE_MOON and self.options.pdsecmotion:
 				for itera in range(self.options.pdsecmotioniter+1):
@@ -553,7 +554,8 @@ class PrimDirs:
 					ao = ra-adlat
 			self.create(True, idp, PrimDir.NONE, PrimDir.ASC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ao-self.aoasc)
 
-			# to DESC
+		# Dsc
+		if self.options.sigangles[1]:
 			do = ra+adlat
 			if idp == astrology.SE_MOON and self.options.pdsecmotion:
 				for itera in range(self.options.pdsecmotioniter+1):
@@ -576,19 +578,19 @@ class PrimDirs:
 			else:
 				advalid = False
 
-		#MC
-		if self.options.sigascmc[1]:
+		# MC
+		if self.options.sigangles[2]:
 			self.create(mundane, PrimDir.CUSTOMERPD, PrimDir.NONE, PrimDir.MC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, rapl-self.ramc)
-
-			# to IC
+		# IC
+		if self.options.sigangles[3]:
 			self.create(mundane, PrimDir.CUSTOMERPD, PrimDir.NONE, PrimDir.IC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, rapl-self.raic)
 
-		#Asc
-		if self.options.sigascmc[0] and advalid:
+		# Asc
+		if self.options.sigangles[0] and advalid:
 			ao = rapl-adlat
 			self.create(mundane, PrimDir.CUSTOMERPD, PrimDir.NONE, PrimDir.ASC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ao-self.aoasc)
-
-			# to DESC
+		# Dsc
+		if self.options.sigangles[1] and advalid:
 			do = rapl+adlat
 			self.create(mundane, PrimDir.CUSTOMERPD, PrimDir.NONE, PrimDir.DESC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, do-self.dodesc)
 
@@ -620,26 +622,29 @@ class PrimDirs:
 			decllof = self.chart.fortune.fortune[fortune.Fortune.DECL]
 			val = math.tan(math.radians(self.chart.place.lat))*math.tan(math.radians(decllof))
 
-			#MC
-			if self.options.sigascmc[1]:
+			# MC
+			if self.options.sigangles[2]:
 				self.create(False, PrimDir.LOF, PrimDir.NONE, PrimDir.MC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ralof-self.ramc)
-				#IC
+			# IC
+			if self.options.sigangles[3]:
 				self.create(False, PrimDir.LOF, PrimDir.NONE, PrimDir.IC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ralof-self.raic)
+
 
 			if math.fabs(val) <= 1.0:
 				adlat = math.degrees(math.asin(val))
 
-				#Asc
-				if self.options.sigascmc[0]:
+				# Asc
+				if self.options.sigangles[0]:
 					aolof = ralof-adlat
 					self.create(False, PrimDir.LOF, PrimDir.NONE, PrimDir.ASC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, aolof-self.aoasc)
-					#Desc
+				# Dsc
+				if self.options.sigangles[1]:
 					dolof = ralof+adlat
 					self.create(False, PrimDir.LOF, PrimDir.NONE, PrimDir.DESC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, dolof-self.dodesc)
 
 		#Terms
 		if self.options.pdterms:
-			if self.options.sigascmc[0] or self.options.sigascmc[1]:
+			if any(self.options.sigangles):
 				num = len(self.options.terms[0])
 				subnum = len(self.options.terms[0][0])
 				for i in range(num):
@@ -656,17 +661,19 @@ class PrimDirs:
 						if math.fabs(val) > 1.0:
 							continue
 						adlat = math.degrees(math.asin(val))
-						#MC
-						if self.options.sigascmc[1]:
+						# MC
+						if self.options.sigangles[2]:
 							self.create(False, PrimDir.TERM+i, self.options.terms[self.options.selterm][i][j][0], PrimDir.MC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, raterm-self.ramc)
-							#IC
+						# IC
+						if self.options.sigangles[3]:
 							self.create(False, PrimDir.TERM+i, self.options.terms[self.options.selterm][i][j][0], PrimDir.IC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, raterm-self.raic)
 
-						#Asc
-						if self.options.sigascmc[0]:
+						# Asc
+						if self.options.sigangles[0]:
 							aoterm = raterm-adlat
 							self.create(False, PrimDir.TERM+i, self.options.terms[self.options.selterm][i][j][0], PrimDir.ASC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, aoterm-self.aoasc)
-							#Desc
+						# Dsc
+						if self.options.sigangles[1]:
 							doterm = raterm+adlat
 							self.create(False, PrimDir.TERM+i, self.options.terms[self.options.selterm][i][j][0], PrimDir.DESC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, doterm-self.dodesc)
 
@@ -752,17 +759,19 @@ class PrimDirs:
 
 
 	def toZodAscMCSub(self, i, ra, adlat):
-		#MC
-		if self.options.sigascmc[1]:
+		# MC
+		if self.options.sigangles[2]:
 			self.create(False, i, PrimDir.NONE, PrimDir.MC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ra-self.ramc)
-			#IC
+		# IC
+		if self.options.sigangles[3]:
 			self.create(False, i, PrimDir.NONE, PrimDir.IC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ra-self.raic)
 
-		#Asc
-		if self.options.sigascmc[0]:
+		# Asc
+		if self.options.sigangles[0]:
 			ao = ra-adlat
 			self.create(False, i, PrimDir.NONE, PrimDir.ASC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, ao-self.aoasc)
-			#Desc
+		# Dsc
+		if self.options.sigangles[1]:
 			do = ra+adlat
 			self.create(False, i, PrimDir.NONE, PrimDir.DESC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, do-self.dodesc)
 
@@ -830,52 +839,52 @@ class PrimDirs:
 						continue
 					adlat = math.degrees(math.asin(val))
 
-				#MC
+				# MC / IC
 				rapl2=rapl
 				adlat2=adlat
-				if self.options.sigascmc[1]:
+
+				# MC
+				if self.options.sigangles[2]:
 					ok = True
 					if i == astrology.SE_MOON and ioffs == 0 and self.options.pdsecmotion:
 						for itera in range(self.options.pdsecmotioniter+1):
 							ok, rapl, adlat = self.calcZodSM(i, j, aspectus, rapl-self.ramc)
-					
 					if ok:
 						self.create(False, i+ioffs, PrimDir.NONE, PrimDir.MC, j, chart.Chart.CONJUNCTIO, rapl-self.ramc)
-					#IC
-					if (not self.options.pdaspects[chart.Chart.OPPOSITIO] or not self.options.zodpromsigasps[PrimDirs.ASPSPROMSTOSIGS]) and j == chart.Chart.CONJUNCTIO:
-						ok = True
-						if i == astrology.SE_MOON and ioffs == 0 and self.options.pdsecmotion:
-							for itera in range(self.options.pdsecmotioniter+1):
-								ok, rapl, adlat = self.calcZodSM(i, j, aspectus, rapl-self.raic)
 
-						if ok:
-							self.create(False, i+ioffs, PrimDir.NONE, PrimDir.IC, j, chart.Chart.CONJUNCTIO, rapl-self.raic)
+				# IC
+				rapl=rapl2; adlat=adlat2
+				if self.options.sigangles[3]:
+					ok = True
+					if i == astrology.SE_MOON and ioffs == 0 and self.options.pdsecmotion:
+						for itera in range(self.options.pdsecmotioniter+1):
+							ok, rapl, adlat = self.calcZodSM(i, j, aspectus, rapl-self.raic)
+					if ok:
+						self.create(False, i+ioffs, PrimDir.NONE, PrimDir.IC, j, chart.Chart.CONJUNCTIO, rapl-self.raic)
 
-				#Asc
-				rapl=rapl2
-				adlat=adlat2
-				if self.options.sigascmc[0]:
+				# Asc
+				rapl=rapl2; adlat=adlat2
+				if self.options.sigangles[0]:
 					aopl = rapl-adlat
 					ok = True
 					if i == astrology.SE_MOON and ioffs == 0 and self.options.pdsecmotion:
 						for itera in range(self.options.pdsecmotioniter+1):
 							ok, rapl, adlat = self.calcZodSM(i, j, aspectus, aopl-self.aoasc)
 							aopl = rapl-adlat
-
 					if ok:
 						self.create(False, i+ioffs, PrimDir.NONE, PrimDir.ASC, j, chart.Chart.CONJUNCTIO, aopl-self.aoasc)
 
-					#Desc
-					if (not self.options.pdaspects[chart.Chart.OPPOSITIO] or not self.options.zodpromsigasps[PrimDirs.ASPSPROMSTOSIGS]) and j == chart.Chart.CONJUNCTIO:
-						dopl = rapl+adlat
-						ok = True
-						if i == astrology.SE_MOON and ioffs == 0 and self.options.pdsecmotion:
-							for itera in range(self.options.pdsecmotioniter+1):
-								ok, rapl, adlat = self.calcZodSM(i, j, aspectus, dopl-self.dodesc)
-								dopl = rapl+adlat
-
-						if ok:
-							self.create(False, i+ioffs, PrimDir.NONE, PrimDir.DESC, j, chart.Chart.CONJUNCTIO, dopl-self.dodesc)
+				# Dsc
+				rapl=rapl2; adlat=adlat2
+				if self.options.sigangles[1]:
+					dopl = rapl+adlat
+					ok = True
+					if i == astrology.SE_MOON and ioffs == 0 and self.options.pdsecmotion:
+						for itera in range(self.options.pdsecmotioniter+1):
+							ok, rapl, adlat = self.calcZodSM(i, j, aspectus, dopl-self.dodesc)
+							dopl = rapl+adlat
+					if ok:
+						self.create(False, i+ioffs, PrimDir.NONE, PrimDir.DESC, j, chart.Chart.CONJUNCTIO, dopl-self.dodesc)
 
 
 	def calcZodSM(self, idp, j, aspect, arc):
@@ -941,13 +950,13 @@ class PrimDirs:
 					continue
 				adlat = math.degrees(math.asin(val))
 
-				#MC
-				if self.options.sigascmc[1]:
+				# MC
+				if self.options.sigangles[2]:
 					self.create(False, i, PrimDir.NONE, PrimDir.MC, points[k][1], chart.Chart.CONJUNCTIO, rapl-self.ramc)
 					#to IC would be a duplicate: par Mars->MC is contrapar Mars->IC
 
 				#Asc
-				if self.options.sigascmc[0]:
+				if self.options.sigangles[0]:
 					aopl = rapl-adlat
 					self.create(False, i, PrimDir.NONE, PrimDir.ASC, points[k][1], chart.Chart.CONJUNCTIO, aopl-self.aoasc)
 					#to Desc would be a duplicate
@@ -986,12 +995,12 @@ class PrimDirs:
 				adlat = math.degrees(math.asin(val))
 
 				#MC
-				if self.options.sigascmc[1]:
+				if self.options.sigangles[2]:
 					self.create(False, i+ioffs, PrimDir.NONE, PrimDir.MC, points[k][1], chart.Chart.CONJUNCTIO, rapl-self.ramc)
 					#to IC would be a duplicate: par Mars->MC is contrapar Mars->IC
 
 				#Asc
-				if self.options.sigascmc[0]:
+				if self.options.sigangles[0]:
 					aopl = rapl-adlat
 					self.create(False, i+ioffs, PrimDir.NONE, PrimDir.ASC, points[k][1], chart.Chart.CONJUNCTIO, aopl-self.aoasc)
 					#to Desc would be a duplicate
@@ -1018,17 +1027,19 @@ class PrimDirs:
 				continue
 			adprom = math.degrees(math.asin(val))
 
-			#MC
-			if self.options.sigascmc[1]:
+			# MC
+			if self.options.sigangles[2]:
 				self.create(False, mid.p1, mid.p2, PrimDir.MC, chart.Chart.MIDPOINT, chart.Chart.CONJUNCTIO, raprom-self.ramc)
-				# to IC
+			# IC
+			if self.options.sigangles[3]:
 				self.create(False, mid.p1, mid.p2, PrimDir.IC, chart.Chart.MIDPOINT, chart.Chart.CONJUNCTIO, raprom-self.raic)
 
-			#Asc
-			if self.options.sigascmc[0]:
+			# Asc
+			if self.options.sigangles[0]:
 				aoprom = raprom-adprom
 				self.create(False, mid.p1, mid.p2, PrimDir.ASC, chart.Chart.MIDPOINT, chart.Chart.CONJUNCTIO, aoprom-self.aoasc)
-				# to DESC
+			# Dsc
+			if self.options.sigangles[1]:
 				doprom = raprom+adprom
 				self.create(False, mid.p1, mid.p2, PrimDir.DESC, chart.Chart.MIDPOINT, chart.Chart.CONJUNCTIO, doprom-self.dodesc)
 
@@ -1060,10 +1071,10 @@ class PrimDirs:
 
 				ra, decl, dist = astrology.swe_cotrans(lon, 0.0, 1.0, -self.chart.obl[0])
 
-				self.create(False, PrimDir.ASC, PrimDir.NONE, PrimDir.MC, i, chart.Chart.CONJUNCTIO, ra-self.ramc)
+				if self.options.sigangles[2]:
+					self.create(False, PrimDir.ASC, PrimDir.NONE, PrimDir.MC, i, chart.Chart.CONJUNCTIO, ra-self.ramc)
 
-				if (not self.options.pdaspects[chart.Chart.OPPOSITIO] or not self.options.zodpromsigasps[PrimDirs.ASPSPROMSTOSIGS]) and i == chart.Chart.CONJUNCTIO:
-					# to IC
+				if self.options.sigangles[3]:
 					self.create(False, PrimDir.ASC, PrimDir.NONE, PrimDir.IC, i, chart.Chart.CONJUNCTIO, ra-self.raic)
 
 
@@ -1089,13 +1100,13 @@ class PrimDirs:
 				continue
 			adlat = math.degrees(math.asin(val))
 
-			#MC
-			if self.options.sigascmc[1]:
+			# MC
+			if self.options.sigangles[2]:
 				self.create(False, PrimDir.ASC, PrimDir.NONE, PrimDir.MC, points[k][1], chart.Chart.CONJUNCTIO, rapl-self.ramc)
 				#to IC would be a duplicate: par Mars->MC is contrapar Mars->IC
 
-			#Asc
-			if self.options.sigascmc[0]:
+			# Asc
+			if self.options.sigangles[0]:
 				aopl = rapl-adlat
 				self.create(False, PrimDir.ASC, PrimDir.NONE, PrimDir.ASC, points[k][1], chart.Chart.CONJUNCTIO, aopl-self.aoasc)
 				#to Desc would be a duplicate
@@ -1166,10 +1177,10 @@ class PrimDirs:
 				adlat = math.degrees(math.asin(val))
 
 				aoprom = ra-adlat
-				self.create(False, PrimDir.MC, PrimDir.NONE, PrimDir.ASC, i, chart.Chart.CONJUNCTIO, aoprom-self.aoasc)
+				if self.options.sigangles[0]:
+					self.create(False, PrimDir.MC, PrimDir.NONE, PrimDir.ASC, i, chart.Chart.CONJUNCTIO, aoprom-self.aoasc)
 
-				if (not self.options.pdaspects[chart.Chart.OPPOSITIO] or not self.options.zodpromsigasps[PrimDirs.ASPSPROMSTOSIGS]) and i == chart.Chart.CONJUNCTIO:
-					# to DESC
+				if self.options.sigangles[1]:
 					doprom = ra+adlat
 					self.create(False, PrimDir.MC, PrimDir.NONE, PrimDir.DESC, i, chart.Chart.CONJUNCTIO, doprom-self.dodesc)
 
@@ -1195,13 +1206,13 @@ class PrimDirs:
 				continue
 			adlat = math.degrees(math.asin(val))
 
-			#MC
-			if self.options.sigascmc[1]:
+				# MC
+			if self.options.sigangles[2]:
 				self.create(False, PrimDir.MC, PrimDir.NONE, PrimDir.MC, points[k][1], chart.Chart.CONJUNCTIO, rapl-self.ramc)
 				#to IC would be a duplicate: par Mars->MC is contrapar Mars->IC
 
-			#Asc
-			if self.options.sigascmc[0]:
+			# Asc
+			if self.options.sigangles[0]:
 				aopl = rapl-adlat
 				self.create(False, PrimDir.MC, PrimDir.NONE, PrimDir.ASC, points[k][1], chart.Chart.CONJUNCTIO, aopl-self.aoasc)
 				#to Desc would be a duplicate
@@ -1263,18 +1274,20 @@ class PrimDirs:
 			else:
 				adlat = math.degrees(math.asin(val))
 
-			#MC
-			if self.options.sigascmc[1]:
+			# MC
+			if self.options.sigangles[2]:
 				self.create(False, i+OFFS, PrimDir.NONE, PrimDir.MC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, rastar-self.ramc)
-				# to IC
+			# IC
+			if self.options.sigangles[3]:
 				self.create(False, i+OFFS, PrimDir.NONE, PrimDir.IC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, rastar-self.raic)
 
-			#Asc
-			if self.options.sigascmc[0] and advalid:
+			# Asc
+			if self.options.sigangles[0] and advalid:
 				aostar = rastar-adlat
 				self.create(False, i+OFFS, PrimDir.NONE, PrimDir.ASC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, aostar-self.aoasc)
 
-				# to DESC
+			# Dsc
+			if self.options.sigangles[1] and advalid:
 				dostar = rastar+adlat
 				self.create(False, i+OFFS, PrimDir.NONE, PrimDir.DESC, chart.Chart.CONJUNCTIO, chart.Chart.CONJUNCTIO, dostar-self.dodesc)
 

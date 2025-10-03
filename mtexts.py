@@ -388,6 +388,12 @@ u"StartSign":u"Start Sign",'Compute':'Compute',u"HeliacalRisingsSettings":u"Heli
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save', 'Circumambulation': 'Circumambulations',
 'CircumPolarLatErr': 'Circumambulations are not available at high latitudes (absolute latitude {0:.2f}°, limit {1:.2f}°).',
 }
+
+txtseng.update({
+    'NumFieldsCannotBeEmpty': 'Problem with data! Numeric fields cannot be empty.',
+    'RangeError': 'Range error! The value is outside the allowed range.',
+})
+
 txtseng.setdefault('Years', u'Years')
 txtseng.setdefault('Real', u'Real Date')
 txtseng.setdefault('On', u'On')
@@ -722,6 +728,10 @@ u"StartSign":u"Bejelentkezés indítása",'Compute':'Számítás',u"HeliacalRisi
 "InputSignandDegree":"Bemenet: Jel és fok","InputEclipticLongitude":"Bemenet: ekliptikus hosszúság (0 - 360)",
 "SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán, ",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
 }
+txtshun.update({
+    'NumFieldsCannotBeEmpty': u'Probléma az adatokkal! A numerikus mezők nem maradhatnak üresen!',
+    'RangeError': u'Érték Hiba! Adjon meg helyes értéket a megengedett tartományon belül.',
+})
 txtshun.setdefault('Years', u'év')  # (pl. 2 év)
 txtshun.setdefault('Real', u'Valós')
 txtshun.setdefault('On', u'Be')
@@ -1052,6 +1062,10 @@ u"StartSign":u"Начать подписываться",'Compute':'Вычисл�
 "InputSignandDegree":"Вход: Знак и степень","InputEclipticLongitude":"Вход: Эклиптическая долгота (0 - 360)",
 "SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane, ",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
 }
+txtsrus.update({
+    'NumFieldsCannotBeEmpty': u'Неправильные данные! Числовые поля не могут быть пустыми.',
+    'RangeError': u'Ошибка диапазона! Значение вне допустимого диапазона.',
+})
 txtsrus.setdefault('Years', u'лет')  # нейтральная форма для n лет
 txtsrus.setdefault('Real', u'Реальное')
 txtsrus.setdefault('On', u'Вкл.')
@@ -1381,6 +1395,10 @@ u"StartSign":u"Iniciar Firmar",'Compute':'Computación',u"HeliacalRisingsSetting
 "InputSignandDegree":"Entrada: signo y grado","InputEclipticLongitude":"Entrada: Longitud eclíptica (0 - 360)",
 "SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos, ",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
 }
+txtsesp.update({
+    'NumFieldsCannotBeEmpty': u'¡Problema con los datos! Los campos numéricos no pueden estar vacíos.',
+    'RangeError': u'¡Error de rango! El valor está fuera del intervalo permitido.',
+})
 txtsesp.setdefault('Years', u'años')
 txtsesp.setdefault('Real', u'Real')
 txtsesp.setdefault('On', u'Activado')
@@ -1719,6 +1737,10 @@ txtsita = {'Circumambulation': u'Circumambulazione',
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
+txtsita.update({
+    'NumFieldsCannotBeEmpty': u'Errore! I campi numerici non possono essere vuoti.',
+    'RangeError': u'Errore di intervallo! Il valore è fuori dall’intervallo consentito.',
+})
 txtsita.setdefault('Years', u'anni')
 txtsita.setdefault('Real', u'Reale')
 txtsita.setdefault('On', u'Acceso')
@@ -2046,6 +2068,12 @@ u"StartSign":u"Start Sign",'Compute':'Compute',"HeliacalRisingsSettings":u"Helia
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
+
+txtsfre.update({
+    'NumFieldsCannotBeEmpty': u'Problème de données ! Les champs numériques ne peuvent pas être vides.',
+    'RangeError': u'Erreur d’intervalle ! La valeur est en dehors de l’intervalle autorisé.',
+})
+
 txtsfre.setdefault('Years', u'ans')
 txtsfre.setdefault('Real', u'Réel')
 txtsfre.setdefault('On', u'Activé')
@@ -2477,6 +2505,10 @@ u"StartSign":u"起始星座",'Compute':'计算',u"HeliacalRisingsSettings":u"谐
 "InputSignandDegree":"输入：星座和度数","InputEclipticLongitude":"输入：黄道经度(0-360)",
 "SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘, ",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
+txtschs.update({
+    'NumFieldsCannotBeEmpty': u'数据问题！数值字段不能为空。',
+    'RangeError': u'范围错误！该值超出允许范围。',
+})
 txtschs.setdefault('Years', u'年')
 txtschs.setdefault('Real', u'实际')
 txtschs.setdefault('On', u'开')
@@ -2710,6 +2742,10 @@ txtscht = {'Circumambulation': u'繞行',
 "InputSignandDegree":"输入：星卒和度数","InputEclipticLongitude":"输入：黄道经度(0-360)",
 "SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘, ",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
+txtscht.update({
+    'NumFieldsCannotBeEmpty': u'數據問題！數值欄位不能為空。',
+    'RangeError': u'範圍錯誤！該值超出允許範圍。',
+})
 txtscht.setdefault('Years', u'年')
 txtscht.setdefault('Real', u'實際')
 txtscht.setdefault('On', u'開')
@@ -2727,7 +2763,7 @@ txtscht.setdefault('Declination', u'赤緯')
 txtscht.setdefault('Year',  u'年')
 txtscht.setdefault('Years', u'年')
 txtscht.setdefault('Month', u'月')
-txtscht.setdefault('Months',u'月')       # ← 누락된 키
+txtscht.setdefault('Months',u'月')       
 txtscht.setdefault('Day',   u'天')
 txtscht.setdefault('Days',  u'天')
 txtscht.setdefault('CheckDMSRanges', u'檢查度/分/秒取值範圍。')
@@ -2735,7 +2771,6 @@ txtscht.setdefault('CheckAbsDegRange', u'絕對度數必須介於 0° 與 360° 
 txtscht.setdefault('CheckDMSRanges',   u'檢查度/分/秒取值範圍。')
 txtscht.setdefault('Error',            u'錯誤')
 txtscht.setdefault('UnexpectedError',  u'未預期的錯誤：')
-# txtscht — only the missing keys
 txtscht.setdefault("OK", u"確定")
 txtscht.setdefault("Cancel", u"取消")
 txtscht.setdefault("Yes", u"是")
@@ -3124,6 +3159,10 @@ txtsko = {'Circumambulation': u'서컴앰뷸레이션',
 'InputEclipticLongitude':u'입력: 황경 (0 - 360)',
 'SignDegMinSec':u'사인 / 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정하기","MundaneOnly":u"먼데인만, ",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
 }
+txtsko.update({
+    'NumFieldsCannotBeEmpty': u'데이터에 문제가 있습니다! 숫자 입력란은 비워둘 수 없습니다.',
+    'RangeError': u'범위 오류입니다! 허용 범위 내의 값을 입력하세요.',
+})
 txtsko.setdefault('Years', u'년')
 txtsko.setdefault('Real', u'실제 날짜')
 txtsko.setdefault('On', u'켜짐')

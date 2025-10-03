@@ -1,4 +1,4 @@
-## [9.0.2] Updated Version from 8.1.0 
+## [9.0.3] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -107,4 +107,7 @@
 - Bugfix: solar revolution not displayed with Ayanamsha enabled.
 #### 9.0.2
 - Bugfix: Heliacal Risings/Setting calender bug fix.
-- Triplicity option header fix
+- Triplicity option header alignment fix.
+#### 9.0.3
+- Primary Directions options now allow Dsc and IC to be controlled independently.
+- Updated an error message that incorrectly instructed users to check a nonexistent question-mark.
