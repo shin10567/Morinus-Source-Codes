@@ -54,7 +54,7 @@
 - Rename: “Find Time and Place” → “Find Time” (the feature does not actually search locations).
 - Planetary Hour: now respects the chart’s birth data and time zone.
 - Rise/Set Times: now respects the chart’s birth data and time zone.
-- Exact Transits: updated the notation when a retrograde planet enters a different sign & fixed an Ayanamsa bug.
+- Exact Transits: updated the notation when a retrograde planet enters a different sign & fixed an Ayanamsha bug.
 - Primary Directions: fixed bugs with Antiscia and Contra-antiscia & fixed Primary Directions for the Lot of Fortune (LoF).
 - Various other known bug fixes.
 #### 8.4.4
@@ -99,7 +99,9 @@
 - Multilingual support: English, Hungarian, Spanish, Italian, French, Russian, Chinese (Simplified), Chinese (Traditional), and Korean supported (fonts changed for Chinese and Korean).
 - UI additions: Added time and birth-time rectification controls at the top of Circumambulations and Angular Directions of Fixed Stars.
 - Bug fix: Resolved an issue where PDs in Chart was not displayed.
-- Bug fix (ayanamsa & nodes interaction): Fixed planetary positions changing when node options were modified after setting the ayanamsa.
+- Bug fix (Ayanamsha & nodes interaction): Fixed planetary positions changing when node options were modified after setting the Ayanamsha.
 - Speculum: Added dodecatemoria notation.
 - English mtexts (menus): Corrected inconsistent phrasings.
 - Arabic Parts settings: Fixed a bug where the Active flag applied only to the first item.
+### 9.0.1
+- Bugfix: solar revolution not displayed with Ayanamsha enabled.
