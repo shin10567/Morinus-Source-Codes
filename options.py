@@ -17,6 +17,7 @@ class Options:
 # ###################################
 # Elias change v 7.2.0  
 	DODECATEMORIA = 4
+	ARABICPARTS = 5
 # ###################################
 
 	MOON = 0

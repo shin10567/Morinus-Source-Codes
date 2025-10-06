@@ -29,6 +29,23 @@ try:
 	unicode
 except NameError:
 	unicode = str
+# 약어('SU','MO',...) → Morinus.ttf 글리프(letters)로 변환
+# Morinus 폰트는 common.common.Planets / Signs1/2 에 글리프용 "문자"가 들어있다.
+ABBR_TO_PID = {
+	'SU': astrology.SE_SUN, 'MO': astrology.SE_MOON, 'ME': astrology.SE_MERCURY,
+	'VE': astrology.SE_VENUS, 'MA': astrology.SE_MARS, 'JU': astrology.SE_JUPITER,
+	'SA': astrology.SE_SATURN, 'UR': astrology.SE_URANUS, 'NE': astrology.SE_NEPTUNE,
+	'PL': astrology.SE_PLUTO,
+}
+def _abbr_to_planet_morinus_char(abbr):
+	pid = ABBR_TO_PID.get((abbr or '').upper())
+	if pid is None:
+		return None
+	try:
+		return common.common.Planets[pid]  # 예: 'A','B','C'... 같은 글리프용 문자
+	except Exception:
+		return None
+
 def _ensure_re_de_tokens():
 	# mtexts.txts에 키 보강
 	if 'DE' not in mtexts.txts:
@@ -99,9 +116,11 @@ def _token_segments_for_formula(tok, fntText, fntSymbol, signs):
 	# 행성/각 라벨 → 심볼 폰트
 	if isinstance(tok, integer_types):
 		lab = mtexts.partstxts[tok]
-		if lab in PLANET_GLYPH:
-			return [(PLANET_GLYPH[lab], fntSymbol)]
-		return [(lab, fntText)]
+		if lab in ABBR_TO_PID:
+			pid = ABBR_TO_PID[lab]
+			ch  = _abbr_to_planet_morinus_char(lab)
+			if ch:
+				return [(ch, fntSymbol, pid)]
 
 	if isinstance(tok, basestring):
 		t = _to_unicode(tok).strip()
@@ -110,7 +129,12 @@ def _token_segments_for_formula(tok, fntText, fntSymbol, signs):
 		# 참조 Rn
 		if t.startswith(u'RE:'):
 			n = t.split(u':',1)[1].strip()
-			return [(u'R'+n, fntText)]
+			try:
+				k = int(n)
+			except:
+				k = 0
+			return [(u'#%d' % (k+1), fntText, None)]
+
 		# 돗수 DE:18°Ari / DE:18Ari / DE:18♈ 등
 		if t.startswith(u'DE:'):
 			val = t.split(u':',1)[1].strip()
@@ -125,37 +149,178 @@ def _token_segments_for_formula(tok, fntText, fntSymbol, signs):
 				deg = int(m.group(1)) % 30
 				ab  = m.group(2).title()
 				si  = SIGN_INDEX.get(ab, 0)
-				glyph = ZODIAC_GLYPH.get(ab, u'?')
-				return [(u'%d\u00b0' % deg, fntText), (glyph, fntSymbol)]
+				glyph = signs[si]  # Morinus.ttf용 글리프 문자
+				return [(u'%d\u00b0' % deg, fntText, None), (glyph, fntSymbol, None)]
 			# 실패 시 원문 출력
-			return [(val, fntText)]
-		# 행성 코드 → 심볼 (소/대문자 섞여 들어와도 처리)
-		if tu in PLANET_GLYPH:
-			return [(PLANET_GLYPH[tu], fntSymbol)]
-		# 각(AC/DC/MC/IC)은 일반 텍스트
+			return [(val, fntText, None)]
+		# Morinus.ttf 글리프 사용
+		if tu in ABBR_TO_PID:
+			pid = ABBR_TO_PID[tu]
+			ch  = _abbr_to_planet_morinus_char(tu)
+			if ch:
+				return [(ch, fntSymbol, pid)]
+
+		# 각(AC/DC/MC/IC)은 mtexts에서 현지화된 문자열로 표시
 		if tu in (u'AC', u'DC', u'MC', u'IC'):
-			return [(tu, fntText)]
+			return [(mtexts.txts.get(tu, tu), fntText, None)]
 
 		# 기타 평문
-		return [(t, fntText)]
+		return [(_to_unicode(tok), fntText, None)]
 
 	# 최후: 문자열화
 	try:
 		unicode
 	except NameError:
 		unicode = str
-	return [(_to_unicode(tok), fntText)]
+	return [(_to_unicode(tok), fntText, None)]
 
-def _draw_formula(draw, x, y, cellw, A, B, C, swapBC, fntText, fntSymbol, signs, txtclr, line_h):
+def _draw_formula(wnd, draw, x, y, cellw, A, B, C, swapBC, fntText, fntSymbol, signs, txtclr, line_h):
+	# A(AC), B(MO/SU), C(SU/MO) 를 각각 심볼/텍스트로 분해해서 그리기
 	if swapBC:
 		B, C = C, B
-	s = u"%s + %s - %s" % (
-		_fmt_token_for_view(A),
-		_fmt_token_for_view(B),
-		_fmt_token_for_view(C),
+	segs = (
+		_token_segments_for_formula(A, fntText, fntSymbol, signs)
+		+ [(u' + ', fntText, None)]
+		+ _token_segments_for_formula(B, fntText, fntSymbol, signs)
+		+ [(u' - ', fntText, None)]
+		+ _token_segments_for_formula(C, fntText, fntSymbol, signs)
 	)
-	w, h = draw.textsize(s, fntText)
-	draw.text((x + (cellw - w)/2.0, y + (line_h - h)/2.0), s, fill=txtclr, font=fntText)
+	total_w = sum(draw.textsize(seg[0], seg[1])[0] for seg in segs)
+
+	cx = x + (cellw - total_w) / 2.0
+	for seg in segs:
+		if len(seg) == 3:
+			s, f, pid = seg
+		else:
+			s, f = seg; pid = None
+		w, h = draw.textsize(s, f)
+		fill = wnd._planet_color(pid, txtclr) if pid is not None else txtclr
+		draw.text((cx, y + (line_h - h) / 2.0), s, fill=fill, font=f)
+		cx += w
+
+	return
+
+def _resolve_token_to_canonical(label):
+	"""
+	현지화 레이블(label)을 정규 약어(AC/DC/MC/IC, SU/MO/ME/VE/MA/JU/SA/UR/NE/PL)로 역매핑.
+	해당 없으면 원문 label 반환.
+	"""
+	# 행성
+	for k in (u'SU',u'MO',u'ME',u'VE',u'MA',u'JU',u'SA',u'UR',u'NE',u'PL'):
+		if label == mtexts.txts.get(k, k):
+			return k
+	# 각(Asc/Desc/MC/IC)
+	for k in (u'AC',u'DC',u'MC',u'IC'):
+		if label == mtexts.txts.get(k, k):
+			return k
+	return label
+
+def _draw_formula_for_part(self, draw, x, y, cellw, part, opts, fntText, fntSymbol, signs, txtclr, line_h):
+	"""
+	아라빅 파츠 1행의 (f1,f2,f3 + refA/B/C + 주야 스왑) 정보를 사용해
+	공식 칸을 Morinus 심볼로 렌더링한다.
+	"""
+	# 원 정의(src) 찾기
+	name = part[arabicparts.ArabicParts.NAME]
+	src = None
+	for it in opts.arabicparts:
+		if it[0] == name:
+			src = it
+			break
+	if not src:
+		return
+
+	f1, f2, f3 = src[1]
+	refA = refB = refC = 0
+	try:
+		t = src[3]
+		if isinstance(t, (list, tuple)) and len(t) == 3:
+			refA, refB, refC = t
+	except:
+		pass
+
+	# 주야 처리 (밤차트+Diurnal이면 B/C 스왑)
+	try:
+		above = self.chart.planets.planets[astrology.SE_SUN].abovehorizon
+	except:
+		above = True
+	diur = False
+	try:
+		diur = bool(src[2])
+	except:
+		try:
+			diur = bool(part[arabicparts.ArabicParts.DIURNAL])
+		except:
+			diur = False
+	if diur and (not above):
+		f2, f3 = f3, f2
+		refB, refC = refC, refB
+
+	# 코드/인덱스 → 레이블
+	def _label_and_bang(code):
+		# mtexts.partstxts[code] (인덱스) 경로 우선
+		lbl = None
+		try:
+			lbl = mtexts.partstxts[code]
+		except:
+			# conv 역매핑(상수값 → 레이블)
+			rev = getattr(mtexts, '_conv_rev_cache', None)
+			if not isinstance(rev, dict):
+				try:
+					rev = dict((v, k) for (k, v) in mtexts.conv.items())
+				except:
+					rev = {}
+				mtexts._conv_rev_cache = rev
+			lbl = rev.get(code, u'?')
+
+		want_lord = False
+		tail = lbl[-1:]  # 마지막 1글자
+		if tail in (u'!', u'G', u'g'):
+			want_lord = True
+			lbl = lbl[:-1]
+
+		return lbl, want_lord
+
+	# 각 항의 “표현 토큰” 만들기: DE/RE는 값 포함, 행성/각은 정규 약어 유지
+	sign_abbr = (u'Ari',u'Tau',u'Gem',u'Can',u'Leo',u'Vir',u'Lib',u'Sco',u'Sag',u'Cap',u'Aqu',u'Pis')
+	def _tok(code, idx):
+		lbl, bang = _label_and_bang(code)
+
+		# Degree
+		if lbl == mtexts.txts.get('DE', 'DE'):
+			absdeg = int((refA, refB, refC)[idx]) % 360
+			si = absdeg // 30
+			dg = absdeg % 30
+			return u'DE:%d%s%s' % (dg, sign_abbr[si], u'!' if bang else u'')
+
+		# Reference Rn
+		if lbl == mtexts.txts.get('RE', 'RE'):
+			rn = int((refA, refB, refC)[idx])
+			return u'RE:%d%s' % (rn, u'!' if bang else u'')
+
+		# 행성/각: 정규 약어로 역매핑해 심볼화
+		can = _resolve_token_to_canonical(lbl)
+		return u'%s%s' % (can, u'!' if bang else u'')
+
+	A, B, C = _tok(f1, 0), _tok(f2, 1), _tok(f3, 2)
+
+	# 세그먼트로 분해(+/− 포함) 후 중앙 정렬 출력
+	def _emit(tok):
+		segs = _token_segments_for_formula(tok.replace(u'!', u''), fntText, fntSymbol, signs)
+		if tok.endswith(u'!'):
+			segs.append((u'!', fntText, None))
+		return segs
+
+	segs = _emit(A) + [(u' + ', fntText, None)] + _emit(B) + [(u' - ', fntText, None)] + _emit(C)
+
+	total_w = sum(draw.textsize(seg[0], seg[1])[0] for seg in segs)
+
+	cx = x + (cellw - total_w) / 2.0
+	for s, f, pid in segs:
+		w, h = draw.textsize(s, f)
+		fill = self._planet_color(pid, txtclr) if pid is not None else txtclr
+		draw.text((cx, y + (line_h - h) / 2.0), s, fill=fill, font=f)
+		cx += w
 
 def _fmt_token_for_view(tok):
 	try:
@@ -397,6 +562,18 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 				draw.text((x + (cellw - mwidth)/2 + prev + wpl + wsp,
 						y + (self.LINE_HEIGHT - h)/2),
 						txt, fill=txtclr, font=self.fntText)
+	def _planet_color(self, pid, default_txtclr):
+		"""행성 pid에 대한 표시 색을 돌려준다."""
+		if self.bw:
+			return (0, 0, 0)
+		try:
+			if getattr(self.options, 'useplanetcolors', False):
+				return self.options.clrindividual[pid]
+			# 사용자 색 미사용이면 존엄(본궁/승/실각/실추) 팔레트로
+			dign = self.chart.dignity(pid)
+			return self.clrs[dign]
+		except Exception:
+			return default_txtclr
 
 	def _draw_col_grid(self, draw, x0, y0, height, color):
 		"""세로 경계선들을 모두 그림"""
@@ -516,7 +693,7 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 
 		# Ref: R0(LoF)
 		COL_REF, COL_NAME, COL_FORM, COL_LONG, COL_DODEC, COL_DECL = 0, 1, 2, 3, 4, 5
-		ref = u'R0'
+		ref = u'#1'
 		tw, th = draw.textsize(ref, self.fntText)
 		draw.text((xs[COL_REF] + (self.COLWIDTHS[COL_REF]-tw)/2.0,
 				   y + (self.LINE_HEIGHT-th)/2.0),
@@ -538,7 +715,8 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 		else:
 			B, C = u'SU', u'MO'; swapBC = (not above)
 
-		_draw_formula(draw, xs[COL_FORM], y, self.COLWIDTHS[COL_FORM], A, B, C, swapBC, self.fntText, self.fntMorinus, self.signs, txtclr, self.LINE_HEIGHT)
+		_draw_formula(self, draw, xs[COL_FORM], y, self.COLWIDTHS[COL_FORM],
+					A, B, C, swapBC, self.fntText, self.fntMorinus, self.signs, txtclr, self.LINE_HEIGHT)
 
 		# Longitude (LoF 경도)
 		lon = data[0]  # Fortune.LON
@@ -590,10 +768,13 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 			absdeg = int(absdeg) % 360
 		except:
 			return u'?'
-		signs = [u'Ari',u'Tau',u'Gem',u'Can',u'Leo',u'Vir',u'Lib',u'Sco',u'Sag',u'Cap',u'Aqu',u'Pis']
+		# mtexts에서 현지화 문자열을 가져오되, 키가 없으면 원래 약어로 폴백
+		sign_keys = (u'Ari',u'Tau',u'Gem',u'Can',u'Leo',u'Vir',u'Lib',u'Sco',u'Sag',u'Cap',u'Aqu',u'Pis')
+		signs = [mtexts.txts.get(k, k) for k in sign_keys]
 		sg = absdeg // 30
 		dg = absdeg % 30
 		return u'%d\u00B0%s' % (dg, signs[sg])
+
 
 	def _render_formula_with_refs(self, part, opts):
 		# part는 계산된 1개 랏 레코드이고, 옵션의 정의로부터 (f1,f2,f3)와 (refA,refB,refC)를 꺼낸다.
@@ -676,14 +857,11 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 				return out + (u'!' if want_lord else u'')
 			if txt == mtexts.txts['RE']:
 				rn = int((refA, refB, refC)[idx])
-				if rn == 0:
-					return u'R0' + (u'!' if want_lord else u'')
-				return (u'R%d' % rn) + (u'!' if want_lord else u'')
+				return (u'#%d' % (rn+1)) + (u'!' if want_lord else u'')
 
 			return label
 
 		return u'%s + %s - %s' % (tok(f1,0), tok(f2,1), tok(f3,2))
-
 	def drawline(self, draw, x, y, data, clr, idx):
 		#bottom horizontal line
 		draw.line((x, y+self.LINE_HEIGHT, x+self.TABLE_WIDTH, y+self.LINE_HEIGHT), fill=clr)
@@ -692,26 +870,25 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 		self._draw_col_grid(draw, x, y, self.LINE_HEIGHT, clr)
 		txtclr = (0,0,0) if self.bw else self.options.clrtexts
 
-		# [중요] 칼럼 인덱스: Ref 포함 6칸
+		# 칼럼 인덱스
 		COL_REF, COL_NAME, COL_FORM, COL_LONG, COL_DODEC, COL_DECL = 0, 1, 2, 3, 4, 5
 
 		# Ref: R{idx+1}
-		ref = u'R%d' % (idx+1)
+		ref = u'#%d' % (idx+2)
 		tw, th = draw.textsize(ref, self.fntText)
-		draw.text((xs[COL_REF] + (self.COLWIDTHS[COL_REF]-tw)/2.0, y + (self.LINE_HEIGHT-th)/2.0), ref, fill=txtclr, font=self.fntText)
+		draw.text((xs[COL_REF] + (self.COLWIDTHS[COL_REF]-tw)/2.0, y + (self.LINE_HEIGHT-th)/2.0),
+				  ref, fill=txtclr, font=self.fntText)
 
 		# Name
 		name = data[idx][arabicparts.ArabicParts.NAME]
 		w, h = draw.textsize(name, self.fntText)
-		draw.text((xs[COL_NAME] + (self.COLWIDTHS[COL_NAME]-w)/2.0, y + (self.LINE_HEIGHT-h)/2.0), name, fill=txtclr, font=self.fntText)
+		draw.text((xs[COL_NAME] + (self.COLWIDTHS[COL_NAME]-w)/2.0, y + (self.LINE_HEIGHT-h)/2.0),
+				  name, fill=txtclr, font=self.fntText)
 
-		w,h = draw.textsize(name, self.fntText)
-		draw.text((xs[COL_NAME] + (self.COLWIDTHS[COL_NAME]-w)/2.0, y + (self.LINE_HEIGHT-h)/2.0), name, fill=txtclr, font=self.fntText)
-
-		# Formula ─ RE/DE 실제값으로 렌더
-		formula = self._render_formula_with_refs(data[idx], self.options)
-		tw, th = draw.textsize(formula, self.fntText)
-		draw.text((xs[COL_FORM] + (self.COLWIDTHS[COL_FORM]-tw)/2.0, y + (self.LINE_HEIGHT-th)/2.0), formula, fill=txtclr, font=self.fntText)
+		# Formula ─ Morinus 심볼 렌더
+		_draw_formula_for_part(self, draw, xs[COL_FORM], y, self.COLWIDTHS[COL_FORM],
+							   data[idx], self.options,
+							   self.fntText, self.fntMorinus, self.signs, txtclr, self.LINE_HEIGHT)
 
 		# Longitude
 		lon = data[idx][arabicparts.ArabicParts.LONG]
@@ -727,7 +904,8 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 		w,h = draw.textsize(txt, self.fntText)
 		offset = (self.COLWIDTHS[COL_LONG] - (w + wsp + wsg)) / 2.0
 		draw.text((xs[COL_LONG] + offset, y + (self.LINE_HEIGHT - h)/2.0), txt, fill=txtclr, font=self.fntText)
-		draw.text((xs[COL_LONG] + offset + w + wsp, y + (self.LINE_HEIGHT - h)/2.0), txtsign, fill=txtclr, font=self.fntMorinus)
+		draw.text((xs[COL_LONG] + offset + w + wsp, y + (self.LINE_HEIGHT - h)/2.0),
+				  txtsign, fill=txtclr, font=self.fntMorinus)
 
 		# Dodecatemorion
 		dodec_lon = _dodecatemorion_long(lon)
@@ -740,7 +918,8 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 		w,h = draw.textsize(txt, self.fntText)
 		offset = (self.COLWIDTHS[COL_DODEC] - (w + wsp + wsg)) / 2.0
 		draw.text((xs[COL_DODEC] + offset, y + (self.LINE_HEIGHT - h)/2.0), txt, fill=txtclr, font=self.fntText)
-		draw.text((xs[COL_DODEC] + offset + w + wsp, y + (self.LINE_HEIGHT - h)/2.0), txtsign, fill=txtclr, font=self.fntMorinus)
+		draw.text((xs[COL_DODEC] + offset + w + wsp, y + (self.LINE_HEIGHT - h)/2.0),
+				  txtsign, fill=txtclr, font=self.fntMorinus)
 
 		# Declination
 		jd_ut = _get_jd_ut(self.chart)
@@ -748,15 +927,105 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 		if dec is not None:
 			txt = fmt_decl_deg(dec)
 			w,h = draw.textsize(txt, self.fntText)
-			draw.text((xs[COL_DECL] + (self.COLWIDTHS[COL_DECL]-w)/2.0, y + (self.LINE_HEIGHT-h)/2.0), txt, fill=txtclr, font=self.fntText)
-		# Almuten (각 파츠별 DEGWINNER 필드 사용)
+			draw.text((xs[COL_DECL] + (self.COLWIDTHS[COL_DECL]-w)/2.0, y + (self.LINE_HEIGHT-h)/2.0),
+					  txt, fill=txtclr, font=self.fntText)
+
+		# Almuten
 		COL_REF, COL_NAME, COL_FORM, COL_LONG, COL_DODEC, COL_DECL, COL_ALM = 0,1,2,3,4,5,6
 		try:
 			degw = data[idx][arabicparts.ArabicParts.DEGWINNER]
 		except Exception:
 			degw = None
 		if degw:
-			self.drawDegWinner2(draw,
-								xs[COL_ALM], y,
-								degw, txtclr,
-								self.COLWIDTHS[COL_ALM])
+			self.drawDegWinner2(draw, xs[COL_ALM], y, degw, txtclr, self.COLWIDTHS[COL_ALM])
+
+def _draw_formula_for_part_symbols(self, draw, x, y, cellw, part, opts,
+								   fntText, fntSymbol, signs, txtclr, line_h):
+	# 1) 옵션 정의에서 (f1,f2,f3)와 (refA,refB,refC), 주야(diurnal) 플래그를 찾음
+	name = part[arabicparts.ArabicParts.NAME]
+	src = None
+	for it in opts.arabicparts:
+		if it[0] == name:
+			src = it; break
+	if not src:
+		return
+
+	f1, f2, f3 = src[1]
+	refA = refB = refC = 0
+	try:
+		t = src[3]
+		if isinstance(t, (list, tuple)) and len(t) == 3:
+			refA, refB, refC = t
+	except:
+		pass
+
+	above = True
+	try:
+		above = self.chart.planets.planets[astrology.SE_SUN].abovehorizon
+	except:
+		pass
+	diur = False
+	try:
+		diur = bool(src[2])
+	except:
+		pass
+	if diur and (not above):
+		f2, f3 = f3, f2
+		refB, refC = refC, refB
+
+	# 2) 라벨 해석: mtexts.partstxts/conv 역매핑 → 정규 약어(AC/SU/…)로 정규화
+	def _label_for(code):
+		try:
+			lbl = mtexts.partstxts[code]
+		except Exception:
+			rev = getattr(mtexts, '_conv_rev_cache', None)
+			if not isinstance(rev, dict):
+				try:
+					rev = dict((v, k) for (k, v) in mtexts.conv.items())
+				except:
+					rev = {}
+				mtexts._conv_rev_cache = rev
+			lbl = rev.get(code, u'?')
+		# 지배자 표기: '!', 'g', 'G' → 모두 지배자 플래그로 처리하고 표시문자 제거
+		want_lord = False
+		if lbl.endswith((u'!', u'g', u'G')):
+			want_lord = True
+			lbl = lbl[:-1]
+		# 현지화 라벨을 정규 약어로 역매핑
+		for k in (u'SU',u'MO',u'ME',u'VE',u'MA',u'JU',u'SA',u'UR',u'NE',u'PL',
+				  u'AC',u'DC',u'MC',u'IC', u'DE',u'RE'):
+			if lbl == mtexts.txts.get(k, k):
+				lbl = k
+				break
+		return lbl, want_lord
+
+	# 3) 각 항을 토큰화
+	sign_abbr = (u'Ari',u'Tau',u'Gem',u'Can',u'Leo',u'Vir',u'Lib',u'Sco',u'Sag',u'Cap',u'Aqu',u'Pis')
+	def _tok(code, idx):
+		lbl, want_lord = _label_for(code)
+		if lbl == u'DE':
+			absdeg = int((refA, refB, refC)[idx]) % 360
+			si = absdeg // 30
+			dg = absdeg % 30
+			# _token_segments_for_formula가 해석할 수 있게 “DE:숫자+약어” 형태로
+			return u'DE:%d%s' % (dg, sign_abbr[si])
+		if lbl == u'RE':
+			rn = int((refA, refB, refC)[idx])
+			return u'RE:%d' % rn
+		return lbl  # AC/SU/MO/…
+
+	A, B, C = _tok(f1,0), _tok(f2,1), _tok(f3,2)
+
+	# 4) 세그먼트로 분해하여 중앙 정렬 출력
+	segs = (_token_segments_for_formula(A, fntText, fntSymbol, signs)
+			+ [(u' + ', fntText)]
+			+ _token_segments_for_formula(B, fntText, fntSymbol, signs)
+			+ [(u' - ', fntText)]
+			+ _token_segments_for_formula(C, fntText, fntSymbol, signs))
+	tw = sum(draw.textsize(seg[0], seg[1])[0] for seg in segs)
+	cx = x + (cellw - tw) / 2.0
+	for seg in segs:
+		s, f = seg[0], seg[1]  # (s,f, pid) 형태도 안전 처리
+		w, h = draw.textsize(s, f)
+		draw.text((cx, y + (line_h - h)/2.0), s, fill=txtclr, font=f)
+		cx += w

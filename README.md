@@ -1,4 +1,4 @@
-## [9.0.3] Updated Version from 8.1.0 
+## [9.0.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -111,3 +111,8 @@
 #### 9.0.3
 - Primary Directions options now allow Dsc and IC to be controlled independently.
 - Updated an error message that incorrectly instructed users to check a nonexistent question-mark.
+#### 9.0.4
+- Arabic Parts changed
+    - Revamped the settings UI for Arabic Parts.
+    - In Tables, formulas are now displayed using symbols.
+    - Arabic Parts can now be displayed on the chart’s outer wheel.

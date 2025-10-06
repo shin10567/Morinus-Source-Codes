@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import planets
 import chart
@@ -14,17 +15,17 @@ wx.HelpProvider.Set(provider)
 
 class Appearance1Dlg(wx.Dialog):
 	def __init__(self, parent):
-        # Instead of calling wx.Dialog.__init__ we precreate the dialog
-        # so we can set an extra style that must be set before
-        # creation, and then we create the GUI object using the Create
-        # method.
+		# Instead of calling wx.Dialog.__init__ we precreate the dialog
+		# so we can set an extra style that must be set before
+		# creation, and then we create the GUI object using the Create
+		# method.
 #		pre = wx.PreDialog()
 #		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 #		pre.Create(parent, -1, mtexts.txts['Appearance1'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
-        # This next step is the most important, it turns this Python
-        # object into the real wrapper of the dialog (instead of pre)
-        # as far as the wxPython extension is concerned.
+		# This next step is the most important, it turns this Python
+		# object into the real wrapper of the dialog (instead of pre)
+		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['Appearance1'], size=wx.DefaultSize)
 		#main vertical sizer
@@ -149,6 +150,9 @@ class Appearance1Dlg(wx.Dialog):
 		self.cantisrb = wx.RadioButton(self, -1, mtexts.txts['ContraAntiscia'])
 		self.Bind(wx.EVT_RADIOBUTTON, self.onCAntis, id=self.cantisrb.GetId())
 		vsizer3.Add(self.cantisrb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
+		self.arabicpartssrb = wx.RadioButton(self, -1, mtexts.txts['ArabicParts'])
+		self.Bind(wx.EVT_RADIOBUTTON, self.onArabicParts, id=self.arabicpartssrb.GetId())
+		vsizer3.Add(self.arabicpartssrb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		self.topocentricckb = wx.CheckBox(self, -1, mtexts.txts['Topocentric'])
 		vsizer3.Add(self.topocentricckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 
@@ -287,6 +291,9 @@ class Appearance1Dlg(wx.Dialog):
 	def onCAntis(self, event):
 		self.enableSubFixstars(False)
 
+	def onArabicParts(self, event):
+		# 아라빅 파츠는 FixStars의 서브옵션(노드/HCS/LoF)이 필요 없으므로 끕니다.
+		self.enableSubFixstars(False)
 
 	def enableSubFixstars(self, enable):
 		self.fixstarshcsckb.Enable(enable)
@@ -380,6 +387,9 @@ class Appearance1Dlg(wx.Dialog):
 			self.enableSubFixstars(False)
 		elif opts.showfixstars == options.Options.CANTIS:
 			self.cantisrb.SetValue(True)
+			self.enableSubFixstars(False)
+		elif opts.showfixstars == options.Options.ARABICPARTS:
+			self.arabicpartssrb.SetValue(True)
 			self.enableSubFixstars(False)
 
 		self.fixstarshcsckb.SetValue(opts.showfixstarshcs)
@@ -520,6 +530,7 @@ class Appearance1Dlg(wx.Dialog):
 			opts.showdecans = self.decansckb.GetValue()
 			changed = True
 
+		# --- showfixstars 라디오 선택 저장 (교체본 시작) ---
 		if self.nonerb.GetValue():
 			if opts.showfixstars != options.Options.NONE:
 				opts.showfixstars = options.Options.NONE
@@ -540,6 +551,11 @@ class Appearance1Dlg(wx.Dialog):
 			if opts.showfixstars != options.Options.CANTIS:
 				opts.showfixstars = options.Options.CANTIS
 				changed = True
+		elif self.arabicpartssrb.GetValue():
+			if opts.showfixstars != options.Options.ARABICPARTS:
+				opts.showfixstars = options.Options.ARABICPARTS
+				changed = True
+		# --- showfixstars 라디오 선택 저장 (교체본 끝) ---
 
 		if opts.showfixstarshcs != self.fixstarshcsckb.GetValue():
 			opts.showfixstarshcs = self.fixstarshcsckb.GetValue()

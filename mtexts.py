@@ -22,7 +22,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'TMAlmutenChart':'Chart\tF3', 'TMAlmutenChartDoc':'Shows the almuten of the chart',
 'TMAlmutenTopical':'Topical\tF4', 'TMAlmutenTopicalDoc':'Shows topical almutens',
 'TMMisc':'Misc.\tF5', 'TMMiscDoc':'Shows misc data',
-'TMMunPos':'Position in the Houses and Mundane LoF\tF6', 'TMMunPosDoc':'Shows zodiacal house positions',
+'TMMunPos':'Position in the Houses and Mundane Fortuna\tF6', 'TMMunPosDoc':'Shows zodiacal house positions',
 'TMAntiscia':'Antiscia\tF7', 'TMAntisciaDoc':'Shows antiscia', 
 'TMAspects':'Aspects\tF8', 'TMAspectsDoc':'Shows aspect-table', 
 'TMMidpoints':'Midpoints\tF9', 'TMMidpointsDoc':'Shows midplanet positions', 
@@ -83,7 +83,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'OMPDsInChartOpt':'PDs in Chart',  
 'OMPDsInChartOptZod':'Celestial\tAlt+S', 'OMPDsInChartOptZodDoc':'Shows PDs in chart selection dialog', 
 'OMPDsInChartOptMun':'Terrestrial\tAlt+R', 'OMPDsInChartOptMunDoc':'Shows PDs in chart selection dialog', 
-'OMLotFortune':'&Lot of Fortune\tShift+L', 'OMLotFortuneDoc':'Shows lot of fortune dialog', 
+'OMLotFortune':'Fortuna\tShift+L', 'OMLotFortuneDoc':'Shows lot of fortune dialog', 
 'OMArabicParts':'Ara&bic Parts\tShift+B', 'OMArabicPartsDoc':'Shows arabic parts dialog', 
 'OMSyzygy':'Sy&zygy\tShift+Z', 'OMSyzygyDoc':'Shows syzygy dialog', 
 'OMFixStarsOpt':'&Fixed Stars\tShift+F', 'OMFixStarsOptDoc':'Shows fixed stars selection dialog', 
@@ -192,7 +192,8 @@ menutxtseng.update({
 })
 
 
-txtseng = {'DiscardCurrHor':'Do you want to discard current horoscope?', 'FileError':'Error with file!', 
+txtseng = {'DE': u'Degree',
+'RE': u'Reference','DiscardCurrHor':'Do you want to discard current horoscope?', 'FileError':'Error with file!', 
 'FileExists':'File already exists. Do you want to overwrite it?', 
 'SelectColumn':'Please select at least one column in Options/Appearance.', 
 'Description':'An easy to use, highly accurate astrology program.           \nSwiss Ephemeris version: ',
@@ -280,21 +281,21 @@ txtseng = {'DiscardCurrHor':'Do you want to discard current horoscope?', 'FileEr
 'TextError':'Text fields can only contain alphanumeric characters, space and comma!', 'Add':'Add', 'Remove':'Remove', 'RemoveAll':'Remove All', 
 'LocalBirthTime':'Local time of birth', 'AreYouSure':'Are you sure?', 'Confirm':'Confirm', 'TextEmpty':'Text-field cannot be empty!', 'Misc':'Misc', 
 'SidTime':'Sidereal Time', 'OblEcl':'Obl. of Ecliptic', 'Vertex':'Vertex', 'EquAsc':'Equat. Ascendant', 
-'LotOfFortune':'Lot of Fortune','LFMoonSun':'LoF = Asc+(Moon-Sun)', 
-'LFDSunMoon':'LoF = Asc+(Sun-Moon) [Diurnal]', 'LFNMoonSun':'LoF = Asc+(Moon-Sun) [Nocturnal]', 
-'LFDMoonSun':'LoF = Asc+(Moon-Sun) [Diurnal]', 'LFNSunMoon':'LoF = Asc+(Sun-Moon) [Nocturnal]',
+'LotOfFortune':'Fortuna','LFMoonSun':'Fortuna = Asc+(Moon-Sun)', 
+'LFDSunMoon':'Fortuna = Asc+(Sun-Moon) [Diurnal]', 'LFNMoonSun':'Fortuna = Asc+(Moon-Sun) [Nocturnal]', 
+'LFDMoonSun':'Fortuna = Asc+(Moon-Sun) [Diurnal]', 'LFNSunMoon':'Fortuna = Asc+(Sun-Moon) [Nocturnal]',
 'HelpMP':'MP is Mundane Position', 'MidPoints':'MidPoints', 'MidPoint':'MidPoint', 'NotAvailable':'Not available for BC charts', 
-'FixStars':'Fixed stars', 'IntermHCS':'Interm. HCs', 'FixStarRef':'01.01.1950 midnight(GMT)', 'DeselectAll':'Deselect All', 'All':'All', 
+'FixStars':'Fixed Stars', 'IntermHCS':'Interm. HCs', 'FixStarRef':'01.01.1950 midnight(GMT)', 'DeselectAll':'Deselect All', 'All':'All', 
 'LeftToSelect':'Left to select', 'Nomencl':'Nomencl.', 'NotFound':'not found', 'NoSelFixStars':'There are no fixed stars selected!', 
-'FixStars2':'Fixed stars', 'Terms':'Terms', 'Egyptian':'Egyptian', 'Ptolemaic':'Ptolemaic', 'MultiPlanets':'A planet is selected several times', 
-'NOT30':'The sum of the degrees is not equal to 30', 'LoF':'LoF', 'Terms2':'Terms', 'ZodAscMCHCsAsProms':'Asc, MC as promissors', 
+'FixStars2':'Fixed Stars', 'Terms':'Terms', 'Egyptian':'Egyptian', 'Ptolemaic':'Ptolemaic', 'MultiPlanets':'A planet is selected several times', 
+'NOT30':'The sum of the degrees is not equal to 30', 'LoF':'Fortuna', 'Terms2':'Terms', 'ZodAscMCHCsAsProms':'Asc, MC as promissors', 
 'Antiscia':'Antiscia', 'ContraAntiscia':'Contraantiscia', 'Antiscion':'Antiscion', 'Contraantiscion':'Contraantiscion', 
 'Rectification':'Rectification', 'Calculate':'Calculate', 'Ant':'Ant', 'ZodPars':'Zodiacal parallels', 'Par':'Par', 'ContraParallel':'Contraparallel', 
-'Strip':'Strip', 'Tab':'Tab', 'Spe':'Spe', 'Decans':'Decans', 'Asps2LoF':'Aspects to LoF', 'Asps2Nodes':'Aspects to Nodes', 
+'Strip':'Strip', 'Tab':'Tab', 'Spe':'Spe', 'Decans':'Decans', 'Asps2LoF':'Aspects to Fortuna', 'Asps2Nodes':'Aspects to Nodes', 
 'ShowTradFSNamesInPDList':'Show traditional names of fixed stars in PD-lists', 
 'AspectRing':'Aspect ring', 'Triplicity':'Triplicity', 
 'Topocentric':'Topocentric', 'Chaldean':'Chaldean', 'Dorothean':'Dorothean', 'MorinusTrip':'Morinus', 'Primary':'Primary', 
-'Secondary':'Secondary', 'Participating':'Particip.', 'None':'None', 'Triplicities':'Triplicities', 'InTables':'In tables', 
+'Secondary':'Secondary', 'Participating':'Particip.', 'None':'None', 'Triplicities':'Triplicities', 'InTables':'In Tables', 
 'AspectsDontCross':'Traditional', 'Texts':'Texts', 'Languages':'Languages', 'Asc':'Asc', 'MC':'MC', 'AscMC2':'Asc-MC', 'GMT':'GMT', 
 'Aries':'Aries', 'Taurus':'Taurus', 'Gemini':'Gemini', 'Cancer':'Cancer', 'Leo':'Leo', 'Virgo':'Virgo', 'Libra':'Libra', 'Scorpio':'Scorpio', 
 'Sagittarius':'Sagittarius', 'Capricornus':'Capricorn', 'Aquarius':'Aquarius', 'Pisces':'Pisces', 
@@ -304,13 +305,13 @@ txtseng = {'DiscardCurrHor':'Do you want to discard current horoscope?', 'FileEr
 'Ayanamsha':'Ayanamsha', 'FaganBradley':'Fagan-Bradley', 'Lahiri':'Lahiri', 'Deluce':'Deluce', 'Raman':'Raman', 'Ushashashi':'Ushashashi', 'Krishnamurti':'Krishnamurti', 'DjwhalKhul':'DjwhalKhul', 'Yukteshwar':'Yukteshwar', 'JNBhasin':'JNBhasin', 'BabylonianKuglerI':'Babylonian, Kugler I', 'BabylonianKuglerII':'Babylonian, Kugler II', 'BabylonianKuglerIII':'Babylonian, Kugler III', 'BabylonianHuber':'Babylonian, Huber', 'BabylonianMercier':'Babylonian, Mercier', 'Aldebaran15Tau':'Aldebaran 15 Taurus', 'Hipparchos':'Hipparchos', 'Sassanian':'Sassanian', 'GalacticCenter0Sag':'Galactic Center at 0 Sag.', 'J2000':'J2000', 'J1900':'J1900', 'B1950':'B1950',
 'BabylonianKuglerI2':'Kugler I', 'BabylonianKuglerII2':'Kugler II', 'BabylonianKuglerIII2':'Kugler III', 'BabylonianHuber2':'Huber', 'BabylonianMercier2':'Mercier', 'Aldebaran15Tau2':'Aldebaran 15T', 'GalacticCenter0Sag2':'Galactic Center',
 'HelpAyanDeg':'Must be between 0 and 90', 'Customer2':'UserP',
-'HelpPDDeg':'Must be between 0 and 359', 'MLoF':'Mundane LoF', 
+'HelpPDDeg':'Must be between 0 and 359', 'MLoF':'Mundane Fortuna', 
 'SouthernLatitude':'Southern latitude', 'Mun':'Mun', 'HousePercent':'House(%)', 
-'ArabicParts':'Arabic Parts', 'SU':'SU', 'MO':'MO', 'ME':'ME', 'VE':'VE', 'MA':'MA', 'JU':'JU', 'SA':'SA', 
-'Diurnal':'Diurnal', 'Nocturnal':'Nocturnal', 'Formula':'Formula', 'Par':'Par', 'AC':'AC', 'DC2':'DC', 
+'ArabicParts':'Arabic Parts', 'SU':'Sun', 'MO':'Moon', 'ME':'Mercury', 'VE':'Venus', 'MA':'Mars', 'JU':'Jupiter', 'SA':'Saturn', 
+'Diurnal':'Diurnal', 'Nocturnal':'Nocturnal', 'Formula':'Formula', 'Par':'Par', 'AC':'Asc', 'DC2':'Dsc', 
 'MaxArabicPartsNum':'The maximum number of the arabic parts is ', 'FSAsps':'FSAsps', 'Ara':'Ara', 'Squ':'Squ', 'UT':'UT', 'ZN':'ZN', 'LC':'LC',
 'J':'J', 'Square':'Square', 'CheckUser':'Check the UserP or UserS in the Primary Directions Dialog in the Options menu.', 'Cpt':'Cpt',
-'NewMoon':'New Moon', 'FullMoon':'Full Moon', 'Syzygy':'Syzygy', 'Date2':'Date(GMT)', 'LF':'LF', 'SY':'SY', 'DayNightOrb':'Day/Night orb', 
+'NewMoon':'New Moon', 'FullMoon':'Full Moon', 'Syzygy':'Syzygy', 'Date2':'Date(GMT)', 'LF':'LF', 'SY':'Syzygy', 'DayNightOrb':'Day/Night orb', 
 'HelpDayNightOrbDeg':'Must be between 0 and 6', 'SyzMoon':'Moon', 'SyzAbove':'Above horizon', 'SyzAboveNatal':'Above horizon(radix)', 
 'Synastry':'Synastry', 'Themes':'Themes', 'theme1':'theme1', 'theme2':'theme2', 'AscMCWidth':'Asc-MC Width', 
 'Individual':'Individual', 'UseIndividual':'Use individual', 
@@ -426,6 +427,11 @@ txtseng.setdefault("Apply", u"Apply")
 txtseng.setdefault("AboutTabInfo", "Info")
 txtseng.setdefault("AboutTabLicense", "License")
 txtseng.setdefault("AboutTabDevelopers", "Developers")
+# Arabic Parts / LoF messages
+txtseng.setdefault('LoFLocked',        u'Fortuna cannot be modified, deleted, or deactivated here!')
+txtseng.setdefault('RemovedExceptLoF', u'All parts except Fortuna were removed.')
+txtseng.setdefault('NoPartsToRemove',  u'No parts to remove (Fortuna is kept.)!')
+
 
 
 menutxtshun = {'MHoroscope':u'&Horoszkóp', 'HMNew':u'&Új\tCtrl+U', 'HMNewDoc':u'Új horoszkóp készítése', 'HMData':u'&Adatok\tCtrl+A', 
@@ -764,6 +770,11 @@ txtshun.setdefault("Apply", u"Alkalmaz")
 txtshun.setdefault("AboutTabInfo", u"Információ")
 txtshun.setdefault("AboutTabLicense", u"Licenc")
 txtshun.setdefault("AboutTabDevelopers", u"Fejlesztők")
+# Arabic Parts / LoF messages
+txtshun.setdefault('LoFLocked',        u'A Szerencsekerék itt nem módosítható, nem törölhető és nem kapcsolható ki.')
+txtshun.setdefault('RemovedExceptLoF', u'A Szerencsekerék kivételével minden pont törlésre került.')
+txtshun.setdefault('NoPartsToRemove',  u'Nincs törölhető pont (a Szerencsekerék megmarad).')
+txtshun.setdefault('RE', u'Hivatkozás') 
 
 
 menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N', 'HMNewDoc':u'Построить новый гороскоп', 'HMData':u'&Данные\tCtrl+D', 
@@ -1099,6 +1110,11 @@ txtsrus.setdefault("Apply", u"Применить")
 txtsrus.setdefault("AboutTabInfo", u"Сведения")
 txtsrus.setdefault("AboutTabLicense", u"Лицензия")
 txtsrus.setdefault("AboutTabDevelopers", u"Разработчики")
+# Arabic Parts / LoF messages
+txtsrus.setdefault('LoFLocked',        u'Жребий Фортуны нельзя здесь изменять, удалять или отключать.')
+txtsrus.setdefault('RemovedExceptLoF', u'Удалены все жребии, кроме Жребия Фортуны.')
+txtsrus.setdefault('NoPartsToRemove',  u'Нет жребиев для удаления (Жребий Фортуны сохраняется).')
+txtsrus.setdefault('RE', u'Ссылка')          # Russian
 
 
 
@@ -1431,7 +1447,11 @@ txtsesp.setdefault("Apply", u"Aplicar")
 txtsesp.setdefault("AboutTabInfo", u"Información")
 txtsesp.setdefault("AboutTabLicense", u"Licencia")
 txtsesp.setdefault("AboutTabDevelopers", u"Desarrolladores")
-
+# Arabic Parts / LoF messages
+txtsesp.setdefault('LoFLocked',        u'La Parte de Fortuna no puede modificarse, eliminarse ni desactivarse aquí.')
+txtsesp.setdefault('RemovedExceptLoF', u'Se eliminaron todas las partes excepto la Parte de Fortuna.')
+txtsesp.setdefault('NoPartsToRemove',  u'No hay partes para eliminar (se mantiene la Parte de Fortuna).')
+txtsesp.setdefault('RE', u'Referencia')      # Spanish
 
 
 
@@ -1773,6 +1793,13 @@ txtsita.setdefault("Apply", u"Applica")
 txtsita.setdefault("AboutTabInfo", u"Informazioni")
 txtsita.setdefault("AboutTabLicense", u"Licenza")
 txtsita.setdefault("AboutTabDevelopers", u"Sviluppatori")
+# Arabic Parts / LoF messages
+txtsita.setdefault('LoFLocked',        u'La Parte di Fortuna non può essere modificata, eliminata o disattivata qui.')
+txtsita.setdefault('RemovedExceptLoF', u'Sono state rimosse tutte le parti tranne la Parte di Fortuna.')
+txtsita.setdefault('NoPartsToRemove',  u'Nessuna parte da rimuovere (la Parte di Fortuna è mantenuta).')
+txtsita.setdefault('RE', u'Riferimento')     # Italian
+
+
 
 menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':u'Créer un nouveau thème', 'HMData':u'&Données\tCtrl+D', 
 'HMDataDoc':u'Editer un thème existant',
@@ -1785,7 +1812,7 @@ menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':
 'HMFindTime':u'&Rechercher date et lieu\tCtrl+R', 'HMFindTimeDoc':u"Rechercher la date et le lieu à partir d'une position", 
 'HMEphemeris':u'&Ephémérides graphiques\tCtrl+E', 'HMEphemerisDoc':u'Ephémérides graphiques', 
 'HMClose':u'&Fermer\tCtrl+F', 'HMCloseDoc':u'Fermer le thème', 
-'HMExit':u'&Quitter\tCtrl+Q', 'HMExitDoc':u"Quitter l'application", 
+'HMExit':u'&Quitter\tCtrl+Q', 'HMExitDoc':u"Quitter l'application",         
 'MTable':u'Ta&bleaux', 
 'TMPositions':u'Données astronomiques\tF1', 'TMPositionsDoc':u'Afficher la position des planètes et des maisons', 
 'TMAlmutens':u'Almutens',
@@ -2103,6 +2130,11 @@ txtsfre.setdefault("OK", u"OK")
 txtsfre.setdefault("Yes", u"Oui")
 txtsfre.setdefault("No", u"Non")
 txtsfre.setdefault("Apply", u"Appliquer")
+# Arabic Parts / LoF messages
+txtsfre.setdefault('LoFLocked',        u'La Part de Fortune ne peut pas être modifiée, supprimée ou désactivée ici.')
+txtsfre.setdefault('RemovedExceptLoF', u'Toutes les parts sauf la Part de Fortune ont été supprimées.')
+txtsfre.setdefault('NoPartsToRemove',  u'Aucune part à supprimer (la Part de Fortune est conservée).')
+txtsfre.setdefault('RE', u'Référence')       # French
 
 
 
@@ -2541,6 +2573,12 @@ txtschs.setdefault("Apply", u"应用")
 txtschs.setdefault("AboutTabInfo", u"信息")
 txtschs.setdefault("AboutTabLicense", u"许可")
 txtschs.setdefault("AboutTabDevelopers", u"开发者")
+# Arabic Parts / LoF messages
+txtschs.setdefault('LoFLocked',        u'此处无法修改、删除或停用福点。')
+txtschs.setdefault('RemovedExceptLoF', u'已删除除福点外的所有点。')
+txtschs.setdefault('NoPartsToRemove',  u'没有可删除的点（保留福点）。')
+txtschs.setdefault('RE', u'引用')             # Chinese (Simplified)
+
 
 
 
@@ -2804,6 +2842,10 @@ txtscht.setdefault("TimeSmallerThanBirthTime", u"時間早於出生時間。")
 txtscht.setdefault("AboutTabInfo", u"資訊")
 txtscht.setdefault("AboutTabLicense", u"授權條款")
 txtscht.setdefault("AboutTabDevelopers", u"開發者")
+txtscht.setdefault('LoFLocked',        u'此處無法修改、刪除或停用福點。')
+txtscht.setdefault('RemovedExceptLoF', u'已刪除除福點外的所有點。')
+txtscht.setdefault('NoPartsToRemove',  u'沒有可刪除的點（保留福點）。')
+txtscht.setdefault('RE', u'引用')             # Chinese (Traditional)
 
 
 
@@ -3060,9 +3102,9 @@ txtsko = {'Circumambulation': u'서컴앰뷸레이션',
 'HelpAyanDeg':u'0에서 90 사이여야 합니다.', 'Customer2':u'사용자P',
 'HelpPDDeg':u'0에서 359 사이여야 합니다.', 'MLoF':u'먼데인 포르투나',
 'SouthernLatitude':u'남위', 'Mun':u'Mun', 'HousePercent':u'하우스(%)',
-'ArabicParts':u'랏(아라빅 파트)', 'SU':u'SU', 'MO':u'MO', 'ME':u'ME', 'VE':u'VE', 'MA':u'MA', 'JU':u'JU', 'SA':u'SA','DE': u'DE',
-'RE': u'RE',
-'Diurnal':u'주간', 'Nocturnal':u'야간', 'Formula':u'공식', 'Par':u'Par', 'AC':u'AC', 'DC2':u'DC',
+'ArabicParts':u'랏(아라빅 파트)', 'SU':u'태양', 'MO':u'달', 'ME':u'수성', 'VE':u'금성', 'MA':u'화성', 'JU':u'목성', 'SA':u'토성','DE': u'도수',
+'RE': u'참조',
+'Diurnal':u'주간', 'Nocturnal':u'야간', 'Formula':u'공식', 'Par':u'Par', 'AC':u'상승점', 'DC2':u'하강점',
 'MaxArabicPartsNum':u'랏(아라빅 파트)의 최대 개수는 ',
 'FSAsps':u'FSAsps', 'Ara':u'Ara', 'Squ':u'Squ', 'UT':u'UT', 'ZN':u'ZN', 'LC':u'LC',
 'J':u'J', 'Square':u'사각형', 'CheckUser':u'옵션 메뉴의 프라이머리 디렉션 대화상자에서 사용자P 또는 사용자S를 선택하세요.', 'Cpt':u'Cpt',
@@ -3157,7 +3199,7 @@ txtsko = {'Circumambulation': u'서컴앰뷸레이션',
 'Converteclipticlongitude':u'사인과 도, 분, 초 또는 절대 황경 도수를 도데카테모리온으로 변환',
 'InputSignandDegree':u'입력: 사인과 도수',
 'InputEclipticLongitude':u'입력: 황경 (0 - 360)',
-'SignDegMinSec':u'사인 / 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정하기","MundaneOnly":u"먼데인만, ",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
+'SignDegMinSec':u'사인 / 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정","MundaneOnly":u"먼데인만, ",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
 }
 txtsko.update({
     'NumFieldsCannotBeEmpty': u'데이터에 문제가 있습니다! 숫자 입력란은 비워둘 수 없습니다.',
@@ -3195,6 +3237,11 @@ txtsko.setdefault("Apply", u"적용")
 txtsko.setdefault("AboutTabInfo", u"정보")
 txtsko.setdefault("AboutTabLicense", u"라이선스")
 txtsko.setdefault("AboutTabDevelopers", u"개발자")
+# Arabic Parts / LoF messages
+txtsko.setdefault('LoFLocked',        u'포르투나는 여기에서 수정, 삭제, 비활성화할 수 없습니다!')
+txtsko.setdefault('RemovedExceptLoF', u'포르투나를 제외한 모든 랏을 삭제했습니다.')
+txtsko.setdefault('NoPartsToRemove',  u'삭제할 랏(아라빅 파츠)이 없습니다(포르투나는 유지됩니다.)!')
+
 
 
 
