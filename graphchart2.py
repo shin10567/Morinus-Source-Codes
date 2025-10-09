@@ -368,6 +368,11 @@ class GraphChart2:
 
 					# ⚠️ 중요: 포르투나 전용 선은 더 이상 그리지 않음
 					# self.drawOuterFortuneLine()  # ← 이 줄은 삭제
+				else:
+					# 사용자 설정 아라빅 파츠가 하나도 없을 때: 포르투나만 선으로 연결
+					# (AP 충돌 시 적용되던 바깥 휠 보정각은 0으로)
+					self._fortune_outer_shift = 0.0
+					self.drawOuterFortuneLine()
 
 		#Convert to PIL (truetype-font is not supported in wxPython)
 		wxImag = self.buffer.ConvertToImage()
@@ -407,6 +412,9 @@ class GraphChart2:
 			elif self.options.showfixstars == options.Options.ARABICPARTS:
 				if self.chart.parts and self.chart.parts.parts:
 					self.drawArabicParts(self._parts_ap, self.apshow, self.apshift, self.apyoffs)
+				else:
+					# 아라빅 파츠가 0개일 때: 포르투나 텍스트만 바깥 wheel에 출력
+					self.drawOuterFortuneText()
 
 		wxImg = wx.Image(self.img.size[0], self.img.size[1])
 		wxImg.SetData(self.img.tobytes())

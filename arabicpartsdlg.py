@@ -405,11 +405,11 @@ class RefDegDlg(wx.Dialog):
 				self.rows.append(('DE', cb, sp))
 			else:
 				# R0(LoF), R1..R{maxref} 라벨 콤보
-				choices = [u'#1'] + [u'#%d' % (k+1) for k in range(1, maxref+1)]
+				choices = [u'#%d' % (k+1) for k in range(maxref)]
 				init_idx = 0
 				try:
 					_n = int(self.values[idx])
-					if 0 <= _n <= maxref:
+					if 0 <= _n < maxref:
 						init_idx = _n
 				except:
 					pass
@@ -866,7 +866,7 @@ class ArabicPartsDlg(wx.Dialog):
 			maxref = self.li.GetItemCount()
 		except Exception:
 			maxref = 1
-		choices = [u'#1'] + [u'#%d' % (k+1) for k in range(1, maxref+1)]
+		choices = [u'#%d' % (k+1) for k in range(maxref)]
 		for cb in (self.reA, self.reB, self.reC):
 			try:
 				sel = cb.GetSelection()
