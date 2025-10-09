@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import wx
 import intvalidator
@@ -7,6 +8,7 @@ import placeslistdlg
 import geonames
 import mtexts
 import util
+import threading
 
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
@@ -161,20 +163,21 @@ class PlacesDlg(wx.Dialog):
 
 	PLUSCHOICES = (u'+', u'-')
 	def __init__(self, parent, langid):#, inittxt):
-        # Instead of calling wx.Dialog.__init__ we precreate the dialog
-        # so we can set an extra style that must be set before
-        # creation, and then we create the GUI object using the Create
-        # method.
+		# Instead of calling wx.Dialog.__init__ we precreate the dialog
+		# so we can set an extra style that must be set before
+		# creation, and then we create the GUI object using the Create
+		# method.
 #		pre = wx.PreDialog()
 #		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 #		pre.Create(parent, -1, mtexts.txts['Places'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
-        # This next step is the most important, it turns this Python
-        # object into the real wrapper of the dialog (instead of pre)
-        # as far as the wxPython extension is concerned.
+		# This next step is the most important, it turns this Python
+		# object into the real wrapper of the dialog (instead of pre)
+		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['Places'], size=wx.DefaultSize)
 		self.langid = langid
+		self._busy = None   # BusyInfo 핸들
 
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
@@ -315,11 +318,19 @@ class PlacesDlg(wx.Dialog):
 		self.alt.SetHelpText(mtexts.txts['HelpAltitude'])
 		self.alt.SetMaxLength(5)
 		self.alt.SetValue('0')
+		# Altitude 토글을 제목 아래, 입력칸 위로 배치
+		self.altToggle = wx.CheckBox(self, -1, mtexts.txts.get('UseAltitude','Use altitude'))
+		self.altToggle.SetValue(False)
+		self.altToggle.Bind(wx.EVT_CHECKBOX, self.OnToggleAltitude)
+		altsizer.Add(self.altToggle, 0, wx.ALIGN_LEFT|wx.LEFT|wx.TOP, 5)
+
 		hhhsubsizer = wx.BoxSizer(wx.HORIZONTAL)
 		hhhsubsizer.Add(self.alt, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 		label = wx.StaticText(self, -1, 'm')
 		hhhsubsizer.Add(label, 0, wx.ALIGN_CENTER|wx.TOP, 2)
 		altsizer.Add(hhhsubsizer, 0, wx.GROW|wx.ALIGN_CENTER|wx.TOP, 20)
+		# 초기 상태 적용(OFF면 Alt 입력칸 비활성 + 0 표시)
+		self.OnToggleAltitude(None)
 
 		hhsubsizer.Add(altsizer, 0, wx.GROW|wx.ALIGN_LEFT|wx.RIGHT, 5)
 		vsubsizer.Add(hhsubsizer, 0, wx.GROW|wx.ALIGN_LEFT)
@@ -329,8 +340,8 @@ class PlacesDlg(wx.Dialog):
 		btnssizer = wx.StaticBoxSizer(sbtns, wx.VERTICAL)
 		vsizer = wx.BoxSizer(wx.VERTICAL)
 		ID_Add = wx.NewId()
-		btnAdd = wx.Button(self, ID_Add, mtexts.txts['Add'])
-		vsizer.Add(btnAdd, 0, wx.GROW|wx.ALL, 5)
+		self.btnAdd = wx.Button(self, ID_Add, mtexts.txts['Add'])
+		vsizer.Add(self.btnAdd, 0, wx.GROW|wx.ALL, 5)
 		ID_Remove = wx.NewId()
 		btnRemove = wx.Button(self, ID_Remove, mtexts.txts['Remove'])
 		vsizer.Add(btnRemove, 0, wx.GROW|wx.ALL, 5)
@@ -398,7 +409,7 @@ class PlacesDlg(wx.Dialog):
 
 		wait = wx.BusyCursor()
 		maxnum = self.sizeslider.GetValue()
-		geo = geonames.Geonames(self.birthplace.GetValue().encode("utf-8"), maxnum, self.langid)
+		geo = geonames.Geonames(self.birthplace.GetValue(), maxnum, self.langid)
 		if (geo.get_location_info()):
 			if len(geo.li) == 1:
 				self.fillFields(geo.li[0])
@@ -416,6 +427,12 @@ class PlacesDlg(wx.Dialog):
 			dlg = wx.MessageDialog(self, mtexts.txts['NotFound'], '', wx.OK|wx.ICON_EXCLAMATION)
 			dlg.ShowModal()
 
+	def OnToggleAltitude(self, evt):
+		use = self.altToggle.GetValue()
+		# 토글 OFF면 입력 비활성 + 0으로 표시
+		self.alt.Enable(use)
+		if not use:
+			self.alt.SetValue('0')
 
 	def fillFields(self, it):
 		self.birthplace.SetValue(it[geonames.Geonames.NAME])
@@ -453,27 +470,123 @@ class PlacesDlg(wx.Dialog):
 		#zone
 		plus = True
 		gmtoffs = it[geonames.Geonames.GMTOFFS]
-		if gmtoffs < 0.0:
-			plus = False
-			gmtoffs *= -1
+		need_fetch_tz = (gmtoffs is None)
 
-		gmtoffshour = int(gmtoffs)
-		gmtoffsmin = int((gmtoffs-gmtoffshour)*60.0)
+		# 바로 계산 가능한 경우만 즉시 반영
+		if not need_fetch_tz:
+			if gmtoffs < 0.0:
+				plus = False
+				gmtoffs *= -1
+			gmtoffshour = int(gmtoffs)
+			gmtoffsmin  = int((gmtoffs-gmtoffshour)*60.0)
+			self.zhour.SetValue(str(gmtoffshour))
+			self.zminute.SetValue(str(gmtoffsmin))
+			self.pluscb.SetStringSelection(PlacesDlg.PLUSCHOICES[0 if plus else 1])
+		else:
+			# 자리표시만 채워두고 나중에 갱신
+			self.zhour.SetValue('0')
+			self.zminute.SetValue('0')
+			self.pluscb.SetStringSelection(PlacesDlg.PLUSCHOICES[0])
 
-		self.zhour.SetValue(str(gmtoffshour))
-		self.zminute.SetValue(str(gmtoffsmin))
-		
-		val = 0
-		if not plus:
-			val = 1
-		self.pluscb.SetStringSelection(PlacesDlg.PLUSCHOICES[val])
 
 		#altitude
-		alt = int(it[geonames.Geonames.ALTITUDE])
-		if alt < 0:
-			alt = 0
+		alt = it[geonames.Geonames.ALTITUDE]
+		use_alt = True
+		try:
+			use_alt = self.altToggle.GetValue()
+		except Exception:
+			pass
 
-		self.alt.SetValue(str(alt))
+		if not use_alt:
+			# 고도 기능 끈 상태: 즉시 0으로 표시하고 조회 안 함
+			self.alt.SetValue('0')
+			need_fetch_alt = False
+		else:
+			need_fetch_alt = (alt is None)
+			if not need_fetch_alt:
+				alt = int(alt)
+				if alt < 0: alt = 0
+				self.alt.SetValue(str(alt))
+			else:
+				# 자리표시
+				self.alt.SetValue('0')
+
+		need_fetch_alt = (alt is None)
+
+		if not need_fetch_alt:
+			alt = int(alt)
+			if alt < 0: alt = 0
+			self.alt.SetValue(str(alt))
+		else:
+			self.alt.SetValue('0')  # 자리표시
+
+		# (Alt 토글 반영) 둘 중 하나라도 필요하면 조회
+		if need_fetch_tz or (use_alt and need_fetch_alt):
+			# 잘못 추가되는 걸 막기 위해 조회 중엔 Add 버튼 비활성
+			if hasattr(self, 'btnAdd'):
+				self.btnAdd.Enable(False)
+
+			lon_o = it[geonames.Geonames.LON]
+			lat_o = it[geonames.Geonames.LAT]
+			# 진행 안내 팝업 (작은 Busy 창)
+			if use_alt and need_fetch_alt:
+				msg = mtexts.txts.get('FetchingZoneAlt',
+					mtexts.txts.get('PleaseWait', 'Please wait… Fetching timezone and elevation…'))
+			else:
+				msg = mtexts.txts.get('FetchingZoneOnly',
+					mtexts.txts.get('PleaseWait', 'Please wait… Fetching timezone…'))
+			self._busy = wx.BusyInfo(msg, parent=self)
+
+			def worker():
+				g = geonames.Geonames('', 1, self.langid)
+				tz = gmtoffs if not need_fetch_tz else g.get_gmt_offset(lon_o, lat_o)
+				if use_alt and need_fetch_alt:
+					el = g.get_elevation(lon_o, lat_o)
+				else:
+					# 토글 OFF이거나 이미 값 있음
+					el = alt if alt is not None else 0
+
+
+				# 기본값 인자로 캡처해서 지역변수 충돌 방지
+				def apply(tz_val=tz, el_val=el):
+					try:
+						# 타임존 반영
+						if tz_val is None:  # 실패 시 0으로
+							tz_val = 0.0
+						local_plus = True
+						if tz_val < 0.0:
+							local_plus = False
+							tz_val = -tz_val
+						h = int(tz_val); m = int(round((tz_val - h) * 60.0))
+						self.zhour.SetValue(str(h))
+						self.zminute.SetValue(str(m))
+						self.pluscb.SetStringSelection(PlacesDlg.PLUSCHOICES[0 if local_plus else 1])
+
+						# 고도 반영
+						if el_val is None: el_val = 0
+						try:
+							el_val = int(el_val)
+						except:
+							el_val = 0
+						if el_val < 0: el_val = 0
+						self.alt.SetValue(str(el_val))
+					finally:
+						# Busy 창 닫기
+						info = getattr(self, '_busy', None)
+						if info is not None:
+							self._busy = None
+							del info
+						# Add 버튼 복구(성공/실패 무조건)
+						if hasattr(self, 'btnAdd'):
+							self.btnAdd.Enable(True)
+
+				wx.CallAfter(apply)
+
+			threading.Thread(target=worker, daemon=True).start()
+		else:
+			# 둘 다 이미 채워졌으면 Add 버튼 유지
+			if hasattr(self, 'btnAdd'):
+				self.btnAdd.Enable(True)
 
 
 #	def isInternetOn(self):

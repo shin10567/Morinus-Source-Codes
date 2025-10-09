@@ -14,6 +14,7 @@ import primdirsrevlistframe
 import wx.lib.newevent
 import _thread
 import mtexts
+import common
 
 (PDReadyEvent, EVT_PDREADY) = wx.lib.newevent.NewEvent()
 pdlock = _thread.allocate_lock()
@@ -99,7 +100,12 @@ class TransitFrame(wx.Frame):
 
 		self.Bind(EVT_PDREADY, self.OnPDReady)
 		self.Bind(wx.EVT_CLOSE, self.OnClose)
-
+		# === status bar: split 2 fields (left datetime, right lon/lat) ===
+		self.statusbar = getattr(self, 'statusbar', None) or self.CreateStatusBar(2)
+		self.statusbar.SetFieldsCount(2)
+		# 반반 폭(비율 지정): 음수면 비율, [-1, -1] = 1:1
+		self.statusbar.SetStatusWidths([-1, -1])
+		self._update_status_time_place()
 
 	def onPopupMenu(self, event):
 		self.PopupMenu(self.pmenu, event.GetPosition())
@@ -110,14 +116,14 @@ class TransitFrame(wx.Frame):
 			self.selection = TransitFrame.CHART
 			self.w.Destroy()
 			self.w = transitwnd.TransitWnd(self, self.chart, self.radix, self.options, self.parent, False, -1, self.GetClientSize())
-
+			self._update_status_time_place()
 
 	def onComparison(self, event):
 		if self.selection != TransitFrame.COMPOUND:
 			self.selection = TransitFrame.COMPOUND
 			self.w.Destroy()
 			self.w = transitwnd.TransitWnd(self, self.chart, self.radix, self.options, self.parent, True, -1, self.GetClientSize())
-
+			self._update_status_time_place()
 
 	def onPositions(self, event):
 		if self.selection != TransitFrame.POSITIONS:
@@ -128,14 +134,71 @@ class TransitFrame(wx.Frame):
 				self.w.Refresh()
 			else:
 				self.w = positionswnd.PositionsWnd(self, self.chart, self.options, self.parent, -1, self.GetClientSize())
-
+				self._update_status_time_place()
 
 	def onSquare(self, event):
 		if self.selection != TransitFrame.SQUARE:
 			self.selection = TransitFrame.SQUARE
 			self.w.Destroy()
 			self.w = squarechartwnd.SquareChartWnd(self, self.chart, self.options, self.parent, -1, self.GetClientSize())
+			self._update_status_time_place()
 
+	def _fmt_lonlat(self, p):
+		deg = u"\N{DEGREE SIGN}"
+		lon_txt = f"{p.deglon}{deg}{str(p.minlon).zfill(2)}' " + ('E' if p.east else 'W')
+		lat_txt = f"{p.deglat}{deg}{str(p.minlat).zfill(2)}' " + ('N' if p.north else 'S')
+		return lon_txt, lat_txt
+
+	def _update_status_time_place(self):
+		try:
+			t = self.chart.time
+			p = self.chart.place
+		except Exception:
+			return
+
+		# === 왼쪽: yyyy.month.dd HH:MM:SS + ZN/UT/LC (메인 차트와 동일 양식) ===
+		# BC 표시
+		signtxt = '-' if getattr(t, 'bc', False) else ''
+		# 타임존 라벨(ZN/UT/LC)
+		ztxt = mtexts.txts['UT']
+		if t.zt == chart.Time.ZONE:
+			ztxt = mtexts.txts['ZN']
+		elif t.zt == chart.Time.LOCALMEAN or t.zt == chart.Time.LOCALAPPARENT:
+			ztxt = mtexts.txts['LC']
+		# 월 이름(로케일 반영): common.common.months
+		try:
+			month_name = common.common.months[t.origmonth-1]
+		except Exception:
+			# fallback
+			month_name = str(t.origmonth).zfill(2)
+
+		left_txt = (
+			f"{signtxt}{t.origyear}."
+			f"{month_name}."
+			f"{str(t.origday).zfill(2)} "
+			f"{str(t.hour).zfill(2)}:{str(t.minute).zfill(2)}:{str(t.second).zfill(2)}"
+			f"{ztxt}"
+		)
+
+		# === 오른쪽: Long./Lat. (메인 상태바의 포맷 그대로) ===
+		deg_symbol = u':'  # 메인 차트 상태바는 ':'를 각도 구분자로 씀
+		dir_lon = mtexts.txts['E'] if p.east else mtexts.txts['W']
+		dir_lat = mtexts.txts['N'] if p.north else mtexts.txts['S']
+
+		right_txt = (
+			f"{mtexts.txts['Long']}.: "
+			f"{str(p.deglon).zfill(2)}{deg_symbol}{str(p.minlon).zfill(2)}'"
+			f"{dir_lon}"
+			f" {mtexts.txts['Lat']}.: "
+			f"{str(p.deglat).zfill(2)}{deg_symbol}{str(p.minlat).zfill(2)}'"
+			f"{dir_lat}"
+		)
+
+		try:
+			(getattr(self, 'statusbar', None) or self.CreateStatusBar(2)).SetStatusText(left_txt, 0)
+			self.statusbar.SetStatusText(right_txt, 1)
+		except Exception:
+			pass
 
 	def onPDDirect(self, event):
 		self.onPD(primdirs.PrimDirs.DIRECT)

@@ -275,6 +275,11 @@ class GraphChart2:
 	def drawChart(self):
 		# PIL can draw only 1-width ellipse (or is there a width=...?)
 		self.drawCircles()
+		# --- Arabic Parts 안전 초기화(없을 경우 대비) ---
+		if not hasattr(self, "apshow"):  self.apshow  = []
+		if not hasattr(self, "apshift"): self.apshift = []
+		if not hasattr(self, "apyoffs"): self.apyoffs = []
+		# ---------------------------------------------
 
 		if self.options.showterms:
 			self.drawTermsLines()
@@ -336,14 +341,33 @@ class GraphChart2:
 			elif self.options.showfixstars == options.Options.CANTIS:
 				self.pshiftantis = self.arrangeAntis(self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.rAntis)
 				self.drawAntisLines(self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.pshiftantis, self.r30, self.rAntisLines)
+
 			elif self.options.showfixstars == options.Options.ARABICPARTS:
 				if self.chart.parts and self.chart.parts.parts:
-					self.apshow = list(range(len(self.chart.parts.parts)))
-					self.apshift = self.arrangeParts(self.chart.parts.parts, self.apshow, self.rFixstars)
-					self.apyoffs = self.arrangeyParts(self.chart.parts.parts, self.apshow, self.apshift, self.rFixstars)
-					self.drawArabicPartsLines(self.chart.parts.parts, self.apshow, self.apshift)
-					self.drawOuterFortuneLine()  # ⬅ 추가
+					# 1) AP 원본을 복사하고, 포르투나를 같은 포맷으로 추가
+					parts_ap = list(self.chart.parts.parts)
+					try:
+						lof_lon  = self.chart.fortune.fortune[fortune.Fortune.LON]
+						lof_name = mtexts.txts.get('LotOfFortune', 'Fortuna')
+						parts_ap.append({
+							arabicparts.ArabicParts.LONG: lof_lon,
+							arabicparts.ArabicParts.NAME: lof_name,
+						})
+					except Exception:
+						pass  # 포르투나가 없으면 그냥 AP만
 
+					# 2) 이후 로직은 전부 이 확장 리스트(parts_ap)를 기준으로
+					self._parts_ap = parts_ap
+					self.apshow  = list(range(len(parts_ap)))
+					rText = (self.rOuterLine + self.symbolSize * 0.2)
+					self.apshift = self.arrangeParts(parts_ap, self.apshow, rText)
+					self.apyoffs = self.arrangeyParts(parts_ap, self.apshow, self.apshift, rText)
+
+					# 3) 바깥 원 연결선도 AP(=포르투나 포함) 기준으로 한 번만 그림
+					self.drawArabicPartsLines(parts_ap, self.apshow, self.apshift)
+
+					# ⚠️ 중요: 포르투나 전용 선은 더 이상 그리지 않음
+					# self.drawOuterFortuneLine()  # ← 이 줄은 삭제
 
 		#Convert to PIL (truetype-font is not supported in wxPython)
 		wxImag = self.buffer.ConvertToImage()
@@ -382,8 +406,8 @@ class GraphChart2:
 				self.drawAntis(self.chart, self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.pshiftantis, self.rAntis)
 			elif self.options.showfixstars == options.Options.ARABICPARTS:
 				if self.chart.parts and self.chart.parts.parts:
-					self.drawArabicParts(self.chart.parts.parts, self.apshow, self.apshift, self.apyoffs)
-					self.drawOuterFortuneText()
+					self.drawArabicParts(self._parts_ap, self.apshow, self.apshift, self.apyoffs)
+
 		wxImg = wx.Image(self.img.size[0], self.img.size[1])
 		wxImg.SetData(self.img.tobytes())
 		self.buffer = wx.Bitmap(wxImg)
@@ -1122,72 +1146,166 @@ class GraphChart2:
 
 	def arrangeParts(self, parts, showidxs, rText):
 		"""
-		FixStars용 arrangefs를 아라빅 파츠에 맞춰 단순화한 버전.
-		겹침을 줄이기 위해 각 항목의 각도를 소폭 시프팅합니다.
+		항성/도데카테모리온과 같은 방식:
+		- 가까운 항목끼리 사각형이 겹치면 앞쪽(+), 뒤쪽(-)으로 0.1°씩 각도를 밀어낸다
+		- 360/0 경계도 처리
+		- 텍스트 폭/높이를 실제로 써서 겹침 판단
 		"""
-		fshift = []
-		num = len(showidxs)
-		for _ in range(num):
-			fshift.append(0.0)
+		import math
+		(cx, cy) = self.center.Get()
+		n = len(showidxs)
+		fshift = [0.0] * n
+		if n < 2:
+			return fshift[:]
 
-		# 각도 기준 정렬
-		order = sorted(range(num), key=lambda k: parts[showidxs[k]][arabicparts.ArabicParts.LONG])
-		mixed = order[:]  # 표시 인덱스 매핑
+		# 정렬용 배열
+		order  = [parts[idx][arabicparts.ArabicParts.LONG] for idx in showidxs]
+		mixed  = list(range(n))  # showidxs의 인덱스
 
-		def text_w(i):
-			name = parts[showidxs[i]][arabicparts.ArabicParts.NAME]
+		# 경도 기준 정렬(오름차순)
+		for j in range(n):
+			for i in range(n-1):
+				if order[i] > order[i+1]:
+					order[i], order[i+1] = order[i+1], order[i]
+					mixed[i], mixed[i+1] = mixed[i+1], mixed[i]
+
+		def rect(i):
+			"""현재 i(정렬 뒤 인덱스)의 라벨 사각형(좌상단 x, y, w, h)"""
+			real_idx = mixed[i]
+			idx = showidxs[real_idx]
+			name = parts[idx][arabicparts.ArabicParts.NAME]
+			lon  = order[i]
+			ang  = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - lon - fshift[real_idx])
+			rad  = math.pi + math.radians(ang)
+			x    = cx + math.cos(rad) * rText
+			y    = cy + math.sin(rad) * rText
 			w, h = self.fntText.getsize(name)
-			return w
+			pos  = util.normalize(math.degrees(rad))
+			if 90.0 < pos < 270.0:  # 좌반구 오른쪽 정렬
+				x -= w
+			return (x, y - h/2.0, w, h)
 
-		# 인접 항목 간 겹침 회피
-		for _ in range(num+1):
-			changed = False
-			for ii in range(num-1):
-				i1, i2 = order[ii], order[ii+1]
-				lon1 = parts[showidxs[i1]][arabicparts.ArabicParts.LONG] + fshift[i1]
-				lon2 = parts[showidxs[i2]][arabicparts.ArabicParts.LONG] + fshift[i2]
+		# 인접쌍 + 360/0 경계 처리
+		def do_shift(p1, p2, forward=False):
+			shifted = False
+			x1, y1, w1, h1 = rect(p1)
+			x2, y2, w2, h2 = rect(p2)
+			while self.overlap(x1, y1, w1, h1, x2, y2, w2, h2):
+				if not forward:
+					fshift[mixed[p1]] -= 0.18
+				fshift[mixed[p2]] += 0.18
+				shifted = True
+				STEP_DEG = 0.5    # ← 0.15~0.22 사이 취향대로
+				GUARD    = 600     # ← 무한루프 방지
 
-				# 화면상 길이 추정: 호 길이 ≈ r * 각도
-				# 텍스트 폭을 감안해 0.5도 단위로 살짝 민다
-				need = (text_w(i1) + text_w(i2)) / (rText if rText else 1.0)
-				need_deg = max(0.0, (need * 180.0 / 3.1415926535) * 0.1)  # 완충치
+				cnt = 0
+				while self.overlap(x1, y1, w1, h1, x2, y2, w2, h2) and cnt < GUARD:
+					if not forward:
+						fshift[mixed[p1]] -= STEP_DEG
+					fshift[mixed[p2]] += STEP_DEG
+					cnt += 1
+					x1, y1, w1, h1 = rect(p1)
+					x2, y2, w2, h2 = rect(p2)
 
-				if lon2 - lon1 < need_deg:
-					# 뒤쪽을 앞으로 밀어 겹침 감소
-					shift = (need_deg - (lon2 - lon1)) * 0.6
-					fshift[i2] += shift
-					changed = True
-			if not changed:
-				break
+			return shifted
 
-		return fshift
+		def do_arrange(forward=False):
+			shifted_local = False
+			for i in range(n-1):
+				if do_shift(i, i+1, forward):
+					shifted_local = True
+			if shifted_local:
+				do_arrange(forward)
+
+		# 여러 번 훑어서 벌리기
+		for _ in range(max(2, n + 2)):   # ← n+1 → n+2 정도로 한 번 더
+			do_arrange(False)
+
+		# 360/0 경계
+		def angle_plus_shift(i):
+			return order[i] + (fshift[mixed[i]] if order[i] < 180 else fshift[mixed[i]])
+		# 경계에서 거꾸로 겹치는 경우만 앞으로(+ 방향) 밀기
+		shifted = do_shift(n-1, 0, True)
+		if shifted:
+			# 경계 밀림 이후 재정렬
+			for _ in range(n):
+				do_arrange(True)
+		else:
+			# 경계는 안 겹치는데, “끝이 앞을 넘어서는” 케이스 보정
+			if order[n-1] > 300.0 and order[0] < 60.0:
+				lon1 = order[n-1] + fshift[mixed[n-1]]
+				lon2 = order[0] + 360.0 + fshift[mixed[0]]
+				if lon1 > lon2:
+					dist = lon1 - lon2
+					fshift[mixed[0]] += dist
+					do_shift(n-1, 0, True)
+					for i in range(n-1):
+						l1 = order[i]   + fshift[mixed[i]]
+						l2 = order[i+1] + fshift[mixed[i+1]]
+						if l1 < 180.0 and l2 < 180.0 and l1 > l2:
+							fshift[mixed[i+1]] += (l1 - l2)
+							do_shift(i, i+1, True)
+						else:
+							break
+					for _ in range(n):
+						do_arrange(True)
+
+		return fshift[:]
+
 
 	def drawArabicParts(self, parts, showidxs, fshift, yoffs):
 		(cx, cy) = self.center.Get()
 		clr = self.options.clrtexts if not self.bw else (0, 0, 0)
 
-		for i in range(len(showidxs)):
-			idx  = showidxs[i]
+		for i, idx in enumerate(showidxs):
 			lon  = parts[idx][arabicparts.ArabicParts.LONG]
 			name = parts[idx][arabicparts.ArabicParts.NAME]
 
-			ayanoffs = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
-			ang_deg  = self.chart.houses.ascmc[houses.Houses.ASC] - ayanoffs - lon - fshift[i]
-			rad      = math.pi + math.radians(ang_deg)
+			base = self.chart.houses.ascmc[houses.Houses.ASC] - lon
+			# ★ 포르투나와 가까운 1개 AP는 '부호'까지 저장된 대칭 분리 각도 사용
+			split_sign = getattr(self, "_af_split_sign", 1.0)
+			split_deg  = getattr(self, "_af_split_deg", 0.0)
+			local_extra = (split_sign * split_deg) if getattr(self, "_af_split_idx", None) == i else 0.0
 
-			r_text = self.rFixstars + self.maxradius * 0.006
+			# 최종 각도(텍스트 레인 각)
+			ang = util.normalize(base - (fshift[i] + local_extra))
+			rad = math.pi + math.radians(ang)
+
+			# 라벨 레인: 선 끝보다 살짝 바깥
+			r_text = self.rOuterLine + self.symbolSize * 0.2
+
+			# 초기 배치
 			x = cx + math.cos(rad) * r_text
-			y = cy + math.sin(rad) * r_text + yoffs[i]  # ★ 추가
+			y = cy + math.sin(rad) * r_text + yoffs[i]
 
+			# 좌/우 반구 정렬
 			pos = util.normalize(math.degrees(rad))
 			w, h = self.fntText.getsize(name)
 			if 90.0 < pos < 270.0:
-				x -= w  # 왼쪽 반구: 오른쪽 정렬
+				x -= w
+
+			# ★ 포르투나 라벨과 매우 가까우면 한 칸 위/아래로 피해주기(기존 로직 유지)
+			try:
+				f_lon  = self.chart.fortune.fortune[fortune.Fortune.LON]
+				f_ang  = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - f_lon +
+										getattr(self, "_fortune_outer_shift", 0.0))
+				d = abs(util.normalize(ang - f_ang))
+				if d > 180.0: d = 360.0 - d
+				if d <= 0.35:
+					step = self.maxradius * 0.016
+					if 90.0 < pos < 270.0:
+						y -= step
+					else:
+						y += step
+			except Exception:
+				pass
+
+			# ★ outer wheel 침범 방지: 필요 시 바깥으로 살짝 더 밀어내기
+			x, y, r_text = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize*0.10))
 
 			self.draw.text((x, y - h/2), name, fill=clr, font=self.fntText)
 
 	def drawOuterFortuneText(self):
-		# 포르투나의 경도 가져오기
 		if not hasattr(self.chart, "fortune") or self.chart.fortune is None:
 			return
 		try:
@@ -1196,50 +1314,119 @@ class GraphChart2:
 			return
 
 		(cx, cy) = self.center.Get()
-		clr = self.options.clrtexts if not self.bw else (0, 0, 0)
-
-		# 라벨 텍스트(다국어 키가 있으면 사용, 없으면 'Fortune')
+		clr  = self.options.clrtexts if not self.bw else (0, 0, 0)
 		name = mtexts.txts.get('LotOfFortune', 'Fortuna')
 
-		ayanoffs = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
-		ang_deg  = self.chart.houses.ascmc[houses.Houses.ASC] - ayanoffs - lon
-		rad      = math.pi + math.radians(ang_deg)
+		base = self.chart.houses.ascmc[houses.Houses.ASC] - lon
+		# ★ AP와의 충돌 시 포르투나는 반대 부호로 이동하도록, drawArabicPartsLines에서 저장한 값을 그대로 사용
+		ang  = util.normalize(base + getattr(self, "_fortune_outer_shift", 0.0))
 
-		# 바깥 고리 라벨 반지름(고정별·아라빅 파츠와 동일 + 약간의 여백)
-		r_text = self.rFixstars + self.maxradius * 0.006
+		rad  = math.pi + math.radians(ang)
+
+		# 라벨 레인: 선 끝보다 살짝 바깥
+		r_text = self.rOuterLine + self.symbolSize * 0.2
+
 		x = cx + math.cos(rad) * r_text
 		y = cy + math.sin(rad) * r_text
 
-		# 왼쪽/오른쪽 반구에 따라 바깥 정렬
-		pos = util.normalize(math.degrees(rad))  # 0..360
+		pos = util.normalize(math.degrees(rad))
 		w, h = self.fntText.getsize(name)
 		if 90.0 < pos < 270.0:
-			x -= w  # 왼쪽 반구: 텍스트를 바깥쪽 정렬
+			x -= w
+
+		# --- 모든 AP 최종 라벨 사각형과 충돌이 없을 때까지 세로 스택 ---
+		if hasattr(self, "apshow") and hasattr(self, "apshift") and hasattr(self, "apyoffs"):
+			def fort_rect():
+				return (x, y - h/2.0, w, h, pos)
+
+			def ap_rect(i):
+				idx  = self.apshow[i]
+				alon = parts[idx][arabicparts.ArabicParts.LONG]
+				aang = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - alon - self.apshift[i])
+				arad = math.pi + math.radians(aang)
+				ax   = cx + math.cos(arad) * r_text
+				ay   = cy + math.sin(arad) * r_text + self.apyoffs[i]
+				aw, ah = self.fntText.getsize(parts[idx][arabicparts.ArabicParts.NAME])
+				apos = util.normalize(math.degrees(arad))
+				if 90.0 < apos < 270.0:
+					ax -= aw
+				return (ax, ay - ah/2.0, aw, ah)
+
+			changed = True
+			while changed:
+				changed = False
+				fx, fy, fw, fh, _ = fort_rect()
+				for i in range(len(self.apshow)):
+					ax, ay, aw, ah = ap_rect(i)
+					if self.overlap(fx, fy, fw, fh, ax, ay, aw, ah):
+						# 좌반구(텍스트 오른쪽 정렬)는 아래로(+), 우반구는 위로(-) 이동
+						y += 1.0 if (90.0 < pos < 270.0) else -1.0
+						changed = True
+						break
+
+			pass
+
+		# ★ outer wheel 침범 방지
+		x, y, r_text = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize*0.10))
 
 		self.draw.text((x, y - h/2), name, fill=clr, font=self.fntText)
 
 	def drawArabicPartsLines(self, parts, showidxs, fshift):
 		(cx, cy) = self.center.Get()
-		clr = self.options.clrframe if not self.bw else (0,0,0)
+		clr = self.options.clrframe if not self.bw else (0, 0, 0)
 		w = 2 if self.chartsize > GraphChart2.MEDIUM_SIZE else 1
 		pen = wx.Pen(clr, w)
 		self.bdc.SetPen(pen)
 
-		for i in range(len(showidxs)):
-			idx = showidxs[i]
-			lon = parts[idx][arabicparts.ArabicParts.LONG]
-			ayanoffs = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
+		# 포르투나-AP 근접 시 라벨 분리각 계산(필요 시만)
+		#self._af_split_idx = None
+		#self._af_split_deg = 0.0
+		try:
+			if hasattr(self.chart, "fortune") and self.chart.fortune and showidxs:
+				f_lon = self.chart.fortune.fortune[fortune.Fortune.LON]
+				f_ang = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - f_lon)
 
-			# 아야남샤 + fshift를 동일하게 반영한 하나의 각도로 선을 그린다(라벨과 일치).
-			ang = self.chart.houses.ascmc[houses.Houses.ASC] - ayanoffs - lon - fshift[i]
+				r_text = self.rOuterLine + self.symbolSize * 0.2
+				f_label = mtexts.txts.get('LotOfFortune', 'Fortuna')
+				f_half = self._label_half_deg(f_label, self.fntText, r_text)
 
-			x1 = cx + math.cos(math.pi + math.radians(ang)) * self.r30
-			y1 = cy + math.sin(math.pi + math.radians(ang)) * self.r30
-			x2 = cx + math.cos(math.pi + math.radians(ang)) * self.rOuterLine
-			y2 = cy + math.sin(math.pi + math.radians(ang)) * self.rOuterLine
+				best_i, best_d, best_need = None, 999.0, 0.0
+				for i, idx in enumerate(showidxs):
+					ap_ang = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] -
+											parts[idx][arabicparts.ArabicParts.LONG] + (fshift[i] * 0.5))
+					d = abs(util.normalize(f_ang - ap_ang))
+					if d > 180.0: d = 360.0 - d
 
+					ap_label = parts[idx][arabicparts.ArabicParts.NAME]
+					ap_half  = self._label_half_deg(ap_label, self.fntText, r_text)
+					AF_PAIR_SCALE = 0.3  # 라벨 반폭 합보다 조금만 벌려도 충분
+					need = (f_half + ap_half + 0.2) * AF_PAIR_SCALE
+					if d < need and d < best_d:
+						best_i, best_d, best_need = i, d, need
+
+				if best_i is not None:
+					self._af_split_idx = best_i
+					self._af_split_deg = (best_need - best_d) * 0.5
+		except Exception:
+			pass
+
+		# Fortuna 라인/텍스트에서 재사용할 보정각
+		self._fortune_outer_shift = float(self._af_split_deg)
+
+		# 핵심: 시작점은 ‘원래 황경 각’(r30), 끝점은 ‘겹침 보정 후 라벨 각’(rOuterLine)
+		for i, idx in enumerate(showidxs):
+			lon  = parts[idx][arabicparts.ArabicParts.LONG]
+			base = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - lon)
+			shift = fshift[i] + (self._af_split_deg if self._af_split_idx == i else 0.0)
+
+			rad_in  = math.pi + math.radians(base)                          # r30: 원래 황경
+			rad_out = math.pi + math.radians(util.normalize(base - shift))   # rOuterLine: 라벨 각
+
+			x1 = cx + math.cos(rad_in)  * self.r30
+			y1 = cy + math.sin(rad_in)  * self.r30
+			x2 = cx + math.cos(rad_out) * self.rOuterLine
+			y2 = cy + math.sin(rad_out) * self.rOuterLine
 			self.bdc.DrawLine(x1, y1, x2, y2)
-
 
 	def drawAntisLines(self, plnts, lof, ascmc, pshift, r1, r2):
 		(cx, cy) = self.center.Get()
@@ -1469,6 +1656,35 @@ class GraphChart2:
 
 		return False
 
+	# 아랫줄(새로 추가) — 텍스트 폭을 각도로 환산(반지름 r_text 기준)
+	def _label_half_deg(self, text, font, r_text, margin_px=4):
+		w, _ = font.getsize(text)
+		px = (w/2.0) + margin_px
+		return (px / float(r_text)) * (180.0 / math.pi)
+	# NEW: 텍스트 박스가 outer wheel(rOuterLine) 안쪽으로 파고들면,
+	# 라벨 반지름을 살짝 키워서 항상 바깥쪽으로 유지
+	def _ensure_text_outside_outer_wheel(self, rad, x, y, w, h, r_text, pad_px=2):
+		(cx, cy) = self.center.Get()
+		# 현재 그릴 사각형 꼭짓점들
+		corners = [(x, y - h/2), (x + w, y - h/2), (x, y + h/2), (x + w, y + h/2)]
+		mind = min(math.hypot(ax - cx, ay - cy) for (ax, ay) in corners)
+
+		target = self.rOuterLine + pad_px  # outer line에서 약간 여유
+		if mind >= target:
+			return x, y, r_text
+
+		# 필요한 만큼 반지름을 바깥으로 밀기
+		delta = target - mind
+		new_r = r_text + delta
+		new_x = cx + math.cos(rad) * new_r
+		new_y = cy + math.sin(rad) * new_r
+
+		# 좌/우 반구 정렬 다시 적용
+		pos = util.normalize(math.degrees(rad))
+		if 90.0 < pos < 270.0:
+			new_x -= w
+
+		return new_x, new_y, new_r
 
 	def mergefsaspmatrices(self):
 		showfss = []
@@ -1847,8 +2063,7 @@ class GraphChart2:
 		return res
 
 	def drawOuterFortuneLine(self):
-		# 포르투나 존재 확인
-		if not hasattr(self.chart, "fortune") or self.chart.fortune is None:
+		if not (self.chart and getattr(self.chart, "fortune", None)):
 			return
 		try:
 			lon = self.chart.fortune.fortune[fortune.Fortune.LON]
@@ -1861,62 +2076,62 @@ class GraphChart2:
 		pen = wx.Pen(clr, w)
 		self.bdc.SetPen(pen)
 
-		# 텍스트와 동일한 기준(아야남샤 반영)으로 두 점 계산
-		ayanoffs = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
-		# 라벨과 동일 기준(아야남샤 적용)으로 반지름 방향 선을 그린다.
-		ang = self.chart.houses.ascmc[houses.Houses.ASC] - ayanoffs - lon
-		x1 = cx + math.cos(math.pi + math.radians(ang)) * self.r30
-		y1 = cy + math.sin(math.pi + math.radians(ang)) * self.r30
-		x2 = cx + math.cos(math.pi + math.radians(ang)) * self.rOuterLine
-		y2 = cy + math.sin(math.pi + math.radians(ang)) * self.rOuterLine
+		base  = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - lon)
+		shift = float(getattr(self, "_fortune_outer_shift", 0.0))
 
+		rad_in  = math.pi + math.radians(base)                        # r30: 원래 황경
+		rad_out = math.pi + math.radians(util.normalize(base + shift))# rOuterLine: 라벨 각
+
+		x1 = cx + math.cos(rad_in)  * self.r30
+		y1 = cy + math.sin(rad_in)  * self.r30
+		x2 = cx + math.cos(rad_out) * self.rOuterLine
+		y2 = cy + math.sin(rad_out) * self.rOuterLine
 		self.bdc.DrawLine(x1, y1, x2, y2)
 
 	def arrangeyParts(self, parts, showidxs, fshift, rText):
+		"""
+		항성의 arrangeyfs와 동일한 요령:
+		- 이웃 라벨끼리 겹치면 좌반구/우반구에 따라 위/아래로 1px씩 쌓아 올림
+		"""
+		import math
 		(cx, cy) = self.center.Get()
-		yoffs = [0.0] * len(showidxs)
-		if len(showidxs) < 2:
-			return yoffs
+		n = len(showidxs)
+		yoffs = [0.0] * n
+		if n < 2:
+			return yoffs[:]
 
-		# 각도 기준 정렬(시프팅 반영)
-		order = sorted(range(len(showidxs)),
-					key=lambda k: parts[showidxs[k]][arabicparts.ArabicParts.LONG] + fshift[k])
+		def rect(i):
+			idx  = showidxs[i]
+			name = parts[idx][arabicparts.ArabicParts.NAME]
+			lon  = parts[idx][arabicparts.ArabicParts.LONG]
+			ang  = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - lon - fshift[i])
+			rad  = math.pi + math.radians(ang)
+			x    = cx + math.cos(rad) * rText
+			y    = cy + math.sin(rad) * rText
+			w, h = self.fntText.getsize(name)
+			pad = max(1, int(self.symbolSize * 0.2))  
+			w  += pad
+			h  += pad
+			pos  = util.normalize(math.degrees(rad))
+			if 90.0 < pos < 270.0:
+				x -= w
+			return (x, y - h/2.0 + yoffs[i], w, h, pos)
 
-		# 겹치면 반구 방향으로 한쪽을 위/아래로 밀기
-		step = self.maxradius * 0.012  # 레인 간 간격(필요하면 조절)
-		for _ in range(len(order) + 1):
+		for _ in range(n):
 			changed = False
-			for a, b in zip(order, order[1:]):
-				lon1 = parts[showidxs[a]][arabicparts.ArabicParts.LONG] + fshift[a]
-				lon2 = parts[showidxs[b]][arabicparts.ArabicParts.LONG] + fshift[b]
-
-				ayan = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
-				ang1 = math.pi + math.radians(self.chart.houses.ascmc[houses.Houses.ASC] - ayan - lon1)
-				ang2 = math.pi + math.radians(self.chart.houses.ascmc[houses.Houses.ASC] - ayan - lon2)
-
-				x1 = cx + math.cos(ang1) * rText
-				y1 = cy + math.sin(ang1) * rText
-				x2 = cx + math.cos(ang2) * rText
-				y2 = cy + math.sin(ang2) * rText
-
-				name1 = parts[showidxs[a]][arabicparts.ArabicParts.NAME]
-				name2 = parts[showidxs[b]][arabicparts.ArabicParts.NAME]
-				w1, h1 = self.fntText.getsize(name1)
-				w2, h2 = self.fntText.getsize(name2)
-
-				# 반구에 따라 기준점을 오른쪽 정렬(왼쪽 반구) / 왼쪽 정렬(오른쪽 반구)
-				def x_left(x, ang, w):
-					deg = util.normalize(math.degrees(ang))
-					return x - (w if 90.0 < deg < 270.0 else 0.0)
-
-				while self.overlap(x_left(x1, ang1, w1), y1 + yoffs[a] - h1/2, w1, h1,
-								x_left(x2, ang2, w2), y2 + yoffs[b] - h2/2, w2, h2):
-					# 뒤쪽(b)을 한 칸 밀기(왼쪽 반구면 아래로, 오른쪽 반구면 위로)
-					deg = util.normalize(math.degrees(ang2))
-					yoffs[b] += (step if 90.0 < deg < 270.0 else -step)
+			for i in range(n-1):
+				x1, y1, w1, h1, pos1 = rect(i)
+				x2, y2, w2, h2, pos2 = rect(i+1)
+				while self.overlap(x1, y1, w1, h1, x2, y2, w2, h2):
 					changed = True
-
+					# 좌반구(텍스트 오른쪽 정렬)는 아래로(+), 우반구는 위로(-) 살짝 이동
+					if 90.0 < pos2 < 270.0:
+						yoffs[i+1] += 1.0
+					else:
+						yoffs[i+1] -= 1.0
+					x1, y1, w1, h1, pos1 = rect(i)
+					x2, y2, w2, h2, pos2 = rect(i+1)
 			if not changed:
 				break
 
-		return yoffs
+		return yoffs[:]

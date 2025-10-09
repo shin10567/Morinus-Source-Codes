@@ -311,7 +311,7 @@ class Chart:
 		if self.options.ayanamsha != 0:
 			astrology.swe_set_sid_mode(self.options.ayanamsha-1, 0, 0)
 			self.ayanamsha = astrology.swe_get_ayanamsa_ut(self.time.jd)
-			pflag |= astrology.SEFLG_SIDEREAL
+			#pflag |= astrology.SEFLG_SIDEREAL
 
 		if self.options.topocentric:
 			pflag += astrology.SEFLG_TOPOCTR
@@ -828,10 +828,7 @@ class Chart:
 			isdom = self.options.dignities[pid][0][sign]
 			isexal = self.options.dignities[pid][1][sign]
 
-			oppsign = sign+Chart.SIGN_NUM/2
-			if oppsign >= Chart.SIGN_NUM:
-				oppsign -= Chart.SIGN_NUM
-
+			oppsign = (sign + Chart.SIGN_NUM // 2) % Chart.SIGN_NUM
 			isexil = self.options.dignities[pid][0][oppsign]
 			iscasus = self.options.dignities[pid][1][oppsign]
 

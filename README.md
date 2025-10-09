@@ -1,4 +1,4 @@
-## [9.0.4] Updated Version from 8.1.0 
+## [9.0.5] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -116,3 +116,10 @@
     - Revamped the settings UI for Arabic Parts.
     - In Tables, formulas are now displayed using symbols.
     - Arabic Parts can now be displayed on the chart’s outer wheel.
+#### 9.0.5
+- Fixed a bug where planetary positions changed when Ayanamsa was enabled and the Whole Sign house system wasn’t applied.
+- Improved city search reliability/performance; fixed cases where some city names couldn’t be found or took too long, and added a “Use altitude” button.
+- Elections chart: now displays the chart date in the footer.
+- Reduced label overlap when showing Lots (Arabic Parts) on the outer wheel.
+- Fixed an issue that prevented charts from being drawn after “Restore Default.”
+- Fixed incorrect values when Lots (Arabic Parts) were shown on the outer wheel with Ayanamsa enabled.

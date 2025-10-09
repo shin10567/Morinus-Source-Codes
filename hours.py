@@ -29,9 +29,15 @@ class PlanetaryHours:
 
         #lon, lat, height, atmpress, celsius
         #in GMT, searches after jd!
-        ret, risetime, serr = astrology.swe_rise_trans(jd, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH, astrology.SE_CALC_RISE, lon, lat, float(altitude), 0.0, 10.0)
+        ret, risetime, serr = astrology.swe_rise_trans(jd, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH,
+            astrology.SE_CALC_RISE | astrology.SE_BIT_DISC_CENTER | astrology.SE_BIT_NO_REFRACTION,
+            lon, lat, float(altitude), 0.0, 0.0)
+
 #		self.logCalc(risetime)#
-        ret, settime, serr = astrology.swe_rise_trans(jd, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH, astrology.SE_CALC_SET, lon, lat, float(altitude), 0.0, 10.0)
+        ret, settime, serr = astrology.swe_rise_trans(jd, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH,
+            astrology.SE_CALC_SET | astrology.SE_BIT_DISC_CENTER | astrology.SE_BIT_NO_REFRACTION,
+            lon, lat, float(altitude), 0.0, 0.0)
+
 #		self.logCalc(settime)#
 
         #swe_rise_trans calculates only forward!!
@@ -41,9 +47,14 @@ class PlanetaryHours:
         if risetime > settime: # daytime
             self.daytime = True
 #			print 'daytime'#
-            ret, self.risetime, serr = astrology.swe_rise_trans(jd-1.0, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH, astrology.SE_CALC_RISE, lon, lat, float(altitude), 0.0, 10.0)
+            ret, self.risetime, serr = astrology.swe_rise_trans(jd-1.0, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH,
+                astrology.SE_CALC_RISE | astrology.SE_BIT_DISC_CENTER | astrology.SE_BIT_NO_REFRACTION,
+                lon, lat, float(altitude), 0.0, 0.0)
+
 #			self.logCalc(risetime)#
-            ret, self.settime, serr = astrology.swe_rise_trans(jd, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH, astrology.SE_CALC_SET, lon, lat, float(altitude), 0.0, 10.0)
+            ret, self.settime, serr = astrology.swe_rise_trans(jd, astrology.SE_SUN, '', astrology.SEFLG_SWIEPH,
+                astrology.SE_CALC_SET | astrology.SE_BIT_DISC_CENTER | astrology.SE_BIT_NO_REFRACTION,
+                lon, lat, float(altitude), 0.0, 0.0)
 
             #From GMT to Local
             self.risetime += offs

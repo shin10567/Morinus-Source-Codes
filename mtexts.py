@@ -102,97 +102,99 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'HEMHelp':'He&lp\tAlt+L', 'HEMHelpDoc':'Help',
 'HEMAbout':'&About\tAlt+A', 'HEMAboutDoc':'Info about the program'}
 menutxtseng.update({
-    # --- Horoscope ---
-    'HMNewDoc':'Creates a new horoscope.',
-    'HMDataDoc':'Opens an existing horoscope.',
-    'HMHereAndNowDoc':'Creates a new horoscope.',
-    'HMLoadDoc':'Loads an existing horoscope.',
-    'HMSaveDoc':'Saves the horoscope.',
-    'HMSaveAsBmpDoc':'Saves the horoscope as a bitmap.',
-    'HMSynastryDoc':'Opens the synastry chart.',
-    'HMFindTimeDoc':'Finds the time and place from positions.',
-    'HMEphemerisDoc':'Shows the graphical ephemeris.',
-    'HMCloseDoc':'Closes the horoscope.',
-    'HMExitDoc':'Exits the application.',
+	# --- Horoscope ---
+	'HMNewDoc':'Creates a new horoscope.',
+	'HMDataDoc':'Opens an existing horoscope.',
+	'HMHereAndNowDoc':'Creates a new horoscope.',
+	'HMLoadDoc':'Loads an existing horoscope.',
+	'HMSaveDoc':'Saves the horoscope.',
+	'HMSaveAsBmpDoc':'Saves the horoscope as a bitmap.',
+	'HMSynastryDoc':'Opens the synastry chart.',
+	'HMFindTimeDoc':'Finds the time and place from positions.',
+	'HMEphemerisDoc':'Shows the graphical ephemeris.',
+	'HMCloseDoc':'Closes the horoscope.',
+	'HMExitDoc':'Exits the application.',
 
-    # --- Tables ---
-    'TMPositionsDoc':'Shows planetary and house positions.',
-    'TMAlmutenZodiacalDoc':'Shows almutens of zodiacal points.',
-    'TMAlmutenChartDoc':'Shows the almuten of the chart.',
-    'TMAlmutenTopicalDoc':'Shows topical almutens.',
-    'TMMiscDoc':'Shows miscellaneous data.',
-    'TMMunPosDoc':'Shows positions in the houses and the mundane Lot of Fortune.',
-    'TMAntisciaDoc':'Shows antiscia.',
-    'TMAspectsDoc':'Shows the aspect table.',
-    'TMMidpointsDoc':'Shows midpoint positions.',
-    'TMRiseSetDoc':'Shows rise and set times.',
-    'TMSpeedsDoc':'Shows planetary speeds.',
-    'TMZodParsDoc':'Shows zodiacal parallels.',
-    'TMFixStarsDoc':'Shows fixed-star positions.',
-    'TMFixStarsAspsDoc':'Shows aspects to fixed stars.',
-    'TMArabianPartsDoc':'Shows Arabic Parts.',
-    'TMStripDoc':'Shows the 30-degree strip.',
-    'TMPlanetaryHoursDoc':'Shows planetary hours.',
-    'TMExactTransitsDoc':'Shows exact transits for a given month.',
-    'TMProfectionsDoc':'Shows tabular profections.',
-    'TMCustomerSpeculumDoc':'Shows the speculum of the given ecliptic point.',
-    'TMFirdariaDoc':'Shows firdaria.',
-    'TMDodecatemoriaDoc':'Shows dodecatemoria.',
-    'TMAngleAtBirthDoc':'Shows fixed stars meeting the ASC/DSC/MC/IC.',
-    'TMPrimaryDirsDoc':'Displays a list of primary directions.',
-    'TMZodiacalReleasingDoc':'Shows zodiacal releasing.',
-    'TMPhasisDoc':'Shows heliacal visibility.',
-    'TMParanatellontaDoc':'Shows planets and fixed stars on the four angles.',
-    'TMCircumambulationDoc':'Shows distributions through the bounds.',
-    'TMFixStarAngleDirsDoc':'Shows the angular directions of fixed stars hitting the ASC/MC/DSC/IC.',
+	# --- Tables ---
+	'TMPositionsDoc':'Shows planetary and house positions.',
+	'TMAlmutenZodiacalDoc':'Shows almutens of zodiacal points.',
+	'TMAlmutenChartDoc':'Shows the almuten of the chart.',
+	'TMAlmutenTopicalDoc':'Shows topical almutens.',
+	'TMMiscDoc':'Shows miscellaneous data.',
+	'TMMunPosDoc':'Shows positions in the houses and the mundane Lot of Fortune.',
+	'TMAntisciaDoc':'Shows antiscia.',
+	'TMAspectsDoc':'Shows the aspect table.',
+	'TMMidpointsDoc':'Shows midpoint positions.',
+	'TMRiseSetDoc':'Shows rise and set times.',
+	'TMSpeedsDoc':'Shows planetary speeds.',
+	'TMZodParsDoc':'Shows zodiacal parallels.',
+	'TMFixStarsDoc':'Shows fixed-star positions.',
+	'TMFixStarsAspsDoc':'Shows aspects to fixed stars.',
+	'TMArabianPartsDoc':'Shows Arabic Parts.',
+	'TMStripDoc':'Shows the 30-degree strip.',
+	'TMPlanetaryHoursDoc':'Shows planetary hours.',
+	'TMExactTransitsDoc':'Shows exact transits for a given month.',
+	'TMProfectionsDoc':'Shows tabular profections.',
+	'TMCustomerSpeculumDoc':'Shows the speculum of the given ecliptic point.',
+	'TMFirdariaDoc':'Shows firdaria.',
+	'TMDodecatemoriaDoc':'Shows dodecatemoria.',
+	'TMAngleAtBirthDoc':'Shows fixed stars meeting the ASC/DSC/MC/IC.',
+	'TMPrimaryDirsDoc':'Displays a list of primary directions.',
+	'TMZodiacalReleasingDoc':'Shows zodiacal releasing.',
+	'TMPhasisDoc':'Shows heliacal visibility.',
+	'TMParanatellontaDoc':'Shows planets and fixed stars on the four angles.',
+	'TMCircumambulationDoc':'Shows distributions through the bounds.',
+	'TMFixStarAngleDirsDoc':'Shows the angular directions of fixed stars hitting the ASC/MC/DSC/IC.',
 
-    # --- Charts ---
-    'PMTransitsDoc':'Shows transits for a given date.',
-    'PMRevolutionsDoc':'Computes revolution charts.',
-    'PMSunTransitsDoc':'Computes the transits of the Sun.',
-    'PMSecondaryDirsDoc':'Computes secondary progressions.',
-    'PMPositionForDateDoc':'Shows progressed positions for a given date.',
-    'PMSquareChartDoc':'Shows the square chart.',
-    'PMProfectionsDoc':'Shows profections.',
-    'PMMundaneDoc':'Shows the mundane chart.',
-    'PMElectionsDoc':'Shows the election chart.',
+	# --- Charts ---
+	'PMTransitsDoc':'Shows transits for a given date.',
+	'PMRevolutionsDoc':'Computes revolution charts.',
+	'PMSunTransitsDoc':'Computes the transits of the Sun.',
+	'PMSecondaryDirsDoc':'Computes secondary progressions.',
+	'PMPositionForDateDoc':'Shows progressed positions for a given date.',
+	'PMSquareChartDoc':'Shows the square chart.',
+	'PMProfectionsDoc':'Shows profections.',
+	'PMMundaneDoc':'Shows the mundane chart.',
+	'PMElectionsDoc':'Shows the election chart.',
 
-    # --- Options (dialogs → “Opens … dialog.”) ---
-    'OMAppearance1Doc':'Opens the Appearance settings dialog.',
-    'OMAppearance2Doc':'Opens the Speculum settings dialog.',
-    'OMSymbolsDoc':'Opens the Symbol settings dialog.',
-    'OMDignitiesDoc':'Opens the Dignities settings dialog.',
-    'OMTriplicitiesDoc':'Opens the Triplicity rulers selection dialog.',
-    'OMTermsDoc':'Opens the Terms selection dialog.',
-    'OMDecansDoc':'Opens the Decans selection dialog.',
-    'OMChartAlmutenDoc':'Opens the Chart almuten dialog.',
-    'OMTopicalDoc':'Opens the Topical almuten dialog.',
-    'OMAyanamshaDoc':'Opens the Ayanamsha dialog.',
-    'OMColorsDoc':'Opens the Color settings dialog.',  
-    'OMOrbsDoc':'Opens the Orbs settings dialog.',
-    'OMPrimaryDirsDoc':'Opens the Primary directions settings dialog.',
-    'OMPrimaryKeysDoc':'Opens the Primary keys dialog.',
-    'OMPDsInChartOptZodDoc':'Opens the PDs-in-chart selection dialog.',
-    'OMPDsInChartOptMunDoc':'Opens the PDs-in-chart selection dialog.',
-    'OMLotFortuneDoc':'Opens the Lot of Fortune dialog.',
-    'OMArabicPartsDoc':'Opens the Arabic Parts dialog.',
-    'OMSyzygyDoc':'Opens the Syzygy dialog.',
-    'OMFixStarsOptDoc':'Opens the Fixed Stars selection dialog.',
-    'OMProfectionsOptDoc':'Opens the Profections selection dialog.',
-    'OMFirdariaOptDoc':'Opens the Firdaria selection dialog.',
-    'OMDefLocationOptDoc':'Opens the Default Location selection dialog.',
-    'OMLanguagesDoc':'Opens the Language selection dialog.',
-    'OMAutoSaveDoc':'Toggles automatic save.',
-    'OMSaveDoc':'Saves options.',
-    'OMReloadDoc':'Restores the default options.',
+	# --- Options (dialogs → “Opens … dialog.”) ---
+	'OMAppearance1Doc':'Opens the Appearance settings dialog.',
+	'OMAppearance2Doc':'Opens the Speculum settings dialog.',
+	'OMSymbolsDoc':'Opens the Symbol settings dialog.',
+	'OMDignitiesDoc':'Opens the Dignities settings dialog.',
+	'OMTriplicitiesDoc':'Opens the Triplicity rulers selection dialog.',
+	'OMTermsDoc':'Opens the Terms selection dialog.',
+	'OMDecansDoc':'Opens the Decans selection dialog.',
+	'OMChartAlmutenDoc':'Opens the Chart almuten dialog.',
+	'OMTopicalDoc':'Opens the Topical almuten dialog.',
+	'OMAyanamshaDoc':'Opens the Ayanamsha dialog.',
+	'OMColorsDoc':'Opens the Color settings dialog.',  
+	'OMOrbsDoc':'Opens the Orbs settings dialog.',
+	'OMPrimaryDirsDoc':'Opens the Primary directions settings dialog.',
+	'OMPrimaryKeysDoc':'Opens the Primary keys dialog.',
+	'OMPDsInChartOptZodDoc':'Opens the PDs-in-chart selection dialog.',
+	'OMPDsInChartOptMunDoc':'Opens the PDs-in-chart selection dialog.',
+	'OMLotFortuneDoc':'Opens the Lot of Fortune dialog.',
+	'OMArabicPartsDoc':'Opens the Arabic Parts dialog.',
+	'OMSyzygyDoc':'Opens the Syzygy dialog.',
+	'OMFixStarsOptDoc':'Opens the Fixed Stars selection dialog.',
+	'OMProfectionsOptDoc':'Opens the Profections selection dialog.',
+	'OMFirdariaOptDoc':'Opens the Firdaria selection dialog.',
+	'OMDefLocationOptDoc':'Opens the Default Location selection dialog.',
+	'OMLanguagesDoc':'Opens the Language selection dialog.',
+	'OMAutoSaveDoc':'Toggles automatic save.',
+	'OMSaveDoc':'Saves options.',
+	'OMReloadDoc':'Restores the default options.',
 
-    # --- Help ---
-    'HEMHelpDoc':'Opens the help.',
-    'HEMAboutDoc':'Shows information about the program.',
+	# --- Help ---
+	'HEMHelpDoc':'Opens the help.',
+	'HEMAboutDoc':'Shows information about the program.',
 })
 
 
-txtseng = {'DE': u'Degree',
+txtseng = {'PleaseWait':'Please wait…',
+'FetchingZoneAlt':'Please wait… Fetching timezone and elevation…',
+'DE': u'Degree',
 'RE': u'Reference','DiscardCurrHor':'Do you want to discard current horoscope?', 'FileError':'Error with file!', 
 'FileExists':'File already exists. Do you want to overwrite it?', 
 'SelectColumn':'Please select at least one column in Options/Appearance.', 
@@ -391,10 +393,15 @@ u"StartSign":u"Start Sign",'Compute':'Compute',u"HeliacalRisingsSettings":u"Heli
 }
 
 txtseng.update({
-    'NumFieldsCannotBeEmpty': 'Problem with data! Numeric fields cannot be empty.',
-    'RangeError': 'Range error! The value is outside the allowed range.',
+	'NumFieldsCannotBeEmpty': 'Problem with data! Numeric fields cannot be empty.',
+	'RangeError': 'Range error! The value is outside the allowed range.',
 })
-
+txtseng.update({
+	'UseAltitude': 'Use altitude',
+	'PleaseWait': 'Please wait.',
+	'RetrievingZoneOnly': 'Please wait. Retrieving timezone.',
+	'RetrievingZoneAlt':  'Please wait. Retrieving timezone and elevation.'
+})
 txtseng.setdefault('Years', u'Years')
 txtseng.setdefault('Real', u'Real Date')
 txtseng.setdefault('On', u'On')
@@ -693,7 +700,8 @@ txtshun = {'Circumambulation': u'körüljárás',
 'Jan2':u'jan', 'Feb2':u'feb', 'Mar2':u'már', 'Apr2':u'ápr', 'May2':u'máj', 'Jun2':u'jun', 'Jul2':u'jul', 'Aug2':u'aug', 'Sep2':u'sep', 'Oct2':u'okt', 'Nov2':u'nov', 'Dec2':u'dec', 
 'Ephem':u'Ephem', 'FindTime':u'Időkeresés', 'R':u'R', 'Minute':u'Perc', 'Second':u'Szekundum', 'Retrograde':u'Retrográd',
 'ApproxPlanets':u'Approximáció(Bolygók)', 'Show':u'Mutasd', 'D2':u'd', 'M2':u'm', 'S2':u's', 
-'BusyInfo2':u'A gép sebességétől függően ez eltarthat egy ideig.',
+'BusyInfo2':u'A gép sebességétől függően ez eltarthat egy ideig.', 'PleaseWait':u'Kérem várjon…',
+'FetchingZoneAlt':u'Kérem várjon… Időzóna és magasság lekérése…',
 'NoChartWithSettings':u'A bolygópoziciók nem találhatóak!', 'Start2':u'Start',
 'HelpDeg':u'0 és 359 között kell lennie', 'Rise':u'Asc', 'Set':u'Desc', 
 'Profections':u'Profekciók', 'PlacidianAnnualProfection':u'Placidus évi profekció', 'ZodiacalAnnualProfection':u'Zodiakális évi profekció', 
@@ -735,8 +743,14 @@ u"StartSign":u"Bejelentkezés indítása",'Compute':'Számítás',u"HeliacalRisi
 "SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán, ",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
 }
 txtshun.update({
-    'NumFieldsCannotBeEmpty': u'Probléma az adatokkal! A numerikus mezők nem maradhatnak üresen!',
-    'RangeError': u'Érték Hiba! Adjon meg helyes értéket a megengedett tartományon belül.',
+	'NumFieldsCannotBeEmpty': u'Probléma az adatokkal! A numerikus mezők nem maradhatnak üresen!',
+	'RangeError': u'Érték Hiba! Adjon meg helyes értéket a megengedett tartományon belül.',
+})
+txtshun.update({
+	'UseAltitude': u'Magasság használata',
+	'PleaseWait': u'Kérem, várjon.',
+	'RetrievingZoneOnly': u'Kérem, várjon. Időzóna lekérése.',
+	'RetrievingZoneAlt':  u'Kérem, várjon. Időzóna és magasság lekérése.'
 })
 txtshun.setdefault('Years', u'év')  # (pl. 2 év)
 txtshun.setdefault('Real', u'Valós')
@@ -879,7 +893,9 @@ menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N'
 'HEMAbout':u'&О программе\tAlt+A', 'HEMAboutDoc':u'Инфо о программе'}
 
 
-txtsrus = {'Circumambulation': u'Обращение',
+txtsrus = {'PleaseWait':u'Пожалуйста, подождите…',
+'FetchingZoneAlt':u'Пожалуйста, подождите… Получаем часовой пояс и высоту местности…',
+'Circumambulation': u'Обращение',
 'CircumPolarLatErr': u'Обращение недоступно на высоких широтах (абсолютная широта {0:.2f}°, предел {1:.2f}°).',
 'DiscardCurrHor':u'Открытый гороскоп не сохранится. Продолжать?', 'FileError':u'Ошибка в файле!', 
 'FileExists':u'Файл уже существует. Перезаписать?', 
@@ -1074,8 +1090,14 @@ u"StartSign":u"Начать подписываться",'Compute':'Вычисл�
 "SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane, ",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
 }
 txtsrus.update({
-    'NumFieldsCannotBeEmpty': u'Неправильные данные! Числовые поля не могут быть пустыми.',
-    'RangeError': u'Ошибка диапазона! Значение вне допустимого диапазона.',
+	'NumFieldsCannotBeEmpty': u'Неправильные данные! Числовые поля не могут быть пустыми.',
+	'RangeError': u'Ошибка диапазона! Значение вне допустимого диапазона.',
+})
+txtsrus.update({
+	'UseAltitude': u'Использовать высоту',
+	'PleaseWait': u'Пожалуйста, подождите.',
+	'RetrievingZoneOnly': u'Пожалуйста, подождите. Получение часового пояса.',
+	'RetrievingZoneAlt':  u'Пожалуйста, подождите. Получение часового пояса и высоты.'
 })
 txtsrus.setdefault('Years', u'лет')  # нейтральная форма для n лет
 txtsrus.setdefault('Real', u'Реальное')
@@ -1303,6 +1325,8 @@ txtsesp = {'Circumambulation': u'Circumambulación',
 'ToLastPage':u'Va a última página', 'MZ':u'M/Z', 'Prom':u'Prom', 'DC':u'D/C', 'M':u'M', 'Z':u'Z', 'D':u'D', 'C':u'C', 'Sig':u'Sig', 
 'Arc':u'Arco', 'Date':u'Fecha', 'TXTFiles':u'Archivos TXT (*.txt)|*.txt', 
 'BusyInfo':u'Dependiendo de la velocidad y configuración de su computador esto puede tomar algún tiempo.', 
+'PleaseWait':u'Por favor, espere…',
+'FetchingZoneAlt':u'Por favor, espere… Obteniendo la zona horaria y la altitud…',
 'UseRegrSun1':u'En caso de un arco solar exacto y converso', 'UseRegrSun2':u'direcciones usan sol regresivo',
 'DBFileError':u"Ubicación archivo base de datos no se puede abrir!", 'InitChars':u'Letras Iniciales', 'InitCharError':u'Por favor escriba al menos una letra!', 
 'TextError':u'Campos de texto solamente pueden contener caracteres alfanuméricos, espacio y coma!', 'Add':u'Agregar', 'Remove':u'Remover', 'RemoveAll':u'Remover Todo', 
@@ -1412,8 +1436,14 @@ u"StartSign":u"Iniciar Firmar",'Compute':'Computación',u"HeliacalRisingsSetting
 "SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos, ",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
 }
 txtsesp.update({
-    'NumFieldsCannotBeEmpty': u'¡Problema con los datos! Los campos numéricos no pueden estar vacíos.',
-    'RangeError': u'¡Error de rango! El valor está fuera del intervalo permitido.',
+	'NumFieldsCannotBeEmpty': u'¡Problema con los datos! Los campos numéricos no pueden estar vacíos.',
+	'RangeError': u'¡Error de rango! El valor está fuera del intervalo permitido.',
+})
+txtsesp.update({
+	'UseAltitude': u'Usar altitud',
+	'PleaseWait': u'Por favor, espere.',
+	'RetrievingZoneOnly': u'Por favor, espere. Obteniendo la zona horaria.',
+	'RetrievingZoneAlt':  u'Por favor, espere. Obteniendo la zona horaria y la altitud.'
 })
 txtsesp.setdefault('Years', u'años')
 txtsesp.setdefault('Real', u'Real')
@@ -1559,7 +1589,9 @@ menutxtsita = {'MHoroscope':u'&Oroscopo',
 'HEMAbout':u'&Informazioni\tAlt+I', 'HEMAboutDoc':u'Info sul programma'}
 
 
-txtsita = {'Circumambulation': u'Circumambulazione',
+txtsita = {'PleaseWait':u'Attendere, prego…',
+'FetchingZoneAlt':u'Attendere, prego… Recupero del fuso orario e dell\'altitudine…',
+'Circumambulation': u'Circumambulazione',
 'CircumPolarLatErr': u'La circumambulazione non è disponibile alle alte latitudini (latitudine assoluta {0:.2f}°, limite {1:.2f}°).',
 'DiscardCurrHor':u'Vuoi scartare questo oroscopo?', 'FileError':u'Errore!',
 'FileExists':u'File già esistente. Vuoi sovrascriverlo?',
@@ -1758,8 +1790,14 @@ txtsita = {'Circumambulation': u'Circumambulazione',
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 txtsita.update({
-    'NumFieldsCannotBeEmpty': u'Errore! I campi numerici non possono essere vuoti.',
-    'RangeError': u'Errore di intervallo! Il valore è fuori dall’intervallo consentito.',
+	'NumFieldsCannotBeEmpty': u'Errore! I campi numerici non possono essere vuoti.',
+	'RangeError': u'Errore di intervallo! Il valore è fuori dall’intervallo consentito.',
+})
+txtsita.update({
+	'UseAltitude': u"Usa l'altitudine",
+	'PleaseWait': u'Attendere, prego.',
+	'RetrievingZoneOnly': u'Attendere, prego. Recupero fuso orario.',
+	'RetrievingZoneAlt':  u"Attendere, prego. Recupero fuso orario e altitudine."
 })
 txtsita.setdefault('Years', u'anni')
 txtsita.setdefault('Real', u'Reale')
@@ -1986,6 +2024,8 @@ txtsfre = {'Circumambulation': u'Circumambulation',
 'ToLastPage':u'Aller à la dernière page', 'MZ':u'M/Z', 'Prom':u'Prom', 'DC':u'D/C', 'M':u'M', 'Z':u'Z', 'D':u'D', 'C':u'C', 'Sig':u'Sig', 
 'Arc':u'Arc', 'Date':u'Date', 'TXTFiles':u'Fichier TXT (*.txt)|*.txt', 
 'BusyInfo':u"Selon la vitesse de l'ordinateur et les réglages D.P. cela peut prendre du temps.", 
+'PleaseWait':u'Veuillez patienter…',
+'FetchingZoneAlt':u'Veuillez patienter… Récupération du fuseau horaire et de l\'altitude…',
 'UseRegrSun1':u"Dans le cas de l'Arc solaire converse", 'UseRegrSun2':u'directions utilisent Soleil régressif',
 'DBFileError':u"Le fichier des villes ne peut s'ouvrir!", 'InitChars':u'Initiales', 'InitCharError':u'Veuillez introduire au moins une lettre !', 
 'TextError':u"Les champs texte ne peuvent contenir que des caractères alphanumériques, l'espace et la virgule !", 'Add':u'Ajout', 'Remove':u'Retirer', 'RemoveAll':u'Tout retirer', 
@@ -2097,10 +2137,15 @@ u"StartSign":u"Start Sign",'Compute':'Compute',"HeliacalRisingsSettings":u"Helia
 }
 
 txtsfre.update({
-    'NumFieldsCannotBeEmpty': u'Problème de données ! Les champs numériques ne peuvent pas être vides.',
-    'RangeError': u'Erreur d’intervalle ! La valeur est en dehors de l’intervalle autorisé.',
+	'NumFieldsCannotBeEmpty': u'Problème de données ! Les champs numériques ne peuvent pas être vides.',
+	'RangeError': u'Erreur d’intervalle ! La valeur est en dehors de l’intervalle autorisé.',
 })
-
+txtsfre.update({
+	'UseAltitude': u"Utiliser l'altitude",
+	'PleaseWait': u'Veuillez patienter.',
+	'RetrievingZoneOnly': u"Veuillez patienter. Récupération du fuseau horaire.",
+	'RetrievingZoneAlt':  u"Veuillez patienter. Récupération du fuseau horaire et de l'altitude."
+})
 txtsfre.setdefault('Years', u'ans')
 txtsfre.setdefault('Real', u'Réel')
 txtsfre.setdefault('On', u'Activé')
@@ -2424,6 +2469,8 @@ txtschs = {'Circumambulation': u'绕行',
 'ToLastPage':u'转至最后一页', 'MZ':u'M/Z', 'Prom':u'从', 'DC':u'D/C', 'M':u'M', 'Z':u'Z', 'D':u'D', 'C':u'C', 'Sig':u'照星',
 'Arc':u'推运弧', 'Date':u'日期', 'TXTFiles':u'TXT 文件 (*.txt)|*.txt',
 'BusyInfo':u'取决于计算机的速度和主限推运设置，这可能需要一些时间.',
+'PleaseWait':u'请稍候…',
+'FetchingZoneAlt':u'请稍候… 正在获取时区和海拔…',
 'UseRegrSun1':u'在真太阳弧和逆向的情况下', 'UseRegrSun2':u'使用回归太阳的方向',
 'DBFileError':"无法打开位置数据库文件!", 'InitChars':u'首字母', 'InitCharError':u'请至少输入一个字母!',
 'TextError':u'文本字段只能包含字母数字字符、空格和逗号!', 'Add':u'添加', 'Remove':u'删除', 'RemoveAll':u'全部删除',
@@ -2538,9 +2585,16 @@ u"StartSign":u"起始星座",'Compute':'计算',u"HeliacalRisingsSettings":u"谐
 "SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘, ",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
 txtschs.update({
-    'NumFieldsCannotBeEmpty': u'数据问题！数值字段不能为空。',
-    'RangeError': u'范围错误！该值超出允许范围。',
+	'NumFieldsCannotBeEmpty': u'数据问题！数值字段不能为空。',
+	'RangeError': u'范围错误！该值超出允许范围。',
 })
+txtschs.update({
+	'UseAltitude': u'使用海拔高度',
+	'PleaseWait': u'请稍候.',
+	'RetrievingZoneOnly': u'请稍候. 正在获取时区.',
+	'RetrievingZoneAlt':  u'请稍候. 正在获取时区和海拔.'
+})
+
 txtschs.setdefault('Years', u'年')
 txtschs.setdefault('Real', u'实际')
 txtschs.setdefault('On', u'开')
@@ -2667,6 +2721,8 @@ txtscht = {'Circumambulation': u'繞行',
 'ToLastPage':u'轉至最後一頁', 'MZ':u'M/Z', 'Prom':u'從', 'DC':u'D/C', 'M':u'M', 'Z':u'Z', 'D':u'D', 'C':u'C', 'Sig':u'照星',
 'Arc':u'推運弧', 'Date':u'日期', 'TXTFiles':u'TXT 文件 (*.txt)|*.txt',
 'BusyInfo':u'取決於計算機的速度和主限推運設置，這可能需要一些時間.',
+'PleaseWait':u'請稍候…',
+'FetchingZoneAlt':u'請稍候… 正在取得時區與海拔…',
 'UseRegrSun1':u'在真太陽弧和逆向的情況下', 'UseRegrSun2':u'使用回歸太陽的方向',
 'DBFileError':"無法打開位置數據庫文件!", 'InitChars':u'首字母', 'InitCharError':u'請至少輸入一個字母!',
 'TextError':u'文本字段只能包含字母數字字符、空格和逗號!', 'Add':u'添加', 'Remove':u'刪除', 'RemoveAll':u'全部刪除',
@@ -2781,8 +2837,14 @@ txtscht = {'Circumambulation': u'繞行',
 "SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘, ",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
 txtscht.update({
-    'NumFieldsCannotBeEmpty': u'數據問題！數值欄位不能為空。',
-    'RangeError': u'範圍錯誤！該值超出允許範圍。',
+	'NumFieldsCannotBeEmpty': u'數據問題！數值欄位不能為空。',
+	'RangeError': u'範圍錯誤！該值超出允許範圍。',
+})
+txtscht.update({
+	'UseAltitude': u'使用海拔高度',
+	'PleaseWait': u'請稍候.',
+	'RetrievingZoneOnly': u'請稍候. 正在取得時區.',
+	'RetrievingZoneAlt':  u'請稍候. 正在取得時區與海拔.'
 })
 txtscht.setdefault('Years', u'年')
 txtscht.setdefault('Real', u'實際')
@@ -3062,6 +3124,8 @@ txtsko = {'Circumambulation': u'서컴앰뷸레이션',
 'ToForwardPage':u'한 페이지 앞으로', 'ToLastPage':u'마지막 페이지로 이동', 'MZ':u'M/Z', 'Prom':u'프로미터', 'DC':u'정/역', 'M':u'M', 'Z':u'Z', 'D':u'정', 'C':u'역', 'Sig':u'지표성',
 'Arc':u'아크', 'Date':u'날짜', 'TXTFiles':u'TXT 파일 (*.txt)|*.txt',
 'BusyInfo':u'컴퓨터 속도와 프라이머리 디렉션 설정(PT) 등에 따라 시간이 다소 걸릴 수 있습니다.',
+'PleaseWait':u'잠시만 기다려 주세요…',
+'FetchingZoneAlt':u'잠시만 기다려 주세요… 시간대와 고도를 가져오는 중입니다…',
 'UseRegrSun1':u'진태양 아크 및 역방향 디렉션에서는', 'UseRegrSun2':u'퇴행하는 태양을 사용합니다.',
 'DBFileError':u'장소 데이터베이스 파일을 열 수 없습니다!', 'InitChars':u'첫 글자', 'InitCharError':u'한 글자 이상 입력하세요!',
 'TextError':u'텍스트 입력란에는 알파벳, 숫자, 공백, 쉼표만 사용할 수 있습니다!', 'Add':u'추가', 'Remove':u'제거', 'RemoveAll':u'모두 제거',
@@ -3202,8 +3266,14 @@ txtsko = {'Circumambulation': u'서컴앰뷸레이션',
 'SignDegMinSec':u'사인 / 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정","MundaneOnly":u"먼데인만, ",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
 }
 txtsko.update({
-    'NumFieldsCannotBeEmpty': u'데이터에 문제가 있습니다! 숫자 입력란은 비워둘 수 없습니다.',
-    'RangeError': u'범위 오류입니다! 허용 범위 내의 값을 입력하세요.',
+	'NumFieldsCannotBeEmpty': u'데이터에 문제가 있습니다! 숫자 입력란은 비워둘 수 없습니다.',
+	'RangeError': u'범위 오류입니다! 허용 범위 내의 값을 입력하세요.',
+})
+txtsko.update({
+	'UseAltitude': u'고도 사용',
+	'PleaseWait': u'잠시만 기다려 주세요.',
+	'RetrievingZoneOnly': u'잠시만 기다려 주세요. 시간대를 불러오는 중입니다.',
+	'RetrievingZoneAlt':  u'잠시만 기다려 주세요. 시간대와 고도를 불러오는 중입니다.'
 })
 txtsko.setdefault('Years', u'년')
 txtsko.setdefault('Real', u'실제 날짜')

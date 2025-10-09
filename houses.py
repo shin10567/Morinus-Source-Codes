@@ -32,7 +32,7 @@ class Houses:
 		if ayanopt != 0 and self.hsys == 'W':
 			del self.cusps
 			cusps = [0.0]
-			sign = int(util.normalize(self.ascmc[Houses.ASC]-ayan))/30
+			sign = int(util.normalize(self.ascmc[Houses.ASC] - ayan)) // 30
 			cusps.append(sign*30.0)
 			for i in range(2, Houses.HOUSE_NUM+1):
 				hc = util.normalize(cusps[i-1]+30.0)

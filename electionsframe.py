@@ -13,7 +13,7 @@ class ElectionsFrame(transitframe.TransitFrame):
 		self.w.chart = chrt
 		self.w.drawBkg()
 		self.w.Refresh()
-
+		self._update_status_time_place()
 		#Update Caption
 		title = title.replace(mtexts.txts['Radix'], mtexts.txts['Elections']+' ('+str(self.chart.time.origyear)+'.'+common.common.months[self.chart.time.origmonth-1]+'.'+str(self.chart.time.origday)+' '+str(self.chart.time.hour)+':'+str(self.chart.time.minute).zfill(2)+':'+str(self.chart.time.second).zfill(2)+')')
 		self.SetTitle(title)

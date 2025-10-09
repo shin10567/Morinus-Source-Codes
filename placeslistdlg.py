@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import wx
 import intvalidator
@@ -20,9 +21,10 @@ class PlaceListCtrl(wx.ListCtrl):
 	COUNTRY = 1
 	LON = 2
 	LAT = 3
-	ZONE = 4
-	ALT = 5
-	COLNUM = ALT+1
+	#ZONE = 4
+	#ALT = 5
+	#COLNUM = ALT+1
+	COLNUM = LAT+1
 
 	def __init__(self, parent, li, ID, pos=wx.DefaultPosition, size=wx.DefaultSize, style=0):
 		wx.ListCtrl.__init__(self, parent, ID, pos, size, style)
@@ -41,8 +43,8 @@ class PlaceListCtrl(wx.ListCtrl):
 		self.InsertColumn(PlaceListCtrl.COUNTRY, mtexts.txts['Country'])
 		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Long']+'.')
 		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Lat']+'.')
-		self.InsertColumn(PlaceListCtrl.ZONE, mtexts.txts['Zone'])
-		self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt']+'.')
+		#self.InsertColumn(PlaceListCtrl.ZONE, mtexts.txts['Zone'])
+		#self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt']+'.')
 
 		items = self.placedata.items()
 		for key, data in items:
@@ -51,16 +53,16 @@ class PlaceListCtrl(wx.ListCtrl):
 			self.SetItem(index, PlaceListCtrl.COUNTRY, data[1])
 			self.SetItem(index, PlaceListCtrl.LON, data[2])
 			self.SetItem(index, PlaceListCtrl.LAT, data[3])
-			self.SetItem(index, PlaceListCtrl.ZONE, data[4])
-			self.SetItem(index, PlaceListCtrl.ALT, data[5])
+			#self.SetItem(index, PlaceListCtrl.ZONE, data[4])
+			#self.SetItem(index, PlaceListCtrl.ALT, data[5])
 			self.SetItemData(index, key)
 
 		self.SetColumnWidth(PlaceListCtrl.PLACE, 200)#wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(PlaceListCtrl.COUNTRY, 100)
 		self.SetColumnWidth(PlaceListCtrl.LON, 60)
 		self.SetColumnWidth(PlaceListCtrl.LAT, 60)
-		self.SetColumnWidth(PlaceListCtrl.ZONE, 60)
-		self.SetColumnWidth(PlaceListCtrl.ALT, 60)
+		#self.SetColumnWidth(PlaceListCtrl.ZONE, 60)
+		#self.SetColumnWidth(PlaceListCtrl.ALT, 60)
 
 		self.currentItem = -1
 		if len(self.placedata):
@@ -110,15 +112,37 @@ class PlaceListCtrl(wx.ListCtrl):
 			lattxt = str(d).zfill(2)+dirtxt+str(m).zfill(2)
 
 			gmtoffs = it[geonames.Geonames.GMTOFFS]
-			signtxt = u'+'
-			if gmtoffs < 0.0:
-				signtxt = u'-'
-				gmtoffs *= -1
 
-			frac = int((gmtoffs-int(gmtoffs))*60.0)
-			gmtoffstxt = signtxt+str(int(gmtoffs))+u':'+str(frac).zfill(2)
+			# None이면 리스트에는 공란으로 표시
+			if gmtoffs is None:
+				gmtoffstxt = ""
+			else:
+				plus = True
+				if gmtoffs < 0.0:
+					plus = False
+					gmtoffs = -gmtoffs
+				h = int(gmtoffs)
+				m = int(round((gmtoffs - h) * 60.0))
+				gmtoffstxt = ("%s%02d:%02d" % ('+' if plus else '-', h, m))
 
-			self.placedata[idx] = (it[geonames.Geonames.NAME], it[geonames.Geonames.COUNTRYNAME], lontxt, lattxt, gmtoffstxt, str(it[geonames.Geonames.ALTITUDE]))
+			# ALT None/음수 안전 처리
+			alt = it[geonames.Geonames.ALTITUDE]
+			if alt is None:
+				alt_str = ""
+			else:
+				alt = int(alt)
+				if alt < 0:
+					alt = 0
+				alt_str = str(alt)
+
+			self.placedata[idx] = (
+				it[geonames.Geonames.NAME],
+				it[geonames.Geonames.COUNTRYNAME],
+				lontxt, lattxt,
+				gmtoffstxt,
+				alt_str
+			)
+
 			idx += 1
 
 
@@ -126,17 +150,17 @@ class PlaceListCtrl(wx.ListCtrl):
 class PlacesListDlg(wx.Dialog):
 
 	def __init__(self, parent, li):
-        # Instead of calling wx.Dialog.__init__ we precreate the dialog
-        # so we can set an extra style that must be set before
-        # creation, and then we create the GUI object using the Create
-        # method.
+		# Instead of calling wx.Dialog.__init__ we precreate the dialog
+		# so we can set an extra style that must be set before
+		# creation, and then we create the GUI object using the Create
+		# method.
 #		pre = wx.PreDialog()
 #		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 #		pre.Create(parent, -1, mtexts.txts['Places'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
-        # This next step is the most important, it turns this Python
-        # object into the real wrapper of the dialog (instead of pre)
-        # as far as the wxPython extension is concerned.
+		# This next step is the most important, it turns this Python
+		# object into the real wrapper of the dialog (instead of pre)
+		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['Places'], size=wx.DefaultSize)
 		#main vertical sizer
@@ -148,7 +172,8 @@ class PlacesListDlg(wx.Dialog):
 		splaces =wx.StaticBox(self, label='')
 		placessizer = wx.StaticBoxSizer(splaces, wx.VERTICAL)
 		ID_Places = wx.NewId()
-		self.li = PlaceListCtrl(self, li, ID_Places, size=(570,230), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
+		#self.li = PlaceListCtrl(self, li, ID_Places, size=(570,230), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
+		self.li = PlaceListCtrl(self, li, ID_Places, size=(420,230), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
 		placessizer.Add(self.li, 1, wx.GROW|wx.ALL, 5)
 
 		mhsizer.Add(placessizer, 0, wx.GROW|wx.ALIGN_LEFT|wx.ALL, 0)

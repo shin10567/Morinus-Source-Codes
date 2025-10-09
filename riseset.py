@@ -61,8 +61,9 @@ class RiseSet:
                 # swe_rise_trans는 앞으로만 찾으므로 씨드 두 개에서 시도
                 for seed in (self.jd - 1.0, self.jd):
                     ret, tut, serr = astrology.swe_rise_trans(
-                        seed, i, '', astrology.SEFLG_SWIEPH, SWISS_KIND[key],
-                        self.lon, self.lat, float(self.alt), 0.0, 10.0
+                        seed, i, '', astrology.SEFLG_SWIEPH,
+                        SWISS_KIND[key] | astrology.SE_BIT_DISC_CENTER | astrology.SE_BIT_NO_REFRACTION,
+                        self.lon, self.lat, float(self.alt), 0.0, 0.0
                     )
                     if ret >= 0:
                         # 표준시 ‘같은 날’을 우선 반영
