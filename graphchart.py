@@ -1400,13 +1400,7 @@ class GraphChart:
 			name = parts[idx][arabicparts.ArabicParts.NAME]
 
 			base = self.chart.houses.ascmc[houses.Houses.ASC] - lon
-			# ★ 포르투나와 가까운 1개 AP는 '부호'까지 저장된 대칭 분리 각도 사용
-			split_sign = getattr(self, "_af_split_sign", 1.0)
-			split_deg  = getattr(self, "_af_split_deg", 0.0)
-			local_extra = (split_sign * split_deg) if getattr(self, "_af_split_idx", None) == i else 0.0
-
-			# 최종 각도(텍스트 레인 각)
-			ang = util.normalize(base - (fshift[i] + local_extra))
+			ang = util.normalize(base - fshift[i])
 			rad = math.pi + math.radians(ang)
 
 			# 라벨 레인: 선 끝보다 살짝 바깥
@@ -1421,26 +1415,8 @@ class GraphChart:
 			w, h = self.fntText.getsize(name)
 			if 90.0 < pos < 270.0:
 				x -= w
-
-			# ★ 포르투나 라벨과 매우 가까우면 한 칸 위/아래로 피해주기(기존 로직 유지)
-			try:
-				f_lon  = self.chart.fortune.fortune[fortune.Fortune.LON]
-				f_ang  = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - f_lon +
-										getattr(self, "_fortune_outer_shift", 0.0))
-				d = abs(util.normalize(ang - f_ang))
-				if d > 180.0: d = 360.0 - d
-				if d <= 0.35:
-					step = self.maxradius * 0.016
-					if 90.0 < pos < 270.0:
-						y -= step
-					else:
-						y += step
-			except Exception:
-				pass
-
 			# ★ outer wheel 침범 방지: 필요 시 바깥으로 살짝 더 밀어내기
 			x, y, r_text = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize*0.10))
-
 			self.draw.text((x, y - h/2), name, fill=clr, font=self.fntText)
 
 	def drawOuterFortuneText(self):
@@ -1505,7 +1481,7 @@ class GraphChart:
 			pass
 
 		# ★ outer wheel 침범 방지
-		x, y, r_text = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize*0.10))
+		#x, y, r_text = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize*0.10))
 
 		self.draw.text((x, y - h/2), name, fill=clr, font=self.fntText)
 
@@ -1516,37 +1492,9 @@ class GraphChart:
 		pen = wx.Pen(clr, w)
 		self.bdc.SetPen(pen)
 
-		# 포르투나-AP 근접 시 라벨 분리각 계산(필요 시만)
-		#self._af_split_idx = None
-		#self._af_split_deg = 0.0
-		try:
-			if hasattr(self.chart, "fortune") and self.chart.fortune and showidxs:
-				f_lon = self.chart.fortune.fortune[fortune.Fortune.LON]
-				f_ang = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - f_lon)
-
-				r_text = self.rOuterLine + self.symbolSize * 0.2
-				f_label = mtexts.txts.get('LotOfFortune', 'Fortuna')
-				f_half = self._label_half_deg(f_label, self.fntText, r_text)
-
-				best_i, best_d, best_need = None, 999.0, 0.0
-				for i, idx in enumerate(showidxs):
-					ap_ang = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] -
-											parts[idx][arabicparts.ArabicParts.LONG] + (fshift[i] * 0.5))
-					d = abs(util.normalize(f_ang - ap_ang))
-					if d > 180.0: d = 360.0 - d
-
-					ap_label = parts[idx][arabicparts.ArabicParts.NAME]
-					ap_half  = self._label_half_deg(ap_label, self.fntText, r_text)
-					AF_PAIR_SCALE = 0.3  # 라벨 반폭 합보다 조금만 벌려도 충분
-					need = (f_half + ap_half + 0.2) * AF_PAIR_SCALE
-					if d < need and d < best_d:
-						best_i, best_d, best_need = i, d, need
-
-				if best_i is not None:
-					self._af_split_idx = best_i
-					self._af_split_deg = (best_need - best_d) * 0.5
-		except Exception:
-			pass
+		self._af_split_idx = None
+		self._af_split_deg = 0.0
+		self._fortune_outer_shift = 0.0
 
 		# Fortuna 라인/텍스트에서 재사용할 보정각
 		self._fortune_outer_shift = float(self._af_split_deg)
@@ -1555,8 +1503,8 @@ class GraphChart:
 		for i, idx in enumerate(showidxs):
 			lon  = parts[idx][arabicparts.ArabicParts.LONG]
 			base = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - lon)
-			shift = fshift[i] + (self._af_split_deg if self._af_split_idx == i else 0.0)
-
+			#shift = fshift[i] + (self._af_split_deg if self._af_split_idx == i else 0.0)
+			shift = fshift[i]
 			rad_in  = math.pi + math.radians(base)                          # r30: 원래 황경
 			rad_out = math.pi + math.radians(util.normalize(base - shift))   # rOuterLine: 라벨 각
 

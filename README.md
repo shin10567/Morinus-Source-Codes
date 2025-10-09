@@ -1,4 +1,4 @@
-## [9.0.5] Updated Version from 8.1.0 
+## [9.0.6] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -123,3 +123,5 @@
 - Reduced label overlap when showing Lots (Arabic Parts) on the outer wheel.
 - Fixed an issue that prevented charts from being drawn after “Restore Default.”
 - Fixed incorrect values when Lots (Arabic Parts) were shown on the outer wheel with Ayanamsa enabled.
+#### 9.0.6
+- - Reduced label overlap when showing Lots (Arabic Parts) and Fortuna on the outer wheel.
