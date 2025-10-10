@@ -627,7 +627,8 @@ class MFrame(wx.Frame):
 		if val == wx.ID_OK:	
 			changed = dlg.check(self.horoscope)
 
-			if self.dirty and changed:
+			#if self.dirty and changed:
+			if changed:
 				dlgm = wx.MessageDialog(self, mtexts.txts['DiscardCurrHor'], mtexts.txts['Confirm'], wx.YES_NO|wx.ICON_QUESTION)
 				if dlgm.ShowModal() == wx.ID_NO:
 					self.save()
@@ -924,44 +925,43 @@ class MFrame(wx.Frame):
 				dlgm.Destroy()#
 			
 			try:
-				f = open(fpath, 'wb')		
-				pickle.dump(self.horoscope.name, f)
-				pickle.dump(self.horoscope.male, f)
-				pickle.dump(self.horoscope.htype, f)
-				pickle.dump(self.horoscope.time.bc, f)
-				pickle.dump(self.horoscope.time.origyear, f)
-				pickle.dump(self.horoscope.time.origmonth, f)
-				pickle.dump(self.horoscope.time.origday, f)
-				pickle.dump(self.horoscope.time.hour, f)
-				pickle.dump(self.horoscope.time.minute, f)
-				pickle.dump(self.horoscope.time.second, f)
-				pickle.dump(self.horoscope.time.cal, f)
-				pickle.dump(self.horoscope.time.zt, f)
-				pickle.dump(self.horoscope.time.plus, f)
-				pickle.dump(self.horoscope.time.zh, f)
-				pickle.dump(self.horoscope.time.zm, f)
-				pickle.dump(self.horoscope.time.daylightsaving, f)
-				pickle.dump(self.horoscope.place.place, f)
-				pickle.dump(self.horoscope.place.deglon, f)
-				pickle.dump(self.horoscope.place.minlon, f)
-				pickle.dump(self.horoscope.place.seclon, f)
-				pickle.dump(self.horoscope.place.east, f)
-				pickle.dump(self.horoscope.place.deglat, f)
-				pickle.dump(self.horoscope.place.minlat, f)
-				pickle.dump(self.horoscope.place.seclat, f)
-				pickle.dump(self.horoscope.place.north, f)
-				pickle.dump(self.horoscope.place.altitude, f)
-				pickle.dump(self.horoscope.notes, f)
+				with open(fpath, 'wb') as f:
+					import pickle
+					p = pickle.Pickler(f, 2)
+					p.dump(self.horoscope.name)
+					p.dump(self.horoscope.male)
+					p.dump(self.horoscope.htype)
+					p.dump(self.horoscope.time.bc)
+					p.dump(self.horoscope.time.origyear)
+					p.dump(self.horoscope.time.origmonth)
+					p.dump(self.horoscope.time.origday)
+					p.dump(self.horoscope.time.hour)
+					p.dump(self.horoscope.time.minute)
+					p.dump(self.horoscope.time.second)
+					p.dump(self.horoscope.time.cal)
+					p.dump(self.horoscope.time.zt)
+					p.dump(self.horoscope.time.plus)
+					p.dump(self.horoscope.time.zh)
+					p.dump(self.horoscope.time.zm)
+					p.dump(self.horoscope.time.daylightsaving)
+					p.dump(self.horoscope.place.place)
+					p.dump(self.horoscope.place.deglon)
+					p.dump(self.horoscope.place.minlon)
+					p.dump(self.horoscope.place.seclon)
+					p.dump(self.horoscope.place.east)
+					p.dump(self.horoscope.place.deglat)
+					p.dump(self.horoscope.place.minlat)
+					p.dump(self.horoscope.place.seclat)
+					p.dump(self.horoscope.place.north)
+					p.dump(self.horoscope.place.altitude)
+					p.dump(self.horoscope.notes)
 				self.fpathhors = dpath
 				self.fpath = fpath
-				self.handleCaption(True)
-				f.close()
 				self.dirty = False
 			except IOError:
 				dlgm = wx.MessageDialog(self, mtexts.txts['FileError'], mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 				dlgm.ShowModal()
-				dlgm.Destroy()#
-
+				dlgm.Destroy()
 		dlg.Destroy()#
 
 
@@ -3676,7 +3676,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.0.7'
+		info.Version = '9.0.8'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
