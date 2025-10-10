@@ -1,4 +1,4 @@
-## [9.0.6] Updated Version from 8.1.0 
+## [9.0.8] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -124,4 +124,10 @@
 - Fixed an issue that prevented charts from being drawn after “Restore Default.”
 - Fixed incorrect values when Lots (Arabic Parts) were shown on the outer wheel with Ayanamsa enabled.
 #### 9.0.6
-- - Reduced label overlap when showing Lots (Arabic Parts) and Fortuna on the outer wheel.
+- Reduced label overlap when showing Lots (Arabic Parts) and Fortuna on the outer wheel.
+#### 9.0.7
+- Fixed an issue where the Arabic Parts settings could reference a non-existent part.
+- Updated: When Arabic Parts are drawn on the outer wheel, the Lot of Fortune (Fortuna) is now shown even if no other Arabic Parts are defined.
+#### 9.0.8
+- Fixed an issue where pressing Enter after editing a data field applied the change without showing the “Do you want to discard current horoscope?” message.
+- Fixed a compatibility issue where .hor files saved in Morinus 9 could not be opened in earlier versions of Morinus.
