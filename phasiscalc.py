@@ -149,10 +149,10 @@ if not hasattr(math, 'isfinite'):
         return (not math.isinf(x)) and (not math.isnan(x))
     math.isfinite = _isfinite
 # ---- Altitude bias policy ---- 'kv_only' or 'full'
-ALTITUDE_BIAS = 'kv_only'
+ALTITUDE_BIAS = 'full'
 
 # 사이트 불변 모드: 기하/배경/공기질량 계산엔 alt=0.0만 쓰도록 강제
-SITE_INVARIANT = True
+SITE_INVARIANT = False
 
 def _alt_eff_geom(alt_m):
     # 기하(alt/az, D)와 rise/set 경계 계산용 고도
@@ -202,7 +202,7 @@ AUREOLE_TARGET_K = 2.0    # (수성↓, 금성↑ 조절 레버)
 AUREOLE_EPS_C    = 15.0   # 전이 스케일[deg] (ε ≳ 해당값°면 HG 벌점 급감)
 AUREOLE_Q        = 1.0    # 급감 가파름
 # --- 오레올 이각 대역 가중 ---
-AUREOLE_BAND_LO   = 5.0    # 시작
+AUREOLE_BAND_LO   = 0.5    # 시작
 AUREOLE_BAND_HI   = 9.0    # 끝
 # 경계 완화 폭(부드럽게 오르내리는 구간 폭), 둘 다 1~1.5° 권장
 AUREOLE_BAND_WLO  = 1.0    # 4° 아래에서 서서히 올라오기
@@ -479,7 +479,7 @@ HREF = {
 
 # --- Atmospheric extinction (V-band), altitude-only model ---
 KV0_SEA = 0.30      # sea-level reference (mag per airmass)
-H0_M    = 8500      # scale height in meters
+H0_M    = 4229.3     # scale height in meters
 KV_USED = 0.30
 def kV_from_altitude(H_m, kv0_sea=KV0_SEA, h0_m=H0_M,
                      clamp_min=None, clamp_max=None):
@@ -903,7 +903,7 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
             float(tjd_ut), astrology.SE_SUN, "",
             int(epheflag), int(rsmi),
             float(lon), float(lat), float(a),      
-            float(SE_ATPRESS), float(SE_ATTEMP))
+            float(atpress), float(attemp))
         out = float(jdev) if (rflag >= 0) else None
         _SUN_EVENT_CACHE[key] = out    
         return out
@@ -957,7 +957,7 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
                 side_ok = (_elong_side(t, ipl) == ('E' if is_evening_flag else 'W'))
                 if alt_pl >= hmin and side_ok:
                     dA = abs((az_pl - az_sun + 540.0) % 360.0 - 180.0)
-                    kv = float(KV_USED)
+                    kv = kV_from_altitude(alt_m)   # 고도 H에 따라 kV(H)=KV0_SEA*exp(-H/H0_M)
                     X  = airmass_effective(max(0.0, alt_pl), alt_m)
                     m0, _ = planet_magnitude(ipl, t)
                     m_obs = m0 + kv * (X - 1.0)

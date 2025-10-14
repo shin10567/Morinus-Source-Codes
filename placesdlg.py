@@ -97,7 +97,12 @@ class PlaceListCtrl(wx.ListCtrl):
 			self.SetItem(num, i, item[i])
 
 		self.currentItem = num
-		self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
+		#self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
+		self.SetItemState(self.currentItem,
+						wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED,
+						wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED)
+		self.SetFocus()  # 리스트 컨트롤에 키보드 포커스도 줘서 하이라이트가 확실히 보이게
+
 		self.SetItemState(self.currentItem, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
 		self.changed = True
@@ -320,7 +325,7 @@ class PlacesDlg(wx.Dialog):
 		self.alt.SetValue('0')
 		# Altitude 토글을 제목 아래, 입력칸 위로 배치
 		self.altToggle = wx.CheckBox(self, -1, mtexts.txts.get('UseAltitude','Use altitude'))
-		self.altToggle.SetValue(False)
+		self.altToggle.SetValue(True)
 		self.altToggle.Bind(wx.EVT_CHECKBOX, self.OnToggleAltitude)
 		altsizer.Add(self.altToggle, 0, wx.ALIGN_LEFT|wx.LEFT|wx.TOP, 5)
 
@@ -330,7 +335,7 @@ class PlacesDlg(wx.Dialog):
 		hhhsubsizer.Add(label, 0, wx.ALIGN_CENTER|wx.TOP, 2)
 		altsizer.Add(hhhsubsizer, 0, wx.GROW|wx.ALIGN_CENTER|wx.TOP, 20)
 		# 초기 상태 적용(OFF면 Alt 입력칸 비활성 + 0 표시)
-		self.OnToggleAltitude(None)
+		self.OnToggleAltitude(True)
 
 		hhsubsizer.Add(altsizer, 0, wx.GROW|wx.ALIGN_LEFT|wx.RIGHT, 5)
 		vsubsizer.Add(hhsubsizer, 0, wx.GROW|wx.ALIGN_LEFT)

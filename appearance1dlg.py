@@ -123,7 +123,8 @@ class Appearance1Dlg(wx.Dialog):
 		vsizer2.Add(self.termsckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		self.decansckb = wx.CheckBox(self, -1, mtexts.txts['Decans'])
 		vsizer2.Add(self.decansckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
-
+		self.topocentricckb = wx.CheckBox(self, -1, mtexts.txts['Topocentric'])
+		vsizer2.Add(self.topocentricckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		inchartsizer.Add(vsizer2, 0, wx.TOP|wx.LEFT, 5)
 
 		vsizer3 = wx.BoxSizer(wx.VERTICAL)
@@ -153,8 +154,6 @@ class Appearance1Dlg(wx.Dialog):
 		self.arabicpartssrb = wx.RadioButton(self, -1, mtexts.txts['ArabicParts'])
 		self.Bind(wx.EVT_RADIOBUTTON, self.onArabicParts, id=self.arabicpartssrb.GetId())
 		vsizer3.Add(self.arabicpartssrb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
-		self.topocentricckb = wx.CheckBox(self, -1, mtexts.txts['Topocentric'])
-		vsizer3.Add(self.topocentricckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 
 		inchartsizer.Add(vsizer3, 0, wx.TOP|wx.LEFT, 5)
 

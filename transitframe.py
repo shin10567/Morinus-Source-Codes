@@ -105,6 +105,14 @@ class TransitFrame(wx.Frame):
 		self.statusbar.SetFieldsCount(2)
 		# 반반 폭(비율 지정): 음수면 비율, [-1, -1] = 1:1
 		self.statusbar.SetStatusWidths([-1, -1])
+		# 상태바 폰트를 메인과 동일하게 맞춤
+		app = wx.GetApp()
+		top = app.GetTopWindow() if app else None
+		main_sb = top.GetStatusBar() if top else None
+		if main_sb:
+			self.statusbar.SetFont(main_sb.GetFont())
+			self.SendSizeEvent()
+
 		self._update_status_time_place()
 
 	def onPopupMenu(self, event):

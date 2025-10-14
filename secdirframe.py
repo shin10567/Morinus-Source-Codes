@@ -136,6 +136,14 @@ class SecDirFrame(transitframe.TransitFrame):
         try:
             if not self.GetStatusBar():
                 self.CreateStatusBar(2)
+                sb = self.GetStatusBar()
+                app = wx.GetApp()
+                top = app.GetTopWindow() if app else None
+                main_sb = top.GetStatusBar() if top else None
+                if sb and main_sb:
+                    sb.SetFont(main_sb.GetFont())
+                    self.SendSizeEvent()
+
                 self.SetStatusWidths([-1, -1])
             self.SetStatusText("%s: %d" % (mtexts.txts['Age'], age_years_int), 0)
             self.SetStatusText("%s: %04d.%02d.%02d" % (mtexts.txts['Real'], y, m, d), 1)
