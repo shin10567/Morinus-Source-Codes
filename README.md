@@ -1,4 +1,4 @@
-## [9.0.8] Updated Version from 8.1.0 
+## [9.0.9] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -131,3 +131,7 @@
 #### 9.0.8
 - Fixed an issue where pressing Enter after editing a data field applied the change without showing the “Do you want to discard current horoscope?” message.
 - Fixed a compatibility issue where .hor files saved in Morinus 9 could not be opened in earlier versions of Morinus.
+#### 9.0.9
+- Unified fonts across Transit, Secondary Progressions, and the main status bar.
+- Heliacal Rising/Setting calculations once again incorporate site altitude.
+- Relocated the Topocentric option within Options → Appearance.
