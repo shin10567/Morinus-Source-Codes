@@ -93,10 +93,11 @@ def altaz_cached(jd_ut, ipl, lon, lat, alt_m):
     a = _alt_eff_geom(alt_m)
     astrology.swe_set_topo(lon, lat, a)
     ra, dec, _ = equ_coords(jd_ut, ipl)
+    p_hpa, t_c = _refr_params(REFRACTION_MODE, alt_m)
     xaz = astrology.swe_azalt(float(jd_ut), astrology.SE_EQU2HOR,
-                              float(lon), float(lat), float(a),
-                              0.0, 0.0,  # refraction 없음(원래도 0,0)
-                              float(ra), float(dec), 1.0)
+                                float(lon), float(lat), float(a),
+                                float(p_hpa), float(t_c),
+                                float(ra), float(dec), 1.0)
     az, alt = xaz[0], xaz[1]
     return (float(alt), float(az))
 
@@ -171,6 +172,35 @@ SE_USE_DISC_BOTTOM = False     # True면 태양 '하단' 기준, False면 '중�
 SE_ATPRESS = 1013.25           # hPa (SE_USE_REFRACTION=True일 때만 사용)
 SE_ATTEMP  = 20.0              # °C
 SE_ATHUM   = 0.63               # 상대습도 0..1 (요구하는 래퍼가 있음)
+# ==== 굴절 모드 & P/T 추정(ISA troposphere) ================================
+# 모드: 'off'|'sea'|'alt'|'custom'
+REFRACTION_MODE = 'alt'
+REFR_P_HPA_DEFAULT = SE_ATPRESS
+REFR_T_C_DEFAULT   = SE_ATTEMP
+
+def _temp_from_altitude_c(h_m):
+    # 표준대기: 15°C @ SL, lapse rate 6.5 K/km (대류권); 하한 -56.5°C
+    t = 15.0 - 6.5*(float(h_m)/1000.0)
+    return t if t >= -56.5 else -56.5
+
+def _press_from_altitude_hpa(h_m):
+    # 표준대기 기압(해발 h[m], ~11km까지 유효)
+    h = float(h_m)
+    return 1013.25 * (1.0 - 2.25577e-5*h)**5.2559 if h >= 0.0 else 1013.25
+
+def _refr_params(mode, alt_m, p_custom=None, t_custom=None):
+    m = (mode or 'off').lower()
+    if m == 'off':
+        return 0.0, 0.0
+    if m == 'sea':
+        return float(REFR_P_HPA_DEFAULT), float(REFR_T_C_DEFAULT)
+    if m == 'alt':
+        return _press_from_altitude_hpa(alt_m), _temp_from_altitude_c(alt_m)
+    # 'custom'
+    p = REFR_P_HPA_DEFAULT if p_custom is None else p_custom
+    t = REFR_T_C_DEFAULT   if t_custom is None else t_custom
+    return float(p), float(t)
+# ========================================================================
 
 # ==== Sea-level (Maryland) twilight μV anchors (V band) ====
 # Source: Koomen et al. (1952) Maryland (sea-level) converted to mag/arcsec^2 by Nawar (2020), Table 5.
@@ -479,7 +509,7 @@ HREF = {
 
 # --- Atmospheric extinction (V-band), altitude-only model ---
 KV0_SEA = 0.30      # sea-level reference (mag per airmass)
-H0_M    = 4229.3     # scale height in meters
+H0_M    = 8000     # scale height in meters
 KV_USED = 0.30
 def kV_from_altitude(H_m, kv0_sea=KV0_SEA, h0_m=H0_M,
                      clamp_min=None, clamp_max=None):
@@ -586,7 +616,7 @@ def airmass_kasten_young(h_deg):
     return 1.0 / (math.cos(math.radians(z)) + 0.50572 * (96.07995 - z)**-1.6364)
 
 # 암야(천문박명 끝) 목표 맨눈 한계
-TARGET_NELM_DARK = 6.8
+TARGET_NELM_DARK = 6.0
 
 def mlim_base(D, F=2.0):
     """
@@ -889,9 +919,11 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
         rsmi = (astrology.SE_CALC_SET if event == 'set' else astrology.SE_CALC_RISE)
         rsmi |= (astrology.SE_BIT_DISC_BOTTOM if SE_USE_DISC_BOTTOM
                 else astrology.SE_BIT_DISC_CENTER)
-        atpress = SE_ATPRESS if SE_USE_REFRACTION else 0.0
-        attemp  = SE_ATTEMP  if SE_USE_REFRACTION else 0.0
-        athum   = SE_ATHUM   if SE_USE_REFRACTION else 0.0
+        if SE_USE_REFRACTION:
+            atpress, attemp = _refr_params(REFRACTION_MODE, alt_m)
+        else:
+            atpress, attemp = 0.0, 0.0
+        athum   = SE_ATHUM if SE_USE_REFRACTION else 0.0
         if not SE_USE_REFRACTION:
             rsmi |= astrology.SE_BIT_NO_REFRACTION
 
