@@ -3646,7 +3646,6 @@ class MFrame(wx.Frame):
 				self.drawBkg()
 				self.Refresh()
 
-
 	def onHelp(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
 		if wx.Platform == '__WXMSW__' and not self.splash:

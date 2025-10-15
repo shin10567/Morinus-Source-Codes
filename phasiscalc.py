@@ -220,7 +220,6 @@ PATAT_V_A2 = -0.057
 # 'hybrid'      : A안과 B안 둘 다 계산해서 더 보수적인 값을 사용
 # 'unified'     : A안과 B안을 합침
 VISIBILITY_MODEL = 'unified'
-
 # ---- A안(HG 오레올) 튜닝값 (aureole_penalty_mag에 전달되는 기본값과 동일) ----
 AUREOLE_G   = 0.75   
 AUREOLE_A0  = 2.5   
