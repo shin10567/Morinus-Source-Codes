@@ -3,7 +3,7 @@
 Zodiacal releasing calculator (Python 2.7, wxClassic)
 - Weights: Aries15, Taurus8, Gemini20, Cancer25, Leo19, Virgo20, Libra8, Scorpio15, Sagittarius12, Capricorn27, Aquarius30, Pisces12
 - Level base units:
-  L1 = 365 days  × weight
+  L1 = 360 days  × weight
   L2 = 30  days  × weight
   L3 = 2.5 days  × weight   (== 60 hours × weight)
   L4 = 5   hours × weight
@@ -22,7 +22,7 @@ SIGN_NAMES = [mtexts.txts['Aries'], mtexts.txts['Taurus'], mtexts.txts['Gemini']
 
 WEIGHTS = [15, 8, 20, 25, 19, 20, 8, 15, 12, 27, 30, 12]
 
-L1_BASE_DAYS = 365.0
+L1_BASE_DAYS = 360.0
 L2_BASE_DAYS = 30.0
 L3_BASE_HRS  = 60.0   # 2.5 days
 L4_BASE_HRS  = 5.0
@@ -119,7 +119,7 @@ def fmt_length(row):
     days = secs / 86400.0
 
     if row['level'] == 1:
-        yrs = days / 365.0
+        yrs = days / 360.0
         unit = mtexts.txts['Year'] if abs(yrs) == 1 else mtexts.txts['Years']
         return u'%.0f %s' % (yrs, unit)
 

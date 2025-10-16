@@ -292,14 +292,14 @@ class ZRDrillDlg(wx.Dialog):
 
         # ⬇️ OK 버튼/버튼영역 완전히 제거: 패널만 넣고 끝
         s = wx.BoxSizer(wx.VERTICAL)
-        s.Add(self.panel, 1, wx.EXPAND | wx.ALL, 8)
+        s.Add(self.panel, 1, wx.EXPAND | wx.ALL, 0)
         self.SetSizerAndFit(s)
 
         # 너가 요청한 작은 가로폭 + 리사이즈 가능/최소 크기
         self.SetInitialSize((400, 560))
         self.SetMinSize((200, 200))
         pos = self.GetPosition()
-        self.SetPosition((pos[0] +300, pos[1]-75));
+        self.SetPosition((pos[0] +300, pos[1]-75))
 
     def _onChar(self, evt):
         code = evt.GetKeyCode()

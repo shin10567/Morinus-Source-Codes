@@ -740,7 +740,7 @@ class CircumFrame(wx.Frame):
         self.table = CircumWnd(panel, self.horoscope, self.options, mainfr=self)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(self.table, 1, wx.EXPAND | wx.ALL, 6)
+        vbox.Add(self.table, 1, wx.EXPAND, 0)
 
         panel.SetSizer(vbox)
         self.table.SetFocus()

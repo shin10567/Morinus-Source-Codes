@@ -485,7 +485,7 @@ class FixedStarDirsFrame(wx.Frame):
         self.table = FixStarDirsWnd(pnl, self.horoscope, self.options, mainfr=self)
         self.table.set_data(self.rows, self.currpage, self.maxpage, self.fr, self.to)
 
-        vbox.Add(self.table, 1, wx.EXPAND | wx.ALL, 6)
+        vbox.Add(self.table, 1, wx.EXPAND, 0)
         pnl.SetSizer(vbox)
 
         # ↑/↓용 임시 메뉴 ID

@@ -3646,6 +3646,7 @@ class MFrame(wx.Frame):
 				self.drawBkg()
 				self.Refresh()
 
+
 	def onHelp(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
 		if wx.Platform == '__WXMSW__' and not self.splash:
@@ -3675,7 +3676,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.1.0'
+		info.Version = '9.1.2'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
