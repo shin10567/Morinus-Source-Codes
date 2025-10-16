@@ -89,13 +89,13 @@ def _fmt_deg(x):
         s = 0; m += 1
     if m == 60:
         m = 0; d += 1
-    return u"%02d°%02d′%02d″" % (d, m, s), sign
+    return u"%02d°%02d'%02d\"" % (d, m, s), sign
 
 def _fmt_lon(x):
     # normalize 0..360
     x = x % 360.0
     deg, mi, se = util.decToDeg(x)
-    return u"%03d°%02d′%02d″" % (deg, mi, se)
+    return u"%03d°%02d'%02d\"" % (deg, mi, se)
 
 def _fmt_lat(x):
     txt, sign = _fmt_deg(x)
@@ -276,20 +276,20 @@ class SecProgPosWnd(commonwnd.CommonWnd):
 
             # Ecliptic: 숫자(DMS) + 사인 기호 분리
             si, d, m, s = _deg360_to_sign_dms(lon)
-            ecl_num  = u"%02d°%02d′%02d″" % (d, m, s)
+            ecl_num  = u"%02d°%02d'%02d\"" % (d, m, s)
             ecl_sign = self.signs[si]
 
-            # Latitude(+/−dd°mm′ss″)
+            # Latitude(+/−dd°mm'ss")
             sign = u'+' if lat >= 0 else u'-'
             ld, lm, ls = util.decToDeg(abs(lat))
-            lat_txt = u"%s%02d°%02d′%02d″" % (sign, ld, lm, ls)
+            lat_txt = u"%s%02d°%02d'%02d\"" % (sign, ld, lm, ls)
 
             # Dodecatemorion → sign + DMS
             x = lon % 360.0
             sign_idx = int(x // 30); intra = x - sign_idx * 30.0
             dode = (sign_idx * 30.0 + intra * 12.0) % 360.0
             si2, d2, m2, s2 = _deg360_to_sign_dms(dode)
-            dode_num  = u"%02d°%02d′%02d″" % (d2, m2, s2)
+            dode_num  = u"%02d°%02d'%02d\"" % (d2, m2, s2)
             dode_sign = self.signs[si2]
 
             # Declination (ecliptic→equatorial)
@@ -303,7 +303,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
                 dec_deg = math.degrees(math.asin(max(-1.0, min(1.0, sin_dec))))
             sgn = u'+' if dec_deg >= 0 else u'-'
             ddg, dmm, dss = util.decToDeg(abs(dec_deg))
-            dec_txt = u"%s%02d°%02d′%02d″" % (sgn, ddg, dmm, dss)
+            dec_txt = u"%s%02d°%02d'%02d\"" % (sgn, ddg, dmm, dss)
 
             self.rows.append((body, (ecl_num, ecl_sign), lat_txt, (dode_num, dode_sign), dec_txt))
 
@@ -377,14 +377,14 @@ class SecProgPosWnd(commonwnd.CommonWnd):
             total  = tw + int(self.FONT_SIZE*0.35) + gw  # 숫자와 기호 사이 간격 약간
             base_x = xx + (self.COL_W[1] - total)/2
             cy     = y + (self.LINE_HEIGHT - th)/2
-            draw.text((base_x, cy), ecl_num, fill=txt, font=self.f_text)
+            draw.text((base_x, cy), ecl_num, fill=pclr, font=self.f_text)
             draw.text((base_x + tw + int(self.FONT_SIZE*0.35),
-                       y + (self.LINE_HEIGHT - gh)/2), ecl_sign, fill=txt, font=self.f_sym)
+                       y + (self.LINE_HEIGHT - gh)/2), ecl_sign, fill=pclr, font=self.f_sym)
             xx += self.COL_W[1]
 
             # Latitude
             tw, th = draw.textsize(lat_txt, self.f_text)
-            draw.text((xx + (self.COL_W[2]-tw)/2, y + (self.LINE_HEIGHT-th)/2), lat_txt, fill=txt, font=self.f_text)
+            draw.text((xx + (self.COL_W[2]-tw)/2, y + (self.LINE_HEIGHT-th)/2), lat_txt, fill=pclr, font=self.f_text)
             xx += self.COL_W[2]
 
             # Dodecatemorion (숫자=f_text + 사인=f_sym 합산 중앙)
@@ -392,14 +392,14 @@ class SecProgPosWnd(commonwnd.CommonWnd):
             gw, gh = draw.textsize(dode_sign, self.f_sym)
             total  = tw + int(self.FONT_SIZE*0.35) + gw
             base_x = xx + (self.COL_W[3] - total)/2
-            draw.text((base_x, y + (self.LINE_HEIGHT-th)/2), dode_num, fill=txt, font=self.f_text)
+            draw.text((base_x, y + (self.LINE_HEIGHT-th)/2), dode_num, fill=pclr, font=self.f_text)
             draw.text((base_x + tw + int(self.FONT_SIZE*0.35),
-                    y + (self.LINE_HEIGHT-gh)/2), dode_sign, fill=txt, font=self.f_sym)
+                    y + (self.LINE_HEIGHT-gh)/2), dode_sign, fill=pclr, font=self.f_sym)
             xx += self.COL_W[3]
 
             # Declination
             tw, th = draw.textsize(dec_txt, self.f_text)
-            draw.text((xx + (self.COL_W[4]-tw)/2, y + (self.LINE_HEIGHT-th)/2), dec_txt, fill=txt, font=self.f_text)
+            draw.text((xx + (self.COL_W[4]-tw)/2, y + (self.LINE_HEIGHT-th)/2), dec_txt, fill=pclr, font=self.f_text)
 
             y += self.LINE_HEIGHT
 
