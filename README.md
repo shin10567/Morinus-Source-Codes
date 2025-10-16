@@ -1,4 +1,4 @@
-## [9.0.9] Updated Version from 8.1.0 
+## [9.1.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -135,3 +135,7 @@
 - Unified fonts across Transit, Secondary Progressions, and the main status bar.
 - Heliacal Rising/Setting calculations once again incorporate site altitude.
 - Relocated the Topocentric option within Options → Appearance.
+#### 9.1.0
+- Heliacal Risings/Settings algorithm revise: set scale height to the standard 8,000 m, added a refraction approximation based on pressure and temperature, changed the naked-eye limiting magnitude to 6.0.
+#### 9.1.1
+- Heliacal Risings/Settings: Adjusted the algorithm’s heuristic parameters.
