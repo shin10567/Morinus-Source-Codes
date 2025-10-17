@@ -1,4 +1,4 @@
-## [9.1.2] Updated Version from 8.1.0 
+## [9.1.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -136,9 +136,13 @@
 - Heliacal Rising/Setting calculations once again incorporate site altitude.
 - Relocated the Topocentric option within Options → Appearance.
 #### 9.1.0
-- Heliacal Risings/Settings algorithm revise: set scale height to the standard 8,000 m, added a refraction approximation based on pressure and temperature, changed the naked-eye limiting magnitude to 6.0.
+- Heliacal Risings/Settings algorithm revise: Set scale height to the standard 8,000 m, added a refraction approximation based on pressure and temperature, changed the naked-eye limiting magnitude to 6.0.
 #### 9.1.1
 - Heliacal Risings/Settings: Adjusted the algorithm’s heuristic parameters.
 #### 9.1.2
 - Zodiacal Releasing bug fix
 - Minor border issue solved
+#### 9.1.3
+- Minor Bugs fix
+#### 9.1.4
+- Heliacal Risings/Settings bug fix

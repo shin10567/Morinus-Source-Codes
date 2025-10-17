@@ -14,9 +14,9 @@ def jd_to_local_YMD_HM(ch, jd_ut):
     # angleatbirth의 포맷터는 HH.MM.SS만 주니까,
     # 날짜는 swe_revjul(jd_ut + 오프셋)을 써서 얻습니다.
     # → 오프셋 산출 로직은 _fmt_time_chart_local과 동일하게 구현.
- # The formatter for angleatbirth is HH. Just give me MM.SS,
- # The date is obtained by writing swe_revjul(jd_ut + offset).
- # → The offset output logic is implemented in the same way as _fmt_time_chart_local .
+    # The formatter for angleatbirth is HH. Just give me MM.SS,
+    # The date is obtained by writing swe_revjul(jd_ut + offset).
+    # → The offset output logic is implemented in the same way as _fmt_time_chart_local .
 
     off_days = 0.0
     zt = ch.time.zt
@@ -220,23 +220,24 @@ PATAT_V_A2 = -0.057
 # 'hybrid'      : A안과 B안 둘 다 계산해서 더 보수적인 값을 사용
 # 'unified'     : A안과 B안을 합침
 VISIBILITY_MODEL = 'unified'
+
 # ---- A안(HG 오레올) 튜닝값 (aureole_penalty_mag에 전달되는 기본값과 동일) ----
-AUREOLE_G   = 0.75   
+AUREOLE_G   = 0.8   
 AUREOLE_A0  = 2.5   
 AUREOLE_D0  = 2.0 
 AUREOLE_EPS_MIN = 0.5
 AUREOLE_EPS_MAX = 90.0 
 # 목표물 대비 손실 스케일(ε 커지면 급감) — 행성별 과적합 없이 보편 파라미터
-AUREOLE_TARGET_K = 2.0    # (수성↓, 금성↑ 조절 레버)
+AUREOLE_TARGET_K = 1.5    # (수성↓, 금성↑ 조절 레버)
 AUREOLE_EPS_C    = 15.0   # 전이 스케일[deg] (ε ≳ 해당값°면 HG 벌점 급감)
 AUREOLE_Q        = 1.0    # 급감 가파름
 # --- 오레올 이각 대역 가중 ---
-AUREOLE_BAND_LO   = 0.5    # 시작
-AUREOLE_BAND_HI   = 9.0    # 끝
-# 경계 완화 폭(부드럽게 오르내리는 구간 폭), 둘 다 1~1.5° 권장
-AUREOLE_BAND_WLO  = 1.0    # 4° 아래에서 서서히 올라오기
-AUREOLE_BAND_WHI  = 1.5    # 8° 이후 서서히 줄어들기
-AUREOLE_BAND_GAIN = 1.0    # 밴드 가중 전체 스케일(보통 1.0)
+AUREOLE_BAND_LO   = 0.0    # 시작
+AUREOLE_BAND_HI   = 8.0    # 끝
+# 경계 완화 폭(부드럽게 오르내리는 구간 폭)
+AUREOLE_BAND_WLO  = 5.0    # 4° 아래에서 서서히 올라오기
+AUREOLE_BAND_WHI  = 15     # 8° 이후 서서히 줄어들기
+AUREOLE_BAND_GAIN = 1.5    # 밴드 가중 전체 스케일(보통 1.0)
 
 def _eps_band_weight(eps,
                      lo=AUREOLE_BAND_LO, hi=AUREOLE_BAND_HI,
@@ -288,13 +289,13 @@ def aureole_target_penalty_mag(D_deg, eps_deg,
     base = aureole_penalty_mag(D_deg, eps_deg, g=g, A0=A0, D0=D0)
     damp = k * math.exp(- (max(0.0, float(eps_deg)) / max(1e-6, float(eps_c))) ** float(q))
     w_eps = _eps_band_weight(eps_deg)
-    return max(0.0, w_eps * damp * base)
+    return max(0.0, _eps_band_weight(eps_deg) * base * damp)
 
 # ---- B안(대비 임계: 베일광) 튜닝값 ----
 VEIL_K      = 16.0   
-VEIL_THETA0 = 0.1   
+VEIL_THETA0 = 1.0  
 VEIL_P      = 2.0   
-VEIL_D0     = 1.0 # 태양 침강각 감쇠 e-폴드(베일광의 D 의존성)
+VEIL_D0     = 2.0 # 태양 침강각 감쇠 e-폴드(베일광의 D 의존성)
 # ---- μV [mag/arcsec^2] ↔ L [cd/m^2] 변환 (Crumey 2014) ----
 def muV_to_luminance_cd_m2(muV):
     # B[cd/m^2] = 10^((12.58 - μV)/2.5)
@@ -373,7 +374,7 @@ def mlim_unified(D, dA_deg, eps_deg, alt_m, F=2.0):
     return m_eff
 
 MU_DARK_SEA = 21.36            # sea-level dark-sky μV (Paranal ~21.7 → sea-level ≈21.36, Δ~0.34)
-C_MU2NELM   = 0.40             # μV 차이를 맨눈 한계 감점(mag)으로 환산하는 계수(완만/안정)
+C_MU2NELM   = 0.426             # μV 차이를 맨눈 한계 감점(mag)으로 환산하는 계수(Crumey)
 
 # Maryland (sea-level) μV(D) anchors at 1° steps (D in degrees of solar depression, 6..18)
 TWILIGHT_ANCHORS_MD_V = [
@@ -449,7 +450,7 @@ SEA_LEVEL_HPA    = 1013.25  # 해수면 표준기압
 TWILIGHT_D_MIN   = 0.0      # 잔광 모델이 작동하는 D 범위
 TWILIGHT_D_MAX   = 30.0
 TWILIGHT_C       = 0.55     # 잔광 감점 스케일(안정적 디폴트)
-AZ_WEIGHT_P      = 1.75      # 방위 가중 지수: w=(0.5*(1+cos dA))^p
+AZ_WEIGHT_P      = 1.75     # 방위 가중 지수: w=(0.5*(1+cos dA))^p
 TWILIGHT_PRESS_GAIN = 1.0   # 압력(고도) 보정이 잔광 감점에 주는 1:1 감쇠
 
 def pressure_from_altitude_hpa(alt_m, p0=SEA_LEVEL_HPA):
@@ -1027,15 +1028,11 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
 
     # --- boundary gate: 경계 시점(일몰/일출)에서 '지평선 위' + '태양과 같은 동/서 반구'인지 확인 ---
     if is_evening:
-        ok_above, _, _ = _above_horizon_at(sunset, ipl, lon, lat, alt_m, eps=0.0)
-        hemi_ok        = _same_hemisphere_as_sun_at(sunset, ipl, lon, lat, alt_m)
-        evening_boundary_ok = (ok_above and hemi_ok)
-        return _scan(sunset, sunset + (EVENING_WINDOW_HR/24.0), True, evening_boundary_ok)
+        side_ok = (_elong_side(sunset, ipl) == 'E')   # 동이각=저녁
+        return _scan(sunset, sunset + (EVENING_WINDOW_HR/24.0), True, side_ok)
     else:
-        ok_above, _, _ = _above_horizon_at(sunrise, ipl, lon, lat, alt_m, eps=0.0)
-        hemi_ok        = _same_hemisphere_as_sun_at(sunrise, ipl, lon, lat, alt_m)
-        morning_boundary_ok = (ok_above and hemi_ok)
-        return _scan(sunrise - (MORNING_WINDOW_HR/24.0), sunrise, False, morning_boundary_ok)
+        side_ok = (_elong_side(sunrise, ipl) == 'W')  # 서이각=아침
+        return _scan(sunrise - (MORNING_WINDOW_HR/24.0), sunrise, False, side_ok)
 
 def visibility_flags_around(chart, days_window=7):
     jd0 = chart.time.jd
