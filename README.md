@@ -145,4 +145,4 @@
 #### 9.1.3
 - Minor Bugs fix
 #### 9.1.4
-- Heliacal Risings/Settings bug fix
+- Heliacal Risings/Settings bug fix & algorithm chanegs
