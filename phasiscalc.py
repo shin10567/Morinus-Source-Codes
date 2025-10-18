@@ -225,19 +225,19 @@ VISIBILITY_MODEL = 'unified'
 AUREOLE_G   = 0.8   
 AUREOLE_A0  = 2.5   
 AUREOLE_D0  = 2.0 
-AUREOLE_EPS_MIN = 0.5
+AUREOLE_EPS_MIN = 0.0
 AUREOLE_EPS_MAX = 90.0 
 # 목표물 대비 손실 스케일(ε 커지면 급감) — 행성별 과적합 없이 보편 파라미터
 AUREOLE_TARGET_K = 1.5    # (수성↓, 금성↑ 조절 레버)
-AUREOLE_EPS_C    = 15.0   # 전이 스케일[deg] (ε ≳ 해당값°면 HG 벌점 급감)
-AUREOLE_Q        = 1.0    # 급감 가파름
+AUREOLE_EPS_C    = 16.0   # 전이 스케일[deg] (ε ≳ 해당값°면 HG 벌점 급감)
+AUREOLE_Q        = 1.5    # 급감 가파름
 # --- 오레올 이각 대역 가중 ---
 AUREOLE_BAND_LO   = 0.0    # 시작
-AUREOLE_BAND_HI   = 8.0    # 끝
+AUREOLE_BAND_HI   = 9.0    # 끝
 # 경계 완화 폭(부드럽게 오르내리는 구간 폭)
-AUREOLE_BAND_WLO  = 5.0    # 4° 아래에서 서서히 올라오기
-AUREOLE_BAND_WHI  = 15     # 8° 이후 서서히 줄어들기
-AUREOLE_BAND_GAIN = 1.5    # 밴드 가중 전체 스케일(보통 1.0)
+AUREOLE_BAND_WLO  = 1.0    # 4° 아래에서 서서히 올라오기
+AUREOLE_BAND_WHI  = 20.0    # 8° 이후 서서히 줄어들기
+AUREOLE_BAND_GAIN = 1.0    # 밴드 가중 전체 스케일(보통 1.0)
 
 def _eps_band_weight(eps,
                      lo=AUREOLE_BAND_LO, hi=AUREOLE_BAND_HI,
@@ -295,7 +295,7 @@ def aureole_target_penalty_mag(D_deg, eps_deg,
 VEIL_K      = 16.0   
 VEIL_THETA0 = 1.0  
 VEIL_P      = 2.0   
-VEIL_D0     = 2.0 # 태양 침강각 감쇠 e-폴드(베일광의 D 의존성)
+VEIL_D0     = 1.0 # 태양 침강각 감쇠 e-폴드(베일광의 D 의존성)
 # ---- μV [mag/arcsec^2] ↔ L [cd/m^2] 변환 (Crumey 2014) ----
 def muV_to_luminance_cd_m2(muV):
     # B[cd/m^2] = 10^((12.58 - μV)/2.5)
@@ -308,6 +308,60 @@ def luminance_cd_m2_to_muV(B):
 def nelm_from_muV(muV, F=2.0):
     # m_lim ≈ 0.426·μV − 2.365 − 2.5·log10(F)  (mlim_base 내부식 분리)
     return 0.426 * float(muV) - 2.365 - 2.5 * math.log10(max(1e-6, float(F)))
+# --- Moonlight sky brightness (Krisciunas & Schaefer 1991) -------------------
+NLAMBERt_TO_CD_M2 = 3.183098861837907e-6  # 1 nL = 3.1831e-6 cd/m^2
+
+def _ang_sep_altaz(alt1_deg, az1_deg, alt2_deg, az2_deg):
+    a1 = math.radians(float(alt1_deg)); A1 = math.radians(float(az1_deg))
+    a2 = math.radians(float(alt2_deg)); A2 = math.radians(float(az2_deg))
+    # 구면코사인법칙 (고도/방위 → 천구상 각거리)
+    return math.degrees(math.acos(
+        max(-1.0, min(1.0,
+            math.sin(a1)*math.sin(a2) +
+            math.cos(a1)*math.cos(a2)*math.cos(A1 - A2)
+        ))
+    ))
+
+def moon_luminance_cd_m2(jd_ut, lon, lat, alt_m, alt_target_deg, az_target_deg, kv=None):
+    """
+    달빛이 만드는 배경 하늘 밝기 L_moon [cd/m^2] (항상 가산).
+    - K&S(1991) 근사식:
+        I(α) = 10^(-0.4*(3.84 + 0.026|α| + 4e-9 α^4))
+        f(ρ) = 10^(5.36)*(1.06 + cos^2 ρ) + 10^(6.15 - ρ/40)
+        B_nL = I * f(ρ) * 10^(-0.4*k*X_moon) * (1 - 10^(-0.4*k*X_sky))
+    L_moon = B_nL * (nL→cd/m^2)
+    - 입력 alt_target/az_target는 관측 시선(행성 위치).
+    - 달이 지평선 아래면 0 처리.
+    """
+    alt_moon, az_moon = altaz_of_body(jd_ut, astrology.SE_MOON, lon, lat, alt_m)
+    if alt_moon <= 0.0:
+        return 0.0
+
+    # 위상각 α (deg)
+    try:
+        rflag, ph, serr = swe_pheno_ut_ex(jd_ut, astrology.SE_MOON, astrology.SEFLG_SWIEPH)
+        alpha = abs(float(ph[0]))
+    except Exception:
+        alpha = 0.0
+
+    # 공기질량과 소광계수
+    if kv is None:
+        kv = kV_from_altitude(alt_m)
+    X_moon = airmass_effective(max(0.0, float(alt_moon)), alt_m)
+    X_sky  = airmass_effective(max(0.0, float(alt_target_deg)), alt_m)
+
+    # 달과 시선 사이 각거리 ρ
+    rho = _ang_sep_altaz(alt_target_deg, az_target_deg, alt_moon, az_moon)
+    rho = max(0.0, min(180.0, float(rho)))
+    cr  = math.cos(math.radians(rho))
+
+    # K&S 구성요소
+    I_alpha = 10.0 ** (-0.4 * (3.84 + 0.026*alpha + 4.0e-9*(alpha**4)))
+    f_rho   = (10.0**5.36) * (1.06 + cr*cr) + (10.0 ** (6.15 - rho/40.0))
+    B_nL    = I_alpha * f_rho * (10.0 ** (-0.4*kv*X_moon)) * (1.0 - 10.0 ** (-0.4*kv*X_sky))
+    L_cd_m2 = max(0.0, B_nL * NLAMBERt_TO_CD_M2)
+    return L_cd_m2
+# ---------------------------------------------------------------------------
 
 def veiling_luminance_stiles_holladay(D_deg, eps_deg,
                                       K=None, D0=None, theta0=None):
@@ -324,14 +378,14 @@ def veiling_luminance_stiles_holladay(D_deg, eps_deg,
     w = 1.0 if (D0 is None or float(D0) <= 0.0) else math.exp(-D/float(D0))
     return float(K) * w / (eps**VEIL_P)
 
-def mlim_from_contrast(D, dA_deg, eps_deg, alt_m):
+def mlim_from_contrast(D, dA_deg, eps_deg, alt_m, L_moon_cd_m2=0.0):
     # 1) μV(D): 현재 모델 사용
     mu_site = muV_twilight_site(float(D), alt_m)
 
-    # 2) 베일광 추가 → 실효 배경
+    # 2) 베일광 + 달빛 → 실효 배경
     B_site  = muV_to_luminance_cd_m2(mu_site)
     L_v     = veiling_luminance_stiles_holladay(D, eps_deg)  # cd/m^2
-    B_eff   = B_site + L_v
+    B_eff   = B_site + L_v + max(0.0, float(L_moon_cd_m2))
     mu_eff  = luminance_cd_m2_to_muV(B_eff)
 
     # 3) 베일광 '추가' 밝기만 감점: dmu_veil = μ_site - μ_eff ≥ 0
@@ -339,14 +393,16 @@ def mlim_from_contrast(D, dA_deg, eps_deg, alt_m):
     base  = 0.5 * (1.0 + math.cos(math.radians(dA_deg)))
     w_az  = base ** AZ_WEIGHT_P
     return mlim_base(D) - C_MU2NELM * dmu_veil * w_az
-def mlim_unified(D, dA_deg, eps_deg, alt_m, F=2.0):
+
+def mlim_unified(D, dA_deg, eps_deg, alt_m, L_moon_cd_m2=0.0, F=2.0):
     """
-    물리 일관 통합식:
+    물리 일관 통합식(+달빛 상시 가산):
       1) μ_site(D, alt) 산출 (황혼 기본 밝기)
-      2) veiling L_v(D, ε) 추가 → B_eff = B_site + w_az * L_v
-      3) μ_eff ← B_eff
-      4) NELM_bg = μ_eff → NELM 변환
-      5) 표적 대비 손실 Δm_a (HG) 차감
+      2) veiling L_v(D, ε) 추가
+      3) L_moon(달빛) 추가  ← (항상)
+      4) μ_eff ← B_eff
+      5) NELM_bg = μ_eff → NELM 변환
+      6) 표적 대비 손실 Δm_a (HG) 차감
     """
     # 1) site 황혼 밝기
     mu_site = muV_twilight_site(float(D), float(alt_m))
@@ -357,24 +413,22 @@ def mlim_unified(D, dA_deg, eps_deg, alt_m, F=2.0):
     w_az = base ** AZ_WEIGHT_P
     L_v  = veiling_luminance_stiles_holladay(D, eps_deg) * w_az
 
-    B_eff = B_site + L_v
+    # 3) 달빛 상시 가산
+    B_eff = B_site + L_v + max(0.0, float(L_moon_cd_m2))
     mu_eff = luminance_cd_m2_to_muV(B_eff)
 
     # 4) 배경 기준 NELM
     m_bg = nelm_from_muV(mu_eff, F=F)
 
-    # 5) 표적 대비 손실(HG) — ε 커지면 급감
+    # 5) 표적 대비 손실(HG)
     m_a = aureole_target_penalty_mag(D, eps_deg)
 
-    # 하한을 너무 높게 잡으면(=0.01) 근태양에서 아무리 벌점 커도 효과가 포화됨.
-    # 물리적으로 NELM은 주간엔 음수까지 내려가는 게 정상이라 하한을 낮춘다.
-    NELM_FLOOR = -8.0   # 테스트는 -6~-10에서 골라, 출시용은 -4~-6 권장
-    m_eff = min(TARGET_NELM_DARK, m_bg - m_a)  # 상한만 유지
-    # 필요하면 다음 한 줄로 하한만 부드럽게: m_eff = max(NELM_FLOOR, m_eff)
+    NELM_FLOOR = -8.0
+    m_eff = min(TARGET_NELM_DARK, m_bg - m_a)
     return m_eff
 
 MU_DARK_SEA = 21.36            # sea-level dark-sky μV (Paranal ~21.7 → sea-level ≈21.36, Δ~0.34)
-C_MU2NELM   = 0.426             # μV 차이를 맨눈 한계 감점(mag)으로 환산하는 계수(Crumey)
+C_MU2NELM   = 0.426            # μV 차이를 맨눈 한계 감점(mag)으로 환산하는 계수(Crumey)
 
 # Maryland (sea-level) μV(D) anchors at 1° steps (D in degrees of solar depression, 6..18)
 TWILIGHT_ANCHORS_MD_V = [
@@ -992,6 +1046,8 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
                     kv = kV_from_altitude(alt_m)   # 고도 H에 따라 kV(H)=KV0_SEA*exp(-H/H0_M)
                     X  = airmass_effective(max(0.0, alt_pl), alt_m)
                     m0, _ = planet_magnitude(ipl, t)
+                    # 달빛: K&S91 근사 (항상 계산해서 선형광도로 합산)
+                    L_moon = moon_luminance_cd_m2(t, lon, lat, alt_m, alt_pl, az_pl, kv)
                     m_obs = m0 + kv * (X - 1.0)
                     # --- A안: Koomen(잔광) + HG 오레올(근태양 방향성) ---
                     m_lim_magA  = mlim_base(D) \
@@ -999,7 +1055,7 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
                                 - aureole_penalty_mag(D, eps, g=AUREOLE_G, A0=AUREOLE_A0, D0=AUREOLE_D0) 
 
                     # --- B안: 대비 임계(베일광) ---
-                    m_lim_contr = mlim_from_contrast(D, dA, eps, alt_m)
+                    m_lim_contr = mlim_from_contrast(D, dA, eps, alt_m, L_moon)
 
                     # --- 모드 선택 ---
                     if   VISIBILITY_MODEL == 'legacy':
@@ -1009,8 +1065,8 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
                     elif VISIBILITY_MODEL == 'contrast':
                         m_lim_eff = m_lim_contr
                     elif VISIBILITY_MODEL == 'unified':
-                        m_lim_eff = mlim_unified(D, dA, eps, alt_m)
-                    else:  # 'hybrid' (보수적으로 둘 중 더 낮은 한계등급 선택)
+                        m_lim_eff = mlim_unified(D, dA, eps, alt_m, L_moon_cd_m2=L_moon)
+                    else:  # 'hybrid'
                         m_lim_eff = min(m_lim_magA, m_lim_contr)
 
                     if above_horizon_ok and (m_obs <= m_lim_eff):
