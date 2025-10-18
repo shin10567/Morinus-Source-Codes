@@ -7,7 +7,7 @@ import commonwnd
 import Image, ImageDraw, ImageFont
 import mtexts
 from phasiscalc import (PLANET_IDS, PLANET_NAMES, visibility_flags_around,
-                        is_outer)
+                        is_outer, _local_date_tuple)
 import mtexts
 import chart  # ← 추가
 # 라벨 매핑을 '지연 평가'로 바꾼다
@@ -31,6 +31,20 @@ def _fmt_day_offset(n):
     sfx  = (u" " + (mtexts.txts['Day'] if abs(n) == 1 else mtexts.txts['Days']))
     sign = u"+" if n > 0 else (u"-" if n < 0 else u"")
     return u"%s%d%s" % (sign, abs(n), sfx)
+def _ymd_plus_days(y, m, d, delta_days, calflag):
+    """
+    (y,m,d)에 달력 일수 delta_days를 더해 같은 달력(calflag: GREG/JUL)으로 (Y,M,D) 반환.
+    Python datetime를 쓰면 율리우스력을 못 다루니 swe_julday/swe_revjul을 이용한다.
+    """
+    try:
+        y = int(y); m = int(m); d = int(d)
+        dd = int(delta_days)
+    except:
+        return (y, m, d)
+    # 정오(12h)를 기준점으로 잡으면 시각·타임존 영향으로 인한 경계 오차를 피할 수 있음.
+    jd_mid = astrology.swe_julday(y, m, d, 12.0, calflag)
+    Y, M, D, _ = astrology.swe_revjul(jd_mid + dd, calflag)
+    return (int(Y), int(M), int(D))
 
 def _extract_chart_ymd(chart):
     """
@@ -40,15 +54,60 @@ def _extract_chart_ymd(chart):
     if not hasattr(chart, 'time'):
         return None
     t = chart.time
+    # --- Py3-safe coercion (근본 해결: long/basestring/unicode 미사용) ---
+    def _coerce_int(v):
+        """정수로 해석 가능하면 int를, 아니면 None을 반환한다."""
+        if v is None:
+            return None
+        # bool은 int로 캐스팅되므로 먼저 배제
+        if isinstance(v, bool):
+            return int(v)
+        # 순수 수치형
+        try:
+            import numpy as _np  # 있으면 numpy 정수형 지원
+            _np_int = (_np.integer,)
+        except Exception:
+            _np_int = tuple()
+        if isinstance(v, (int,) + _np_int):
+            return int(v)
+        if isinstance(v, float):
+            try:
+                if v == v:  # NaN 배제
+                    return int(v)
+            except Exception:
+                return None
+            return None
+        # 문자열/바이트
+        if isinstance(v, bytes):
+            try:
+                v = v.decode('utf-8', 'ignore')
+            except Exception:
+                return None
+        if isinstance(v, str):
+            s = v.strip()
+            if not s:
+                return None
+            # 흔히 오는 "YYYY", " 07 ", "+12" 등 처리
+            try:
+                return int(s)
+            except Exception:
+                return None
+        # 그 외: __int__ 또는 __str__ 기반 최후의 시도
+        try:
+            return int(v)
+        except Exception:
+            try:
+                return int(str(v).strip())
+            except Exception:
+                return None
+
     def pick(obj, names):
+        """여러 후보 필드명 중 처음으로 '정수 해석' 가능한 값을 반환."""
         for nm in names:
             if hasattr(obj, nm):
-                v = getattr(obj, nm)
-                if isinstance(v, (int, long)) or (isinstance(v, basestring) and unicode(v).strip()):
-                    try:
-                        return int(v)
-                    except:
-                        pass
+                val = _coerce_int(getattr(obj, nm))
+                if val is not None:
+                    return val
         return None
 
     y = pick(t, ('y','year','yyyy','yr','jy','iy'))   # 빌드마다 이름 다를 수 있음
@@ -224,13 +283,9 @@ class PhasisWnd(commonwnd.CommonWnd):
             self._alt_m = 0.0
         order = PLANET_IDS
 
-        # 참조 기준일 (정오/자정 보정 없이 달력 날짜만 사용)
+        # 참조 기준일: 계산부와 동일하게 '차트의 로컬 민일'을 기준으로 고정
         jd0 = self.chart.time.jd
-        # 차트 설정을 그대로 따른다 (GREGORIAN ↔ JULIAN)
-        calflag = (astrology.SE_GREG_CAL
-                if getattr(self.chart.time, 'cal', chart.Time.GREGORIAN) == chart.Time.GREGORIAN
-                else astrology.SE_JUL_CAL)
-        y0, m0, d0, _ = astrology.swe_revjul(jd0, calflag)
+        y0, m0, d0, calflag = _local_date_tuple(self.chart, jd0)
 
         # 라벨 우선순위 (가까운 날짜가 1순위, 동률 시 이 순으로 선택)
         pref = {'MF':0, 'ML':1, 'EF':2, 'EL':3}
@@ -247,7 +302,8 @@ class PhasisWnd(commonwnd.CommonWnd):
             for code in codes:
                 off = off_map.get(code, None)
                 if isinstance(off, int) and abs(off) <= PHASIS_WINDOW_DAYS:
-                    y, m, d, _ = astrology.swe_revjul(jd0 + off, calflag)
+                    # 날짜 표시를 UT(JD0+off)가 아니라, "차트 로컬 기준일(y0,m0,d0) + off일"로 만든다.
+                    y, m, d = _ymd_plus_days(y0, m0, d0, off, calflag)
                     events.append((code, (y, m, d), off))
 
             # 3) 결과 문자열 구성
@@ -256,8 +312,13 @@ class PhasisWnd(commonwnd.CommonWnd):
                 best = sorted(events, key=lambda t: (abs(t[2]), pref[t[0]]))[0]
                 lbl, (yy, mm, dd), off = best
                 phasis_txt = get_PHASE_LABELS().get(lbl, lbl)
-                offs_txt   = _fmt_day_offset(off)
+                # 날짜는 위에서 y0/m0/d0에 off일을 더해 만든 (yy/mm/dd)
                 date_txt   = _fmt_astro_date(yy, mm, dd)
+                # ±Days는 '날짜 차이'에서 재계산 → 날짜와 텍스트가 반드시 일치
+                jd_base = astrology.swe_julday(y0, m0, d0, 12.0, calflag)
+                jd_ev   = astrology.swe_julday(yy, mm, dd, 12.0, calflag)
+                off_print = int(round(jd_ev - jd_base))
+                offs_txt   = _fmt_day_offset(off_print)
                 time_txt   = u"%s (%s)" % (date_txt, offs_txt)
             else:
                 phasis_txt = PHASIS_EMPTY

@@ -151,6 +151,67 @@ if not hasattr(math, 'isfinite'):
     math.isfinite = _isfinite
 # ---- Altitude bias policy ---- 'kv_only' or 'full'
 ALTITUDE_BIAS = 'full'
+# === Local day helpers (use chart's timezone/LMT/LAT/DST) ===
+def _local_offset_days(ch, jd_ut):
+    """
+    Return offset (days) such that  JD_local = JD_UT + offset.
+    Mirrors _fmt_time_chart_local / jd_to_local_YMD_HM logic.
+    """
+    calflag = astrology.SE_GREG_CAL if ch.time.cal == chart.Time.GREGORIAN else astrology.SE_JUL_CAL
+    off_days = 0.0
+    zt = ch.time.zt
+    if zt == chart.Time.ZONE:
+        ztime_h = float(getattr(ch.time, 'zh', 0.0) or 0.0) + float(getattr(ch.time, 'zm', 0.0) or 0.0)/60.0
+        off_days += (ztime_h if getattr(ch.time, 'plus', False) else -ztime_h) / 24.0
+    elif zt == chart.Time.LOCALMEAN:  # LMT
+        long_min = (ch.place.deglon + ch.place.minlon/60.0) * 4.0
+        hours = long_min / 60.0
+        off_days += (hours if ch.place.east else -hours) / 24.0
+    elif zt == chart.Time.LOCALAPPARENT:  # LAT
+        long_min = (ch.place.deglon + ch.place.minlon/60.0) * 4.0
+        hours = long_min / 60.0
+        lmt_days = (hours if ch.place.east else -hours) / 24.0
+        # Equation of Time (swe_time_equ expects UT)
+        try:
+            ret, te, serr = astrology.swe_time_equ(jd_ut)
+            te_days = te if abs(te) <= 0.5 else te/1440.0
+        except Exception:
+            te_days = 0.0
+        off_days += (lmt_days - te_days)
+    if getattr(ch.time, 'daylightsaving', False):
+        off_days += 1.0/24.0
+    return float(off_days)
+
+def _local_date_tuple(ch, jd_ut):
+    """
+    Return (y, m, d, calflag) of the chart's local civil date at jd_ut.
+    """
+    calflag = astrology.SE_GREG_CAL if ch.time.cal == chart.Time.GREGORIAN else astrology.SE_JUL_CAL
+    off = _local_offset_days(ch, jd_ut)
+    y, m, d, _ = astrology.swe_revjul(jd_ut + off, calflag)
+    return (int(y), int(m), int(d), calflag)
+
+def _ymd_plus_days_local(y, m, d, delta_days, calflag):
+    """(y,m,d) 로컬 민일에 ±delta_days를 달력 일수로 더해 (Y,M,D) 반환."""
+    try:
+        y = int(y); m = int(m); d = int(d); dd = int(delta_days)
+    except Exception:
+        return (y, m, d)
+    jd_local_noon = astrology.swe_julday(y, m, d, 12.0, calflag)
+    Y, M, D, _ = astrology.swe_revjul(jd_local_noon + dd, calflag)
+    return (int(Y), int(M), int(D))
+
+def _jd_ut_from_local_noon(ch, y, m, d, calflag, iters=3):
+    """
+    (y,m,d) 로컬 민일의 '정오(12:00 Local)'에 해당하는 UT JD를 구한다.
+    LAT(방정시) 케이스를 위해 offset 고정점을 2~3회 반복.
+    """
+    jd_local_noon = astrology.swe_julday(int(y), int(m), int(d), 12.0, calflag)
+    # 초기 추정: timezone/LMT 오프셋만 고려
+    jd_ut = jd_local_noon - _local_offset_days(ch, jd_local_noon)
+    for _ in range(int(max(1, iters))):
+        jd_ut = jd_local_noon - _local_offset_days(ch, jd_ut)
+    return float(jd_ut)
 
 # 사이트 불변 모드: 기하/배경/공기질량 계산엔 alt=0.0만 쓰도록 강제
 SITE_INVARIANT = False
@@ -224,12 +285,12 @@ VISIBILITY_MODEL = 'unified'
 # ---- A안(HG 오레올) 튜닝값 (aureole_penalty_mag에 전달되는 기본값과 동일) ----
 AUREOLE_G   = 0.8   
 AUREOLE_A0  = 2.5   
-AUREOLE_D0  = 2.0 
+AUREOLE_D0  = 3.0 
 AUREOLE_EPS_MIN = 0.0
 AUREOLE_EPS_MAX = 90.0 
 # 목표물 대비 손실 스케일(ε 커지면 급감) — 행성별 과적합 없이 보편 파라미터
 AUREOLE_TARGET_K = 1.5    # (수성↓, 금성↑ 조절 레버)
-AUREOLE_EPS_C    = 16.0   # 전이 스케일[deg] (ε ≳ 해당값°면 HG 벌점 급감)
+AUREOLE_EPS_C    = 18.0   # 전이 스케일[deg] (ε ≳ 해당값°면 HG 벌점 급감)
 AUREOLE_Q        = 1.5    # 급감 가파름
 # --- 오레올 이각 대역 가중 ---
 AUREOLE_BAND_LO   = 0.0    # 시작
@@ -237,7 +298,10 @@ AUREOLE_BAND_HI   = 9.0    # 끝
 # 경계 완화 폭(부드럽게 오르내리는 구간 폭)
 AUREOLE_BAND_WLO  = 1.0    # 4° 아래에서 서서히 올라오기
 AUREOLE_BAND_WHI  = 20.0    # 8° 이후 서서히 줄어들기
-AUREOLE_BAND_GAIN = 1.0    # 밴드 가중 전체 스케일(보통 1.0)
+AUREOLE_BAND_GAIN = 1.0    # 밴드 가중 전체 스케일
+# 오레올 꼬리 동적 축소용(튜닝 노브)
+AUREOLE_BAND_WHI_MIN = 4.0   # 깊은 박명에서 꼬리 최소폭(도)
+AUREOLE_BAND_D_STAR  = 6.0   # 꼬리 축소 e-폴드 길이(도)  (값↑ = 더 천천히 줄어듦)
 
 def _eps_band_weight(eps,
                      lo=AUREOLE_BAND_LO, hi=AUREOLE_BAND_HI,
@@ -270,6 +334,21 @@ def _eps_band_weight(eps,
         fall = _smoothstep01(t)  # C¹
 
     return gain * rise * fall
+def _eps_band_weight_dyn(eps, D,
+                         lo=AUREOLE_BAND_LO, hi=AUREOLE_BAND_HI,
+                         wlo=AUREOLE_BAND_WLO, whi=AUREOLE_BAND_WHI,
+                         gain=AUREOLE_BAND_GAIN,
+                         D_star=AUREOLE_BAND_D_STAR,
+                         whi_min=AUREOLE_BAND_WHI_MIN):
+    """
+    박명이 깊어질수록(큰 D) 오레올 '원거리 꼬리(상단 소프트페이드)'를 자동으로 단축.
+    얕은 박명에서는 기존 WHI를 거의 유지.
+    """
+    D = max(0.0, float(D))
+    whi_eff = float(whi) * math.exp(- D / max(1e-6, float(D_star)))
+    if whi_min is not None:
+        whi_eff = max(float(whi_min), whi_eff)
+    return _eps_band_weight(eps, lo=lo, hi=hi, wlo=wlo, whi=whi_eff, gain=gain)
 
 def aureole_target_penalty_mag(D_deg, eps_deg,
                                g=None, A0=None, D0=None,
@@ -288,14 +367,14 @@ def aureole_target_penalty_mag(D_deg, eps_deg,
 
     base = aureole_penalty_mag(D_deg, eps_deg, g=g, A0=A0, D0=D0)
     damp = k * math.exp(- (max(0.0, float(eps_deg)) / max(1e-6, float(eps_c))) ** float(q))
-    w_eps = _eps_band_weight(eps_deg)
-    return max(0.0, _eps_band_weight(eps_deg) * base * damp)
+    w_eps = _eps_band_weight_dyn(eps_deg, D_deg)
+    return max(0.0, w_eps * base * damp)
 
 # ---- B안(대비 임계: 베일광) 튜닝값 ----
 VEIL_K      = 16.0   
 VEIL_THETA0 = 1.0  
 VEIL_P      = 2.0   
-VEIL_D0     = 1.0 # 태양 침강각 감쇠 e-폴드(베일광의 D 의존성)
+VEIL_D0     = 4.0 # 태양 침강각 감쇠 e-폴드(베일광의 D 의존성)
 # ---- μV [mag/arcsec^2] ↔ L [cd/m^2] 변환 (Crumey 2014) ----
 def muV_to_luminance_cd_m2(muV):
     # B[cd/m^2] = 10^((12.58 - μV)/2.5)
@@ -504,7 +583,7 @@ SEA_LEVEL_HPA    = 1013.25  # 해수면 표준기압
 TWILIGHT_D_MIN   = 0.0      # 잔광 모델이 작동하는 D 범위
 TWILIGHT_D_MAX   = 30.0
 TWILIGHT_C       = 0.55     # 잔광 감점 스케일(안정적 디폴트)
-AZ_WEIGHT_P      = 1.75     # 방위 가중 지수: w=(0.5*(1+cos dA))^p
+AZ_WEIGHT_P      = 2.00     # 방위 가중 지수: w=(0.5*(1+cos dA))^p
 TWILIGHT_PRESS_GAIN = 1.0   # 압력(고도) 보정이 잔광 감점에 주는 1:1 감쇠
 
 def pressure_from_altitude_hpa(alt_m, p0=SEA_LEVEL_HPA):
@@ -947,7 +1026,7 @@ def _elong_side(jd_ut, ipl):
     return 'E' if dlon > 0.0 else 'W'
 
 
-def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0):
+def visible_window_for_day(ch, jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0):
     """Return (any_visible, eps_min, near_horizon_flag, qual_twilight_visible)
        for that civil day's evening/morning window.
        qual_twilight_visible = 황혼-근지평-가시성(전이 검출용)"""
@@ -993,6 +1072,35 @@ def visible_window_for_day(jd_day_ut, lon, lat, alt_m, ipl, is_evening, hmin=0.0
         out = float(jdev) if (rflag >= 0) else None
         _SUN_EVENT_CACHE[key] = out    
         return out
+    # === LOCAL-DAY ALIGNMENT: pick sunrise/sunset that belong to the chart's local date ===
+    y0, m0, d0, calflag = _local_date_tuple(ch, jd_day_ut)
+
+    def _pick_local_event(event):
+        """
+        Choose the first event within the chart's local civil day (y0/m0/d0).
+        We probe two anchors: (jd_day_ut-1) and (jd_day_ut), each with 'next-after-noon'.
+        """
+        cands = []
+        c1 = _sun_event(jd_day_ut - 1.0, lon, lat, alt_m, event)
+        if c1 is not None:
+            cands.append(c1)
+        c2 = _sun_event(jd_day_ut, lon, lat, alt_m, event)
+        if c2 is not None:
+            cands.append(c2)
+
+        for c in cands:
+            y, m, d, _ = astrology.swe_revjul(c + _local_offset_days(ch, c), calflag)
+            if int(y) == y0 and int(m) == m0 and int(d) == d0:
+                return float(c)
+        return None  # (극지 등: 그 로컬-데이에 해당 이벤트 없음)
+
+    # sunset/sunrise for this local day
+    if is_evening:
+        sunset  = _pick_local_event('set')
+        sunrise = _pick_local_event('rise')  # 경계 계산용(있으면 사용)
+    else:
+        sunrise = _pick_local_event('rise')
+        sunset  = _pick_local_event('set')   # 경계 계산용(있으면 사용)
 
     # --- 스캔 루프 (근지평/가시성/ε 동시 추적) ---
     def _scan(t_start, t_end, is_evening_flag, boundary_ok):
@@ -1096,6 +1204,14 @@ def visibility_flags_around(chart, days_window=7):
     astrology.swe_set_topo(lon, lat, _alt_eff_geom(alt_m))
     out = {}
     scan_w = max(days_window, 10)
+    # dd=0 기준 로컬 민일(차트 입력 Y/M/D)과 캘린더 플래그
+    _tup = _local_date_tuple(chart, jd0)
+    if _tup is None:
+        # 폴백: 로컬 오프셋을 적용해 (UT→로컬) 변환 후 Gregorian으로 처리
+        calflag0 = astrology.SE_GREG_CAL
+        y0, m0, d0, _ = astrology.swe_revjul(jd0 + _local_offset_days(chart, jd0), calflag0)
+    else:
+        y0, m0, d0, calflag0 = _tup
 
     for ipl in PLANET_IDS:
         # 임시 저장
@@ -1105,9 +1221,13 @@ def visibility_flags_around(chart, days_window=7):
         near_e, near_m = {}, {}
 
         for dd in range(-scan_w, scan_w+1):
-            jd = jd0 + dd
-            ve, ee, ne, qe = visible_window_for_day(jd, lon, lat, alt_m, ipl, is_evening=True)
-            vm, em, nm, qm = visible_window_for_day(jd, lon, lat, alt_m, ipl, is_evening=False)
+            # dd일 만큼 '로컬 민일'을 이동한 날짜의 정오(12:00 Local)를 UT로 변환
+            y_d, m_d, d_d = _ymd_plus_days_local(y0, m0, d0, dd, calflag0)
+            jd_anchor_ut  = _jd_ut_from_local_noon(chart, y_d, m_d, d_d, calflag0)
+
+            ve, ee, ne, qe = visible_window_for_day(chart, jd_anchor_ut, lon, lat, alt_m, ipl, is_evening=True)
+            vm, em, nm, qm = visible_window_for_day(chart, jd_anchor_ut, lon, lat, alt_m, ipl, is_evening=False)
+
             vis_e[dd], eps_e[dd], near_e[dd], qual_e[dd] = ve, ee, ne, qe
             vis_m[dd], eps_m[dd], near_m[dd], qual_m[dd] = vm, em, nm, qm
         def _deps_per_day(eps_seq, day):
