@@ -50,6 +50,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'TMParanatellonta':'Paranatellonta\tCtrl+3', 'TMParanatellontaDoc':'Shows Planets and fixed stars on the 4 angles',
 'TMCircumambulation':'Circumambulations\tCtrl+4', 'TMCircumambulationDoc':'Shows distributions through the bounds',
 'TMFixStarAngleDirs':'Angular Directions of Fixed Stars\tCtrl+5', 'TMFixStarAngleDirsDoc':'Shows mundane fixed stars hitting ASC/MC/DSC/IC',
+'TMEclipses':'Eclipses\tCtrl+6', 'TMEclipsesDoc':'Shows solar and lunar eclipses',
 
 'MCharts':'&Charts', 
 'PMTransits':'Transits\tShift+Ctrl+F1', 'PMTransitsDoc':'Transit for a given date', 
@@ -192,7 +193,8 @@ menutxtseng.update({
 })
 
 
-txtseng = {'PleaseWait':'Please wait…',
+txtseng = {'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'Partial', 'Penumbral':'Penumbral', 'Unknown':'Unknown', 'EclipsesFailed':'Eclipses failed',
+'Saros':'Saros', 'PleaseWait':'Please wait…',
 'FetchingZoneAlt':'Please wait… Fetching timezone and elevation…',
 'DE': u'Degree',
 'RE': u'Reference','DiscardCurrHor':'Do you want to discard current horoscope?', 'FileError':'Error with file!', 
@@ -415,6 +417,8 @@ txtseng.setdefault('EveningFirst', u'Evening First')
 txtseng.setdefault('EveningLast', u'Evening Last')
 txtseng.setdefault('Confirm', u'Confirm')
 txtseng.setdefault('Dodecatemorion', u'Dodecatemorion')
+txtseng.setdefault('Solar2', u'Solar')
+txtseng.setdefault('Lunar2', u'Lunar')
 txtseng.setdefault('Declination', u'Declination')
 txtseng.setdefault('Year',  u'Year')
 txtseng.setdefault('Years', u'Years')
@@ -540,9 +544,12 @@ menutxtshun = {'MHoroscope':u'&Horoszkóp', 'HMNew':u'&Új\tCtrl+U', 'HMNewDoc':
 'MHelp':u'&Info', 
 'HEMHelp':u'Súgó\tAlt+L', 'HEMHelpDoc':u'Súgó',
 'HEMAbout':u'&A programról\tAlt+A', 'HEMAboutDoc':u'Információ a programról'}
+menutxtshun.setdefault('TMEclipses', u'Nap-/Holdfogyatkozások\tCtrl+6')
+menutxtshun.setdefault('TMEclipsesDoc', u'Fogyatkozások a képlet dátuma körül.')
 
 
-txtshun = {'Circumambulation': u'körüljárás',
+txtshun = {'Total2':'Teljes', 'Annular':'Gyűrűs', 'Hybrid':'Hibrid', 'Partial':'Részleges', 'Penumbral':'Félárnyékos', 'Unknown':'Ismeretlen', 'EclipsesFailed':'Fogyatkozások számítása sikertelen',
+'Circumambulation': u'körüljárás',
 'CircumPolarLatErr': u'A körüljárás magas földrajzi szélességen nem érhető el (abszolút szélesség {0:.2f}°, határ {1:.2f}°).',
 'DiscardCurrHor':u'El akarja dobni a jelenlegi horoszkópot?', 'FileError':u'Hiba a fájl-val!', 
 'FileExists':u'Már létezik a fájl. Felül akarja írni?', 
@@ -765,6 +772,8 @@ txtshun.setdefault('EveningFirst', u'Este (első)')
 txtshun.setdefault('EveningLast', u'Este (utolsó)')
 txtshun.setdefault('Confirm', u'Megerősítés')
 txtshun.setdefault('Dodecatemorion', u'Dodecatemorion')
+txtshun.setdefault('Solar2', u'Nap')
+txtshun.setdefault('Lunar2', u'Hold')
 txtshun.setdefault('Declination', u'Deklináció')
 txtshun.setdefault('Year',  u'év')
 txtshun.setdefault('Years', u'évek')
@@ -891,9 +900,12 @@ menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N'
 'MHelp':u'&Помощь', 
 'HEMHelp':u'Помощь\tAlt+L', 'HEMHelpDoc':u'Help',
 'HEMAbout':u'&О программе\tAlt+A', 'HEMAboutDoc':u'Инфо о программе'}
+menutxtsrus.setdefault('TMEclipses', u'Затмения\tCtrl+6')
+menutxtsrus.setdefault('TMEclipsesDoc', u'Показать затмения около даты карты.')
 
 
-txtsrus = {'PleaseWait':u'Пожалуйста, подождите…',
+txtsrus = {'Total2':'Полное', 'Annular':'Кольцеобразное', 'Hybrid':'Гибридное', 'Partial':'Частичное', 'Penumbral':'Полутеневое', 'Unknown':'Неизвестно', 'EclipsesFailed':'Сбой расчёта затмений',
+'PleaseWait':u'Пожалуйста, подождите…',
 'FetchingZoneAlt':u'Пожалуйста, подождите… Получаем часовой пояс и высоту местности…',
 'Circumambulation': u'Обращение',
 'CircumPolarLatErr': u'Обращение недоступно на высоких широтах (абсолютная широта {0:.2f}°, предел {1:.2f}°).',
@@ -1112,6 +1124,8 @@ txtsrus.setdefault('EveningFirst', u'Вечер (перв.)')
 txtsrus.setdefault('EveningLast', u'Вечер (посл.)')
 txtsrus.setdefault('Confirm', u'Подтверждение')
 txtsrus.setdefault('Dodecatemorion', u'Додекатеморион')
+txtsrus.setdefault('Solar2', u'Солнечное')
+txtsrus.setdefault('Lunar2', u'Лунное')
 txtsrus.setdefault('Declination', u'Склонение')
 txtsrus.setdefault('Year',  u'год')
 txtsrus.setdefault('Years', u'лет')       # 일반 복수형
@@ -1240,9 +1254,12 @@ menutxtsesp = {'MHoroscope':u'&Horóscopo', 'HMNew':u'&Nuevo\tCtrl+N', 'HMNewDoc
 'MHelp':u'&Ayuda', 
 'HEMHelp':u'A&yuda\tAlt+Y', 'HEMHelpDoc':u'Ayuda',
 'HEMAbout':u'Acerca &de\tAlt+D', 'HEMAboutDoc':u'Información acerca del Programa'}
+menutxtsesp.setdefault('TMEclipses', u'Eclipses\tCtrl+6')
+menutxtsesp.setdefault('TMEclipsesDoc', u'Mostrar eclipses alrededor de la fecha de la carta.')
 
 
-txtsesp = {'Circumambulation': u'Circumambulación',
+txtsesp = {'Total2':'Total', 'Annular':'Anular', 'Hybrid':'Híbrido', 'Partial':'Parcial', 'Penumbral':'Penumbral', 'Unknown':'Desconocido', 'EclipsesFailed':'Error al calcular los eclipses',
+'Circumambulation': u'Circumambulación',
 'CircumPolarLatErr': u'La circumambulación no está disponible en latitudes altas (latitud absoluta {0:.2f}°, límite {1:.2f}°).',
 'DiscardCurrHor':u'UD. desea descartar este Horóscopo?', 'FileError':u'Error de archivo!', 
 'FileExists':u'Este Archivo ya Existe. ¿Ud. Desea sobrescribirlo?', 
@@ -1458,6 +1475,8 @@ txtsesp.setdefault('EveningFirst', u'Tarde (primero)')
 txtsesp.setdefault('EveningLast', u'Tarde (último)')
 txtsesp.setdefault('Confirm', u'Confirmación')
 txtsesp.setdefault('Dodecatemorion', u'Dodecatemorion')
+txtsesp.setdefault('Solar2', u'Solar')
+txtsesp.setdefault('Lunar2', u'Lunar')
 txtsesp.setdefault('Declination', u'Declinación')
 txtsesp.setdefault('Year',  u'año')
 txtsesp.setdefault('Years', u'años')
@@ -1587,9 +1606,12 @@ menutxtsita = {'MHoroscope':u'&Oroscopo',
 'MHelp':u'&Help',
 'HEMHelp':u'H&elp\tAlt+E', 'HEMHelpDoc':u'Help',
 'HEMAbout':u'&Informazioni\tAlt+I', 'HEMAboutDoc':u'Info sul programma'}
+menutxtsita.setdefault('TMEclipses', u'Eclissi\tCtrl+6')
+menutxtsita.setdefault('TMEclipsesDoc', u'Mostra le eclissi attorno alla data della carta.')
 
 
-txtsita = {'PleaseWait':u'Attendere, prego…',
+txtsita = {'Total2':'Totale', 'Annular':'Anulare', 'Hybrid':'Ibrido', 'Partial':'Parziale', 'Penumbral':'Penombrale', 'Unknown':'Sconosciuto', 'EclipsesFailed':'Errore nel calcolo delle eclissi',
+'PleaseWait':u'Attendere, prego…',
 'FetchingZoneAlt':u'Attendere, prego… Recupero del fuso orario e dell\'altitudine…',
 'Circumambulation': u'Circumambulazione',
 'CircumPolarLatErr': u'La circumambulazione non è disponibile alle alte latitudini (latitudine assoluta {0:.2f}°, limite {1:.2f}°).',
@@ -1812,6 +1834,8 @@ txtsita.setdefault('EveningFirst', u'Sera (primo)')
 txtsita.setdefault('EveningLast', u'Sera (ultimo)')
 txtsita.setdefault('Confirm', u'Conferma')
 txtsita.setdefault('Dodecatemorion', u'Dodecatemorion')
+txtsita.setdefault('Solar2', u'Solare')
+txtsita.setdefault('Lunar2', u'Lunare')
 txtsita.setdefault('Declination', u'Declinazione')
 txtsita.setdefault('Year',  u'anno')
 txtsita.setdefault('Years', u'anni')
@@ -1939,9 +1963,12 @@ menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':
 'MHelp':u'A&ide', 
 'HEMHelp':u'Aid&e\tAlt+E', 'HEMHelpDoc':u'Aide',
 'HEMAbout':u'&A propos\tAlt+A', 'HEMAboutDoc':u'Infos à propos du programme'}
+menutxtsfre.setdefault('TMEclipses', u'Éclipses\tCtrl+6')
+menutxtsfre.setdefault('TMEclipsesDoc', u'Afficher les éclipses autour de la date du thème.')
 
 
-txtsfre = {'Circumambulation': u'Circumambulation',
+txtsfre = {'Total2':'Totale', 'Annular':'Annulaire', 'Hybrid':'Hybride', 'Partial':'Partielle', 'Penumbral':'Pénombrale', 'Unknown':'Inconnu', 'EclipsesFailed':'Échec du calcul des éclipses',
+'Circumambulation': u'Circumambulation',
 'CircumPolarLatErr': u'La circumambulation n’est pas disponible aux hautes latitudes (latitude absolue {0:.2f}°, limite {1:.2f}°).',
 'DiscardCurrHor':u'Voulez-vous abandonner le thème actuel?', 'FileError':u'Erreur avec le fichier!', 
 'FileExists':u"Le fichier existe déjà. Voulez-vous l'écraser?", 
@@ -2159,6 +2186,8 @@ txtsfre.setdefault('EveningFirst', u'Soir (premier)')
 txtsfre.setdefault('EveningLast', u'Soir (dernier)')
 txtsfre.setdefault('Confirm', u'Confirmation')
 txtsfre.setdefault('Dodecatemorion', u'Dodecatemorion')
+txtsfre.setdefault('Solar2', u'Solaire')
+txtsfre.setdefault('Lunar2', u'Lunaire')
 txtsfre.setdefault('Declination', u'Déclinaison')
 txtsfre.setdefault('Year',  u'an')      # 또는 "année"
 txtsfre.setdefault('Years', u'ans')     # 또는 "années"
@@ -2282,6 +2311,8 @@ menutxtschs = {'MHoroscope':'(&H)星盘',
 'MHelp':'(&E)帮助',
 'HEMHelp':'(&L)帮助\tAlt+L', 'HEMHelpDoc':'帮助',
 'HEMAbout':'(&A)关于\tAlt+A', 'HEMAboutDoc':'关于程序的信息'}
+menutxtschs.setdefault('TMEclipses', u'日月食\tCtrl+6')
+menutxtschs.setdefault('TMEclipsesDoc', u'以表格显示星盘日期前后一年的日/月食。')
 
 
 menutxtscht = {'MHoroscope':'(&H)星盤',
@@ -2383,8 +2414,11 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 'MHelp':'(&E)幫助',
 'HEMHelp':'(&L)幫助\tAlt+L', 'HEMHelpDoc':'幫助',
 'HEMAbout':'(&A)關於\tAlt+A', 'HEMAboutDoc':'關於程序的信息'}
+menutxtscht.setdefault('TMEclipses', u'日月食\tCtrl+6')
+menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食。')
 
-txtschs = {'Circumambulation': u'绕行',
+txtschs = {'Total2':'全食', 'Annular':'环食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食计算失败',
+'Circumambulation': u'绕行',
 'CircumPolarLatErr': u'绕行在高纬度不可用（绝对纬度 {0:.2f}°，上限 {1:.2f}°）。',
 'DiscardCurrHor':u'你想放弃目前的占星吗?', 'FileError':u'文件错误!',
 'FileExists':u'文件已经存在. 你要覆盖它吗?',
@@ -2608,6 +2642,8 @@ txtschs.setdefault('EveningFirst', u'傍晚首次')
 txtschs.setdefault('EveningLast', u'傍晚末次')
 txtschs.setdefault('Confirm', u'确认')
 txtschs.setdefault('Dodecatemorion', u'十二分盘')
+txtschs.setdefault('Solar2', u'日食')
+txtschs.setdefault('Lunar2', u'月食')
 txtschs.setdefault('Declination', u'赤纬')
 txtschs.setdefault('Year',  u'年')
 txtschs.setdefault('Years', u'年')
@@ -2636,7 +2672,8 @@ txtschs.setdefault('RE', u'引用')             # Chinese (Simplified)
 
 
 
-txtscht = {'Circumambulation': u'繞行',
+txtscht = {'Total2':'全食', 'Annular':'環食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食計算失敗',
+'Circumambulation': u'繞行',
 'CircumPolarLatErr': u'繞行在高緯度不可用（絕對緯度 {0:.2f}°，上限 {1:.2f}°）。',
 'DiscardCurrHor':u'你想放棄目前的占星嗎?', 'FileError':u'文件錯誤!',
 'FileExists':u'文件已經存在. 你要覆蓋它嗎?',
@@ -2859,6 +2896,8 @@ txtscht.setdefault('EveningFirst', u'傍晚首次')
 txtscht.setdefault('EveningLast', u'傍晚末次')
 txtscht.setdefault('Confirm', u'確認')
 txtscht.setdefault('Dodecatemorion', u'十二分盤')
+txtscht.setdefault('Solar2', u'日食')
+txtscht.setdefault('Lunar2', u'月食')
 txtscht.setdefault('Declination', u'赤緯')
 txtscht.setdefault('Year',  u'年')
 txtscht.setdefault('Years', u'年')
@@ -3011,8 +3050,11 @@ menutxtsko = {'MHoroscope':u'천궁도',
 'MHelp':u'도움말',
 'HEMHelp':u'도움말\tAlt+L', 'HEMHelpDoc':u'도움말을 보여줍니다.',
 'HEMAbout':u'정보\tAlt+A', 'HEMAboutDoc':u'이 프로그램에 대한 정보를 보여줍니다.'}
+menutxtsko.setdefault('TMEclipses', u'일월식\tCtrl+6')
+menutxtsko.setdefault('TMEclipsesDoc', u'일식과 월식을 표로 보여줍니다.')
 
-txtsko = {'Circumambulation': u'서컴앰뷸레이션',
+txtsko = {'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Partial':'부분식', 'Penumbral':'반영식', 'Unknown':'미상', 'EclipsesFailed':'일월식 계산 실패',
+'Circumambulation': u'서컴앰뷸레이션',
 'CircumPolarLatErr': u'서컴앰뷸레이션은 고위도에서는 사용할 수 없습니다 (절대 위도 {0:.2f}°, 한계 {1:.2f}°).',
 'DiscardCurrHor':u'현재 천궁도를 폐기하시겠습니까?',
 'FileError':u'파일에 오류가 있습니다!',
@@ -3288,6 +3330,8 @@ txtsko.setdefault('EveningFirst', u'저녁 첫 가시')
 txtsko.setdefault('EveningLast', u'저녁 마지막 가시')
 txtsko.setdefault('Confirm', u'확인')
 txtsko.setdefault('Dodecatemorion', u'도데카테모리온')
+txtsko.setdefault('Solar2', u'일식')
+txtsko.setdefault('Lunar2', u'월식')
 txtsko.setdefault('Declination', u'적위')
 txtsko.setdefault('Year',  u'년')
 txtsko.setdefault('Years', u'년')

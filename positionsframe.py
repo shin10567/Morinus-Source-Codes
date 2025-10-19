@@ -5,7 +5,7 @@ import mtexts
 
 class PositionsFrame(wx.Frame):
 	def __init__(self, parent, title, chrt, options):
-		wx.Frame.__init__(self, parent, -1, title, wx.DefaultPosition, wx.Size(640, 400))
+		wx.Frame.__init__(self, parent, -1, title, wx.DefaultPosition, wx.Size(720, 570))
 
 		self.pmenu = wx.Menu()
 		self.ID_SaveAsBitmap = 101

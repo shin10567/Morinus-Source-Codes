@@ -1,4 +1,4 @@
-## [9.1.6] Updated Version from 8.1.0 
+## [9.1.7] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -150,3 +150,6 @@
 - Heliacal Risings/Settings now consider the effects of moonlight & algorithm chanegs
 #### 9.1.6
 - Heliacal Risings/Settings calender bug fix & algorithm chanegs
+#### 9.1.7
+- Added Solar & Lunar Eclipses: shows all solar and lunar eclipses within ±1 year of the chart date.
+- Speculum: adjusted display window size.

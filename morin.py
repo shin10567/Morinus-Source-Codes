@@ -128,6 +128,7 @@ import sys  # 위쪽 import들 근처에 이미 있다면 생략
 import json
 import urllib.request as urllib2
 import urllib
+import eclipsesframe
 
 # morin.py 상단 어딘가 (import wx 아래)
 LANG_MAP = {
@@ -215,6 +216,7 @@ class MFrame(wx.Frame):
 		self.ID_Phasis = 137
 		self.ID_Paranatellonta = 138
 		self.ID_Circumambulation = 139
+		self.ID_Eclipses = 186
 		self.ID_FixStarAngleDirs = 185  # Angular directions of fixed stars
 		#Charts-menu
 		self.ID_Transits, self.ID_Revolutions, self.ID_SunTransits, self.ID_SecondaryDirs, self.ID_Elections, self.ID_SquareChart, self.ID_ProfectionsChart, self.ID_MundaneChart = range(140, 148)
@@ -313,6 +315,7 @@ class MFrame(wx.Frame):
 		self.mtable.Append(self.ID_Paranatellonta, mtexts.menutxts['TMParanatellonta'],mtexts.menutxts['TMParanatellontaDoc'])
 		self.mtable.Append(self.ID_Circumambulation, mtexts.menutxts['TMCircumambulation'],mtexts.menutxts['TMCircumambulationDoc'])
 		self.mtable.Append(self.ID_FixStarAngleDirs, mtexts.menutxts['TMFixStarAngleDirs'],mtexts.menutxts['TMFixStarAngleDirsDoc'])
+		self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
 
 		#Charts-menu
 		self.mcharts.Append(self.ID_Transits, mtexts.menutxts['PMTransits'], mtexts.menutxts['PMTransitsDoc'])
@@ -489,6 +492,7 @@ class MFrame(wx.Frame):
 		self.Bind(wx.EVT_MENU, self.onParanatellonta, id=self.ID_Paranatellonta)
 		self.Bind(wx.EVT_MENU, self.onCircumambulation, id=self.ID_Circumambulation)
 		self.Bind(wx.EVT_MENU, self.onFixStarAngleDirs, id=self.ID_FixStarAngleDirs)
+		self.Bind(wx.EVT_MENU, self.onEclipses, id=self.ID_Eclipses)
 		self.Bind(wx.EVT_MENU, self.onTransits, id=self.ID_Transits)
 		self.Bind(wx.EVT_MENU, self.onRevolutions, id=self.ID_Revolutions)
 		self.Bind(wx.EVT_MENU, self.onSunTransits, id=self.ID_SunTransits)
@@ -548,6 +552,7 @@ class MFrame(wx.Frame):
 			(wx.ACCEL_CTRL, ord('3'),  self.ID_Paranatellonta),
 			(wx.ACCEL_CTRL, ord('4'),  self.ID_Circumambulation),
 			(wx.ACCEL_CTRL, ord('5'),  self.ID_FixStarAngleDirs),
+			(wx.ACCEL_CTRL, ord('6'),  self.ID_Eclipses),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F5, self.ID_SecProgChart),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F6, self.ID_SecProgPositions),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F9, self.ID_Elections),
@@ -1612,6 +1617,11 @@ class MFrame(wx.Frame):
 				fr.Show(True)
 			finally:
 				del wait
+	def onEclipses(self, event):
+		if self.horoscope is None:
+			return
+		fr = eclipsesframe.EclipsesFrame(self, self.title, self.horoscope, self.options)
+		fr.Show(True)
 
 	def onZodiacalReleasing(self, event):
 		if self.horoscope.time.bc:
@@ -2973,6 +2983,7 @@ class MFrame(wx.Frame):
 				self.ID_Phasis = 137
 				self.ID_Paranatellonta = 138
 				self.ID_Circumambulation = 139
+				self.ID_Eclipses = 186
 				self.ID_FixStarAngleDirs = 185  # Angular directions of fixed stars
 		#Charts-menu
 				self.ID_Transits, self.ID_Revolutions, self.ID_SunTransits, self.ID_SecondaryDirs, self.ID_Elections, self.ID_SquareChart, self.ID_ProfectionsChart, self.ID_MundaneChart = range(140, 148)
@@ -3071,6 +3082,7 @@ class MFrame(wx.Frame):
 				self.mtable.Append(self.ID_Paranatellonta, mtexts.menutxts['TMParanatellonta'],mtexts.menutxts['TMParanatellontaDoc'])
 				self.mtable.Append(self.ID_Circumambulation, mtexts.menutxts['TMCircumambulation'],mtexts.menutxts['TMCircumambulationDoc'])
 				self.mtable.Append(self.ID_FixStarAngleDirs, mtexts.menutxts['TMFixStarAngleDirs'],mtexts.menutxts['TMFixStarAngleDirsDoc'])
+				self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
 		#Charts-menu
 				self.mcharts.Append(self.ID_Transits, mtexts.menutxts['PMTransits'], mtexts.menutxts['PMTransitsDoc'])
 				self.mcharts.Append(self.ID_Revolutions, mtexts.menutxts['PMRevolutions'], mtexts.menutxts['PMRevolutionsDoc'])
@@ -3676,7 +3688,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.1.6'
+		info.Version = '9.1.7'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
@@ -3809,6 +3821,7 @@ class MFrame(wx.Frame):
 		self.mtable.Enable(self.ID_Paranatellonta, bEnable)
 		self.mtable.Enable(self.ID_Circumambulation, bEnable)
 		self.mtable.Enable(self.ID_FixStarAngleDirs, bEnable)
+		self.mtable.Enable(self.ID_Eclipses, bEnable)
 		self.mcharts.Enable(self.ID_Transits, bEnable)
 		self.mcharts.Enable(self.ID_Revolutions, bEnable)
 		self.mcharts.Enable(self.ID_SunTransits, bEnable)
