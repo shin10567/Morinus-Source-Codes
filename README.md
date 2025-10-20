@@ -1,4 +1,4 @@
-## [9.1.8] Updated Version from 8.1.0 
+## [9.1.9] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -155,3 +155,5 @@
 - Speculum: adjusted display window size.
 #### 9.1.8
 - Swapped the positions of “Misc(Miscellaneous)” and “Eclipses” in the UI and exchanged their keyboard shortcuts; updated shortcut labels accordingly.
+#### 9.1.9
+- Timezone bug fix

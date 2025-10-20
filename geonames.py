@@ -4,17 +4,17 @@ import urllib.request as urllib2
 import urllib
 from datetime import datetime, timezone
 try:
-    from zoneinfo import ZoneInfo            # Py3.9+
+	from zoneinfo import ZoneInfo            # Py3.9+
 except Exception:
-    try:
-        from backports.zoneinfo import ZoneInfo  # Py3.7–3.8
-    except Exception:
-        ZoneInfo = None
+	try:
+		from backports.zoneinfo import ZoneInfo  # Py3.7–3.8
+	except Exception:
+		ZoneInfo = None
 
 try:
-    from timezonefinder import TimezoneFinder
+	from timezonefinder import TimezoneFinder
 except Exception:
-    TimezoneFinder = None
+	TimezoneFinder = None
 
 #Csaba's code
 
@@ -67,7 +67,9 @@ class Geonames:
 
 	def get_gmt_offset_offline(self, longitude, latitude, when_utc=None):
 		"""
-		TimezoneFinder + (backports.)zoneinfo 로 오프라인 오프셋(시간대 오프셋, 시간 단위) 계산.
+		TimezoneFinder + (backports.)zoneinfo 로 오프라인 오프셋(시간대 오프셋, '시간' 단위) 계산.
+		- when_utc가 주어지면: 그 UTC 시각에서의 '총 오프셋'(DST 포함)을 반환
+		- when_utc가 None이면: '표준시(raw offset, DST 제외)'을 추정하여 반환
 		실패 시 None 반환.
 		"""
 		if Geonames._tf is None or ZoneInfo is None:
@@ -81,7 +83,6 @@ class Geonames:
 		try:
 			tzname = Geonames._tf.timezone_at(lng=lon, lat=lat)
 			if not tzname:
-				# 해안/경계 근처 보정
 				tzname = Geonames._tf.closest_timezone_at(lng=lon, lat=lat)
 		except Exception:
 			tzname = None
@@ -93,22 +94,35 @@ class Geonames:
 		except Exception:
 			return None
 
-		# 기준 시각: 지정 없으면 '지금'을 UTC로
-		if when_utc is None:
-			when_utc = datetime.utcnow().replace(tzinfo=timezone.utc)
-		else:
-			# naive면 UTC로 가정
-			if when_utc.tzinfo is None:
-				when_utc = when_utc.replace(tzinfo=timezone.utc)
-			else:
-				when_utc = when_utc.astimezone(timezone.utc)
+		from datetime import datetime, timezone as _tz
 
-		# 해당 타임존의 현지 시각으로 변환 후 오프셋 계산
-		local_dt = when_utc.astimezone(tz)
-		off = local_dt.utcoffset()
-		if off is None:
-			return None
-		return off.total_seconds() / 3600.0
+		# when_utc가 주어졌다면: 그 시각의 총 오프셋(DST 포함)
+		if when_utc is not None:
+			if when_utc.tzinfo is None:
+				when_utc = when_utc.replace(tzinfo=_tz.utc)
+			else:
+				when_utc = when_utc.astimezone(_tz.utc)
+			off = when_utc.astimezone(tz).utcoffset()
+			return None if off is None else (off.total_seconds() / 3600.0)
+
+		# when_utc가 None이면: '표준시(raw offset)'을 계산
+		# 방법: 기준 연도(예: 2024)의 각 달 1일 12:00 UTC를 해당 타임존으로 변환해
+		#      12개의 utcoffset 중 '가장 작은 값(보통 DST 미적용 표준시)'을 선택
+		def _std_off_hours(tzobj):
+			year = 2024
+			offs = []
+			for m in range(1, 13):
+				dt_utc = datetime(year, m, 1, 12, tzinfo=_tz.utc)
+				off = dt_utc.astimezone(tzobj).utcoffset()
+				if off is not None:
+					offs.append(off.total_seconds() / 3600.0)
+			if not offs:
+				return None
+			# 예: 뉴욕(-5, -4) → min = -5 (표준시), 런던(0, +1) → 0, 시드니(+10, +11) → +10
+			return min(offs)
+
+		offh = _std_off_hours(tz)
+		return offh
 
 	def get_gmt_offset(self, longitude, latitude):
 		# 1) 오프라인 계산 먼저 시도

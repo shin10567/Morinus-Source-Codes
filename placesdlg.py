@@ -483,10 +483,10 @@ class PlacesDlg(wx.Dialog):
 				plus = False
 				gmtoffs *= -1
 			gmtoffshour = int(gmtoffs)
-			gmtoffsmin  = int((gmtoffs-gmtoffshour)*60.0)
-			self.zhour.SetValue(str(gmtoffshour))
-			self.zminute.SetValue(str(gmtoffsmin))
-			self.pluscb.SetStringSelection(PlacesDlg.PLUSCHOICES[0 if plus else 1])
+			gmtoffsmin  = int(round((gmtoffs - gmtoffshour) * 60.0))
+			if gmtoffsmin == 60:
+				gmtoffshour += 1
+				gmtoffsmin = 0
 		else:
 			# 자리표시만 채워두고 나중에 갱신
 			self.zhour.SetValue('0')
