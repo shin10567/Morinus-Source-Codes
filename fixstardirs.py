@@ -8,6 +8,7 @@ import common  # Morinus의 ephe 경로 사용 (common.common.ephepath)
 import chart
 import fixstars
 import primdirs
+import astrology 
 import common  # Morinus의 ephe 경로 사용 (common.common.ephepath)
 #try: swe.set_ephe_path(common.common.ephepath)
 #except: pass

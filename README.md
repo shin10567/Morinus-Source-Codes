@@ -1,4 +1,4 @@
-## [9.1.9] Updated Version from 8.1.0 
+## [9.2.0] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -157,3 +157,5 @@
 - Swapped the positions of “Misc(Miscellaneous)” and “Eclipses” in the UI and exchanged their keyboard shortcuts; updated shortcut labels accordingly.
 #### 9.1.9
 - Timezone bug fix
+#### 9.2.0
+- Angular Directions of Fixed Stars bug fix

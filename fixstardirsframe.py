@@ -160,16 +160,16 @@ class FixStarDirsWnd(cw.CommonWnd):
             d = getattr(opt, 'pdkeyd', None)
             if d == primdirs.PrimDirs.TRUESOLAREQUATORIALARC:
                 #return u"Dynamic Key: True Solar (Equatorial)"
-                return mtexts.txts["DynamicKey"]+":" + mtexts.txts['TrueSolarEquatorialArc']
+                return mtexts.txts["DynamicKey"]+": " + mtexts.txts['TrueSolarEquatorialArc']
             if d == primdirs.PrimDirs.TRUESOLARECLIPTICALARC:
                 #return u"Dynamic Key: True Solar (Ecliptical)"
-                return mtexts.txts["DynamicKey"]+":" + mtexts.txts["TrueSolarEclipticalArc"]
+                return mtexts.txts["DynamicKey"]+": " + mtexts.txts["TrueSolarEclipticalArc"]
             if d == primdirs.PrimDirs.BIRTHDAYSOLAREQUATORIALARC:
                 #return u"Dynamic Key: Birthday Solar (Equatorial)"
-                return mtexts.txts["DynamicKey"]+":" + mtexts.txts["BirthdaySolarEquatorialArc"]
+                return mtexts.txts["DynamicKey"]+": " + mtexts.txts["BirthdaySolarEquatorialArc"]
             if d == primdirs.PrimDirs.BIRTHDAYSOLARECLIPTICALARC:
                 #return u"Dynamic Key: Birthday Solar (Ecliptical)"
-                return mtexts.txts["DynamicKey"]+":" + mtexts.txts["BirthdaySolarEclipticalArc"]
+                return mtexts.txts["DynamicKey"]+": " + mtexts.txts["BirthdaySolarEclipticalArc"]
             return mtexts.txts["DynamicKey"]
         # 정적 키
         s = getattr(opt, 'pdkeys', None)
