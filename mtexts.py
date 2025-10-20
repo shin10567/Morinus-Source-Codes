@@ -43,7 +43,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 # ############### V 8.0.1
 'TMDodecatemoria':'Dodecatemoria\tCtrl+F10', 'TMDodecatemoriaDoc':'Shows dodecatemoria',
 # ###############
-'TMAngleAtBirth':'Angle at Birth\tCtrl+F11', 'TMAngleAtBirthDoc':'Shows fixed stars meeting Asc/Dsc/MC/IC',
+'TMAngleAtBirth':'Angles at Birth\tCtrl+F11', 'TMAngleAtBirthDoc':'Shows fixed stars meeting Asc/Dsc/MC/IC',
 'TMPrimaryDirs':'Primary Directions\tCtrl+F12', 'TMPrimaryDirsDoc':'Displays list of primary directions',
 'TMZodiacalReleasing':'Zodiacal Releasing\tCtrl+1', 'TMZodiacalReleasingDoc':'Shows time-lord releasing',
 'TMPhasis':'Heliacal Risings/Settings\tCtrl+2', 'TMPhasisDoc':'Shows heliacal visibility',
@@ -139,7 +139,7 @@ menutxtseng.update({
 	'TMCustomerSpeculumDoc':'Shows the speculum of the given ecliptic point.',
 	'TMFirdariaDoc':'Shows firdaria.',
 	'TMDodecatemoriaDoc':'Shows dodecatemoria.',
-	'TMAngleAtBirthDoc':'Shows fixed stars meeting the ASC/DSC/MC/IC.',
+	'TMAngleAtBirthDoc':'Shows fixed stars meeting the Asc, Dsc, MC, IC.',
 	'TMPrimaryDirsDoc':'Displays a list of primary directions.',
 	'TMZodiacalReleasingDoc':'Shows zodiacal releasing.',
 	'TMPhasisDoc':'Shows heliacal visibility.',
