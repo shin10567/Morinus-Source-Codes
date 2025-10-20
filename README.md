@@ -1,4 +1,4 @@
-## [9.1.7] Updated Version from 8.1.0 
+## [9.1.8] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -153,3 +153,5 @@
 #### 9.1.7
 - Added Solar & Lunar Eclipses: shows all solar and lunar eclipses within ±1 year of the chart date.
 - Speculum: adjusted display window size.
+#### 9.1.8
+- Swapped the positions of “Misc(Miscellaneous)” and “Eclipses” in the UI and exchanged their keyboard shortcuts; updated shortcut labels accordingly.

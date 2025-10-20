@@ -173,7 +173,18 @@ class MFrame(wx.Frame):
 		self.hortitle = title
 		
 		self.options = opts
+		import importlib
+		importlib.reload(mtexts)  # 저장된 mtexts.py 변경분까지 즉시 재적재
 		mtexts.setLang(self.options.langid)
+
+		# wx 표준 라벨(파일 대화상자 버튼, About 등)도 새 로케일로 갱신
+		self._locale = wx.Locale(LANG_MAP.get(self.options.langid, wx.LANGUAGE_ENGLISH))
+		try:
+			self._locale.AddCatalog("wxstd")
+			self._locale.AddCatalog("wx")
+		except Exception:
+			pass
+
 		# 선택된 언어로 wx 로케일 고정 (About 라벨 등 표준 문자열이 번역됨)
 		self._locale = wx.Locale(LANG_MAP.get(opts.langid, wx.LANGUAGE_ENGLISH))
 		try:
@@ -278,8 +289,8 @@ class MFrame(wx.Frame):
 		self.talmutens.Append(self.ID_AlmutenChart, mtexts.menutxts['TMAlmutenChart'], mtexts.menutxts['TMAlmutenChartDoc'])
 		self.talmutens.Append(self.ID_AlmutenTopical, mtexts.menutxts['TMAlmutenTopical'], mtexts.menutxts['TMAlmutenTopicalDoc'])
 		self.mtable.Append(self.ID_TAlmutens, mtexts.menutxts['TMAlmutens'], self.talmutens)
-
-		self.mtable.Append(self.ID_Misc, mtexts.menutxts['TMMisc'], mtexts.menutxts['TMMiscDoc'])
+		self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
+		
 		self.mtable.Append(self.ID_MunPos, mtexts.menutxts['TMMunPos'], mtexts.menutxts['TMMunPosDoc'])
 		self.mtable.Append(self.ID_Antiscia, mtexts.menutxts['TMAntiscia'], mtexts.menutxts['TMAntisciaDoc'])
 # ###################################
@@ -315,7 +326,7 @@ class MFrame(wx.Frame):
 		self.mtable.Append(self.ID_Paranatellonta, mtexts.menutxts['TMParanatellonta'],mtexts.menutxts['TMParanatellontaDoc'])
 		self.mtable.Append(self.ID_Circumambulation, mtexts.menutxts['TMCircumambulation'],mtexts.menutxts['TMCircumambulationDoc'])
 		self.mtable.Append(self.ID_FixStarAngleDirs, mtexts.menutxts['TMFixStarAngleDirs'],mtexts.menutxts['TMFixStarAngleDirsDoc'])
-		self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
+		self.mtable.Append(self.ID_Misc, mtexts.menutxts['TMMisc'], mtexts.menutxts['TMMiscDoc'])
 
 		#Charts-menu
 		self.mcharts.Append(self.ID_Transits, mtexts.menutxts['PMTransits'], mtexts.menutxts['PMTransitsDoc'])
@@ -552,7 +563,8 @@ class MFrame(wx.Frame):
 			(wx.ACCEL_CTRL, ord('3'),  self.ID_Paranatellonta),
 			(wx.ACCEL_CTRL, ord('4'),  self.ID_Circumambulation),
 			(wx.ACCEL_CTRL, ord('5'),  self.ID_FixStarAngleDirs),
-			(wx.ACCEL_CTRL, ord('6'),  self.ID_Eclipses),
+			(wx.ACCEL_NORMAL, wx.WXK_F5, self.ID_Eclipses),
+			(wx.ACCEL_CTRL, ord('6'),  self.ID_Misc),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F5, self.ID_SecProgChart),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F6, self.ID_SecProgPositions),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F9, self.ID_Elections),
@@ -3045,8 +3057,8 @@ class MFrame(wx.Frame):
 				self.talmutens.Append(self.ID_AlmutenChart, mtexts.menutxts['TMAlmutenChart'], mtexts.menutxts['TMAlmutenChartDoc'])
 				self.talmutens.Append(self.ID_AlmutenTopical, mtexts.menutxts['TMAlmutenTopical'], mtexts.menutxts['TMAlmutenTopicalDoc'])
 				self.mtable.Append(self.ID_TAlmutens, mtexts.menutxts['TMAlmutens'], self.talmutens)
+				self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
 
-				self.mtable.Append(self.ID_Misc, mtexts.menutxts['TMMisc'], mtexts.menutxts['TMMiscDoc'])
 				self.mtable.Append(self.ID_MunPos, mtexts.menutxts['TMMunPos'], mtexts.menutxts['TMMunPosDoc'])
 				self.mtable.Append(self.ID_Antiscia, mtexts.menutxts['TMAntiscia'], mtexts.menutxts['TMAntisciaDoc'])
 # ###################################
@@ -3082,7 +3094,7 @@ class MFrame(wx.Frame):
 				self.mtable.Append(self.ID_Paranatellonta, mtexts.menutxts['TMParanatellonta'],mtexts.menutxts['TMParanatellontaDoc'])
 				self.mtable.Append(self.ID_Circumambulation, mtexts.menutxts['TMCircumambulation'],mtexts.menutxts['TMCircumambulationDoc'])
 				self.mtable.Append(self.ID_FixStarAngleDirs, mtexts.menutxts['TMFixStarAngleDirs'],mtexts.menutxts['TMFixStarAngleDirsDoc'])
-				self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
+				self.mtable.Append(self.ID_Misc, mtexts.menutxts['TMMisc'], mtexts.menutxts['TMMiscDoc'])
 		#Charts-menu
 				self.mcharts.Append(self.ID_Transits, mtexts.menutxts['PMTransits'], mtexts.menutxts['PMTransitsDoc'])
 				self.mcharts.Append(self.ID_Revolutions, mtexts.menutxts['PMRevolutions'], mtexts.menutxts['PMRevolutionsDoc'])
@@ -3688,7 +3700,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.1.7'
+		info.Version = '9.1.8'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

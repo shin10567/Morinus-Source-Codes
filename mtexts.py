@@ -21,7 +21,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'TMAlmutenZodiacal':'Points\tF2', 'TMAlmutenZodiacalDoc':'Shows almutens of zodiacal points',
 'TMAlmutenChart':'Chart\tF3', 'TMAlmutenChartDoc':'Shows the almuten of the chart',
 'TMAlmutenTopical':'Topical\tF4', 'TMAlmutenTopicalDoc':'Shows topical almutens',
-'TMMisc':'Misc.\tF5', 'TMMiscDoc':'Shows misc data',
+'TMMisc':'Miscellaneous\tCtrl+6', 'TMMiscDoc':'Shows miscellaneous data',
 'TMMunPos':'Position in the Houses and Mundane Fortuna\tF6', 'TMMunPosDoc':'Shows zodiacal house positions',
 'TMAntiscia':'Antiscia\tF7', 'TMAntisciaDoc':'Shows antiscia', 
 'TMAspects':'Aspects\tF8', 'TMAspectsDoc':'Shows aspect-table', 
@@ -50,7 +50,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'TMParanatellonta':'Paranatellonta\tCtrl+3', 'TMParanatellontaDoc':'Shows Planets and fixed stars on the 4 angles',
 'TMCircumambulation':'Circumambulations\tCtrl+4', 'TMCircumambulationDoc':'Shows distributions through the bounds',
 'TMFixStarAngleDirs':'Angular Directions of Fixed Stars\tCtrl+5', 'TMFixStarAngleDirsDoc':'Shows mundane fixed stars hitting ASC/MC/DSC/IC',
-'TMEclipses':'Eclipses\tCtrl+6', 'TMEclipsesDoc':'Shows solar and lunar eclipses',
+'TMEclipses':'Eclipses\tF5', 'TMEclipsesDoc':'Shows solar and lunar eclipses',
 
 'MCharts':'&Charts', 
 'PMTransits':'Transits\tShift+Ctrl+F1', 'PMTransitsDoc':'Transit for a given date', 
@@ -462,7 +462,7 @@ menutxtshun = {'MHoroscope':u'&Horoszkóp', 'HMNew':u'&Új\tCtrl+U', 'HMNewDoc':
 'TMAlmutenZodiacal':u'Pontok\tF2', 'TMAlmutenZodiacalDoc':u'Zodiakális pontok almutenjeinek megtekintése',
 'TMAlmutenChart':u'Horoszkóp\tF3', 'TMAlmutenChartDoc':u'A horoszkóp almutenjének megtekintése',
 'TMAlmutenTopical':u'Témák\tF4', 'TMAlmutenTopicalDoc':u'A téma almutenek megtekintése',
-'TMMisc':u'Vegyes\tF5', 'TMMiscDoc':u'Vegyes adatok megtekintése',  
+'TMMisc':u'Vegyes\tCtrl+6', 'TMMiscDoc':u'Vegyes adatok megtekintése',  
 'TMMunPos':u'Mundán pozíciók\tF6', 'TMMunPosDoc':u'Bolygók mundán házpozícióinak megtekintése',
 'TMAntiscia':u'Antiscia\tF7', 'TMAntisciaDoc':u'Antiscia megtekintése', 
 'TMAspects':u'Fényszögek\tF8', 'TMAspectsDoc':u'Fényszög-táblázat megtekintése', 
@@ -544,7 +544,7 @@ menutxtshun = {'MHoroscope':u'&Horoszkóp', 'HMNew':u'&Új\tCtrl+U', 'HMNewDoc':
 'MHelp':u'&Info', 
 'HEMHelp':u'Súgó\tAlt+L', 'HEMHelpDoc':u'Súgó',
 'HEMAbout':u'&A programról\tAlt+A', 'HEMAboutDoc':u'Információ a programról'}
-menutxtshun.setdefault('TMEclipses', u'Nap-/Holdfogyatkozások\tCtrl+6')
+menutxtshun.setdefault('TMEclipses', u'Nap-/Holdfogyatkozások\tF5')
 menutxtshun.setdefault('TMEclipsesDoc', u'Fogyatkozások a képlet dátuma körül.')
 
 
@@ -818,7 +818,7 @@ menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N'
 'TMAlmutenZodiacal':u'Альм.Градусов\tF2', 'TMAlmutenZodiacalDoc':u'Показать Альмутены градусов',
 'TMAlmutenChart':u'Господин гороскопа\tF3', 'TMAlmutenChartDoc':u'Показать господина гороскопа',
 'TMAlmutenTopical':u'Тематический Альм.\tF4', 'TMAlmutenTopicalDoc':u'Показать темат. альм.',
-'TMMisc':u'Доп. Данные\tF5', 'TMMiscDoc':u'Показать дополнительные данные',
+'TMMisc':u'Доп. Данные\tCtrl+6', 'TMMiscDoc':u'Показать дополнительные данные',
 'TMMunPos':u'Мунданные координаты\tF6', 'TMMunPosDoc':u'Показать мунданные координаты домов', 
 'TMAntiscia':u'Антисы\tF7', 'TMAntisciaDoc':u'Показать антисы', 
 'TMAspects':u'Аспекты\tF8', 'TMAspectsDoc':u'Показать таблицу аспектов', 
@@ -900,7 +900,7 @@ menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N'
 'MHelp':u'&Помощь', 
 'HEMHelp':u'Помощь\tAlt+L', 'HEMHelpDoc':u'Help',
 'HEMAbout':u'&О программе\tAlt+A', 'HEMAboutDoc':u'Инфо о программе'}
-menutxtsrus.setdefault('TMEclipses', u'Затмения\tCtrl+6')
+menutxtsrus.setdefault('TMEclipses', u'Затмения\tF5')
 menutxtsrus.setdefault('TMEclipsesDoc', u'Показать затмения около даты карты.')
 
 
@@ -1172,7 +1172,7 @@ menutxtsesp = {'MHoroscope':u'&Horóscopo', 'HMNew':u'&Nuevo\tCtrl+N', 'HMNewDoc
 'TMAlmutenZodiacal':u'Puntos\tF2', 'TMAlmutenZodiacalDoc':u'Mostrar punto de Almutens en el Zodíaco',
 'TMAlmutenChart':u'Carta\tF3', 'TMAlmutenChartDoc':u'Mostrar Almutens de la carta',
 'TMAlmutenTopical':u'Tó­picos\tF4', 'TMAlmutenTopicalDoc':u'Mostrar Almutens Tópicos',
-'TMMisc':u'Misc\tF5', 'TMMiscDoc':u'Mostrar datos misc',
+'TMMisc':u'Misc.\tCtrl+6', 'TMMiscDoc':u'Mostrar datos misc',
 'TMMunPos':u'Posiciones Mundanas\tF6', 'TMMunPosDoc':u'Mostrar Posición Casas Mundanas', 
 'TMAntiscia':u'Antiscia\tF7', 'TMAntisciaDoc':u'Mostrar Antiscia', 
 'TMAspects':u'Aspectos\tF8', 'TMAspectsDoc':u'Mostrar Tabla de Aspectos', 
@@ -1254,7 +1254,7 @@ menutxtsesp = {'MHoroscope':u'&Horóscopo', 'HMNew':u'&Nuevo\tCtrl+N', 'HMNewDoc
 'MHelp':u'&Ayuda', 
 'HEMHelp':u'A&yuda\tAlt+Y', 'HEMHelpDoc':u'Ayuda',
 'HEMAbout':u'Acerca &de\tAlt+D', 'HEMAboutDoc':u'Información acerca del Programa'}
-menutxtsesp.setdefault('TMEclipses', u'Eclipses\tCtrl+6')
+menutxtsesp.setdefault('TMEclipses', u'Eclipses\tF5')
 menutxtsesp.setdefault('TMEclipsesDoc', u'Mostrar eclipses alrededor de la fecha de la carta.')
 
 
@@ -1524,7 +1524,7 @@ menutxtsita = {'MHoroscope':u'&Oroscopo',
 'TMAlmutenZodiacal':u'Punti\tF2', 'TMAlmutenZodiacalDoc':u'Mostra gli almuten dei punti zodiacali',
 'TMAlmutenChart':u'Carta\tF3', 'TMAlmutenChartDoc':u"Mostra l'almuten della carta",
 'TMAlmutenTopical':u'Specifici\tF4', 'TMAlmutenTopicalDoc':u'Mostra almuten per specifici argomenti',
-'TMMisc':u'Altri dati\tF5', 'TMMiscDoc':u'Mostra altri dari',
+'TMMisc':u'Altri dati\tCtrl+6', 'TMMiscDoc':u'Mostra altri dari',
 'TMMunPos':u'Pos. nelle case e PdF mondana\tF6', 'TMMunPosDoc':u'Mostra la posizione nelle case',
 'TMAntiscia':u'Antisce\tF7', 'TMAntisciaDoc':u'Mostra Antisce',
 'TMAspects':u'Aspetti\tF8', 'TMAspectsDoc':u'Mostra tavola degli aspetti',
@@ -1606,7 +1606,7 @@ menutxtsita = {'MHoroscope':u'&Oroscopo',
 'MHelp':u'&Help',
 'HEMHelp':u'H&elp\tAlt+E', 'HEMHelpDoc':u'Help',
 'HEMAbout':u'&Informazioni\tAlt+I', 'HEMAboutDoc':u'Info sul programma'}
-menutxtsita.setdefault('TMEclipses', u'Eclissi\tCtrl+6')
+menutxtsita.setdefault('TMEclipses', u'Eclissi\tF5')
 menutxtsita.setdefault('TMEclipsesDoc', u'Mostra le eclissi attorno alla data della carta.')
 
 
@@ -1881,7 +1881,7 @@ menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':
 'TMAlmutenZodiacal':u'Points\tF2', 'TMAlmutenZodiacalDoc':u'Afficher les almutens par points',
 'TMAlmutenChart':u'Thème\tF3', 'TMAlmutenChartDoc':u'Afficher Almuten du thème',
 'TMAlmutenTopical':u'Etude\tF4', 'TMAlmutenTopicalDoc':u'Afficher Etude Almutens',
-'TMMisc':u'Divers\tF5', 'TMMiscDoc':u'Afficher données diverses',
+'TMMisc':u'Divers\tCtrl+6', 'TMMiscDoc':u'Afficher données diverses',
 'TMMunPos':u'Domitudes\tF6', 'TMMunPosDoc':u'Afficher les domitudes (positions mondiales)', 
 'TMAntiscia':u'Antisces\tF7', 'TMAntisciaDoc':u'Afficher les Antisces', 
 'TMAspects':u'Aspects\tF8', 'TMAspectsDoc':u'Afficher tableau des aspects', 
@@ -1963,7 +1963,7 @@ menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':
 'MHelp':u'A&ide', 
 'HEMHelp':u'Aid&e\tAlt+E', 'HEMHelpDoc':u'Aide',
 'HEMAbout':u'&A propos\tAlt+A', 'HEMAboutDoc':u'Infos à propos du programme'}
-menutxtsfre.setdefault('TMEclipses', u'Éclipses\tCtrl+6')
+menutxtsfre.setdefault('TMEclipses', u'Éclipses\tF5')
 menutxtsfre.setdefault('TMEclipsesDoc', u'Afficher les éclipses autour de la date du thème.')
 
 
@@ -2232,7 +2232,7 @@ menutxtschs = {'MHoroscope':'(&H)星盘',
 'TMAlmutenZodiacal':'点\tF2', 'TMAlmutenZodiacalDoc':'显示黄道点的征象星',
 'TMAlmutenChart':'星盘\tF3', 'TMAlmutenChartDoc':'显示星盘的征象星',
 'TMAlmutenTopical':'主题\tF4', 'TMAlmutenTopicalDoc':'显示征象星主题',
-'TMMisc':'杂项\tF5', 'TMMiscDoc':'显示杂项数据',
+'TMMisc':'杂项\tCtrl+6', 'TMMiscDoc':'显示杂项数据',
 'TMMunPos':'宫头和福点的芒多位置\tF6', 'TMMunPosDoc':'显示黄道宫位置',
 'TMAntiscia':'映点集\tF7', 'TMAntisciaDoc':'显示映点集',
 'TMAspects':'相位\tF8', 'TMAspectsDoc':'显示相位表',
@@ -2311,7 +2311,7 @@ menutxtschs = {'MHoroscope':'(&H)星盘',
 'MHelp':'(&E)帮助',
 'HEMHelp':'(&L)帮助\tAlt+L', 'HEMHelpDoc':'帮助',
 'HEMAbout':'(&A)关于\tAlt+A', 'HEMAboutDoc':'关于程序的信息'}
-menutxtschs.setdefault('TMEclipses', u'日月食\tCtrl+6')
+menutxtschs.setdefault('TMEclipses', u'日月食\tF5')
 menutxtschs.setdefault('TMEclipsesDoc', u'以表格显示星盘日期前后一年的日/月食。')
 
 
@@ -2335,7 +2335,7 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 'TMAlmutenZodiacal':'點\tF2', 'TMAlmutenZodiacalDoc':'顯示黃道點的征像星',
 'TMAlmutenChart':'星盤\tF3', 'TMAlmutenChartDoc':'顯示星盤的征像星',
 'TMAlmutenTopical':'主題\tF4', 'TMAlmutenTopicalDoc':'顯示征像星主題',
-'TMMisc':'雜項\tF5', 'TMMiscDoc':'顯示雜項數據',
+'TMMisc':'雜項\tCtrl+6', 'TMMiscDoc':'顯示雜項數據',
 'TMMunPos':'宮和芒多福點位置\tF6', 'TMMunPosDoc':'顯示黃道宮位置',
 'TMAntiscia':'映點集\tF7', 'TMAntisciaDoc':'顯示映點集',
 'TMAspects':'相位\tF8', 'TMAspectsDoc':'顯示相位表',
@@ -2414,7 +2414,7 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 'MHelp':'(&E)幫助',
 'HEMHelp':'(&L)幫助\tAlt+L', 'HEMHelpDoc':'幫助',
 'HEMAbout':'(&A)關於\tAlt+A', 'HEMAboutDoc':'關於程序的信息'}
-menutxtscht.setdefault('TMEclipses', u'日月食\tCtrl+6')
+menutxtscht.setdefault('TMEclipses', u'日月食\tF5')
 menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食。')
 
 txtschs = {'Total2':'全食', 'Annular':'环食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食计算失败',
@@ -2970,7 +2970,7 @@ menutxtsko = {'MHoroscope':u'천궁도',
 'TMAlmutenZodiacal':u'감응점\tF2', 'TMAlmutenZodiacalDoc':u'감응점의 알무텐을 보여줍니다.',
 'TMAlmutenChart':u'차트\tF3', 'TMAlmutenChartDoc':u'차트의 알무텐을 보여줍니다.',
 'TMAlmutenTopical':u'주제\tF4', 'TMAlmutenTopicalDoc':u'해당 주제에 대한 알무텐을 보여줍니다.',
-'TMMisc':u'기타 정보\tF5', 'TMMiscDoc':u'기타 정보를 보여줍니다.',
+'TMMisc':u'기타 정보\tCtrl+6', 'TMMiscDoc':u'기타 정보를 보여줍니다.',
 'TMMunPos':u'먼데인 하우스 위치\tF6', 'TMMunPosDoc':u'먼데인 하우스 위치를 보여줍니다.',
 'TMAntiscia':u'앤티션\tF7', 'TMAntisciaDoc':u'앤티션을 보여줍니다.',
 'TMAspects':u'각\tF8', 'TMAspectsDoc':u'각-표를 보여줍니다.',
@@ -3050,7 +3050,7 @@ menutxtsko = {'MHoroscope':u'천궁도',
 'MHelp':u'도움말',
 'HEMHelp':u'도움말\tAlt+L', 'HEMHelpDoc':u'도움말을 보여줍니다.',
 'HEMAbout':u'정보\tAlt+A', 'HEMAboutDoc':u'이 프로그램에 대한 정보를 보여줍니다.'}
-menutxtsko.setdefault('TMEclipses', u'일월식\tCtrl+6')
+menutxtsko.setdefault('TMEclipses', u'일월식\tF5')
 menutxtsko.setdefault('TMEclipsesDoc', u'일식과 월식을 표로 보여줍니다.')
 
 txtsko = {'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Partial':'부분식', 'Penumbral':'반영식', 'Unknown':'미상', 'EclipsesFailed':'일월식 계산 실패',
