@@ -110,14 +110,9 @@ class FixStarDirsWnd(cw.CommonWnd):
         self.maxpage  = maxpage
         self.fr       = fr
         self.to       = to
-        # 가로 1컬럼/2컬럼 동적 폭
-        total = self.to - self.fr
-        if total <= self.LINE_NUM:
-            self.TITLE_CELL_WIDTH = self.TABLE_WIDTH
-            self.WIDTH = FixStarDirsWnd.BORDER + self.TITLE_CELL_WIDTH + FixStarDirsWnd.BORDER
-        else:
-            self.TITLE_CELL_WIDTH = 2 * self.TABLE_WIDTH + self.SPACE_BETWEEN_TABLESX + 1
-            self.WIDTH = FixStarDirsWnd.BORDER + self.TITLE_CELL_WIDTH + FixStarDirsWnd.BORDER
+        # (변경) 프라이머리 디렉션과 동일 UX: 결과가 1컬럼이어도 항상 2컬럼 헤더를 보여준다.
+        self.TITLE_CELL_WIDTH = 2 * self.TABLE_WIDTH + self.SPACE_BETWEEN_TABLESX + 1
+        self.WIDTH = FixStarDirsWnd.BORDER + self.TITLE_CELL_WIDTH + FixStarDirsWnd.BORDER
         self.SetVirtualSize((self.WIDTH, self.HEIGHT))
         self.drawBkg()
 
@@ -188,6 +183,16 @@ class FixStarDirsWnd(cw.CommonWnd):
         # 안전망(기본)
         return  mtexts.txts["StaticKey"]+":"+mtexts.txts["Naibod"]
 
+    def _dir_title_for_fixedstars(self):
+        # 프라이머리 디렉션 '방식'을 제목 좌측에 표기하되, UTP는 항성-앵글에선 배제
+        pdidx = getattr(self.options, 'primarydir', primdirs.PrimDirs.PLACIDIANSEMIARC)
+        if pdidx == primdirs.PrimDirs.PLACIDIANUNDERTHEPOLE:
+            pdidx = primdirs.PrimDirs.PLACIDIANSEMIARC
+        try:
+            return mtexts.typeListDirs[pdidx]
+        except Exception:
+            return mtexts.typeListDirs[primdirs.PrimDirs.PLACIDIANSEMIARC]
+
     # 그리기
     def drawBkg(self):
         img  = Image.new('RGB', (max(self.WIDTH,1), max(self.HEIGHT,1)), self.bkgclr)
@@ -199,7 +204,7 @@ class FixStarDirsWnd(cw.CommonWnd):
         draw.rectangle(((BOR, BOR), (BOR + self.TITLE_CELL_WIDTH, BOR + self.TITLE_CELL_HEIGHT)),
                        outline=self.tableclr, fill=self.bkgclr)
         keytxt = self._pd_key_title()
-        title  = mtexts.txts["MundaneOnly"] + keytxt
+        title  = mtexts.txts["MundaneOnly"] + ', ' + keytxt
         tw, th = draw.textsize(title, self.fntText)
         draw.text((BOR + (self.TITLE_CELL_WIDTH - tw) / 2,
                    BOR + (self.LINE_HEIGHT - th) / 2),
@@ -323,14 +328,26 @@ class FixStarDirsWnd(cw.CommonWnd):
 
 # ---------- 프레임(페이지 네비게이션 포함) ----------
 class FixedStarDirsFrame(wx.Frame):
-    def __init__(self, parent, title, horoscope, options):
+    def __init__(self, parent, title, horoscope, options, pdrange, direction):
         wx.Frame.__init__(self, parent, title=mtexts.txts['FixStarAngleDirs'])
         self.parent    = parent
         self.horoscope = horoscope
         self.options   = options
 
         # 전체 데이터 먼저 계산
-        self.rows = fixstardirs.compute_fixedstar_angle_rows(self.horoscope, self.options, age_max_years=150.0)
+        # 선택된 범위/방향 보관
+        self.pdrange   = pdrange
+        self.direction = direction
+
+        # PrimDirs의 범위 테이블을 그대로 사용
+        lo, hi = primdirs.PrimDirs.Ranges[self.pdrange]
+
+        # 항성 앵글 디렉션 계산 + 범위/방향 필터 적용
+        self.rows = fixstardirs.compute_fixedstar_angle_rows(
+            self.horoscope, self.options,
+            age_range=(lo, hi),
+            direction=self.direction
+        )
 
         # 페이지 상태 (프라이머리와 동일 구조: 한 페이지 = 좌우 2컬럼)
         self.LINE_NUM  = 40
@@ -645,7 +662,13 @@ class FixedStarDirsFrame(wx.Frame):
                                     new_time, self.horoscope.place, self.horoscope.htype,
                                     self.horoscope.notes, self.horoscope.options)
 
-        self.rows = fixstardirs.compute_fixedstar_angle_rows(self.horoscope, self.options, age_max_years=150.0)
+        # 선택 범위/방향 유지하여 재계산
+        lo, hi = primdirs.PrimDirs.Ranges[self.pdrange]
+        self.rows = fixstardirs.compute_fixedstar_angle_rows(
+            self.horoscope, self.options,
+            age_range=(lo, hi),
+            direction=self.direction
+        )
         self.currpage = 1
         self.fr = 0
         self.to = min(self.page_cap, len(self.rows))

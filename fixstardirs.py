@@ -816,7 +816,7 @@ def _date_string_from_jd(jd_ut, chrt, options):
     mm = int((frac * 24.0 - hh) * 60.0)
     return u"{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d} UTC".format(y, m, d, hh, mm)
 
-def compute_fixedstar_angle_rows(horoscope, options, age_max_years=150.0):
+def compute_fixedstar_angle_rows(horoscope, options, age_range=None, direction=None):
     rows = []
 
     # 0) 기본 상수
@@ -828,6 +828,11 @@ def compute_fixedstar_angle_rows(horoscope, options, age_max_years=150.0):
     jd0   = getattr(getattr(horoscope, 'time', None), 'jd', None)
     if jd0 is None:
         return []
+    if age_range is None:
+        age_range = (0.0, primdirs.PrimDirs.LIMIT)
+    if direction is None:
+        direction = primdirs.PrimDirs.BOTHDC
+    lo_age, hi_age = age_range
 
     # 2) 사용자가 켠 항성 '코드'만 모으기
     codes = _selected_star_codes(options)
@@ -837,7 +842,7 @@ def compute_fixedstar_angle_rows(horoscope, options, age_max_years=150.0):
     # 표시용 이름 가져오기 위해 DB 미리 로드
     _db_cache = _load_fixstars_cat()
     # 3) 각 항성(코드)에 대해 네 각도 계산 → 150년 확장
-    max_days = age_max_years * 365.2421897
+    max_days = hi_age * 365.2421897
     for code in codes:
         # of-date RA/Dec 계산(세차+고유운동 반영)
         try:
@@ -858,19 +863,40 @@ def compute_fixedstar_angle_rows(horoscope, options, age_max_years=150.0):
 
         # ADlat로 ASC/DSC 가능성 판단
         ad = _adlat(phi, dec)
+        # 선택된 프라이머리 디렉션 방식 (UTP는 항성-앵글에선 배제 → Placidian(Semiarc)로 취급)
+        pd_method = getattr(options, 'primarydir', primdirs.PrimDirs.PLACIDIANSEMIARC)
+        if pd_method == primdirs.PrimDirs.PLACIDIANUNDERTHEPOLE:
+            pd_method = primdirs.PrimDirs.PLACIDIANSEMIARC
 
         # 각도쌍: (표시각, target, base)
-        pairs = [
-            ("MC",  ra,              ramc),
-            ("IC",  ra,              raic),
-        ]
+        # ==> 프라이머리의 옵션(Options.sigangles: [Asc, Dsc, MC, IC])을 그대로 적용
+        sigflags = getattr(options, 'sigangles', [True, True, True, True])
+        want = set()
+        try:
+            # PD와 동일 인덱스: [Asc, Dsc, MC, IC] = [0,1,2,3]
+            if sigflags[2]: want.add("MC")
+            if sigflags[3]: want.add("IC")
+            if sigflags[0]: want.add("ASC")
+            if sigflags[1]: want.add("DSC")
+        except Exception:
+            # 안전망: 모두 표시
+            want = {"MC", "IC", "ASC", "DSC"}
+
+        pairs = []
+        # MC/IC는 언제나 정의됨
+        if "MC" in want:
+            pairs.append(("MC",  ra, ramc))
+        if "IC" in want:
+            pairs.append(("IC",  ra, raic))
+
+        # ASC/DSC는 ADlat이 정의될 때만 가능
         if ad is not None:
             aostar = (ra - ad) % 360.0
             dostar = (ra + ad) % 360.0
-            pairs += [
-                ("ASC", aostar, aoasc ),
-                ("DSC", dostar, dodesc),
-            ]
+            if "ASC" in want:
+                pairs.append(("ASC", aostar, aoasc))
+            if "DSC" in want:
+                pairs.append(("DSC", dostar, dodesc))
 
         # 정방/역방 각각 1개씩만 생성 (k회전 확장 금지)
         for sig, target, base in pairs:
@@ -881,26 +907,28 @@ def compute_fixedstar_angle_rows(horoscope, options, age_max_years=150.0):
             yrsD = _arc_to_years_from_primary_key(horoscope, options, arcD, True)
             yrsC = _arc_to_years_from_primary_key(horoscope, options, arcC, False)
 
-            if 0.0 <= yrsD <= age_max_years:
-                jd_evt = jd0 + yrsD * 365.2421897
-                rows.append({
-                    'prom': dispname,
-                    'dc'  : 'D',
-                    'sig' : sig,
-                    'arc' : arcD,
-                    'jd'  : jd_evt,
-                })
+            # 선택한 방향/나이 범위에 맞춰 D/C 개별 추가
+            if direction in (primdirs.PrimDirs.BOTHDC, primdirs.PrimDirs.DIRECT):
+                if lo_age <= yrsD <= hi_age:
+                    jd_evt = jd0 + yrsD * 365.2421897
+                    rows.append({
+                        'prom': dispname,
+                        'dc'  : 'D',
+                        'sig' : sig,
+                        'arc' : arcD,
+                        'jd'  : jd_evt,
+                    })
 
-            if 0.0 <= yrsC <= age_max_years:
-                jd_evt = jd0 + yrsC * 365.2421897
-                rows.append({
-                    'prom': dispname,
-                    'dc'  : 'C',
-                    'sig' : sig,
-                    'arc' : arcC,
-                    'jd'  : jd_evt,
-                })
-
+            if direction in (primdirs.PrimDirs.BOTHDC, primdirs.PrimDirs.CONVERSE):
+                if lo_age <= yrsC <= hi_age:
+                    jd_evt = jd0 + yrsC * 365.2421897
+                    rows.append({
+                        'prom': dispname,
+                        'dc'  : 'C',
+                        'sig' : sig,
+                        'arc' : arcC,
+                        'jd'  : jd_evt,
+                    })
 
     # 4) 날짜 오름차순 정렬 후 문자열화
     rows.sort(key=lambda r: r['jd'])

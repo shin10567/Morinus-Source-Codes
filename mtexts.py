@@ -49,7 +49,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'TMPhasis':'Heliacal Risings/Settings\tCtrl+2', 'TMPhasisDoc':'Shows heliacal visibility',
 'TMParanatellonta':'Paranatellonta\tCtrl+3', 'TMParanatellontaDoc':'Shows Planets and fixed stars on the 4 angles',
 'TMCircumambulation':'Circumambulations\tCtrl+4', 'TMCircumambulationDoc':'Shows distributions through the bounds',
-'TMFixStarAngleDirs':'Angular Directions of Fixed Stars\tCtrl+5', 'TMFixStarAngleDirsDoc':'Shows mundane fixed stars hitting ASC/MC/DSC/IC',
+'TMFixStarAngleDirs':'Angular Directions of Fixed Stars\tCtrl+5', 'TMFixStarAngleDirsDoc':'Shows mundane fixed stars hitting Asc, Dsc, MC, IC.',
 'TMEclipses':'Eclipses\tF5', 'TMEclipsesDoc':'Shows solar and lunar eclipses',
 
 'MCharts':'&Charts', 
@@ -145,7 +145,6 @@ menutxtseng.update({
 	'TMPhasisDoc':'Shows heliacal visibility.',
 	'TMParanatellontaDoc':'Shows planets and fixed stars on the four angles.',
 	'TMCircumambulationDoc':'Shows distributions through the bounds.',
-	'TMFixStarAngleDirsDoc':'Shows the angular directions of fixed stars hitting the ASC/MC/DSC/IC.',
 
 	# --- Charts ---
 	'PMTransitsDoc':'Shows transits for a given date.',
@@ -253,8 +252,8 @@ txtseng = {'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'
 'Ok':'OK', 'Cancel':'Cancel', 'Close':'Close', 'ZodiacalOpts':'Zodiacal Options', 'Calculating':'Calculating', 'Information':'Information', 
 'ZodAspsPromsToSigs1':'Aspects of Promissors', 'ZodAspsPromsToSigs2':'to Significators',
 'ZodPromsToSigAsps1':'Promissors to', 'ZodPromsToSigAsps2':'Aspects of Significators',
-'Campanian':'Campanus', 'PlacidianSemiArc':'Placidus(semiarc)', 'Placidian':'Placidus', 'Regiomontan':'Regiomontanus', 
-'Mundane':'Mundane', 'Zodiacal':'Zodiacal', 'HelpCampanian':"Campanian direction", 'PlacidianUnderThePole':'Placidus(underthepole)',
+'Campanian':'Campanus', 'PlacidianSemiArc':'Placidus (semiarc)', 'Placidian':'Placidus', 'Regiomontan':'Regiomontanus', 
+'Mundane':'Mundane', 'Zodiacal':'Zodiacal', 'HelpCampanian':"Campanian direction", 'PlacidianUnderThePole':'Placidus (under the pole)',
 'HelpPlacidianSemiArc':"As the significator's SDA to it's MD so is the promissor's SDA to it's secondary distance", 
 'HelpPlacidianUnderThePole':'Projects the planets under their own pole',
 'HelpRegiomontan':'Regiomontanus direction',  'HelpMundane':"Both the significator's and the promissor's latitudes are used", 
@@ -390,7 +389,7 @@ u"StartSign":u"Start Sign",'Compute':'Compute',u"HeliacalRisingsSettings":u"Heli
 ,'NorthNode':'North Node','Convert':'Convert',"DodecatemorionSign":"Dodecatemorion Sign","DodecatemorionPosition":"Dodecatemorion Position (D/M/S)","DodecatemorionAbsoluteLongitude":"Dodecatemorion Absolute Longitude (Degree)"
 ,'EclipticLongitude':'Ecliptic Longitude (0 - 360)',"DodecatemoriaCalculator":"Dodecatemoria Calculator", "Converteclipticlongitude":"Convert ecliptic longitude or sign+DMS to dodecatemoria",
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
-"SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save', 'Circumambulation': 'Circumambulations',
+"SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save', 'Circumambulation': 'Circumambulations',
 'CircumPolarLatErr': 'Circumambulations are not available at high latitudes (absolute latitude {0:.2f}°, limit {1:.2f}°).',
 }
 
@@ -747,7 +746,7 @@ u"StartSign":u"Bejelentkezés indítása",'Compute':'Számítás',u"HeliacalRisi
 ,'NorthNode':'Északi csomópont','Convert':'Konvertálás',"DodecatemorionSign":"Dodecatemorion jel","DodecatemorionPosition":"Dodecatemorion pozíció (D/M/S)","DodecatemorionAbsoluteLongitude":"Dodekatemorion abszolút hosszúság (fok)"
 ,'EclipticLongitude':'ekliptikus hosszúság (0 - 360)',"DodecatemoriaCalculator":"Dodecatemoria kalkulátor", "Converteclipticlongitude":"Ekliptikus hosszúság vagy sign+DMS átalakítása dodecatemoriába",
 "InputSignandDegree":"Bemenet: Jel és fok","InputEclipticLongitude":"Bemenet: ekliptikus hosszúság (0 - 360)",
-"SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán, ",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
+"SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
 }
 txtshun.update({
 	'NumFieldsCannotBeEmpty': u'Probléma az adatokkal! A numerikus mezők nem maradhatnak üresen!',
@@ -1099,7 +1098,7 @@ u"StartSign":u"Начать подписываться",'Compute':'Вычисл�
 ,'NorthNode':'Северный узел','Convert':'Конвертировать',"DodecatemorionSign":"Додекатеморион Знак","DodecatemorionPosition":"Додекатеморион Позиция (D/M/S)","DodecatemorionAbsoluteLongitude":"Додекатеморион Абсолютная долгота (градус)"
 ,'EclipticLongitude':'Ecliptic Longitude (0 - 360)',"DodecatemoriaCalculator":"Калькулятор Dodecatemoria", "Converteclipticlongitude":"Преобразовать эклиптическую долготу или знак+DMS в додекатеморию",
 "InputSignandDegree":"Вход: Знак и степень","InputEclipticLongitude":"Вход: Эклиптическая долгота (0 - 360)",
-"SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane, ",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
+"SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
 }
 txtsrus.update({
 	'NumFieldsCannotBeEmpty': u'Неправильные данные! Числовые поля не могут быть пустыми.',
@@ -1450,7 +1449,7 @@ u"StartSign":u"Iniciar Firmar",'Compute':'Computación',u"HeliacalRisingsSetting
 ,'NorthNode':'Nodo Norte','Convert':'Convertir',"DodecatemorionSign":"signo Dodecatemorion","DodecatemorionPosition":"Posición Dodecatemorion (D/M/S)","DodecatemorionAbsoluteLongitude":"Dodecatemorion Longitud absoluta (grado)"
 ,'EclipticLongitude':'Longitud eclíptica (0 - 360)',"DodecatemoriaCalculator":"Calculadora Dodecatemoria", "Converteclipticlongitude":"Convertir longitud eclíptica o signo+DMS en dodecatemoria",
 "InputSignandDegree":"Entrada: signo y grado","InputEclipticLongitude":"Entrada: Longitud eclíptica (0 - 360)",
-"SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos, ",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
+"SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
 }
 txtsesp.update({
 	'NumFieldsCannotBeEmpty': u'¡Problema con los datos! Los campos numéricos no pueden estar vacíos.',
@@ -1809,7 +1808,7 @@ txtsita = {'Total2':'Totale', 'Annular':'Anulare', 'Hybrid':'Ibrido', 'Partial':
 ,'NorthNode':'North Node','Convert':'Convert',"DodecatemorionSign":"Dodecatemorion Sign","DodecatemorionPosition":"Dodecatemorion Position (D/M/S)","DodecatemorionAbsoluteLongitude":"Dodecatemorion Absolute Longitude (Degree)"
 ,'EclipticLongitude':'Ecliptic Longitude (0 - 360)',"Dodecatemoria Calculator":"DodecatemoriaCalculator", "Converteclipticlongitude":"Convert ecliptic longitude or sign+DMS to dodecatemoria",
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
-"SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
+"SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 txtsita.update({
 	'NumFieldsCannotBeEmpty': u'Errore! I campi numerici non possono essere vuoti.',
@@ -2160,7 +2159,7 @@ u"StartSign":u"Start Sign",'Compute':'Compute',"HeliacalRisingsSettings":u"Helia
 ,'NorthNode':'North Node','Convert':'Convert',"DodecatemorionSign":"Dodecatemorion Sign","DodecatemorionPosition":"Dodecatemorion Position (D/M/S)","DodecatemorionAbsoluteLongitude":"Dodecatemorion Absolute Longitude (Degree)"
 ,'EclipticLongitude':'Ecliptic Longitude (0 - 360)',"DodecatemoriaCalculator":"Dodecatemoria Calculator", "Converteclipticlongitude":"Convert ecliptic longitude or sign+DMS to dodecatemoria",
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
-"SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only, ",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
+"SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 
 txtsfre.update({
@@ -2616,7 +2615,7 @@ u"StartSign":u"起始星座",'Compute':'计算',u"HeliacalRisingsSettings":u"谐
 ,'NorthNode':'北交点','Convert':'转换',"DodecatemorionSign":"十二分盘星座","DodecatemorionPosition":"十二分盘位置 (D/M/S)","DodecatemorionAbsoluteLongitude":"十二分盘绝对经度 (度)",
 'EclipticLongitude':'黄道经度 (0 - 360)','DodecatemoriaCalculator':u'十二分盘计算器', "Converteclipticlongitude":"将黄道经度或符号转换为十二星座",
 "InputSignandDegree":"输入：星座和度数","InputEclipticLongitude":"输入：黄道经度(0-360)",
-"SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘, ",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
+"SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
 txtschs.update({
 	'NumFieldsCannotBeEmpty': u'数据问题！数值字段不能为空。',
@@ -2871,7 +2870,7 @@ txtscht = {'Total2':'全食', 'Annular':'環食', 'Hybrid':'混合食', 'Partial
 ,'NorthNode':'北交点','Convert':'转换',"DodecatemorionSign":"十二分盘星座","DodecatemorionPosition":"十二分盘位置 (D/M/S)","DodecatemorionAbsoluteLongitude":"十二分盘绝对经度 (度)",
 'EclipticLongitude':'黄道经度 (0 - 360)',"DodecatemoriaCalculator":"十二分盘计算器", "Converteclipticlongitude":"将黄道经度或符号转换为十二星座",
 "InputSignandDegree":"输入：星卒和度数","InputEclipticLongitude":"输入：黄道经度(0-360)",
-"SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘, ",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
+"SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
 txtscht.update({
 	'NumFieldsCannotBeEmpty': u'數據問題！數值欄位不能為空。',
@@ -2996,8 +2995,8 @@ menutxtsko = {'MHoroscope':u'천궁도',
 'TMPrimaryDirs':u'프라이머리 디렉션\tCtrl+F12', 'TMPrimaryDirsDoc':u'프라이머리 디렉션의 표를 보여줍니다.',
 'TMZodiacalReleasing':u'조디어컬 릴리징\tCtrl+1', 'TMZodiacalReleasingDoc':u'조디어컬 릴리징을 보여줍니다.',
 'TMPhasis':u'헬리어컬 라이징과 세팅\tCtrl+2', 'TMPhasisDoc':u'태양 근처 행성들이 언제 처음 관측되거나 언제 마지막으로 관측되는지 보여줍니다.',
-'TMParanatellonta':u'파라나텔론타\tCtrl+3', 'TMParanatellontaDoc':u'행성들과 항성들이 4개의 앵글에 만나는 시점을 보여줍니다.',
-'TMCircumambulation':u'서컴앰뷸레이션\tCtrl+4', 'TMCircumambulationDoc':u'상승점이 이동하며 어느 텀에 들어가는지를 보여줍니다.',
+'TMParanatellonta':u'파라나텔론타\tCtrl+3', 'TMParanatellontaDoc':u'행성들과 항성들이 4개의 앵글에 동시에 만나는 쌍을 보여줍니다.',
+'TMCircumambulation':u'서컴앰뷸레이션\tCtrl+4', 'TMCircumambulationDoc':u'상승점이 이동하며 어느 텀에 들어가거나 어떤 행성과 각을 맺는지를 보여줍니다.',
 'TMFixStarAngleDirs':u'항성의 앵글 디렉션\tCtrl+5', 'TMFixStarAngleDirsDoc':u'항성의 먼데인 앵글 디렉션을 보여줍니다.',
 
 'MCharts':u'차트',
@@ -3305,7 +3304,7 @@ txtsko = {'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Pa
 'Converteclipticlongitude':u'사인과 도, 분, 초 또는 절대 황경 도수를 도데카테모리온으로 변환',
 'InputSignandDegree':u'입력: 사인과 도수',
 'InputEclipticLongitude':u'입력: 황경 (0 - 360)',
-'SignDegMinSec':u'사인 / 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정","MundaneOnly":u"먼데인만, ",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
+'SignDegMinSec':u'사인 / 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정","MundaneOnly":u"먼데인만",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
 }
 txtsko.update({
 	'NumFieldsCannotBeEmpty': u'데이터에 문제가 있습니다! 숫자 입력란은 비워둘 수 없습니다.',

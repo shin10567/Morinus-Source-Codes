@@ -1616,19 +1616,46 @@ class MFrame(wx.Frame):
 			self.handleStatusBar(True)
 
 		if not self.splash:
-			# 고정별 카탈로그/선택 검증 (프로그램 기존 onFixStars와 동일 로직 재사용)
+			# 고정별 카탈로그/선택 검증 (onFixStars 로직과 동일)
 			if not self.checkFixStars():
 				return
 			if len(self.options.fixstars) == 0:
 				dlgm = wx.MessageDialog(self, mtexts.txts['NoSelFixStars'], '', wx.OK|wx.ICON_INFORMATION)
 				dlgm.ShowModal(); dlgm.Destroy(); return
 
+			# >>> PD 범위/방향 팝업 재사용 <<<
+			if self.pdrangedlg == None:
+				self.pdrangedlg = primdirsrangedlg.PrimDirsRangeDlg(None)
+			self.pdrangedlg.CenterOnParent()
+			val = self.pdrangedlg.ShowModal()
+			if val != wx.ID_OK:
+				return
+
+			# PD와 동일하게 범위/방향 읽기
+			pdrange = primdirs.PrimDirs.RANGEALL
+			if self.pdrangedlg.range25rb.GetValue():
+				pdrange = primdirs.PrimDirs.RANGE25
+			elif self.pdrangedlg.range50rb.GetValue():
+				pdrange = primdirs.PrimDirs.RANGE50
+			elif self.pdrangedlg.range75rb.GetValue():
+				pdrange = primdirs.PrimDirs.RANGE75
+			elif self.pdrangedlg.range100rb.GetValue():
+				pdrange = primdirs.PrimDirs.RANGE100
+
+			direction = primdirs.PrimDirs.BOTHDC
+			if self.pdrangedlg.directrb.GetValue():
+				direction = primdirs.PrimDirs.DIRECT
+			elif self.pdrangedlg.converserb.GetValue():
+				direction = primdirs.PrimDirs.CONVERSE
+
 			wait = wx.BusyCursor()
 			try:
-				fr = fixstardirsframe.FixedStarDirsFrame(self, self.title, self.horoscope, self.options)
+				# pdrange, direction을 프레임에 전달
+				fr = fixstardirsframe.FixedStarDirsFrame(self, self.title, self.horoscope, self.options, pdrange, direction)
 				fr.Show(True)
 			finally:
 				del wait
+
 	def onEclipses(self, event):
 		if self.horoscope is None:
 			return
@@ -3700,7 +3727,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.2.0'
+		info.Version = '9.2.1'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

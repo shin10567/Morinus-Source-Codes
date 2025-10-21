@@ -1,4 +1,4 @@
-## [9.2.0] Updated Version from 8.1.0 
+## [9.2.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -159,3 +159,5 @@
 - Timezone bug fix
 #### 9.2.0
 - Angular Directions of Fixed Stars bug fix
+#### 9.2.1
+- Angular Directions of Fixed Stars: added Age and Direct/Converse pop-up controls; angles can now be selected (Asc, Dsc, MC, IC).

@@ -471,7 +471,7 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 		clr = self.options.clrtexts
 		if self.bw:
 			clr = (0,0,0)
-		txt = dirtxt+'   '+keytypetxt+': '+keytxt
+		txt = dirtxt+', '+keytypetxt+': '+keytxt
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((BOR+(self.TITLE_CELL_WIDTH-w)/2, BOR+(self.LINE_HEIGHT-h)/2), txt, fill=clr, font=self.fntText)
 
