@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 import astrology
@@ -17,7 +18,7 @@ import wx
 
 
 class ProfectionsWnd(commonwnd.CommonWnd):
-	AGE, DATE, ASC, MC, SUN, MOON, FORTUNE, MERCURY, VENUS, MARS, JUPITER, SATURN, URANUS, NEPTUNE, PLUTO = range(0, 15)
+	AGE, DATE, ASC, MC, HOURLORD, SUN, MOON, FORTUNE, MERCURY, VENUS, MARS, JUPITER, SATURN, URANUS, NEPTUNE, PLUTO = range(0, 16)
 
 	def __init__(self, parent, age, pchrts, options, mainfr, mainsigs, id = -1, size = wx.DefaultSize):
 		commonwnd.CommonWnd.__init__(self, parent, pchrts[0][0], options, id, size)
@@ -33,9 +34,9 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 		self.LINE_NUM = 12
 
 		if self.mainsigs:
-			self.COLUMN_NUM = 7
+			self.COLUMN_NUM = 8
 		else:
-			self.COLUMN_NUM = 15
+			self.COLUMN_NUM = 16
 			if self.options.intables:
 				if not self.options.transcendental[chart.Chart.TRANSURANUS]:
 					self.COLUMN_NUM -= 1
@@ -117,6 +118,11 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 		txtclr = (0,0,0)
 		if not self.bw:
 			txtclr = self.options.clrtexts
+		# Hour Lord 헤더(다국어 키가 없으면 기본 문자열 사용)
+		try:
+			hour_hdr = mtexts.txts['HourLord']
+		except Exception:
+			hour_hdr = u'Hour Lord'
 
 		#LeftClick
 		txt = mtexts.txts['LeftClick']
@@ -126,24 +132,41 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 
 		#Title
 		draw.rectangle(((BOR, BOR+2*self.LINE_HEIGHT),(BOR+self.TITLE_WIDTH, BOR+2*self.LINE_HEIGHT+self.TITLE_HEIGHT)), outline=(tableclr), fill=(self.bkgclr))
-		txt = (mtexts.txts['Age'], mtexts.txts['Date'], mtexts.txts['Asc'], mtexts.txts['MC'], common.common.Planets[0], common.common.Planets[1], common.common.fortune, common.common.Planets[2], common.common.Planets[3], common.common.Planets[4], common.common.Planets[5], common.common.Planets[6], common.common.Planets[7], common.common.Planets[8], common.common.Planets[9])
-		arclrs = (txtclr, txtclr, txtclr, txtclr, self.options.clrindividual[0], self.options.clrindividual[1], self.options.clrindividual[11], self.options.clrindividual[2], self.options.clrindividual[3], self.options.clrindividual[4], self.options.clrindividual[5], self.options.clrindividual[6], self.options.clrindividual[7], self.options.clrindividual[8], self.options.clrindividual[9])
+		txt = (mtexts.txts['Age'], mtexts.txts['Date'], mtexts.txts['Asc'], mtexts.txts['MC'], hour_hdr,
+	   common.common.Planets[0], common.common.Planets[1], common.common.fortune,
+	   common.common.Planets[2], common.common.Planets[3], common.common.Planets[4],
+	   common.common.Planets[5], common.common.Planets[6], common.common.Planets[7],
+	   common.common.Planets[8], common.common.Planets[9])
+		arclrs = (txtclr, txtclr, txtclr, txtclr, txtclr,
+          self.options.clrindividual[0], self.options.clrindividual[1], txtclr,
+          self.options.clrindividual[2], self.options.clrindividual[3], self.options.clrindividual[4],
+          self.options.clrindividual[5], self.options.clrindividual[6], self.options.clrindividual[7],
+          self.options.clrindividual[8], self.options.clrindividual[9])
 
-		cols = (self.CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)
+		cols = (self.CELL_WIDTH, self.BIG_CELL_WIDTH,  # Age, Date
+        self.BIG_CELL_WIDTH,                   # Asc
+        self.BIG_CELL_WIDTH,                   # MC
+        self.BIG_CELL_WIDTH,                   # Hour Lord  ← (신규)
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Sun, Moon
+        self.BIG_CELL_WIDTH,                       # Fortune
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Merc, Venus, Mars
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Jup, Sat, Uranus
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)                        # Neptune, Pluto
 
 		offs = 0
 		for i in range(self.COLUMN_NUM):
 			fnt = self.fntText
-			if i > 3:
+			# 기존: if i > 3: fnt = self.fntMorinus
+			if i > 3 and i != ProfectionsWnd.HOURLORD:
 				fnt = self.fntMorinus
 			tclr = (0, 0, 0)
 			if not self.bw:
 				if self.options.useplanetcolors:
 					tclr = arclrs[i]
 				else:
-					if i > 3:
-						tclr = self.options.clrperegrin
-
+					# 기존: if i > 3: clr = tclr
+					if i > 3 and i != ProfectionsWnd.HOURLORD:
+						clr = tclr
 			w,h = draw.textsize(txt[i], fnt)
 			clr = txtclr
 			if i > 3:
@@ -168,7 +191,15 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 		draw.line((x, y+self.LINE_HEIGHT, x+self.TABLE_WIDTH, y+self.LINE_HEIGHT), fill=clr)
 
 		#vertical lines
-		offs = (self.CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)
+		offs = (self.CELL_WIDTH, self.BIG_CELL_WIDTH,
+        self.BIG_CELL_WIDTH,  # Asc
+        self.BIG_CELL_WIDTH,  # MC
+        self.BIG_CELL_WIDTH,  # Hour Lord  ← (신규)
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Sun, Moon
+        self.BIG_CELL_WIDTH,                       # Fortune
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Merc, Venus, Mars
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Jup, Sat, Uranus
+        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)                        # Neptune, Pluto
 
 		BOR = commonwnd.CommonWnd.BORDER
 		draw.line((x, y, x, y+self.LINE_HEIGHT), fill=clr)
@@ -189,6 +220,31 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=tclr, font=self.fntText)
 			else:
+				if i == ProfectionsWnd.HOURLORD:
+					# 기준: 현재 차트의 시주(planetaryhour)
+					base_hl = self.chart.time.ph.planetaryhour  # 0=Sun,1=Moon,2=Merc,3=Venus,4=Mars,5=Jup,6=Sat
+
+					# 칼데안 순서(토,목,화,태,금,수,달)를 0=Sun..6=Sat 인덱스로 표현
+					chaldean = (6, 5, 4, 0, 3, 2, 1)
+
+					# base_hl이 칼데안 열에서 몇 번째인지 찾고, '연령(row_age)만큼' 진행
+					pos_in_ch = chaldean.index(base_hl)
+					row_age = age + idx  # 이 행의 Age
+					plidx = chaldean[(pos_in_ch + (row_age % 7)) % 7]
+
+					glyph = common.common.Planets[plidx]
+
+					# 사용자 행성색 적용(BW면 흑, 미사용이면 텍스트색)
+					if (not self.bw) and getattr(self.options, 'useplanetcolors', False):
+						plclr = self.options.clrindividual[plidx]
+					else:
+						plclr = (0, 0, 0) if self.bw else self.options.clrtexts
+
+					w, h = draw.textsize(glyph, self.fntMorinus)
+					offset = (offs[i]-w)/2
+					draw.text((x+summa+offset, y+(self.LINE_HEIGHT-h)/2), glyph, fill=plclr, font=self.fntMorinus)
+					summa += offs[i]
+					continue
 				if i == ProfectionsWnd.ASC:
 					lon = pcharts[0].houses.ascmc[houses.Houses.ASC]
 				if i == ProfectionsWnd.MC:
@@ -200,7 +256,7 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 				if i == ProfectionsWnd.FORTUNE:
 					lon = pcharts[0].fortune.fortune[fortune.Fortune.LON]
 				if i >= ProfectionsWnd.MERCURY:
-					lon = pcharts[0].planets.planets[i-5].data[planets.Planet.LONG]
+					lon = pcharts[0].planets.planets[i-6].data[planets.Planet.LONG]
 				if self.options.ayanamsha != 0:
 					lon -= self.chart.ayanamsha
 					lon = util.normalize(lon)

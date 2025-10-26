@@ -143,7 +143,7 @@ class Time:
 
 	def calcPHs(self, place):
 		#Planetary day/hour calculation
-		self.weekday = datetime.datetime(self.dyear, self.dmonth, self.dday, self.dhour, self.dmin, self.dsec).weekday()#only daylightsaving was subtracted
+		#self.weekday = datetime.datetime(self.dyear, self.dmonth, self.dday, self.dhour, self.dmin, self.dsec).weekday()#only daylightsaving was subtracted
 		lon = place.deglon+place.minlon/60.0
 		if not place.east:
 			lon *= -1
@@ -161,6 +161,13 @@ class Time:
 			ret, te, serr = astrology.swe_time_equ(self.jd)  # te: day 단위
 			tz_hours = (place.lon / 15.0) + te*24.0
 
+		# --- JD 기반 요일 계산 (달력 독립, Monday=0 ... Sunday=6)
+		# tz_hours: 현지시 오프셋(시간) → 일수로 환산해 로컬 JD를 만든다
+		offs = float(tz_hours) / 24.0
+		jd_local = self.jd + offs
+		# JD는 정오 기준 증가하므로 +0.5로 자정 경계를 맞춘 뒤 요일 산출
+		self.weekday = int(math.floor(jd_local + 0.5)) % 7
+		# --- 끝
 
 		self.ph = hours.PlanetaryHours(lon, lat, place.altitude, self.weekday, self.jd, tz_hours)
 

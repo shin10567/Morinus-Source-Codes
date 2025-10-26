@@ -1,4 +1,4 @@
-## [9.2.1] Updated Version from 8.1.0 
+## [9.2.2] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -161,3 +161,7 @@
 - Angular Directions of Fixed Stars bug fix
 #### 9.2.1
 - Angular Directions of Fixed Stars: added Age and Direct/Converse pop-up controls; angles can now be selected (Asc, Dsc, MC, IC).
+#### 9.2.2
+- Fix: Corrected Planetary Day and Hour calculation when using the Julian calendar (now matches the Gregorian-equivalent moment).
+- Enhancement: Planetary Day/Hour glyphs are now drawn with user-defined planet colors (falls back to text color in B/W).
+- Feature: Added Hour Lord column to Profections (after Asc and MC), following the Chaldean order starting from the chart’s current Hour Lord; rendered with user colors.

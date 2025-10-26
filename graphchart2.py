@@ -919,17 +919,39 @@ class GraphChart2:
 
 
 	def drawPlanetaryDayAndHour(self):
-		clr = self.options.clrtexts
+		# 라벨 색(텍스트 기본색)은 유지, 행성 기호만 사용자 색 적용
+		clr_lbl = self.options.clrtexts
 		if self.bw:
-			clr = (0,0,0)
+			clr_lbl = (0,0,0)
+
 		ar = (1, 4, 2, 5, 3, 6, 0)
 		x = self.w-self.w/8
 		y = self.h/25
 		size = self.symbolSize/4*3
-		self.draw.text((x,y), common.common.Planets[ar[self.chart.time.ph.weekday]], fill=clr, font=self.fntMorinus2)
-		self.draw.text((x+size+size/2,y), mtexts.txts['Day'], fill=clr, font=self.fntBigText)
-		self.draw.text((x,y+size+size/2), common.common.Planets[self.chart.time.ph.planetaryhour], fill=clr, font=self.fntMorinus2)
-		self.draw.text((x+size+size/2,y+size+size/2), mtexts.txts['Hour'], fill=clr, font=self.fntBigText)
+
+		# 일주/시주 행성 인덱스
+		idx_day  = ar[self.chart.time.ph.weekday]
+		idx_hour = self.chart.time.ph.planetaryhour
+
+		# 사용자 색 결정(옵션 켜져있고 BW가 아닐 때만)
+		if (not self.bw) and getattr(self.options, 'useplanetcolors', False):
+			try:
+				clr_day = self.options.clrindividual[idx_day]
+			except Exception:
+				clr_day = clr_lbl
+			try:
+				clr_hour = self.options.clrindividual[idx_hour]
+			except Exception:
+				clr_hour = clr_lbl
+		else:
+			clr_day  = clr_lbl
+			clr_hour = clr_lbl
+
+		# 출력: 기호는 사용자 색, 라벨은 라벨 색
+		self.draw.text((x, y), common.common.Planets[idx_day], fill=clr_day,  font=self.fntMorinus2)
+		self.draw.text((x+size+size/2, y), mtexts.txts['Day'],        fill=clr_lbl, font=self.fntBigText)
+		self.draw.text((x, y+size+size/2), common.common.Planets[idx_hour], fill=clr_hour, font=self.fntMorinus2)
+		self.draw.text((x+size+size/2, y+size+size/2), mtexts.txts['Hour'],  fill=clr_lbl, font=self.fntBigText)
 
 
 	def drawHousesystemName(self):

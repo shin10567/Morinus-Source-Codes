@@ -90,7 +90,7 @@ class HoursWnd(commonwnd.CommonWnd):
         jy, jm, jd, jh = astrology.swe_revjul(jd_disp, calflag)
         hh, mm, ss = util.decToDeg(jh)
         # 라벨 변경: LocalBirthTime -> "Time of Birth"
-        txt = mtexts.txts['TimeofBirth'] + str(hh)+':'+str(mm).zfill(2)+':'+str(ss).zfill(2)
+        txt = mtexts.txts['TimeofBirth']+": " + str(hh)+':'+str(mm).zfill(2)+':'+str(ss).zfill(2)
 
         w,h = draw.textsize(txt, self.fntText)
         draw.text((BOR+(self.TITLE_WIDTH-w)/2, BOR+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
@@ -99,11 +99,11 @@ class HoursWnd(commonwnd.CommonWnd):
             rh, rm, rs = self.chart.time.ph.revTime(self.chart.time.ph.risetime)
             sh, sm, ss = self.chart.time.ph.revTime(self.chart.time.ph.settime)
             if self.chart.time.ph.daytime:
-                txt1 = mtexts.txts['RiseTime']+":" + str(rh)+':'+str(rm).zfill(2)+':'+str(rs).zfill(2)
-                txt2 = mtexts.txts['SetTime']+":"  + str(sh)+':'+str(sm).zfill(2)+':'+str(ss).zfill(2)
+                txt1 = mtexts.txts['RiseTime']+": " + str(rh)+':'+str(rm).zfill(2)+':'+str(rs).zfill(2)
+                txt2 = mtexts.txts['SetTime']+": "  + str(sh)+':'+str(sm).zfill(2)+':'+str(ss).zfill(2)
             else:
-                txt2 = mtexts.txts['RiseTime']+":" + str(rh)+':'+str(rm).zfill(2)+':'+str(rs).zfill(2)
-                txt1 = mtexts.txts['SetTime']+":"  + str(sh)+':'+str(sm).zfill(2)+':'+str(ss).zfill(2)
+                txt2 = mtexts.txts['RiseTime']+": " + str(rh)+':'+str(rm).zfill(2)+':'+str(rs).zfill(2)
+                txt1 = mtexts.txts['SetTime']+": "  + str(sh)+':'+str(sm).zfill(2)+':'+str(ss).zfill(2)
 
             w,h = draw.textsize(txt1, self.fntText)
             draw.text((BOR+(self.TITLE_WIDTH-w)/2, BOR+self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt1, fill=txtclr, font=self.fntText)

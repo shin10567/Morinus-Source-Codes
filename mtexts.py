@@ -56,7 +56,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'PMTransits':'Transits\tShift+Ctrl+F1', 'PMTransitsDoc':'Transit for a given date', 
 'PMRevolutions':'Revolutions\tShift+Ctrl+F2', 'PMRevolutionsDoc':'Computes revolutions', 
 'PMSunTransits':'Sun-Transits\tShift+Ctrl+F3', 'PMSunTransitsDoc':'Computes the transits of the Sun', 
-'PMSecondaryDirs':'Chart\tShift+Ctrl+F4', 'PMSecondaryDirsDoc':'Computes secondary progressions',
+'PMSecondaryDirs':'Secondary Progressions\tShift+Ctrl+F4', 'PMSecondaryDirsDoc':'Computes secondary progressions',
 'PMPositionForDate':'Positions for Date\tShift+Ctrl+F5', 'PMPositionForDateDoc':'Shows progressed positions by a real date',
 'PMSquareChart':'Square\tShift+Ctrl+F6', 'PMSquareChartDoc':'Shows square-chart',
 'PMProfections':'Profections\tShift+Ctrl+F7', 'PMProfectionsDoc':'Shows profections',
@@ -174,7 +174,7 @@ menutxtseng.update({
 	'OMPrimaryKeysDoc':'Opens the Primary keys dialog.',
 	'OMPDsInChartOptZodDoc':'Opens the PDs-in-chart selection dialog.',
 	'OMPDsInChartOptMunDoc':'Opens the PDs-in-chart selection dialog.',
-	'OMLotFortuneDoc':'Opens the Lot of Fortune dialog.',
+	'OMLotFortuneDoc':'Opens the Fortuna dialog.',
 	'OMArabicPartsDoc':'Opens the Arabic Parts dialog.',
 	'OMSyzygyDoc':'Opens the Syzygy dialog.',
 	'OMFixStarsOptDoc':'Opens the Fixed Stars selection dialog.',
@@ -192,7 +192,8 @@ menutxtseng.update({
 })
 
 
-txtseng = {'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'Partial', 'Penumbral':'Penumbral', 'Unknown':'Unknown', 'EclipsesFailed':'Eclipses failed',
+txtseng = {'HourLord':'Hour Lord',
+'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'Partial', 'Penumbral':'Penumbral', 'Unknown':'Unknown', 'EclipsesFailed':'Eclipses failed',
 'Saros':'Saros', 'PleaseWait':'Please wait…',
 'FetchingZoneAlt':'Please wait… Fetching timezone and elevation…',
 'DE': u'Degree',
@@ -266,7 +267,7 @@ txtseng = {'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'
 'HouseCusps':'House cusps', 'UseLatitude':'Use latitudes', 
 'UseLatitudeHelp':'Use the planets in the houses not their ecliptical projections', 'PlanetsInHouses':'Planets In Houses', 'Hrs':'Hrs', 
 'Monday':'Monday', 'Tuesday':'Tuesday', 'Wednesday':'Wednesday', 'Thursday':'Thursday', 'Friday':'Friday', 'Saturday':'Saturday', 
-'Sunday':'Sunday', 'RiseTime':'SunRise', 'SetTime':'SunSet', 'Length':'Length', 'RaptParallel':'Rapt Parallel', 
+'Sunday':'Sunday', 'RiseTime':'Sunrise', 'SetTime':'Sunset', 'Length':'Length', 'RaptParallel':'Rapt Parallel', 
 'PlanetInNextHouse1':'Planet is in next house', 'PlanetInNextHouse2':'when reached', 
 'PlanetInNextHouseHelp':'Planet counts to next house when its position reached x percent of its current house', 'Both':'Both',
 'Deselect':'Deselect', 'SelectAll':'Select All', 'PrimaryKeys':'Primary Keys', 'Keys':'Keys', 'Dynamic':'Dynamic', 'Static':'Static', 
@@ -547,7 +548,8 @@ menutxtshun.setdefault('TMEclipses', u'Nap-/Holdfogyatkozások\tF5')
 menutxtshun.setdefault('TMEclipsesDoc', u'Fogyatkozások a képlet dátuma körül.')
 
 
-txtshun = {'Total2':'Teljes', 'Annular':'Gyűrűs', 'Hybrid':'Hibrid', 'Partial':'Részleges', 'Penumbral':'Félárnyékos', 'Unknown':'Ismeretlen', 'EclipsesFailed':'Fogyatkozások számítása sikertelen',
+txtshun = {'HourLord':u'Óra ura',
+'Total2':'Teljes', 'Annular':'Gyűrűs', 'Hybrid':'Hibrid', 'Partial':'Részleges', 'Penumbral':'Félárnyékos', 'Unknown':'Ismeretlen', 'EclipsesFailed':'Fogyatkozások számítása sikertelen',
 'Circumambulation': u'körüljárás',
 'CircumPolarLatErr': u'A körüljárás magas földrajzi szélességen nem érhető el (abszolút szélesség {0:.2f}°, határ {1:.2f}°).',
 'DiscardCurrHor':u'El akarja dobni a jelenlegi horoszkópot?', 'FileError':u'Hiba a fájl-val!', 
@@ -903,7 +905,8 @@ menutxtsrus.setdefault('TMEclipses', u'Затмения\tF5')
 menutxtsrus.setdefault('TMEclipsesDoc', u'Показать затмения около даты карты.')
 
 
-txtsrus = {'Total2':'Полное', 'Annular':'Кольцеобразное', 'Hybrid':'Гибридное', 'Partial':'Частичное', 'Penumbral':'Полутеневое', 'Unknown':'Неизвестно', 'EclipsesFailed':'Сбой расчёта затмений',
+txtsrus = {'HourLord':u'Упр. часа',
+'Total2':'Полное', 'Annular':'Кольцеобразное', 'Hybrid':'Гибридное', 'Partial':'Частичное', 'Penumbral':'Полутеневое', 'Unknown':'Неизвестно', 'EclipsesFailed':'Сбой расчёта затмений',
 'PleaseWait':u'Пожалуйста, подождите…',
 'FetchingZoneAlt':u'Пожалуйста, подождите… Получаем часовой пояс и высоту местности…',
 'Circumambulation': u'Обращение',
@@ -1257,7 +1260,7 @@ menutxtsesp.setdefault('TMEclipses', u'Eclipses\tF5')
 menutxtsesp.setdefault('TMEclipsesDoc', u'Mostrar eclipses alrededor de la fecha de la carta.')
 
 
-txtsesp = {'Total2':'Total', 'Annular':'Anular', 'Hybrid':'Híbrido', 'Partial':'Parcial', 'Penumbral':'Penumbral', 'Unknown':'Desconocido', 'EclipsesFailed':'Error al calcular los eclipses',
+txtsesp = {'HourLord':u'Señor de la Hora','Total2':'Total', 'Annular':'Anular', 'Hybrid':'Híbrido', 'Partial':'Parcial', 'Penumbral':'Penumbral', 'Unknown':'Desconocido', 'EclipsesFailed':'Error al calcular los eclipses',
 'Circumambulation': u'Circumambulación',
 'CircumPolarLatErr': u'La circumambulación no está disponible en latitudes altas (latitud absoluta {0:.2f}°, límite {1:.2f}°).',
 'DiscardCurrHor':u'UD. desea descartar este Horóscopo?', 'FileError':u'Error de archivo!', 
@@ -1609,7 +1612,8 @@ menutxtsita.setdefault('TMEclipses', u'Eclissi\tF5')
 menutxtsita.setdefault('TMEclipsesDoc', u'Mostra le eclissi attorno alla data della carta.')
 
 
-txtsita = {'Total2':'Totale', 'Annular':'Anulare', 'Hybrid':'Ibrido', 'Partial':'Parziale', 'Penumbral':'Penombrale', 'Unknown':'Sconosciuto', 'EclipsesFailed':'Errore nel calcolo delle eclissi',
+txtsita = {'HourLord':u'Signore dell’ora',
+'Total2':'Totale', 'Annular':'Anulare', 'Hybrid':'Ibrido', 'Partial':'Parziale', 'Penumbral':'Penombrale', 'Unknown':'Sconosciuto', 'EclipsesFailed':'Errore nel calcolo delle eclissi',
 'PleaseWait':u'Attendere, prego…',
 'FetchingZoneAlt':u'Attendere, prego… Recupero del fuso orario e dell\'altitudine…',
 'Circumambulation': u'Circumambulazione',
@@ -1966,7 +1970,8 @@ menutxtsfre.setdefault('TMEclipses', u'Éclipses\tF5')
 menutxtsfre.setdefault('TMEclipsesDoc', u'Afficher les éclipses autour de la date du thème.')
 
 
-txtsfre = {'Total2':'Totale', 'Annular':'Annulaire', 'Hybrid':'Hybride', 'Partial':'Partielle', 'Penumbral':'Pénombrale', 'Unknown':'Inconnu', 'EclipsesFailed':'Échec du calcul des éclipses',
+txtsfre = {'HourLord':u'Maître de l’heure',
+'Total2':'Totale', 'Annular':'Annulaire', 'Hybrid':'Hybride', 'Partial':'Partielle', 'Penumbral':'Pénombrale', 'Unknown':'Inconnu', 'EclipsesFailed':'Échec du calcul des éclipses',
 'Circumambulation': u'Circumambulation',
 'CircumPolarLatErr': u'La circumambulation n’est pas disponible aux hautes latitudes (latitude absolue {0:.2f}°, limite {1:.2f}°).',
 'DiscardCurrHor':u'Voulez-vous abandonner le thème actuel?', 'FileError':u'Erreur avec le fichier!', 
@@ -2416,7 +2421,8 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 menutxtscht.setdefault('TMEclipses', u'日月食\tF5')
 menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食。')
 
-txtschs = {'Total2':'全食', 'Annular':'环食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食计算失败',
+txtschs = {'HourLord':u'時主星',
+'Total2':'全食', 'Annular':'环食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食计算失败',
 'Circumambulation': u'绕行',
 'CircumPolarLatErr': u'绕行在高纬度不可用（绝对纬度 {0:.2f}°，上限 {1:.2f}°）。',
 'DiscardCurrHor':u'你想放弃目前的占星吗?', 'FileError':u'文件错误!',
@@ -2671,7 +2677,8 @@ txtschs.setdefault('RE', u'引用')             # Chinese (Simplified)
 
 
 
-txtscht = {'Total2':'全食', 'Annular':'環食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食計算失敗',
+txtscht = {'HourLord':u'時主星',
+'Total2':'全食', 'Annular':'環食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食計算失敗',
 'Circumambulation': u'繞行',
 'CircumPolarLatErr': u'繞行在高緯度不可用（絕對緯度 {0:.2f}°，上限 {1:.2f}°）。',
 'DiscardCurrHor':u'你想放棄目前的占星嗎?', 'FileError':u'文件錯誤!',
@@ -3003,7 +3010,7 @@ menutxtsko = {'MHoroscope':u'천궁도',
 'PMTransits':u'트랜짓\tShift+Ctrl+F1', 'PMTransitsDoc':u'주어진 날짜의 트랜짓 차트를 보여줍니다.',
 'PMRevolutions':u'레볼루션(리턴)\tShift+Ctrl+F2', 'PMRevolutionsDoc':u'레볼루션(리턴) 차트를 보여줍니다.',
 'PMSunTransits':u'태양 트랜짓\tShift+Ctrl+F3', 'PMSunTransitsDoc':u'태양의 트랜짓 차트를 보여줍니다.',
-'PMSecondaryDirs':u'차트\tShift+Ctrl+F4', 'PMSecondaryDirsDoc':u'세컨더리 프로그레션을 보여줍니다.',
+'PMSecondaryDirs':u'세컨더리 프로그레션\tShift+Ctrl+F4', 'PMSecondaryDirsDoc':u'세컨더리 프로그레션을 보여줍니다.',
 'PMPositionForDate':u'특정 날짜의 행성 위치\tShift+Ctrl+F5', 'PMPositionForDateDoc':u'세컨더리 프로그레션의 실제 날짜에 따른 행성의 위치를 보여줍니다.',
 'PMSquareChart':u'사각 차트\tShift+Ctrl+F6', 'PMSquareChartDoc':u'사각 차트를 보여줍니다.',
 'PMProfections':u'프로펙션\tShift+Ctrl+F7', 'PMProfectionsDoc':u'프로펙션 차트를 보여줍니다.',
@@ -3052,7 +3059,8 @@ menutxtsko = {'MHoroscope':u'천궁도',
 menutxtsko.setdefault('TMEclipses', u'일월식\tF5')
 menutxtsko.setdefault('TMEclipsesDoc', u'일식과 월식을 표로 보여줍니다.')
 
-txtsko = {'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Partial':'부분식', 'Penumbral':'반영식', 'Unknown':'미상', 'EclipsesFailed':'일월식 계산 실패',
+txtsko = {'HourLord':u'시주',
+'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Partial':'부분식', 'Penumbral':'반영식', 'Unknown':'미상', 'EclipsesFailed':'일월식 계산 실패',
 'Circumambulation': u'서컴앰뷸레이션',
 'CircumPolarLatErr': u'서컴앰뷸레이션은 고위도에서는 사용할 수 없습니다 (절대 위도 {0:.2f}°, 한계 {1:.2f}°).',
 'DiscardCurrHor':u'현재 천궁도를 폐기하시겠습니까?',
