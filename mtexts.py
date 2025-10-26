@@ -96,7 +96,7 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'OMDefLocationOpt':'Defaul&t Location\tShift+T', 'OMDefLocationOptDoc':'Shows default location selection dialog',
 # ################
 'OMLanguages':'La&nguages\tShift+N', 'OMLanguagesDoc':'Shows language selection dialog', 
-'OMAutoSave':'A&utomatic save\tShift+U', 'OMAutoSaveDoc':'Toggles automatic save', 
+'OMAutoSave':'Automatic Save\tShift+U', 'OMAutoSaveDoc':'Toggles automatic save', 
 'OMSave':'&Save\tShift+S', 'OMSaveDoc':'Saves options', 
 'OMReload':'&Restore Default\tShift+R', 'OMReloadDoc':'Reloads default options', 
 'MHelp':'H&elp', 

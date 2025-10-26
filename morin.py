@@ -238,6 +238,15 @@ class MFrame(wx.Frame):
 		self.ID_TimeLordsMenu    = 5003
 		self.ID_PrimaryDirsMenu  = 5004
 		self.ID_TransitsMenu     = 5005
+		# --- Options submenu headers ---
+		# --- New submenu headers ---
+		self.ID_SaveMenu            = 5006  # Horoscope > Save group
+		self.ID_ArabicPartsOptMenu  = 5011  # Options > ArabicParts (Fortuna+Arabic Parts)
+		self.ID_PrimaryDirsOptMenu  = 5012  # Options > PrimaryDirs (Dirs+Keys+PDs in Chart)
+		self.ID_TimeLordsOptMenu    = 5013  # Options > TimeLords (Profections+Firdaria)
+		self.ID_AppearanceOptMenu   = 5014  # Options > Appearance1 (Appearance1/2+Colors+Symbols)
+		self.ID_DignitiesOptMenu    = 5015  # Options > Dignities (Dignities+Minor Dignities)
+
 
 		# Secondary progressions (Charts submenu)
 		self.ID_SecProgChart = 148
@@ -273,8 +282,12 @@ class MFrame(wx.Frame):
 		self.mhoros.Append(self.ID_HereAndNow, mtexts.menutxts['HMHereAndNow'], mtexts.menutxts['HMHereAndNowDoc'])
 # ###########################################
 		self.mhoros.Append(self.ID_Load, mtexts.menutxts['HMLoad'], mtexts.menutxts['HMLoadDoc'])
-		self.mhoros.Append(self.ID_Save, mtexts.menutxts['HMSave'], mtexts.menutxts['HMSaveDoc'])
-		self.mhoros.Append(self.ID_SaveAsBitmap, mtexts.menutxts['HMSaveAsBmp'], mtexts.menutxts['HMSaveAsBmpDoc'])
+		# Save group
+		self.hsave = wx.Menu()
+		self.hsave.Append(self.ID_Save,          mtexts.menutxts['HMSave'],       mtexts.menutxts['HMSaveDoc'])
+		self.hsave.Append(self.ID_SaveAsBitmap,  mtexts.menutxts['HMSaveAsBmp'],  mtexts.menutxts['HMSaveAsBmpDoc'])
+		self.mhoros.Append(self.ID_SaveMenu, mtexts.txts['Save'], self.hsave)
+
 		self.mhoros.Append(self.ID_Synastry, mtexts.menutxts['HMSynastry'], mtexts.menutxts['HMSynastryDoc'])
 		self.mhoros.Append(self.ID_FindTime, mtexts.menutxts['HMFindTime'], mtexts.menutxts['HMFindTimeDoc'])
 		self.mhoros.Append(self.ID_Ephemeris, mtexts.menutxts['HMEphemeris'], mtexts.menutxts['HMEphemerisDoc'])
@@ -379,17 +392,26 @@ class MFrame(wx.Frame):
 		self.italcab = self.mhousesystem.Append(self.ID_Housesystem11, mtexts.menutxts['OMHSAlcabitus'], '', wx.ITEM_RADIO)
 		self.itporph = self.mhousesystem.Append(self.ID_Housesystem12, mtexts.menutxts['OMHSPorphyrius'], '', wx.ITEM_RADIO)
 
-		self.moptions.Append(self.ID_Appearance1, mtexts.menutxts['OMAppearance1'], mtexts.menutxts['OMAppearance1Doc'])
-		self.moptions.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
-		self.moptions.Append(self.ID_Symbols, mtexts.menutxts['OMSymbols'], mtexts.menutxts['OMSymbolsDoc'])
-		self.moptions.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
+		# [Appearance1] submenu: Appearance1/Speculum(=Appearance2)/Colors/Symbols
+		self.o_appearance = wx.Menu()
+		self.o_appearance.Append(self.ID_Appearance1, mtexts.menutxts['OMAppearance1'], mtexts.menutxts['OMAppearance1Doc'])
+		self.o_appearance.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
+		self.o_appearance.Append(self.ID_Colors,      mtexts.menutxts['OMColors'],      mtexts.menutxts['OMColorsDoc'])
+		self.o_appearance.Append(self.ID_Symbols,     mtexts.menutxts['OMSymbols'],     mtexts.menutxts['OMSymbolsDoc'])
+		self.moptions.Append(self.ID_AppearanceOptMenu, mtexts.txts['Appearance1'], self.o_appearance)
+
+		# [Dignities] submenu: Dignities + Minor Dignities(submenu)
+		self.o_digs = wx.Menu()
+		self.o_digs.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
 
 		self.mdignities = wx.Menu()
 		self.mdignities.Append(self.ID_Triplicities, mtexts.menutxts['OMTriplicities'], mtexts.menutxts['OMTriplicitiesDoc'])
-		self.mdignities.Append(self.ID_Terms, mtexts.menutxts['OMTerms'], mtexts.menutxts['OMTermsDoc'])
-		self.mdignities.Append(self.ID_Decans, mtexts.menutxts['OMDecans'], mtexts.menutxts['OMDecansDoc'])
+		self.mdignities.Append(self.ID_Terms,        mtexts.menutxts['OMTerms'],        mtexts.menutxts['OMTermsDoc'])
+		self.mdignities.Append(self.ID_Decans,       mtexts.menutxts['OMDecans'],       mtexts.menutxts['OMDecansDoc'])
+		self.o_digs.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
 
-		self.moptions.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
+		self.moptions.Append(self.ID_DignitiesOptMenu, mtexts.txts['Dignities'], self.o_digs)
+
 
 		self.malmutens = wx.Menu()
 		self.malmutens.Append(self.ID_ChartAlmuten, mtexts.menutxts['OMChartAlmuten'], mtexts.menutxts['OMChartAlmutenDoc'])
@@ -397,7 +419,6 @@ class MFrame(wx.Frame):
 
 		self.moptions.Append(self.ID_Almutens, mtexts.menutxts['OMAlmutens'], self.malmutens)
 		self.moptions.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
-		self.moptions.Append(self.ID_Colors, mtexts.menutxts['OMColors'], mtexts.menutxts['OMColorsDoc'])
 
 		self.moptions.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
 
@@ -411,28 +432,34 @@ class MFrame(wx.Frame):
 
 		self.setNode()
 
-		# 앞순서 유지
+		# Orbs 그대로 탑레벨
 		self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
 
-		# Fortuna/Arabic/Syzygy/Fixed Stars 먼저
-		self.moptions.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'], mtexts.menutxts['OMLotFortuneDoc'])
-		self.moptions.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'], mtexts.menutxts['OMArabicPartsDoc'])
-		self.moptions.Append(self.ID_Syzygy,       mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
-		self.moptions.Append(self.ID_FixStarsOpt,  mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+		# [ArabicParts] submenu: Arabic Parts(first) + Fortuna(second)
+		self.o_arabic = wx.Menu()
+		self.o_arabic.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'],  mtexts.menutxts['OMArabicPartsDoc'])
+		self.o_arabic.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'],   mtexts.menutxts['OMLotFortuneDoc'])
+		self.moptions.Append(self.ID_ArabicPartsOptMenu, mtexts.txts['ArabicParts'], self.o_arabic)
 
-		# 그 다음 PD/Keys
-		self.moptions.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'],  mtexts.menutxts['OMPrimaryDirsDoc'])
-		self.moptions.Append(self.ID_PrimaryKeys,    mtexts.menutxts['OMPrimaryKeys'],  mtexts.menutxts['OMPrimaryKeysDoc'])
+		# Syzygy / Fixed Stars는 탑레벨 유지
+		self.moptions.Append(self.ID_Syzygy,      mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
+		self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+		
+        # [TimeLords] submenu: Profections + Firdaria
+		self.o_tl = wx.Menu()
+		self.o_tl.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
+		self.o_tl.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
+		self.moptions.Append(self.ID_TimeLordsOptMenu, mtexts.txts['TimeLords'], self.o_tl)
 
-		# PDs in Chart 서브메뉴
+		# [PrimaryDirs] submenu: Primary Dirs + Primary Keys + PDs in Chart(submenu)
+		self.o_pd = wx.Menu()
+		self.o_pd.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'], mtexts.menutxts['OMPrimaryDirsDoc'])
+		self.o_pd.Append(self.ID_PrimaryKeys,    mtexts.menutxts['OMPrimaryKeys'], mtexts.menutxts['OMPrimaryKeysDoc'])
 		self.mpdsinchartopts = wx.Menu()
 		self.mpdsinchartopts.Append(self.ID_PDsInChartOptZod, mtexts.menutxts['OMPDsInChartOptZod'], mtexts.menutxts['OMPDsInChartOptZodDoc'])
 		self.mpdsinchartopts.Append(self.ID_PDsInChartOptMun, mtexts.menutxts['OMPDsInChartOptMun'], mtexts.menutxts['OMPDsInChartOptMunDoc'])
-		self.moptions.Append(self.ID_PDsInChartOpt, mtexts.menutxts['OMPDsInChartOpt'], self.mpdsinchartopts)
-
-		# 끝에 Profections/Firdaria 옵션 유지
-		self.moptions.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
-		self.moptions.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
+		self.o_pd.Append(self.ID_PDsInChartOpt, mtexts.menutxts['OMPDsInChartOpt'], self.mpdsinchartopts)
+		self.moptions.Append(self.ID_PrimaryDirsOptMenu, mtexts.txts['PrimaryDirs'], self.o_pd)
 
 # Roberto change V 7.2.0
 		self.moptions.Append(self.ID_DefLocationOpt, mtexts.menutxts['OMDefLocationOpt'], mtexts.menutxts['OMDefLocationOptDoc'])
@@ -3052,6 +3079,20 @@ class MFrame(wx.Frame):
 				self.ID_Transits, self.ID_Revolutions, self.ID_SunTransits, self.ID_SecondaryDirs, self.ID_Elections, self.ID_SquareChart, self.ID_ProfectionsChart, self.ID_MundaneChart = range(140, 148)
 
 				self.ID_SecProgMenu = 5000  # Secondary progressions (submenu header)
+				# --- new submenu headers ---
+				self.ID_PlanetsPointsMenu = 5001
+				self.ID_FixedStarsMenu   = 5002
+				self.ID_TimeLordsMenu    = 5003
+				self.ID_PrimaryDirsMenu  = 5004
+				self.ID_TransitsMenu     = 5005
+				# --- Options submenu headers ---
+				# --- New submenu headers ---
+				self.ID_SaveMenu            = 5006  # Horoscope > Save group
+				self.ID_ArabicPartsOptMenu  = 5011  # Options > ArabicParts (Fortuna+Arabic Parts)
+				self.ID_PrimaryDirsOptMenu  = 5012  # Options > PrimaryDirs (Dirs+Keys+PDs in Chart)
+				self.ID_TimeLordsOptMenu    = 5013  # Options > TimeLords (Profections+Firdaria)
+				self.ID_AppearanceOptMenu   = 5014  # Options > Appearance1 (Appearance1/2+Colors+Symbols)
+				self.ID_DignitiesOptMenu    = 5015  # Options > Dignities (Dignities+Minor Dignities)
 
 				# Secondary progressions (Charts submenu)
 				self.ID_SecProgChart = 148
@@ -3086,8 +3127,12 @@ class MFrame(wx.Frame):
 				self.mhoros.Append(self.ID_HereAndNow, mtexts.menutxts['HMHereAndNow'], mtexts.menutxts['HMHereAndNowDoc'])
 # ###########################################
 				self.mhoros.Append(self.ID_Load, mtexts.menutxts['HMLoad'], mtexts.menutxts['HMLoadDoc'])
-				self.mhoros.Append(self.ID_Save, mtexts.menutxts['HMSave'], mtexts.menutxts['HMSaveDoc'])
-				self.mhoros.Append(self.ID_SaveAsBitmap, mtexts.menutxts['HMSaveAsBmp'], mtexts.menutxts['HMSaveAsBmpDoc'])
+				# Save group
+				self.hsave = wx.Menu()
+				self.hsave.Append(self.ID_Save,          mtexts.menutxts['HMSave'],       mtexts.menutxts['HMSaveDoc'])
+				self.hsave.Append(self.ID_SaveAsBitmap,  mtexts.menutxts['HMSaveAsBmp'],  mtexts.menutxts['HMSaveAsBmpDoc'])
+				self.mhoros.Append(self.ID_SaveMenu, mtexts.txts['Save'], self.hsave)
+
 				self.mhoros.Append(self.ID_Synastry, mtexts.menutxts['HMSynastry'], mtexts.menutxts['HMSynastryDoc'])
 				self.mhoros.Append(self.ID_FindTime, mtexts.menutxts['HMFindTime'], mtexts.menutxts['HMFindTimeDoc'])
 				self.mhoros.Append(self.ID_Ephemeris, mtexts.menutxts['HMEphemeris'], mtexts.menutxts['HMEphemerisDoc'])
@@ -3191,17 +3236,24 @@ class MFrame(wx.Frame):
 				self.italcab = self.mhousesystem.Append(self.ID_Housesystem11, mtexts.menutxts['OMHSAlcabitus'], '', wx.ITEM_RADIO)
 				self.itporph = self.mhousesystem.Append(self.ID_Housesystem12, mtexts.menutxts['OMHSPorphyrius'], '', wx.ITEM_RADIO)
 
-				self.moptions.Append(self.ID_Appearance1, mtexts.menutxts['OMAppearance1'], mtexts.menutxts['OMAppearance1Doc'])
-				self.moptions.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
-				self.moptions.Append(self.ID_Symbols, mtexts.menutxts['OMSymbols'], mtexts.menutxts['OMSymbolsDoc'])
-				self.moptions.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
+				# [Appearance1] submenu: Appearance1/Speculum(=Appearance2)/Colors/Symbols
+				self.o_appearance = wx.Menu()
+				self.o_appearance.Append(self.ID_Appearance1, mtexts.menutxts['OMAppearance1'], mtexts.menutxts['OMAppearance1Doc'])
+				self.o_appearance.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
+				self.o_appearance.Append(self.ID_Colors,      mtexts.menutxts['OMColors'],      mtexts.menutxts['OMColorsDoc'])
+				self.o_appearance.Append(self.ID_Symbols,     mtexts.menutxts['OMSymbols'],     mtexts.menutxts['OMSymbolsDoc'])
+				self.moptions.Append(self.ID_AppearanceOptMenu, mtexts.txts['Appearance1'], self.o_appearance)
+				# [Dignities] submenu: Dignities + Minor Dignities(submenu)
+				self.o_digs = wx.Menu()
+				self.o_digs.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
 
 				self.mdignities = wx.Menu()
 				self.mdignities.Append(self.ID_Triplicities, mtexts.menutxts['OMTriplicities'], mtexts.menutxts['OMTriplicitiesDoc'])
-				self.mdignities.Append(self.ID_Terms, mtexts.menutxts['OMTerms'], mtexts.menutxts['OMTermsDoc'])
-				self.mdignities.Append(self.ID_Decans, mtexts.menutxts['OMDecans'], mtexts.menutxts['OMDecansDoc'])
+				self.mdignities.Append(self.ID_Terms,        mtexts.menutxts['OMTerms'],        mtexts.menutxts['OMTermsDoc'])
+				self.mdignities.Append(self.ID_Decans,       mtexts.menutxts['OMDecans'],       mtexts.menutxts['OMDecansDoc'])
+				self.o_digs.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
 
-				self.moptions.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
+				self.moptions.Append(self.ID_DignitiesOptMenu, mtexts.txts['Dignities'], self.o_digs)
 
 				self.malmutens = wx.Menu()
 				self.malmutens.Append(self.ID_ChartAlmuten, mtexts.menutxts['OMChartAlmuten'], mtexts.menutxts['OMChartAlmutenDoc'])
@@ -3209,7 +3261,6 @@ class MFrame(wx.Frame):
 
 				self.moptions.Append(self.ID_Almutens, mtexts.menutxts['OMAlmutens'], self.malmutens)
 				self.moptions.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
-				self.moptions.Append(self.ID_Colors, mtexts.menutxts['OMColors'], mtexts.menutxts['OMColorsDoc'])
 
 				self.moptions.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
 
@@ -3223,30 +3274,35 @@ class MFrame(wx.Frame):
 
 				self.setNode()
 
-				# 앞순서 유지
+				# Orbs 그대로 탑레벨
 				self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
 
-				# Fortuna/Arabic/Syzygy/Fixed Stars 먼저
-				self.moptions.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'], mtexts.menutxts['OMLotFortuneDoc'])
-				self.moptions.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'], mtexts.menutxts['OMArabicPartsDoc'])
-				self.moptions.Append(self.ID_Syzygy,       mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
-				self.moptions.Append(self.ID_FixStarsOpt,  mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+				# [ArabicParts] submenu: Arabic Parts(first) + Fortuna(second)
+				self.o_arabic = wx.Menu()
+				self.o_arabic.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'],  mtexts.menutxts['OMArabicPartsDoc'])
+				self.o_arabic.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'],   mtexts.menutxts['OMLotFortuneDoc'])
+				self.moptions.Append(self.ID_ArabicPartsOptMenu, mtexts.txts['ArabicParts'], self.o_arabic)
 
-				# 그 다음 PD/Keys
-				self.moptions.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'],  mtexts.menutxts['OMPrimaryDirsDoc'])
-				self.moptions.Append(self.ID_PrimaryKeys,    mtexts.menutxts['OMPrimaryKeys'],  mtexts.menutxts['OMPrimaryKeysDoc'])
+				# Syzygy / Fixed Stars는 탑레벨 유지
+				self.moptions.Append(self.ID_Syzygy,      mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
+				self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+				
+                # [TimeLords] submenu: Profections + Firdaria
+				self.o_tl = wx.Menu()
+				self.o_tl.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
+				self.o_tl.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
+				self.moptions.Append(self.ID_TimeLordsOptMenu, mtexts.txts['TimeLords'], self.o_tl)
 
-				# PDs in Chart 서브메뉴
+				# [PrimaryDirs] submenu: Primary Dirs + Primary Keys + PDs in Chart(submenu)
+				self.o_pd = wx.Menu()
+				self.o_pd.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'], mtexts.menutxts['OMPrimaryDirsDoc'])
+				self.o_pd.Append(self.ID_PrimaryKeys,    mtexts.menutxts['OMPrimaryKeys'], mtexts.menutxts['OMPrimaryKeysDoc'])
 				self.mpdsinchartopts = wx.Menu()
 				self.mpdsinchartopts.Append(self.ID_PDsInChartOptZod, mtexts.menutxts['OMPDsInChartOptZod'], mtexts.menutxts['OMPDsInChartOptZodDoc'])
 				self.mpdsinchartopts.Append(self.ID_PDsInChartOptMun, mtexts.menutxts['OMPDsInChartOptMun'], mtexts.menutxts['OMPDsInChartOptMunDoc'])
-				self.moptions.Append(self.ID_PDsInChartOpt, mtexts.menutxts['OMPDsInChartOpt'], self.mpdsinchartopts)
+				self.o_pd.Append(self.ID_PDsInChartOpt, mtexts.menutxts['OMPDsInChartOpt'], self.mpdsinchartopts)
+				self.moptions.Append(self.ID_PrimaryDirsOptMenu, mtexts.txts['PrimaryDirs'], self.o_pd)
 
-				# 끝에 Profections/Firdaria 옵션 유지
-				self.moptions.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
-				self.moptions.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
-
-# ###########################################
 # ###########################################
 # Roberto change V 7.2.0
 				self.moptions.Append(self.ID_DefLocationOpt, mtexts.menutxts['OMDefLocationOpt'], mtexts.menutxts['OMDefLocationOptDoc'])
@@ -3862,6 +3918,7 @@ class MFrame(wx.Frame):
 # ###########################################
 		self.mhoros.Enable(self.ID_Save, bEnable)
 		self.mhoros.Enable(self.ID_SaveAsBitmap, bEnable)
+		self.mhoros.Enable(self.ID_SaveMenu, bEnable)
 		self.mhoros.Enable(self.ID_Synastry, bEnable)
 		self.mhoros.Enable(self.ID_Close, bEnable)
 		self.mtable.Enable(self.ID_Positions, bEnable)
