@@ -232,6 +232,12 @@ class MFrame(wx.Frame):
 		#Charts-menu
 		self.ID_Transits, self.ID_Revolutions, self.ID_SunTransits, self.ID_SecondaryDirs, self.ID_Elections, self.ID_SquareChart, self.ID_ProfectionsChart, self.ID_MundaneChart = range(140, 148)
 		self.ID_SecProgMenu = 5000  # Secondary progressions (submenu header)
+		# --- new submenu headers ---
+		self.ID_PlanetsPointsMenu = 5001
+		self.ID_FixedStarsMenu   = 5002
+		self.ID_TimeLordsMenu    = 5003
+		self.ID_PrimaryDirsMenu  = 5004
+		self.ID_TransitsMenu     = 5005
 
 		# Secondary progressions (Charts submenu)
 		self.ID_SecProgChart = 148
@@ -282,67 +288,81 @@ class MFrame(wx.Frame):
 		self.Bind(wx.EVT_MENU_RANGE, self.OnFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 
 		#Table-menu
-		self.mtable.Append(self.ID_Positions, mtexts.menutxts['TMPositions'], mtexts.menutxts['TMPositionsDoc'])
+		# ---------------- Tables (grouped) ----------------
 
+		# Planets/Points
+		self.tplanets = wx.Menu()
+		self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])
+		self.tplanets.Append(self.ID_Speeds,           mtexts.menutxts['TMSpeeds'],           mtexts.menutxts['TMSpeedsDoc'])
+		self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
+		self.tplanets.Append(self.ID_Phasis,           mtexts.menutxts['TMPhasis'],           mtexts.menutxts['TMPhasisDoc'])
+		self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])
+		self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc'])
+		self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])
+		self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc'])
+		self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])
+		self.tplanets.Append(self.ID_PlanetaryHours,   mtexts.menutxts['TMPlanetaryHours'],   mtexts.menutxts['TMPlanetaryHoursDoc'])
+		self.tplanets.Append(self.ID_Midpoints,        mtexts.menutxts['TMMidpoints'],        mtexts.menutxts['TMMidpointsDoc'])
+		self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])
+		self.tplanets.Append(self.ID_Arabians,         mtexts.menutxts['TMArabianParts'],     mtexts.menutxts['TMArabianPartsDoc'])
+		self.tplanets.Append(self.ID_Eclipses,         mtexts.menutxts['TMEclipses'],         mtexts.menutxts['TMEclipsesDoc'])
+		self.tplanets.Append(self.ID_Misc,             mtexts.menutxts['TMMisc'],             mtexts.menutxts['TMMiscDoc'])
+		self.mtable.Append(self.ID_PlanetsPointsMenu, mtexts.txts['PlanetsPoints'], self.tplanets)
+
+		# Almutens (existing submenu)
 		self.talmutens = wx.Menu()
 		self.talmutens.Append(self.ID_AlmutenZodiacal, mtexts.menutxts['TMAlmutenZodiacal'], mtexts.menutxts['TMAlmutenZodiacalDoc'])
-		self.talmutens.Append(self.ID_AlmutenChart, mtexts.menutxts['TMAlmutenChart'], mtexts.menutxts['TMAlmutenChartDoc'])
-		self.talmutens.Append(self.ID_AlmutenTopical, mtexts.menutxts['TMAlmutenTopical'], mtexts.menutxts['TMAlmutenTopicalDoc'])
+		self.talmutens.Append(self.ID_AlmutenChart,    mtexts.menutxts['TMAlmutenChart'],    mtexts.menutxts['TMAlmutenChartDoc'])
+		self.talmutens.Append(self.ID_AlmutenTopical,  mtexts.menutxts['TMAlmutenTopical'],  mtexts.menutxts['TMAlmutenTopicalDoc'])
 		self.mtable.Append(self.ID_TAlmutens, mtexts.menutxts['TMAlmutens'], self.talmutens)
-		self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
-		
-		self.mtable.Append(self.ID_MunPos, mtexts.menutxts['TMMunPos'], mtexts.menutxts['TMMunPosDoc'])
-		self.mtable.Append(self.ID_Antiscia, mtexts.menutxts['TMAntiscia'], mtexts.menutxts['TMAntisciaDoc'])
-# ###################################
-# Elias change v 8.0.0
-#		self.mtable.Append(self.ID_Dodecatemoria, mtexts.menutxts['TMDodecatemoria'], mtexts.menutxts['TMDodecatemoriaDoc'])
-# ###################################
-		self.mtable.Append(self.ID_Aspects, mtexts.menutxts['TMAspects'], mtexts.menutxts['TMAspectsDoc'])
-		self.mtable.Append(self.ID_Midpoints, mtexts.menutxts['TMMidpoints'], mtexts.menutxts['TMMidpointsDoc'])
-		self.mtable.Append(self.ID_RiseSet, mtexts.menutxts['TMRiseSet'], mtexts.menutxts['TMRiseSetDoc'])
-		self.mtable.Append(self.ID_Speeds, mtexts.menutxts['TMSpeeds'], mtexts.menutxts['TMSpeedsDoc'])
-		self.mtable.Append(self.ID_ZodPars, mtexts.menutxts['TMZodPars'], mtexts.menutxts['TMZodParsDoc'])
-		self.mtable.Append(self.ID_FixStars, mtexts.menutxts['TMFixStars'], mtexts.menutxts['TMFixStarsDoc'])
-		self.mtable.Append(self.ID_FixStarsAsps, mtexts.menutxts['TMFixStarsAsps'], mtexts.menutxts['TMFixStarsAspsDoc'])
-		self.mtable.Append(self.ID_Arabians, mtexts.menutxts['TMArabianParts'], mtexts.menutxts['TMArabianPartsDoc'])
-		self.mtable.Append(self.ID_Strip, mtexts.menutxts['TMStrip'], mtexts.menutxts['TMStripDoc'])
-		self.mtable.Append(self.ID_PlanetaryHours, mtexts.menutxts['TMPlanetaryHours'], mtexts.menutxts['TMPlanetaryHoursDoc'])
-		self.mtable.Append(self.ID_ExactTransits, mtexts.menutxts['TMExactTransits'], mtexts.menutxts['TMExactTransitsDoc'])
-		self.mtable.Append(self.ID_Profections, mtexts.menutxts['TMProfections'], mtexts.menutxts['TMProfectionsDoc'])
-		self.mtable.Append(self.ID_CustomerSpeculum, mtexts.menutxts['TMCustomerSpeculum'], mtexts.menutxts['TMCustomerSpeculumDoc'])
-# ###########################################
-# Roberto change V 7.3.0		
-		self.mtable.Append(self.ID_Firdaria, mtexts.menutxts['TMFirdaria'], mtexts.menutxts['TMFirdariaDoc'])
-# ###########################################
-# ###################################
-# Roberto change v 8.0.1
-		self.mtable.Append(self.ID_Dodecatemoria, mtexts.menutxts['TMDodecatemoria'], mtexts.menutxts['TMDodecatemoriaDoc'])
-		self.mtable.Append(self.ID_AngleAtBirth,mtexts.menutxts['TMAngleAtBirth'],mtexts.menutxts['TMAngleAtBirthDoc'])
-		self.mtable.Append(self.ID_PrimaryDirs, mtexts.menutxts['TMPrimaryDirs'], mtexts.menutxts['TMPrimaryDirsDoc'])
-# ###################################
+		# (Almutens 서브메뉴가 이미 존재하는 형태는 파일에 보임) :contentReference[oaicite:4]{index=4}
 
-		self.mtable.Append(self.ID_ZodiacalReleasing, mtexts.menutxts['TMZodiacalReleasing'],mtexts.menutxts['TMZodiacalReleasingDoc'])
-		self.mtable.Append(self.ID_Phasis, mtexts.menutxts['TMPhasis'],mtexts.menutxts['TMPhasisDoc'])
-		self.mtable.Append(self.ID_Paranatellonta, mtexts.menutxts['TMParanatellonta'],mtexts.menutxts['TMParanatellontaDoc'])
-		self.mtable.Append(self.ID_Circumambulation, mtexts.menutxts['TMCircumambulation'],mtexts.menutxts['TMCircumambulationDoc'])
-		self.mtable.Append(self.ID_FixStarAngleDirs, mtexts.menutxts['TMFixStarAngleDirs'],mtexts.menutxts['TMFixStarAngleDirsDoc'])
-		self.mtable.Append(self.ID_Misc, mtexts.menutxts['TMMisc'], mtexts.menutxts['TMMiscDoc'])
+		# Fixed Stars
+		self.tfixed = wx.Menu()
+		self.tfixed.Append(self.ID_FixStars,        mtexts.menutxts['TMFixStars'],        mtexts.menutxts['TMFixStarsDoc'])
+		self.tfixed.Append(self.ID_FixStarsAsps,    mtexts.menutxts['TMFixStarsAsps'],    mtexts.menutxts['TMFixStarsAspsDoc'])
+		self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
+		self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
+		self.mtable.Append(self.ID_FixedStarsMenu, mtexts.txts['FixStars'], self.tfixed)
+
+		# Time Lords
+		self.ttimelords = wx.Menu()
+		self.ttimelords.Append(self.ID_Profections,        mtexts.menutxts['TMProfections'],        mtexts.menutxts['TMProfectionsDoc'])
+		self.ttimelords.Append(self.ID_Firdaria,           mtexts.menutxts['TMFirdaria'],           mtexts.menutxts['TMFirdariaDoc'])
+		self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
+		self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
+		self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
+
+		# Primary Directions
+		self.tpd = wx.Menu()
+		self.tpd.Append(self.ID_PrimaryDirs,        mtexts.menutxts['TMPrimaryDirs'],        mtexts.menutxts['TMPrimaryDirsDoc'])
+		self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
+		self.tpd.Append(self.ID_FixStarAngleDirs,   mtexts.menutxts['TMFixStarAngleDirs'],   mtexts.menutxts['TMFixStarAngleDirsDoc'])
+		self.mtable.Append(self.ID_PrimaryDirsMenu, mtexts.txts['PrimaryDirs'], self.tpd)
+
+		# Un-grouped (요청대로 단독 유지)
+		self.mtable.Append(self.ID_ExactTransits, mtexts.menutxts['TMExactTransits'], mtexts.menutxts['TMExactTransitsDoc'])
 
 		#Charts-menu
-		self.mcharts.Append(self.ID_Transits, mtexts.menutxts['PMTransits'], mtexts.menutxts['PMTransitsDoc'])
-		self.mcharts.Append(self.ID_Revolutions, mtexts.menutxts['PMRevolutions'], mtexts.menutxts['PMRevolutionsDoc'])
-		self.mcharts.Append(self.ID_SunTransits, mtexts.menutxts['PMSunTransits'], mtexts.menutxts['PMSunTransitsDoc'])
+		# 앞부분: 기본 항목 먼저
+		self.mcharts.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
+		self.mcharts.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+		self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
+		self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
+		self.mcharts.Append(self.ID_Revolutions,     mtexts.menutxts['PMRevolutions'],     mtexts.menutxts['PMRevolutionsDoc'])
 
-		# --- Secondary progressions submenu (Charts) ---
+		# Secondary Progressions 서브메뉴(기존 그대로)
 		self.csecprog = wx.Menu()
-		self.csecprog.Append(self.ID_SecProgChart,mtexts.menutxts['PMSecondaryDirs'], mtexts.menutxts['PMSecondaryDirsDoc'])
-		self.csecprog.Append(self.ID_SecProgPositions, mtexts.menutxts['PMPositionForDate'], mtexts.menutxts['PMPositionForDateDoc'])
+		self.csecprog.Append(self.ID_SecProgChart,     mtexts.menutxts['PMSecondaryDirs'],    mtexts.menutxts['PMSecondaryDirsDoc'])
+		self.csecprog.Append(self.ID_SecProgPositions, mtexts.menutxts['PMPositionForDate'],  mtexts.menutxts['PMPositionForDateDoc'])
 		self.mcharts.Append(self.ID_SecProgMenu, mtexts.txts['SecondaryDirs'], self.csecprog)
 
-		self.mcharts.Append(self.ID_SquareChart, mtexts.menutxts['PMSquareChart'], mtexts.menutxts['PMSquareChartDoc'])
-		self.mcharts.Append(self.ID_ProfectionsChart, mtexts.menutxts['PMProfections'], mtexts.menutxts['PMProfectionsDoc'])
-		self.mcharts.Append(self.ID_MundaneChart, mtexts.menutxts['PMMundane'], mtexts.menutxts['PMMundaneDoc'])
-		self.mcharts.Append(self.ID_Elections, mtexts.menutxts['PMElections'], mtexts.menutxts['PMElectionsDoc'])
+		# Transits 서브메뉴 신설
+		self.ctransits = wx.Menu()
+		self.ctransits.Append(self.ID_Transits,    mtexts.menutxts['PMTransits'],    mtexts.menutxts['PMTransitsDoc'])
+		self.ctransits.Append(self.ID_SunTransits, mtexts.menutxts['PMSunTransits'], mtexts.menutxts['PMSunTransitsDoc'])
+		self.mcharts.Append(self.ID_TransitsMenu, mtexts.txts['Transits'], self.ctransits)
+
 
 		#Options-menu
 		self.mhousesystem = wx.Menu()
@@ -391,25 +411,29 @@ class MFrame(wx.Frame):
 
 		self.setNode()
 
+		# 앞순서 유지
 		self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
-		self.moptions.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'], mtexts.menutxts['OMPrimaryDirsDoc'])
-		self.moptions.Append(self.ID_PrimaryKeys, mtexts.menutxts['OMPrimaryKeys'], mtexts.menutxts['OMPrimaryKeysDoc'])
 
+		# Fortuna/Arabic/Syzygy/Fixed Stars 먼저
+		self.moptions.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'], mtexts.menutxts['OMLotFortuneDoc'])
+		self.moptions.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'], mtexts.menutxts['OMArabicPartsDoc'])
+		self.moptions.Append(self.ID_Syzygy,       mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
+		self.moptions.Append(self.ID_FixStarsOpt,  mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+
+		# 그 다음 PD/Keys
+		self.moptions.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'],  mtexts.menutxts['OMPrimaryDirsDoc'])
+		self.moptions.Append(self.ID_PrimaryKeys,    mtexts.menutxts['OMPrimaryKeys'],  mtexts.menutxts['OMPrimaryKeysDoc'])
+
+		# PDs in Chart 서브메뉴
 		self.mpdsinchartopts = wx.Menu()
 		self.mpdsinchartopts.Append(self.ID_PDsInChartOptZod, mtexts.menutxts['OMPDsInChartOptZod'], mtexts.menutxts['OMPDsInChartOptZodDoc'])
 		self.mpdsinchartopts.Append(self.ID_PDsInChartOptMun, mtexts.menutxts['OMPDsInChartOptMun'], mtexts.menutxts['OMPDsInChartOptMunDoc'])
-
 		self.moptions.Append(self.ID_PDsInChartOpt, mtexts.menutxts['OMPDsInChartOpt'], self.mpdsinchartopts)
-		self.moptions.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'], mtexts.menutxts['OMLotFortuneDoc'])
-		self.moptions.Append(self.ID_ArabicParts, mtexts.menutxts['OMArabicParts'], mtexts.menutxts['OMArabicPartsDoc'])
-		self.moptions.Append(self.ID_Syzygy, mtexts.menutxts['OMSyzygy'], mtexts.menutxts['OMSyzygyDoc'])
-		self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+
+		# 끝에 Profections/Firdaria 옵션 유지
 		self.moptions.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
-# ###########################################
-# Roberto change V 7.3.0
-		self.moptions.Append(self.ID_FirdariaOpt, mtexts.menutxts['OMFirdariaOpt'], mtexts.menutxts['OMFirdariaOptDoc'])
-# ###########################################
-# ###########################################
+		self.moptions.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
+
 # Roberto change V 7.2.0
 		self.moptions.Append(self.ID_DefLocationOpt, mtexts.menutxts['OMDefLocationOpt'], mtexts.menutxts['OMDefLocationOptDoc'])
 # ###########################################		
@@ -563,11 +587,11 @@ class MFrame(wx.Frame):
 			(wx.ACCEL_CTRL, ord('3'),  self.ID_Paranatellonta),
 			(wx.ACCEL_CTRL, ord('4'),  self.ID_Circumambulation),
 			(wx.ACCEL_CTRL, ord('5'),  self.ID_FixStarAngleDirs),
-			(wx.ACCEL_NORMAL, wx.WXK_F5, self.ID_Eclipses),
-			(wx.ACCEL_CTRL, ord('6'),  self.ID_Misc),
-	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F5, self.ID_SecProgChart),
-	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F6, self.ID_SecProgPositions),
-	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F9, self.ID_Elections),
+			(wx.ACCEL_NORMAL, wx.WXK_F5, self.ID_Misc),
+			(wx.ACCEL_CTRL, ord('6'),  self.ID_Eclipses),
+	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F4, self.ID_SecProgChart),
+	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F5, self.ID_Elections),
+	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F9, self.ID_SecProgPositions),
 ]))
 
 		self.Bind(wx.EVT_CLOSE, self.onExit)
@@ -2363,7 +2387,7 @@ class MFrame(wx.Frame):
 
 		# 표가 없으면 생성, 있으면 갱신
 		try:
-			title0 = self.title.replace(mtexts.txts['Radix'], u'Positions for date')
+			title0 = self.title.replace(mtexts.txts['Radix'], mtexts.txts['Positionsfordate'])
 			if not hasattr(self, "_secprog_tbl") or not self._secprog_tbl:
 				# ★ 최초 생성 때부터 팝업을 짝으로 넘김
 				self._secprog_tbl = secdirframe.SecProgPosTableFrame(
@@ -3077,67 +3101,80 @@ class MFrame(wx.Frame):
 				self.Bind(wx.EVT_MENU_RANGE, self.OnFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 
 		#Table-menu
-				self.mtable.Append(self.ID_Positions, mtexts.menutxts['TMPositions'], mtexts.menutxts['TMPositionsDoc'])
+				# ---------------- Tables (grouped) ----------------
 
+				# Planets/Points
+				self.tplanets = wx.Menu()
+				self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])
+				self.tplanets.Append(self.ID_Speeds,           mtexts.menutxts['TMSpeeds'],           mtexts.menutxts['TMSpeedsDoc'])
+				self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
+				self.tplanets.Append(self.ID_Phasis,           mtexts.menutxts['TMPhasis'],           mtexts.menutxts['TMPhasisDoc'])
+				self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])
+				self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc'])
+				self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])
+				self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc'])
+				self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])
+				self.tplanets.Append(self.ID_PlanetaryHours,   mtexts.menutxts['TMPlanetaryHours'],   mtexts.menutxts['TMPlanetaryHoursDoc'])
+				self.tplanets.Append(self.ID_Midpoints,        mtexts.menutxts['TMMidpoints'],        mtexts.menutxts['TMMidpointsDoc'])
+				self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])
+				self.tplanets.Append(self.ID_Arabians,         mtexts.menutxts['TMArabianParts'],     mtexts.menutxts['TMArabianPartsDoc'])
+				self.tplanets.Append(self.ID_Eclipses,         mtexts.menutxts['TMEclipses'],         mtexts.menutxts['TMEclipsesDoc'])
+				self.tplanets.Append(self.ID_Misc,             mtexts.menutxts['TMMisc'],             mtexts.menutxts['TMMiscDoc'])
+				self.mtable.Append(self.ID_PlanetsPointsMenu, mtexts.txts['PlanetsPoints'], self.tplanets)
+
+				# Almutens (existing submenu)
 				self.talmutens = wx.Menu()
 				self.talmutens.Append(self.ID_AlmutenZodiacal, mtexts.menutxts['TMAlmutenZodiacal'], mtexts.menutxts['TMAlmutenZodiacalDoc'])
-				self.talmutens.Append(self.ID_AlmutenChart, mtexts.menutxts['TMAlmutenChart'], mtexts.menutxts['TMAlmutenChartDoc'])
-				self.talmutens.Append(self.ID_AlmutenTopical, mtexts.menutxts['TMAlmutenTopical'], mtexts.menutxts['TMAlmutenTopicalDoc'])
+				self.talmutens.Append(self.ID_AlmutenChart,    mtexts.menutxts['TMAlmutenChart'],    mtexts.menutxts['TMAlmutenChartDoc'])
+				self.talmutens.Append(self.ID_AlmutenTopical,  mtexts.menutxts['TMAlmutenTopical'],  mtexts.menutxts['TMAlmutenTopicalDoc'])
 				self.mtable.Append(self.ID_TAlmutens, mtexts.menutxts['TMAlmutens'], self.talmutens)
-				self.mtable.Append(self.ID_Eclipses, mtexts.menutxts['TMEclipses'], mtexts.menutxts['TMEclipsesDoc'])
+				# (Almutens 서브메뉴가 이미 존재하는 형태는 파일에 보임) :contentReference[oaicite:4]{index=4}
 
-				self.mtable.Append(self.ID_MunPos, mtexts.menutxts['TMMunPos'], mtexts.menutxts['TMMunPosDoc'])
-				self.mtable.Append(self.ID_Antiscia, mtexts.menutxts['TMAntiscia'], mtexts.menutxts['TMAntisciaDoc'])
-# ###################################
-# Elias change v 8.0.0
-#		self.mtable.Append(self.ID_Dodecatemoria, mtexts.menutxts['TMDodecatemoria'], mtexts.menutxts['TMDodecatemoriaDoc'])
-# ###################################
-				self.mtable.Append(self.ID_Aspects, mtexts.menutxts['TMAspects'], mtexts.menutxts['TMAspectsDoc'])
-				self.mtable.Append(self.ID_Midpoints, mtexts.menutxts['TMMidpoints'], mtexts.menutxts['TMMidpointsDoc'])
-				self.mtable.Append(self.ID_RiseSet, mtexts.menutxts['TMRiseSet'], mtexts.menutxts['TMRiseSetDoc'])
-				self.mtable.Append(self.ID_Speeds, mtexts.menutxts['TMSpeeds'], mtexts.menutxts['TMSpeedsDoc'])
-				self.mtable.Append(self.ID_ZodPars, mtexts.menutxts['TMZodPars'], mtexts.menutxts['TMZodParsDoc'])
-				self.mtable.Append(self.ID_FixStars, mtexts.menutxts['TMFixStars'], mtexts.menutxts['TMFixStarsDoc'])
-				self.mtable.Append(self.ID_FixStarsAsps, mtexts.menutxts['TMFixStarsAsps'], mtexts.menutxts['TMFixStarsAspsDoc'])
-				self.mtable.Append(self.ID_Arabians, mtexts.menutxts['TMArabianParts'], mtexts.menutxts['TMArabianPartsDoc'])
-				self.mtable.Append(self.ID_Strip, mtexts.menutxts['TMStrip'], mtexts.menutxts['TMStripDoc'])
-				self.mtable.Append(self.ID_PlanetaryHours, mtexts.menutxts['TMPlanetaryHours'], mtexts.menutxts['TMPlanetaryHoursDoc'])
+				# Fixed Stars
+				self.tfixed = wx.Menu()
+				self.tfixed.Append(self.ID_FixStars,        mtexts.menutxts['TMFixStars'],        mtexts.menutxts['TMFixStarsDoc'])
+				self.tfixed.Append(self.ID_FixStarsAsps,    mtexts.menutxts['TMFixStarsAsps'],    mtexts.menutxts['TMFixStarsAspsDoc'])
+				self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
+				self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
+				self.mtable.Append(self.ID_FixedStarsMenu, mtexts.txts['FixStars'], self.tfixed)
+
+				# Time Lords
+				self.ttimelords = wx.Menu()
+				self.ttimelords.Append(self.ID_Profections,        mtexts.menutxts['TMProfections'],        mtexts.menutxts['TMProfectionsDoc'])
+				self.ttimelords.Append(self.ID_Firdaria,           mtexts.menutxts['TMFirdaria'],           mtexts.menutxts['TMFirdariaDoc'])
+				self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
+				self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
+				self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
+
+				# Primary Directions
+				self.tpd = wx.Menu()
+				self.tpd.Append(self.ID_PrimaryDirs,        mtexts.menutxts['TMPrimaryDirs'],        mtexts.menutxts['TMPrimaryDirsDoc'])
+				self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
+				self.tpd.Append(self.ID_FixStarAngleDirs,   mtexts.menutxts['TMFixStarAngleDirs'],   mtexts.menutxts['TMFixStarAngleDirsDoc'])
+				self.mtable.Append(self.ID_PrimaryDirsMenu, mtexts.txts['PrimaryDirs'], self.tpd)
+
+				# Un-grouped (요청대로 단독 유지)
 				self.mtable.Append(self.ID_ExactTransits, mtexts.menutxts['TMExactTransits'], mtexts.menutxts['TMExactTransitsDoc'])
-				self.mtable.Append(self.ID_Profections, mtexts.menutxts['TMProfections'], mtexts.menutxts['TMProfectionsDoc'])
-				self.mtable.Append(self.ID_CustomerSpeculum, mtexts.menutxts['TMCustomerSpeculum'], mtexts.menutxts['TMCustomerSpeculumDoc'])
-# ###########################################
-# Roberto change V 7.3.0
-				self.mtable.Append(self.ID_Firdaria, mtexts.menutxts['TMFirdaria'], mtexts.menutxts['TMFirdariaDoc'])
-# ###########################################
-# ###################################
-# Roberto change v 8.0.1
-				self.mtable.Append(self.ID_Dodecatemoria, mtexts.menutxts['TMDodecatemoria'], mtexts.menutxts['TMDodecatemoriaDoc'])
-				self.mtable.Append(self.ID_AngleAtBirth,mtexts.menutxts['TMAngleAtBirth'],mtexts.menutxts['TMAngleAtBirthDoc'])
-# ###################################
-				self.mtable.Append(self.ID_PrimaryDirs, mtexts.menutxts['TMPrimaryDirs'], mtexts.menutxts['TMPrimaryDirsDoc'])
 
-				self.mtable.Append(self.ID_ZodiacalReleasing, mtexts.menutxts['TMZodiacalReleasing'],mtexts.menutxts['TMZodiacalReleasingDoc'])
-				self.mtable.Append(self.ID_Phasis, mtexts.menutxts['TMPhasis'],mtexts.menutxts['TMPhasisDoc'])
-				self.mtable.Append(self.ID_Paranatellonta, mtexts.menutxts['TMParanatellonta'],mtexts.menutxts['TMParanatellontaDoc'])
-				self.mtable.Append(self.ID_Circumambulation, mtexts.menutxts['TMCircumambulation'],mtexts.menutxts['TMCircumambulationDoc'])
-				self.mtable.Append(self.ID_FixStarAngleDirs, mtexts.menutxts['TMFixStarAngleDirs'],mtexts.menutxts['TMFixStarAngleDirsDoc'])
-				self.mtable.Append(self.ID_Misc, mtexts.menutxts['TMMisc'], mtexts.menutxts['TMMiscDoc'])
 		#Charts-menu
-				self.mcharts.Append(self.ID_Transits, mtexts.menutxts['PMTransits'], mtexts.menutxts['PMTransitsDoc'])
-				self.mcharts.Append(self.ID_Revolutions, mtexts.menutxts['PMRevolutions'], mtexts.menutxts['PMRevolutionsDoc'])
-				self.mcharts.Append(self.ID_SunTransits, mtexts.menutxts['PMSunTransits'], mtexts.menutxts['PMSunTransitsDoc'])
+				# 앞부분: 기본 항목 먼저
+				self.mcharts.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
+				self.mcharts.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+				self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
+				self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
+				self.mcharts.Append(self.ID_Revolutions,     mtexts.menutxts['PMRevolutions'],     mtexts.menutxts['PMRevolutionsDoc'])
 
-				# --- Secondary progressions submenu (Charts) ---
+				# Secondary Progressions 서브메뉴(기존 그대로)
 				self.csecprog = wx.Menu()
-				self.csecprog.Append(self.ID_SecProgChart,mtexts.menutxts['PMSecondaryDirs'], mtexts.menutxts['PMSecondaryDirsDoc'])
-				self.csecprog.Append(self.ID_SecProgPositions, mtexts.menutxts['PMPositionForDate'], mtexts.menutxts['PMPositionForDateDoc'])
+				self.csecprog.Append(self.ID_SecProgChart,     mtexts.menutxts['PMSecondaryDirs'],    mtexts.menutxts['PMSecondaryDirsDoc'])
+				self.csecprog.Append(self.ID_SecProgPositions, mtexts.menutxts['PMPositionForDate'],  mtexts.menutxts['PMPositionForDateDoc'])
 				self.mcharts.Append(self.ID_SecProgMenu, mtexts.txts['SecondaryDirs'], self.csecprog)
 
-				self.mcharts.Append(self.ID_SquareChart, mtexts.menutxts['PMSquareChart'], mtexts.menutxts['PMSquareChartDoc'])
-				self.mcharts.Append(self.ID_ProfectionsChart, mtexts.menutxts['PMProfections'], mtexts.menutxts['PMProfectionsDoc'])
-				self.mcharts.Append(self.ID_MundaneChart, mtexts.menutxts['PMMundane'], mtexts.menutxts['PMMundaneDoc'])
-				self.mcharts.Append(self.ID_Elections, mtexts.menutxts['PMElections'], mtexts.menutxts['PMElectionsDoc'])
-
+				# Transits 서브메뉴 신설
+				self.ctransits = wx.Menu()
+				self.ctransits.Append(self.ID_Transits,    mtexts.menutxts['PMTransits'],    mtexts.menutxts['PMTransitsDoc'])
+				self.ctransits.Append(self.ID_SunTransits, mtexts.menutxts['PMSunTransits'], mtexts.menutxts['PMSunTransitsDoc'])
+				self.mcharts.Append(self.ID_TransitsMenu, mtexts.txts['Transits'], self.ctransits)
 
 		#Options-menu
 				self.mhousesystem = wx.Menu()
@@ -3186,23 +3223,29 @@ class MFrame(wx.Frame):
 
 				self.setNode()
 
+				# 앞순서 유지
 				self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
-				self.moptions.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'], mtexts.menutxts['OMPrimaryDirsDoc'])
-				self.moptions.Append(self.ID_PrimaryKeys, mtexts.menutxts['OMPrimaryKeys'], mtexts.menutxts['OMPrimaryKeysDoc'])
 
+				# Fortuna/Arabic/Syzygy/Fixed Stars 먼저
+				self.moptions.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'], mtexts.menutxts['OMLotFortuneDoc'])
+				self.moptions.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'], mtexts.menutxts['OMArabicPartsDoc'])
+				self.moptions.Append(self.ID_Syzygy,       mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
+				self.moptions.Append(self.ID_FixStarsOpt,  mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+
+				# 그 다음 PD/Keys
+				self.moptions.Append(self.ID_PrimaryDirsOpt, mtexts.menutxts['OMPrimaryDirs'],  mtexts.menutxts['OMPrimaryDirsDoc'])
+				self.moptions.Append(self.ID_PrimaryKeys,    mtexts.menutxts['OMPrimaryKeys'],  mtexts.menutxts['OMPrimaryKeysDoc'])
+
+				# PDs in Chart 서브메뉴
 				self.mpdsinchartopts = wx.Menu()
 				self.mpdsinchartopts.Append(self.ID_PDsInChartOptZod, mtexts.menutxts['OMPDsInChartOptZod'], mtexts.menutxts['OMPDsInChartOptZodDoc'])
 				self.mpdsinchartopts.Append(self.ID_PDsInChartOptMun, mtexts.menutxts['OMPDsInChartOptMun'], mtexts.menutxts['OMPDsInChartOptMunDoc'])
-
 				self.moptions.Append(self.ID_PDsInChartOpt, mtexts.menutxts['OMPDsInChartOpt'], self.mpdsinchartopts)
-				self.moptions.Append(self.ID_LotOfFortune, mtexts.menutxts['OMLotFortune'], mtexts.menutxts['OMLotFortuneDoc'])
-				self.moptions.Append(self.ID_ArabicParts, mtexts.menutxts['OMArabicParts'], mtexts.menutxts['OMArabicPartsDoc'])
-				self.moptions.Append(self.ID_Syzygy, mtexts.menutxts['OMSyzygy'], mtexts.menutxts['OMSyzygyDoc'])
-				self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
+
+				# 끝에 Profections/Firdaria 옵션 유지
 				self.moptions.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
-# ###########################################
-# Roberto change V 7.3.0
-				self.moptions.Append(self.ID_FirdariaOpt, mtexts.menutxts['OMFirdariaOpt'], mtexts.menutxts['OMFirdariaOptDoc'])
+				self.moptions.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
+
 # ###########################################
 # ###########################################
 # Roberto change V 7.2.0
@@ -3871,6 +3914,26 @@ class MFrame(wx.Frame):
 		self.mcharts.Enable(self.ID_SquareChart, bEnable)
 		self.mcharts.Enable(self.ID_ProfectionsChart, bEnable)
 		self.mcharts.Enable(self.ID_MundaneChart, bEnable)
+		# --- NEW: disable/enable newly added grouped submenus when no chart is open ---
+		# Tables (group headers)
+		for _mid in (
+			getattr(self, 'ID_PlanetsPointsMenu', None),
+			getattr(self, 'ID_FixedStarsMenu',   None),
+			getattr(self, 'ID_TimeLordsMenu',    None),
+			getattr(self, 'ID_PrimaryDirsMenu',  None),
+		):
+			try:
+				if _mid is not None:
+					self.mtable.Enable(_mid, bEnable)
+			except Exception:
+				# In case the submenu wasn't built in this build variant
+				pass
+
+		# Charts (group header)
+		try:
+			self.mcharts.Enable(self.ID_TransitsMenu, bEnable)
+		except Exception:
+			pass
 
 
 	def enableOptMenus(self, bEnable):
