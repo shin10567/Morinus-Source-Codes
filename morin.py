@@ -349,8 +349,8 @@ class MFrame(wx.Frame):
 		# Primary Directions
 		self.tpd = wx.Menu()
 		self.tpd.Append(self.ID_PrimaryDirs,        mtexts.menutxts['TMPrimaryDirs'],        mtexts.menutxts['TMPrimaryDirsDoc'])
-		self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
 		self.tpd.Append(self.ID_FixStarAngleDirs,   mtexts.menutxts['TMFixStarAngleDirs'],   mtexts.menutxts['TMFixStarAngleDirsDoc'])
+		self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
 		self.mtable.Append(self.ID_PrimaryDirsMenu, mtexts.txts['PrimaryDirs'], self.tpd)
 
 		# Un-grouped (요청대로 단독 유지)
@@ -445,7 +445,7 @@ class MFrame(wx.Frame):
 		self.moptions.Append(self.ID_Syzygy,      mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
 		self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
 		
-        # [TimeLords] submenu: Profections + Firdaria
+		# [TimeLords] submenu: Profections + Firdaria
 		self.o_tl = wx.Menu()
 		self.o_tl.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
 		self.o_tl.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
@@ -3194,8 +3194,8 @@ class MFrame(wx.Frame):
 				# Primary Directions
 				self.tpd = wx.Menu()
 				self.tpd.Append(self.ID_PrimaryDirs,        mtexts.menutxts['TMPrimaryDirs'],        mtexts.menutxts['TMPrimaryDirsDoc'])
-				self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
 				self.tpd.Append(self.ID_FixStarAngleDirs,   mtexts.menutxts['TMFixStarAngleDirs'],   mtexts.menutxts['TMFixStarAngleDirsDoc'])
+				self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
 				self.mtable.Append(self.ID_PrimaryDirsMenu, mtexts.txts['PrimaryDirs'], self.tpd)
 
 				# Un-grouped (요청대로 단독 유지)
@@ -3287,7 +3287,7 @@ class MFrame(wx.Frame):
 				self.moptions.Append(self.ID_Syzygy,      mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
 				self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
 				
-                # [TimeLords] submenu: Profections + Firdaria
+				# [TimeLords] submenu: Profections + Firdaria
 				self.o_tl = wx.Menu()
 				self.o_tl.Append(self.ID_ProfectionsOpt, mtexts.menutxts['OMProfectionsOpt'], mtexts.menutxts['OMProfectionsOptDoc'])
 				self.o_tl.Append(self.ID_FirdariaOpt,    mtexts.menutxts['OMFirdariaOpt'],    mtexts.menutxts['OMFirdariaOptDoc'])
