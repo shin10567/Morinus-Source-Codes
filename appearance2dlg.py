@@ -121,7 +121,7 @@ class Appearance2Dlg(wx.Dialog):
 		self.intimeckb = wx.CheckBox(self, -1, mtexts.txts['InTime'])
 		rasizer.Add(self.intimeckb, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
-		mvsizer.Add(rasizer, 0, wx.GROW|wx.ALIGN_TOP|wx.RIGHT, 5)
+		mvsizer.Add(rasizer, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT|wx.TOP, 5)
 
 		btnsizer = wx.StdDialogButtonSizer()
 

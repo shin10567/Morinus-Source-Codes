@@ -1,4 +1,4 @@
-## [9.2.3] Updated Version from 8.1.0 
+## [9.2.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -168,3 +168,5 @@
 #### 9.2.3
 - Now respects Morinus 8.1.0's shortcut keys
 - Grouped and re-arraned menus
+#### 9.2.4
+- Positions for Date bug fix

@@ -2387,7 +2387,7 @@ class MFrame(wx.Frame):
 				if hasattr(self, "_secprog_tbl") and self._secprog_tbl:
 					self._secprog_tbl.change_chart(prg)
 				else:
-					title = self.title.replace(mtexts.txts['Radix'], mtexts.txts['Positionsfordate'])
+					title = self.title.replace(mtexts.txts['Radix'], u"Positions for Date")
 					self._secprog_tbl = secdirframe.SecProgPosTableFrame(self, title, prg, buddy_dlg=self._secui_dlg)
 					self._secprog_tbl.Show(True); self._secprog_tbl.Raise()
 			except Exception as e:
@@ -2414,7 +2414,7 @@ class MFrame(wx.Frame):
 
 		# 표가 없으면 생성, 있으면 갱신
 		try:
-			title0 = self.title.replace(mtexts.txts['Radix'], mtexts.txts['Positionsfordate'])
+			title0 = self.title.replace(mtexts.txts['Radix'], u"Positions for Date")
 			if not hasattr(self, "_secprog_tbl") or not self._secprog_tbl:
 				# ★ 최초 생성 때부터 팝업을 짝으로 넘김
 				self._secprog_tbl = secdirframe.SecProgPosTableFrame(
@@ -2439,7 +2439,7 @@ class MFrame(wx.Frame):
 
 		except Exception as e:
 			try:
-				wx.MessageBox(u"Positions table error (initial): %s" % e, u"Positions for date")
+				wx.MessageBox(u"Positions table error (initial): %s" % e, u"Positions for Date")
 			except:
 				pass
 
@@ -3826,7 +3826,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.2.3'
+		info.Version = '9.2.4'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
