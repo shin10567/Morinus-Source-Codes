@@ -335,7 +335,7 @@ class MFrame(wx.Frame):
 		self.tfixed.Append(self.ID_FixStars,        mtexts.menutxts['TMFixStars'],        mtexts.menutxts['TMFixStarsDoc'])
 		self.tfixed.Append(self.ID_FixStarsAsps,    mtexts.menutxts['TMFixStarsAsps'],    mtexts.menutxts['TMFixStarsAspsDoc'])
 		self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
-        self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
+		self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
 		self.mtable.Append(self.ID_FixedStarsMenu, mtexts.txts['FixStars'], self.tfixed)
 
 		# Time Lords
@@ -3179,7 +3179,7 @@ class MFrame(wx.Frame):
 				self.tfixed = wx.Menu()
 				self.tfixed.Append(self.ID_FixStars,        mtexts.menutxts['TMFixStars'],        mtexts.menutxts['TMFixStarsDoc'])
 				self.tfixed.Append(self.ID_FixStarsAsps,    mtexts.menutxts['TMFixStarsAsps'],    mtexts.menutxts['TMFixStarsAspsDoc'])
-                self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
+				self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
 				self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
 				self.mtable.Append(self.ID_FixedStarsMenu, mtexts.txts['FixStars'], self.tfixed)
 
