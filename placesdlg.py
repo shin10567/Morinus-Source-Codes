@@ -97,7 +97,7 @@ class PlaceListCtrl(wx.ListCtrl):
 			self.SetItem(num, i, item[i])
 
 		self.currentItem = num
-		#self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
+		self.EnsureVisible(self.currentItem) #This scrolls the list to the added item at the end
 		self.SetItemState(self.currentItem,
 						wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED,
 						wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED)

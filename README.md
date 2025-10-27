@@ -1,4 +1,4 @@
-## [9.2.4] Updated Version from 8.1.0 
+## [9.2.5] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -170,3 +170,5 @@
 - Grouped and re-arraned menus
 #### 9.2.4
 - Positions for Date bug fix
+#### 9.2.5
+- Re-arraned menus

@@ -88,7 +88,7 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 
 				profsmonthly = profectionsmonthly.ProfectionsMonthly(self.pcharts, steps12, rownum)
 
-				profsmonfr = profstablemonframe.ProfsTableMonFrame(self.mainfr, self.mainfr.title, self.pcharts, profsmonthly.dates, self.options, self.mainsigs, self.age+rownum)
+				profsmonfr = profstablemonframe.ProfsTableMonFrame(wx.GetTopLevelParent(self), self.mainfr.title, self.pcharts, profsmonthly.dates, self.options, self.mainsigs, self.age+rownum)
 				profsmonfr.Show(True)
 
 			dlg.Destroy()

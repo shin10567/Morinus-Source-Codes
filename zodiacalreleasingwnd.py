@@ -233,12 +233,22 @@ class ZRWnd(commonwnd.CommonWnd):
             return
         row = int((y - (self.INFO_H + self.HEAD_H)) // self.LINE_HEIGHT)
         if row < 0 or row >= len(self.row_lv): return
-        if self.row_lv[row] != 2: return  # L2만
-
         l2row = self.rows[row]
-        dlg = ZRDrillDlg(self, l2row, self.signs, self.fntText, self.fntMor, mainfr=self.mainfr)
-        #dlg.CentreOnScreen()
-        dlg.ShowModal(); dlg.Destroy()
+        # 부모는 반드시 프레임(self.mainfr)로 지정 (부모 닫을 때 함께 정리)
+        dlg = ZRDrillDlg(self.mainfr, l2row, self.signs, self.fntText, self.fntMor, mainfr=self.mainfr)
+
+        # 프레임에 등록(부모 닫힐 때 함께 정리)
+        if hasattr(self.mainfr, "_register_drill"):
+            self.mainfr._register_drill(dlg)
+
+        # 모델리스로 띄우고, 닫기(X) 시 파괴되게 연결
+        dlg.Bind(wx.EVT_CLOSE, lambda e: dlg.Destroy())
+        dlg.Show()          # ← 모델리스
+        dlg.Raise()
+        try:
+            dlg.SetFocus()
+        except Exception:
+            pass
 
     def _onMotion(self, evt):
         #ux, uy = tuple(self._calc_unscrolled(evt.GetPositionTuple()))
