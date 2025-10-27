@@ -238,6 +238,7 @@ class MFrame(wx.Frame):
 		self.ID_TimeLordsMenu    = 5003
 		self.ID_PrimaryDirsMenu  = 5004
 		self.ID_TransitsMenu     = 5005
+		self.ID_ChartsMenu      = 5016
 		# --- Options submenu headers ---
 		# --- New submenu headers ---
 		self.ID_SaveMenu            = 5006  # Horoscope > Save group
@@ -358,8 +359,11 @@ class MFrame(wx.Frame):
 
 		#Charts-menu
 		# 앞부분: 기본 항목 먼저
-		self.mcharts.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
-		self.mcharts.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+		self.chartsmenu2 = wx.Menu()
+		self.chartsmenu2.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
+		self.chartsmenu2.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+		self.mcharts.Append(self.ID_ChartsMenu, mtexts.menutxts['MCharts'], self.chartsmenu2)
+
 		self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 		self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
 
@@ -3204,8 +3208,11 @@ class MFrame(wx.Frame):
 
 		#Charts-menu
 				# 앞부분: 기본 항목 먼저
-				self.mcharts.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
-				self.mcharts.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+				self.chartsmenu2 = wx.Menu()
+				self.chartsmenu2.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
+				self.chartsmenu2.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+				self.mcharts.Append(self.ID_ChartsMenu, mtexts.menutxts['MCharts'], self.chartsmenu2)
+
 				self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 				self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
 
@@ -3967,6 +3974,7 @@ class MFrame(wx.Frame):
 		self.mcharts.Enable(self.ID_Revolutions, bEnable)
 		self.mcharts.Enable(self.ID_SunTransits, bEnable)
 		self.mcharts.Enable(self.ID_SecProgMenu, bEnable)
+		self.mcharts.Enable(self.ID_ChartsMenu, bEnable)
 		self.mcharts.Enable(self.ID_SecProgChart, bEnable)
 		self.mcharts.Enable(self.ID_SecProgPositions, bEnable)
 		self.mcharts.Enable(self.ID_Elections, bEnable)
@@ -3980,6 +3988,7 @@ class MFrame(wx.Frame):
 			getattr(self, 'ID_FixedStarsMenu',   None),
 			getattr(self, 'ID_TimeLordsMenu',    None),
 			getattr(self, 'ID_PrimaryDirsMenu',  None),
+			getattr(self, 'ID_ChartsMenu',  None),
 		):
 			try:
 				if _mid is not None:
