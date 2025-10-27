@@ -183,7 +183,7 @@ class TransitFrame(wx.Frame):
 		left_txt = (
 			f"{signtxt}{t.origyear}."
 			f"{month_name}."
-			f"{str(t.origday).zfill(2)} "
+			f"{str(t.origday).zfill(2)}. "
 			f"{str(t.hour).zfill(2)}:{str(t.minute).zfill(2)}:{str(t.second).zfill(2)}"
 			f"{ztxt}"
 		)
@@ -196,7 +196,7 @@ class TransitFrame(wx.Frame):
 		right_txt = (
 			f"{mtexts.txts['Long']}.: "
 			f"{str(p.deglon).zfill(2)}{deg_symbol}{str(p.minlon).zfill(2)}'"
-			f"{dir_lon}"
+			f"{dir_lon},"
 			f" {mtexts.txts['Lat']}.: "
 			f"{str(p.deglat).zfill(2)}{deg_symbol}{str(p.minlat).zfill(2)}'"
 			f"{dir_lat}"

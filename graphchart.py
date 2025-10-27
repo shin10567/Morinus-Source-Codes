@@ -405,6 +405,9 @@ class GraphChart:
 			self.drawPlanetaryDayAndHour()
 		if self.options.housesystem and self.planetaryday:
 			self.drawHousesystemName()
+		# chart meta labels (inside wheel)
+		self.drawChartTimeTopLeft()
+		self.drawChartPlaceBottomLeft()
 
 		if self.chart2 == None and self.planetaryday and self.options.showfixstars != options.Options.NONE: #If planetaryday is True => radix chart
 			if self.options.showfixstars == options.Options.FIXSTARS:
@@ -1083,11 +1086,26 @@ class GraphChart:
 			clr_hour = clr_lbl
 
 		# 출력: 기호는 사용자 색, 라벨은 라벨 색
-		self.draw.text((x, y), common.common.Planets[idx_day], fill=clr_day,  font=self.fntMorinus2)
-		self.draw.text((x+size+size/2, y), mtexts.txts['Day'],        fill=clr_lbl, font=self.fntBigText)
-		self.draw.text((x, y+size+size/2), common.common.Planets[idx_hour], fill=clr_hour, font=self.fntMorinus2)
-		self.draw.text((x+size+size/2, y+size+size/2), mtexts.txts['Hour'],  fill=clr_lbl, font=self.fntBigText)
+		# --- 줄 높이/패딩을 텍스트 실제 크기로 계산 ---
+		glyph_day  = common.common.Planets[idx_day]
+		glyph_hour = common.common.Planets[idx_hour]
 
+		w_day,  h_icon_day  = self.fntMorinus2.getsize(glyph_day)
+		w_hour, h_icon_hour = self.fntMorinus2.getsize(glyph_hour)
+		_,      h_label     = self.fntBigText.getsize("Ag")  # 라벨 기준 높이
+
+		line_h = int(max(h_icon_day, h_icon_hour, h_label) * 1.1)  # 날짜/시간 라벨과 동일한 규칙
+		pad_x  = int(self.symbolSize * 0.25)
+		w_icon = max(w_day, w_hour)  # 두 줄 아이콘 열 너비 동일화
+
+		# 1행
+		self.draw.text((x, y), glyph_day, fill=clr_day, font=self.fntMorinus2)
+		self.draw.text((x + w_icon + pad_x, y), mtexts.txts['Day'], fill=clr_lbl, font=self.fntBigText)
+
+		# 2행: y를 line_h만큼만 내린다
+		y2 = y + line_h
+		self.draw.text((x, y2), glyph_hour, fill=clr_hour, font=self.fntMorinus2)
+		self.draw.text((x + w_icon + pad_x, y2), mtexts.txts['Hour'], fill=clr_lbl, font=self.fntBigText)
 
 	def drawHousesystemName(self):
 		clr = self.options.clrtexts
@@ -1105,6 +1123,66 @@ class GraphChart:
 
 		self.draw.text((x,y), self.hsystem[self.options.hsys], fill=clr, font=self.fntBigText)
 
+	def drawChartTimeTopLeft(self):
+		# 좌상단: 윗줄 = 날짜(예: 1998.July.23), 아랫줄 = 시간+표준(예: 11:20:24ZN)
+		clr = self.options.clrtexts
+		if self.bw:
+			clr = (0, 0, 0)
+
+		# 위치: 화면 안쪽 여백
+		x = self.w/25
+		y = self.h/25
+
+		# 줄 간격
+		_, h = self.fntBigText.getsize("Ag")
+		dy = h * 1.1
+
+		# 날짜 문자열 (월은 현지화)
+		sign = '-' if self.chart.time.bc else ''
+		month_txt = common.common.months[self.chart.time.origmonth - 1]
+		date_txt = f"{sign}{self.chart.time.origyear}.{month_txt}.{str(self.chart.time.origday).zfill(2)}."
+
+		# 시간 표기 + 기준(ZN/UT/LC) 현지화
+		ztxt = mtexts.txts['UT']
+		if self.chart.time.zt == chart.Time.ZONE:
+			ztxt = mtexts.txts['ZN']
+		elif self.chart.time.zt == chart.Time.LOCALMEAN or self.chart.time.zt == chart.Time.LOCALAPPARENT:
+			ztxt = mtexts.txts['LC']
+		time_txt = f"{str(self.chart.time.hour).zfill(2)}:{str(self.chart.time.minute).zfill(2)}:{str(self.chart.time.second).zfill(2)}, {ztxt}"
+
+		# 출력
+		self.draw.text((x, y),            date_txt, fill=clr, font=self.fntBigText)
+		self.draw.text((x, y + dy),       time_txt, fill=clr, font=self.fntBigText)
+
+	def drawChartPlaceBottomLeft(self):
+		# 좌하단: 윗줄 = 장소명(그대로), 아랫줄 = 좌표(예: 126°55'E, 37°31N)
+		clr = self.options.clrtexts
+		if self.bw:
+			clr = (0, 0, 0)
+
+		x = self.w/25
+		# 하단 기준선 맞추기 (housesystem 텍스트 위치와 균형)
+		base_y = self.h - self.h/20
+
+		# 줄 간격
+		_, h = self.fntBigText.getsize("Ag")
+		dy = h * 1.1
+
+		# 장소명(현지화 X)
+		name_txt = str(self.chart.place.place)
+
+		# 방위문자 현지화
+		dir_lon = mtexts.txts['E'] if self.chart.place.east  else mtexts.txts['W']
+		dir_lat = mtexts.txts['N'] if self.chart.place.north else mtexts.txts['S']
+
+		# 각도 표기(도°/분′), 초는 생략(원하면 동일한 방식으로 추가 가능)
+		lon_txt = (str(self.chart.place.deglon)).zfill(2) + self.deg_symbol + (str(self.chart.place.minlon)).zfill(2) + "'" + dir_lon
+		lat_txt = (str(self.chart.place.deglat)).zfill(2) + self.deg_symbol + (str(self.chart.place.minlat)).zfill(2) + "'" + dir_lat
+		coord_txt = f"{lon_txt}, {lat_txt}"
+
+		# 출력 (장소명 위줄, 좌표는 아래줄)
+		self.draw.text((x, base_y - dy),  name_txt,  fill=clr, font=self.fntBigText)
+		self.draw.text((x, base_y),       coord_txt, fill=clr, font=self.fntBigText)
 
 	def drawLines(self, deg, shift, r1, r2):
 		(cx, cy) = self.center.Get()

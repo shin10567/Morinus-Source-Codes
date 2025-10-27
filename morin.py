@@ -3835,7 +3835,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.2.5'
+		info.Version = '9.2.6'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
@@ -4031,7 +4031,7 @@ class MFrame(wx.Frame):
 			self.SetStatusText(txt, 2)
 			deg_symbol = u':'
 			t1 = mtexts.txts['Long']+'.: '
-			t2 = ' '+mtexts.txts['Lat']+'.: '
+			t2 = ', '+mtexts.txts['Lat']+'.: '
 			dirlontxt = mtexts.txts['E']
 			if not self.horoscope.place.east:
 				dirlontxt = mtexts.txts['W']
