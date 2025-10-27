@@ -40,6 +40,7 @@ class Options:
 		self.def_tablesize = self.tablesize = 0.75
 		self.def_planetarydayhour = self.planetarydayhour = True
 		self.def_housesystem = self.housesystem = True
+		self.def_information = self.information = True
 		self.transcendental = [True, True, True]
 		self.def_transcendental = self.transcendental[:]
 		self.def_shownodes = self.shownodes = True
@@ -447,6 +448,7 @@ class Options:
 		self.tablesize = self.def_tablesize
 		self.planetarydayhour = self.def_planetarydayhour
 		self.housesystem = self.def_housesystem
+		self.information = self.def_information
 		self.transcendental = self.def_transcendental[:]
 		self.shownodes = self.def_shownodes
 		self.aspectstonodes = self.def_aspectstonodes
@@ -695,6 +697,12 @@ class Options:
 			self.topocentric = pickle.load(f)
 			self.usetradfixstarnamespdlist = pickle.load(f)
 			self.netbook = pickle.load(f)
+			# 추가 필드(구버전 호환): Information
+			try:
+				self.information = pickle.load(f)
+			except Exception:
+				self.information = self.def_information
+
 			f.close()
 		except IOError:
 			res = False
@@ -1027,6 +1035,7 @@ class Options:
 			pickle.dump(self.topocentric, f)
 			pickle.dump(self.usetradfixstarnamespdlist, f)
 			pickle.dump(self.netbook, f)
+			pickle.dump(self.information, f)
 			f.close()
 			return True
 		except IOError:

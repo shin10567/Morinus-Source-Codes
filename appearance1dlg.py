@@ -219,6 +219,8 @@ class Appearance1Dlg(wx.Dialog):
 		planetarysizer.Add(self.planetarydayhour, 1, wx.ALL, 2)
 		self.housesystem = wx.CheckBox(self, -1, mtexts.txts['Housesystem'])
 		planetarysizer.Add(self.housesystem, 1, wx.ALL, 2)
+		self.information = wx.CheckBox(self, -1, mtexts.txts['Information'])
+		planetarysizer.Add(self.information, 1, wx.ALL, 2)
 
 		vsizer.Add(planetarysizer, 0, wx.GROW|wx.RIGHT|wx.TOP, 5)
 
@@ -349,6 +351,7 @@ class Appearance1Dlg(wx.Dialog):
 		self.sizeslider.SetValue(opts.tablesize*100)
 		self.planetarydayhour.SetValue(opts.planetarydayhour)
 		self.housesystem.SetValue(opts.housesystem)
+		self.information.SetValue(opts.information)
 
 		self.uranusckb.SetValue(opts.transcendental[chart.Chart.TRANSURANUS])
 		self.neptuneckb.SetValue(opts.transcendental[chart.Chart.TRANSNEPTUNE])
@@ -477,6 +480,10 @@ class Appearance1Dlg(wx.Dialog):
 
 		if opts.housesystem != self.housesystem.GetValue():
 			opts.housesystem = self.housesystem.GetValue()
+			changed = True
+			
+		if opts.information != self.information.GetValue():
+			opts.information = self.information.GetValue()
 			changed = True
 
 		if opts.transcendental[chart.Chart.TRANSURANUS] != self.uranusckb.GetValue():

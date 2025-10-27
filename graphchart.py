@@ -408,8 +408,10 @@ class GraphChart:
 		if self.options.housesystem:
 			self.drawHousesystemName()
 		# chart meta labels (inside wheel)
-		self.drawChartTimeTopLeft()
-		self.drawChartPlaceBottomLeft()
+		# chart meta labels (inside wheel)
+		if getattr(self.options, 'information', True):
+			self.drawChartTimeTopLeft()
+			self.drawChartPlaceBottomLeft()
 
 		if self.chart2 == None and self.planetaryday and self.options.showfixstars != options.Options.NONE: #If planetaryday is True => radix chart
 			if self.options.showfixstars == options.Options.FIXSTARS:
