@@ -401,9 +401,11 @@ class GraphChart:
 			if self.options.houses:
 				self.drawHousePos()
 
-		if self.options.planetarydayhour and self.planetaryday:
+		#if self.options.planetarydayhour and self.planetaryday:
+		if self.options.planetarydayhour:
 			self.drawPlanetaryDayAndHour()
-		if self.options.housesystem and self.planetaryday:
+		#if self.options.housesystem and self.planetaryday:
+		if self.options.housesystem:
 			self.drawHousesystemName()
 		# chart meta labels (inside wheel)
 		self.drawChartTimeTopLeft()
@@ -1066,6 +1068,14 @@ class GraphChart:
 		x = self.w-self.w/8
 		y = self.h/25
 		size = self.symbolSize/4*3
+		# Planetary Hours 보장: ph가 없으면 정확 계산으로 즉시 생성
+		if getattr(self.chart.time, 'ph', None) is None:
+			try:
+				self.chart.time.calcPHs(self.chart.place)
+			except Exception:
+				return
+		if getattr(self.chart.time, 'ph', None) is None:
+			return
 
 		# 일주/시주 행성 인덱스
 		idx_day  = ar[self.chart.time.ph.weekday]
