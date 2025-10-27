@@ -362,13 +362,14 @@ class MFrame(wx.Frame):
 		self.mcharts.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
 		self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 		self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
-		self.mcharts.Append(self.ID_Revolutions,     mtexts.menutxts['PMRevolutions'],     mtexts.menutxts['PMRevolutionsDoc'])
 
 		# Secondary Progressions 서브메뉴(기존 그대로)
 		self.csecprog = wx.Menu()
 		self.csecprog.Append(self.ID_SecProgChart,     mtexts.menutxts['PMSecondaryDirs'],    mtexts.menutxts['PMSecondaryDirsDoc'])
 		self.csecprog.Append(self.ID_SecProgPositions, mtexts.menutxts['PMPositionForDate'],  mtexts.menutxts['PMPositionForDateDoc'])
 		self.mcharts.Append(self.ID_SecProgMenu, mtexts.txts['SecondaryDirs'], self.csecprog)
+
+		self.mcharts.Append(self.ID_Revolutions,     mtexts.menutxts['PMRevolutions'],     mtexts.menutxts['PMRevolutionsDoc'])
 
 		# Transits 서브메뉴 신설
 		self.ctransits = wx.Menu()
@@ -3207,13 +3208,14 @@ class MFrame(wx.Frame):
 				self.mcharts.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
 				self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 				self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
-				self.mcharts.Append(self.ID_Revolutions,     mtexts.menutxts['PMRevolutions'],     mtexts.menutxts['PMRevolutionsDoc'])
 
 				# Secondary Progressions 서브메뉴(기존 그대로)
 				self.csecprog = wx.Menu()
 				self.csecprog.Append(self.ID_SecProgChart,     mtexts.menutxts['PMSecondaryDirs'],    mtexts.menutxts['PMSecondaryDirsDoc'])
 				self.csecprog.Append(self.ID_SecProgPositions, mtexts.menutxts['PMPositionForDate'],  mtexts.menutxts['PMPositionForDateDoc'])
 				self.mcharts.Append(self.ID_SecProgMenu, mtexts.txts['SecondaryDirs'], self.csecprog)
+				
+				self.mcharts.Append(self.ID_Revolutions,     mtexts.menutxts['PMRevolutions'],     mtexts.menutxts['PMRevolutionsDoc'])
 
 				# Transits 서브메뉴 신설
 				self.ctransits = wx.Menu()
