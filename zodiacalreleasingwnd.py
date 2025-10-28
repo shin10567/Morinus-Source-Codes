@@ -128,7 +128,7 @@ class ZRWnd(commonwnd.CommonWnd):
         head_y = BOR + self.INFO_H
         draw.rectangle(((BOR, head_y), (BOR+self.TITLE_W, head_y+self.HEAD_H)),
                        fill=bkg)
-        heads = (u"Lv.", mtexts.txts["Signs"], mtexts.txts["Start"], mtexts.txts["Length"])
+        heads = (u"Lv.", mtexts.txts["TopicalSign"], mtexts.txts["Start"], mtexts.txts["Length"])
         x = BOR
         for i,h in enumerate(heads):
             tw, th = draw.textsize(h, self.fntText)
@@ -399,7 +399,7 @@ class ZRDrillWnd(commonwnd.CommonWnd):
         # 헤더
         head_y = BOR
         draw.rectangle(((BOR, head_y),(BOR+self.TITLE_W, head_y+self.HEAD_H)), outline=tbl, fill=bkg)
-        heads = (u"Lv.", mtexts.txts["Signs"], mtexts.txts["Start"], mtexts.txts["Length"])
+        heads = (u"Lv.", mtexts.txts["TopicalSign"], mtexts.txts["Start"], mtexts.txts["Length"])
         x = BOR
         for i,h in enumerate(heads):
             tw, th = draw.textsize(h, self.fntText)

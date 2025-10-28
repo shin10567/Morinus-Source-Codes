@@ -50,7 +50,8 @@ menutxtseng = {'MHoroscope':'&Horoscope',
 'TMParanatellonta':'Paranatellonta\tCtrl+3', 'TMParanatellontaDoc':'Shows Planets and fixed stars on the 4 angles',
 'TMCircumambulation':'Circumambulations\tCtrl+4', 'TMCircumambulationDoc':'Shows distributions through the bounds',
 'TMFixStarAngleDirs':'Angular Directions of Fixed Stars\tCtrl+5', 'TMFixStarAngleDirsDoc':'Shows mundane fixed stars hitting Asc, Dsc, MC, IC.',
-'TMEclipses':'Eclipses\tCtrl+6', 'TMEclipsesDoc':'Shows solar and lunar eclipses',
+'TMEclipses':'Eclipses\tCtrl+6', 'TMEclipsesDoc':'Shows solar and lunar eclipses.',
+'TMDecennials':'Decennials\tCtrl+7', 'TMDecennialsDoc':'Shows decennials using 30-day schematic months. L3/L4 use the Valens method.',
 
 'MCharts':'&Charts', 
 'PMTransits':'Transits\tShift+Ctrl+F1', 'PMTransitsDoc':'Transit for a given date', 
@@ -139,7 +140,7 @@ menutxtseng.update({
 	'TMCustomerSpeculumDoc':'Shows the speculum of the given ecliptic point.',
 	'TMFirdariaDoc':'Shows firdaria.',
 	'TMDodecatemoriaDoc':'Shows dodecatemoria.',
-	'TMAngleAtBirthDoc':'Shows fixed stars meeting the Asc, Dsc, MC, IC.',
+	'TMAngleAtBirthDoc':'Shows fixed stars meeting the four angles.',
 	'TMPrimaryDirsDoc':'Displays a list of primary directions.',
 	'TMZodiacalReleasingDoc':'Shows zodiacal releasing.',
 	'TMPhasisDoc':'Shows heliacal visibility.',
@@ -493,6 +494,7 @@ menutxtshun = {'MHoroscope':u'&Horoszkóp', 'HMNew':u'&Új\tCtrl+U', 'HMNewDoc':
 'TMParanatellonta':'Paranatellontában\tCtrl+3', 'TMParanatellontaDoc':'Bolygók és csillagok a négy szögben',
 'TMCircumambulation':'körüljárás\tCtrl+4', 'TMCircumambulationDoc':'Elosztás a határokon keresztül (igazi felemelkedés)',
 'TMFixStarAngleDirs':'A rögzített csillagok szögi irányai\tCtrl+5', 'TMFixStarAngleDirsDoc':'Világi rögzített csillagok ütköző ASC/MC/DSC/IC (Naibod)',
+'TMDecennials':u'Decenniák\tCtrl+7', 'TMDecennialsDoc':u'30 napos sémás hónapokkal számolt decenniák megjelenítése. L3/L4: Valens-módszer.',
 'MCharts':u'Dia&gramok',
 'PMTransits':u'Tranzitok\tShift+Ctrl+F1', 'PMTransitsDoc':u'Tranzit adott dátumra', 
 'PMRevolutions':u'Revolúciók\tShift+Ctrl+F2', 'PMRevolutionsDoc':u'Revolúciók megtekintése', 
@@ -852,6 +854,7 @@ menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N'
 'TMParanatellonta':'Паранателлонта\tCtrl+3', 'TMParanatellontaDoc':'Планеты и фиксированные звезды под четырьмя углами',
 'TMCircumambulation':'Обращение\tCtrl+4', 'TMCircumambulationDoc':'Распределение через границы (истинное вознесение)',
 'TMFixStarAngleDirs':'Угольные направления фиксированных звезд\tCtrl+5', 'TMFixStarAngleDirsDoc':'Минданные фиксированные звезды, поражающие ASC/MC/DSC/IC (Найбуд)',
+'TMDecennials':'Децении\tCtrl+7', 'TMDecennialsDoc':'Показывает децении, рассчитанные по схематическим месяцам по 30 дней. Уровни L3/L4 — по методу Валента.',
 'MCharts':u'&Карты', 
 'PMTransits':u'Транзиты\tShift+Ctrl+F1', 'PMTransitsDoc':u'Транзиты на заданный день', 
 'PMRevolutions':u'Возвращения\tShift+Ctrl+F2', 'PMRevolutionsDoc':u'Рассчитать возвращение', 
@@ -1209,6 +1212,8 @@ menutxtsesp = {'MHoroscope':u'&Horóscopo', 'HMNew':u'&Nuevo\tCtrl+N', 'HMNewDoc
 'TMParanatellonta':'Paranatellonta\tCtrl+3', 'TMParanatellontaDoc':'Planetas y estrellas fijas en los 4 ángulos',
 'TMCircumambulation':'Circumambulación\tCtrl+4', 'TMCircumambulationDoc':'Distribuciones a través de los límites (verdadera ascensión)',
 'TMFixStarAngleDirs':'Direcciones angulares de estrellas fijas\tCtrl+5', 'TMFixStarAngleDirsDoc':'Estrellas fijas mundanas golpeando ASC/MC/DSC/IC (Naibod)',
+'TMDecennials':'Decenios\tCtrl+7', 'TMDecennialsDoc':'Muestra los decenios con meses esquemáticos de 30 días. L3/L4 usan el método de Valens.',
+
 'MCharts':u'&Cartas', 
 'PMTransits':u'Tránsitos\tShift+Ctrl+F1', 'PMTransitsDoc':u'Tránsitos para una fecha dada', 
 'PMRevolutions':u'Revoluciones\tShift+Ctrl+F2', 'PMRevolutionsDoc':u'Calcular revoluciones', 
@@ -1564,6 +1569,7 @@ menutxtsita = {'MHoroscope':u'&Oroscopo',
 'TMParanatellonta':'Paranatellonta\tCtrl+3', 'TMParanatellontaDoc':'Pianeti e stelle fisse sui 4 angoli',
 'TMCircumambulation':'Circumambulazione\tCtrl+4', 'TMCircumambulationDoc':'Distribuzioni attraverso i confini (vera ascensione)',
 'TMFixStarAngleDirs':'Direzioni angolari delle stelle fisse\tCtrl+5', 'TMFixStarAngleDirsDoc':'Stelle fisse mondane che colpiscono ASC/MC/DSC/IC (Naibod)',
+'TMDecennials':'Decennali\tCtrl+7', 'TMDecennialsDoc':'Mostra i decennali con mesi schematici di 30 giorni. L3/L4 usano il metodo di Valens.',
 'MCharts':u'&Carte',
 'PMTransits':u'Transiti\tShift+Ctrl+F1', 'PMTransitsDoc':u'Transiti per una data a scelta',
 'PMRevolutions':u'Rivoluzione solare\tShift+Ctrl+F2', 'PMRevolutionsDoc':u'Calcola la rivoluzione',
@@ -1924,6 +1930,7 @@ menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':
 'TMParanatellonta':'Paranatellonte\tCtrl+3', 'TMParanatellontaDoc':'Planètes et étoiles fixes sur les 4 angles',
 'TMCircumambulation':'Circumambulation\tCtrl+4', 'TMCircumambulationDoc':'Distributions à travers les limites (vraie ascension)',
 'TMFixStarAngleDirs':'Directions angulaires des étoiles fixes\tCtrl+5', 'TMFixStarAngleDirsDoc':'Étoiles fixes mondaines frappant ASC/MC/DSC/IC (Naibod)',
+'TMDecennials':'Décennales\tCtrl+7', 'TMDecennialsDoc':"Affiche les décennales avec des mois schématiques de 30 jours. L3/L4 utilisent la méthode de Valens.",
 'MCharts':u'&Cartes', 
 'PMTransits':u'Transits\tShift+Ctrl+F1', 'PMTransitsDoc':u'Transit pour une date donnée', 
 'PMRevolutions':u'Révolutions\tShift+Ctrl+F2', 'PMRevolutionsDoc':u'Calculs de révolutions', 
@@ -2278,6 +2285,7 @@ menutxtschs = {'MHoroscope':'(&H)星盘',
 'TMParanatellonta':'汇点(Paranatellonta)\tCtrl+3', 'TMParanatellontaDoc':'四角上的行星和恒星',
 'TMCircumambulation':'绕行\tCtrl+4', 'TMCircumambulationDoc':'通过边界的分布(真升天)',
 'TMFixStarAngleDirs':'恒星的角推运\tCtrl+5', 'TMFixStarAngleDirsDoc':'芒多中恒星与 ASC/MC/DSC/IC 相合(耐保德)',
+'TMDecennials':'十年限\tCtrl+7', 'TMDecennialsDoc':'显示采用30天示意月的十年限 L3/L4 使用瓦伦斯方法',
 'MCharts':'(&C)星盘',
 'PMTransits':'行运\tShift+Ctrl+F1', 'PMTransitsDoc':'为给定的日期行运',
 'PMRevolutions':'返照\tShift+Ctrl+F2', 'PMRevolutionsDoc':'计算返照',
@@ -2329,7 +2337,7 @@ menutxtschs = {'MHoroscope':'(&H)星盘',
 'HEMHelp':'(&L)帮助\tAlt+L', 'HEMHelpDoc':'帮助',
 'HEMAbout':'(&A)关于\tAlt+A', 'HEMAboutDoc':'关于程序的信息'}
 menutxtschs.setdefault('TMEclipses', u'日月食\tCtrl+6')
-menutxtschs.setdefault('TMEclipsesDoc', u'以表格显示星盘日期前后一年的日/月食。')
+menutxtschs.setdefault('TMEclipsesDoc', u'以表格显示星盘日期前后一年的日/月食')
 
 
 menutxtscht = {'MHoroscope':'(&H)星盤',
@@ -2381,6 +2389,7 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 'TMParanatellonta':'汇点(Paranatellonta)\tCtrl+3', 'TMParanatellontaDoc':'四角上的行星和恒星',
 'TMCircumambulation':'绕行\tCtrl+4', 'TMCircumambulationDoc':'通过边界的分布(真升天)',
 'TMFixStarAngleDirs':'恒星的角推运\tCtrl+5', 'TMFixStarAngleDirsDoc':'芒多中恒星与 ASC/MC/DSC/IC 相合(耐保德)',
+'TMDecennials':'十年限\tCtrl+7', 'TMDecennialsDoc':'顯示以30天示意月計算的十年限 L3/L4 使用瓦倫斯法',
 'MCharts':'(&C)星盤',
 'PMTransits':'行運\tShift+Ctrl+F1', 'PMTransitsDoc':'為給定的日期行運',
 'PMRevolutions':'返照\tShift+Ctrl+F2', 'PMRevolutionsDoc':'計算返照',
@@ -2432,7 +2441,7 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 'HEMHelp':'(&L)幫助\tAlt+L', 'HEMHelpDoc':'幫助',
 'HEMAbout':'(&A)關於\tAlt+A', 'HEMAboutDoc':'關於程序的信息'}
 menutxtscht.setdefault('TMEclipses', u'日月食\tCtrl+6')
-menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食。')
+menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食')
 
 txtschs = {'HourLord':u'時主星',
 'TimeLords':u'时间主宰',
@@ -2688,9 +2697,6 @@ txtschs.setdefault('LoFLocked',        u'此处无法修改、删除或停用福
 txtschs.setdefault('RemovedExceptLoF', u'已删除除福点外的所有点。')
 txtschs.setdefault('NoPartsToRemove',  u'没有可删除的点（保留福点）。')
 txtschs.setdefault('RE', u'引用')             # Chinese (Simplified)
-
-
-
 
 txtscht = {'HourLord':u'時主星',
 'TimeLords':u'時間主宰',
@@ -3015,13 +3021,14 @@ menutxtsko = {'MHoroscope':u'천궁도',
 # ############### V 8.0.1
 'TMDodecatemoria':u'도데카테모리아\tCtrl+F10', 'TMDodecatemoriaDoc':u'도데카테모리아를 보여줍니다.',
 # ###############
-'TMAngleAtBirth':u'앵글 앳 버스\tCtrl+F11', 'TMAngleAtBirthDoc':u'상승점, 하강점, 중천점, 천저점에 항성이 실제로 만나는지 보여줍니다.',
+'TMAngleAtBirth':u'앵글 앳 버스\tCtrl+F11', 'TMAngleAtBirthDoc':u'4개의 앵글에 항성이 실제로 만나는지 보여줍니다.',
 'TMPrimaryDirs':u'프라이머리 디렉션\tCtrl+F12', 'TMPrimaryDirsDoc':u'프라이머리 디렉션의 표를 보여줍니다.',
 'TMZodiacalReleasing':u'조디어컬 릴리징\tCtrl+1', 'TMZodiacalReleasingDoc':u'조디어컬 릴리징을 보여줍니다.',
 'TMPhasis':u'헬리어컬 라이징과 세팅\tCtrl+2', 'TMPhasisDoc':u'태양 근처 행성들이 언제 처음 관측되거나 언제 마지막으로 관측되는지 보여줍니다.',
 'TMParanatellonta':u'파라나텔론타\tCtrl+3', 'TMParanatellontaDoc':u'행성들과 항성들이 4개의 앵글에 동시에 만나는 쌍을 보여줍니다.',
 'TMCircumambulation':u'서컴앰뷸레이션\tCtrl+4', 'TMCircumambulationDoc':u'상승점이 이동하며 어느 텀에 들어가거나 어떤 행성과 각을 맺는지를 보여줍니다.',
 'TMFixStarAngleDirs':u'항성의 앵글 디렉션\tCtrl+5', 'TMFixStarAngleDirsDoc':u'항성의 먼데인 앵글 디렉션을 보여줍니다.',
+'TMDecennials':u'데세니얼\tCtrl+7', 'TMDecennialsDoc':u'30일 달을 사용하는 데세니얼을 보여줍니다. L3/L4는 발렌스 방식을 사용합니다.',
 
 'MCharts':u'차트',
 'PMTransits':u'트랜짓\tShift+Ctrl+F1', 'PMTransitsDoc':u'주어진 날짜의 트랜짓 차트를 보여줍니다.',

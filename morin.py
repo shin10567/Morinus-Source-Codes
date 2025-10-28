@@ -228,6 +228,7 @@ class MFrame(wx.Frame):
 		self.ID_Paranatellonta = 138
 		self.ID_Circumambulation = 139
 		self.ID_Eclipses = 186
+		self.ID_Decennials = 187
 		self.ID_FixStarAngleDirs = 185  # Angular directions of fixed stars
 		#Charts-menu
 		self.ID_Transits, self.ID_Revolutions, self.ID_SunTransits, self.ID_SecondaryDirs, self.ID_Elections, self.ID_SquareChart, self.ID_ProfectionsChart, self.ID_MundaneChart = range(140, 148)
@@ -345,6 +346,7 @@ class MFrame(wx.Frame):
 		self.ttimelords.Append(self.ID_Firdaria,           mtexts.menutxts['TMFirdaria'],           mtexts.menutxts['TMFirdariaDoc'])
 		self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
 		self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
+		self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 		self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
 
 		# Primary Directions
@@ -558,6 +560,7 @@ class MFrame(wx.Frame):
 		self.Bind(wx.EVT_MENU, self.onPhasis, id=self.ID_Phasis)
 		self.Bind(wx.EVT_MENU, self.onParanatellonta, id=self.ID_Paranatellonta)
 		self.Bind(wx.EVT_MENU, self.onCircumambulation, id=self.ID_Circumambulation)
+		self.Bind(wx.EVT_MENU, self.onDecennials, id=self.ID_Decennials)
 		self.Bind(wx.EVT_MENU, self.onFixStarAngleDirs, id=self.ID_FixStarAngleDirs)
 		self.Bind(wx.EVT_MENU, self.onEclipses, id=self.ID_Eclipses)
 		self.Bind(wx.EVT_MENU, self.onTransits, id=self.ID_Transits)
@@ -1729,6 +1732,20 @@ class MFrame(wx.Frame):
 			try:
 				import zodiacalreleasingframe
 				fr = zodiacalreleasingframe.ZRFrame(self, self.title, self.horoscope, self.options)
+				fr.Show(True)
+			finally:
+				del wait
+	def onDecennials(self, event):
+		if self.horoscope.time.bc:
+			dlgm = wx.MessageDialog(self, mtexts.txts['NotAvailable'], '', wx.OK|wx.ICON_INFORMATION)
+			dlgm.ShowModal(); dlgm.Destroy(); return
+		if wx.Platform == '__WXMSW__' and not self.splash:
+			self.handleStatusBar(True)
+		if not self.splash:
+			wait = wx.BusyCursor()
+			try:
+				import decennialsframe
+				fr = decennialsframe.DecennialsFrame(self, self.title, self.horoscope, self.options)
 				fr.Show(True)
 			finally:
 				del wait
@@ -3194,6 +3211,7 @@ class MFrame(wx.Frame):
 				self.ttimelords.Append(self.ID_Firdaria,           mtexts.menutxts['TMFirdaria'],           mtexts.menutxts['TMFirdariaDoc'])
 				self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
 				self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
+				self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 				self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
 
 				# Primary Directions
@@ -3835,7 +3853,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.2.6'
+		info.Version = '9.2.7'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
