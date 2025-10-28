@@ -364,9 +364,9 @@ class MFrame(wx.Frame):
 		self.chartsmenu2 = wx.Menu()
 		self.chartsmenu2.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
 		self.chartsmenu2.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+		self.chartsmenu2.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 		self.mcharts.Append(self.ID_ChartsMenu, mtexts.menutxts['MCharts'], self.chartsmenu2)
 
-		self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 		self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
 
 		# Secondary Progressions 서브메뉴(기존 그대로)
@@ -3229,9 +3229,9 @@ class MFrame(wx.Frame):
 				self.chartsmenu2 = wx.Menu()
 				self.chartsmenu2.Append(self.ID_SquareChart,     mtexts.menutxts['PMSquareChart'],     mtexts.menutxts['PMSquareChartDoc'])
 				self.chartsmenu2.Append(self.ID_MundaneChart,    mtexts.menutxts['PMMundane'],         mtexts.menutxts['PMMundaneDoc'])
+				self.chartsmenu2.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 				self.mcharts.Append(self.ID_ChartsMenu, mtexts.menutxts['MCharts'], self.chartsmenu2)
 
-				self.mcharts.Append(self.ID_Elections,       mtexts.menutxts['PMElections'],       mtexts.menutxts['PMElectionsDoc'])
 				self.mcharts.Append(self.ID_ProfectionsChart,mtexts.menutxts['PMProfections'],     mtexts.menutxts['PMProfectionsDoc'])
 
 				# Secondary Progressions 서브메뉴(기존 그대로)
