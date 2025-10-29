@@ -5,7 +5,9 @@ import chart
 import graphchart
 import graphchart2
 import mtexts
-
+import fixstars
+import arabicparts
+import syzygy
 
 class TransitWnd(wx.Window):
 	def __init__(self, parent, chrt, radix, options, mainfr, compound = False, id = -1, size = wx.DefaultSize):
@@ -14,6 +16,49 @@ class TransitWnd(wx.Window):
 		self.parent = parent
 		self.chart = chrt
 		self.radix = radix
+		# === ensure Arabic Parts / antiscia / fixstars for transit/revolution/election ===
+		try:
+			C = self.chart
+
+			# Arabic Parts ensure for non-radix charts (revolutions/elections/transits)
+			if not hasattr(self.chart, 'parts') or getattr(self.chart, 'parts') is None:
+				try:
+					C = self.chart
+					# syzygy가 없으면 먼저 확보
+					if not hasattr(C, 'syzygy') or C.syzygy is None:
+						C.syzygy = syzygy.Syzygy(C)
+
+					# ArabicParts 정식 생성자 호출
+					C.parts = arabicparts.ArabicParts(
+						C.options.arabicparts,
+						C.houses.ascmc,
+						C.planets,
+						C.houses,
+						C.houses.cusps,
+						C.fortune,
+						C.syzygy,
+						C.options
+					)
+				except Exception:
+					# 실패해도 크래시는 막고, 그리기 단계에서 자연스럽게 skip
+					self.chart.parts = None
+
+			# 2) Antiscia(antis/contra/dodec): 없으면 계산
+			if not getattr(C, 'antiscia', None) and hasattr(C, 'calcAntiscia'):
+				C.calcAntiscia()
+
+			# 3) Fixed stars 본체: 없으면 생성 (이미 뜬다 했으니 유지)
+			if not getattr(C, 'fixstars', None) or not getattr(getattr(C, 'fixstars', None), 'data', None):
+				import fixstars
+				C.fixstars = fixstars.FixStars(C.time.jd, 0, C.options.fixstars, C.obl[0])
+
+			# 4) Fixed stars aspect matrices: 없으면 계산
+			if not getattr(C, 'fsaspmatrix', None) and hasattr(C, 'calcFixStarAspMatrix'):
+				C.calcFixStarAspMatrix()
+		except Exception:
+			pass
+		# === end ensure block ===
+
 		self.options = options
 		self.mainfr = mainfr
 		self.compound = compound
@@ -36,6 +81,39 @@ class TransitWnd(wx.Window):
 
 
 	def drawBkg(self):
+		# ensure Arabic Parts / antiscia / fixstars for current chart (handles steppers)
+		try:
+			C = self.chart
+
+			if (not hasattr(C, 'parts')) or (getattr(C, 'parts') is None):
+				try:
+					if (not hasattr(C, 'syzygy')) or (C.syzygy is None):
+						C.syzygy = syzygy.Syzygy(C)
+					C.parts = arabicparts.ArabicParts(
+						C.options.arabicparts,
+						C.houses.ascmc,
+						C.planets,
+						C.houses,
+						C.houses.cusps,
+						C.fortune,
+						C.syzygy,
+						C.options
+					)
+				except Exception:
+					C.parts = None
+
+			if (not getattr(C, 'antiscia', None)) and hasattr(C, 'calcAntiscia'):
+				C.calcAntiscia()
+
+			if (not getattr(C, 'fixstars', None)) or (not getattr(getattr(C, 'fixstars', None), 'data', None)):
+				import fixstars
+				C.fixstars = fixstars.FixStars(C.time.jd, 0, C.options.fixstars, C.obl[0])
+
+			if (not getattr(C, 'fsaspmatrix', None)) and hasattr(C, 'calcFixStarAspMatrix'):
+				C.calcFixStarAspMatrix()
+		except Exception:
+			pass
+
 		gchart = None
 		if self.compound:
 			if self.options.theme == 0:

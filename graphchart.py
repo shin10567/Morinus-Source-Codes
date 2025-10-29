@@ -12,6 +12,7 @@ import mtexts
 import arabicparts
 import fortune
 import mtexts
+import hours
 
 class GraphChart:
 
@@ -40,7 +41,8 @@ class GraphChart:
 		self.deg01510len = 0.01
 		self.retrdiff = 0.01
 		if self.chart2 == None:
-			if self.planetaryday and self.options.showfixstars != options.Options.NONE: #If planetaryday is True => radix chart
+			#if self.planetaryday and self.options.showfixstars != options.Options.NONE: #If planetaryday is True => radix chart
+			if self.options.showfixstars != options.Options.NONE:
 				self.symbolSize = self.maxradius/16
 				self.signSize = self.maxradius/20
 				self.planetsectorlen = 0.15
@@ -327,56 +329,76 @@ class GraphChart:
 			if self.options.showlof and self.options.showaspectstolof:
 				self.drawLoFAspectLines()
 
-		if self.chart2 == None and self.planetaryday and self.options.showfixstars != options.Options.NONE: #If planetaryday is True => radix chart
+		#if self.chart2 == None and self.planetaryday and self.options.showfixstars != options.Options.NONE:  # radix 차트
+		if self.chart2 == None and self.options.showfixstars != options.Options.NONE:
 			if self.options.showfixstars == options.Options.FIXSTARS:
 				self.showfss = self.mergefsaspmatrices()
-				self.fsshift = self.arrangefs(self.chart.fixstars.data, self.showfss, self.rFixstars)
-				self.fsyoffs = self.arrangeyfs(self.chart.fixstars.data, self.fsshift, self.showfss, self.rFixstars)
-				#PIL doesn't want to show short lines
-				self.drawFixstarsLines(self.showfss)
-			elif self.options.showfixstars == options.Options.DODECATEMORIA:
-				self.pshiftantis = self.arrangeAntis(self.chart.antiscia.pldodecatemoria, self.chart.antiscia.lofdodec, self.chart.antiscia.ascmcdodec, self.rAntis)
-				self.drawAntisLines(self.chart.antiscia.pldodecatemoria, self.chart.antiscia.lofdodec, self.chart.antiscia.ascmcdodec, self.pshiftantis, self.r30, self.rAntisLines)
-			elif self.options.showfixstars == options.Options.ANTIS:
-				self.pshiftantis = self.arrangeAntis(self.chart.antiscia.plantiscia, self.chart.antiscia.lofant, self.chart.antiscia.ascmcant, self.rAntis)
-				self.drawAntisLines(self.chart.antiscia.plantiscia, self.chart.antiscia.lofant, self.chart.antiscia.ascmcant, self.pshiftantis, self.r30, self.rAntisLines)
-			elif self.options.showfixstars == options.Options.CANTIS:
-				self.pshiftantis = self.arrangeAntis(self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.rAntis)
-				self.drawAntisLines(self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.pshiftantis, self.r30, self.rAntisLines)
-			elif self.options.showfixstars == options.Options.ARABICPARTS:
-				if self.chart.parts and self.chart.parts.parts:
-					# 1) AP 원본을 복사하고, 포르투나를 같은 포맷으로 추가
-					parts_ap = list(self.chart.parts.parts)
+				fsdata = getattr(getattr(self.chart, 'fixstars', None), 'data', None)
+				if fsdata:
+					self.fsshift = self.arrangefs(fsdata, self.showfss, self.rFixstars)
+					# (있다면) 아래 두 줄도 fsdata가 있을 때만 호출
 					try:
-						lof_lon  = self.chart.fortune.fortune[fortune.Fortune.LON]
-						lof_name = mtexts.txts.get('LotOfFortune', 'Fortuna')
-						parts_ap.append({
-							arabicparts.ArabicParts.LONG: lof_lon,
-							arabicparts.ArabicParts.NAME: lof_name,
-						})
+						self.drawFixstarsLines(self.showfss)
+						self.drawFixstars(self.showfss)
 					except Exception:
-						pass  # 포르투나가 없으면 그냥 AP만
-
-					# 2) 이후 로직은 전부 이 확장 리스트(parts_ap)를 기준으로
-					self._parts_ap = parts_ap
-					self.apshow  = list(range(len(parts_ap)))
-					rText = (self.rOuterLine + self.symbolSize * 0.2)
-					self.apshift = self.arrangeParts(parts_ap, self.apshow, rText)
-					self.apyoffs = self.arrangeyParts(parts_ap, self.apshow, self.apshift, rText)
-
-					# 3) 바깥 원 연결선도 AP(=포르투나 포함) 기준으로 한 번만 그림
-					self.drawArabicPartsLines(parts_ap, self.apshow, self.apshift)
-
-					# ⚠️ 중요: 포르투나 전용 선은 더 이상 그리지 않음
-					# self.drawOuterFortuneLine()  # ← 이 줄은 삭제
+						pass
 				else:
-					# 사용자 설정 아라빅 파츠가 하나도 없을 때: 포르투나만 선으로 연결
-					# (AP 충돌 시 적용되던 바깥 휠 보정각은 0으로)
-					self._fortune_outer_shift = 0.0
-					self.drawOuterFortuneLine()
+					# 데이터가 없으면 고정성 블록 전체를 스킵
+					self.fsshift = []
 
-		#Convert to PIL (truetype-font is not supported in wxPython)
+				self.fsyoffs = self.arrangeyfs(self.chart.fixstars.data, self.fsshift, self.showfss, self.rFixstars)
+				self.drawFixstarsLines(self.showfss)
+
+			elif self.options.showfixstars == options.Options.ANTIS:
+				pl, lo, am = self._get_overlay_data('ANTIS')
+				self.pshiftantis = self.arrangeAntis(pl, lo, am, self.rAntis)
+				self.drawAntisLines(pl, lo, am, self.pshiftantis, self.r30, self.rAntisLines)
+
+			elif self.options.showfixstars == options.Options.DODECATEMORIA:
+				pl, lo, am = self._get_overlay_data('DODEC')
+				self.pshiftantis = self.arrangeAntis(pl, lo, am, self.rAntis)
+				self.drawAntisLines(pl, lo, am, self.pshiftantis, self.r30, self.rAntisLines)
+
+			elif self.options.showfixstars == options.Options.CANTIS:
+				pl, lo, am = self._get_overlay_data('CANTIS')
+				self.pshiftantis = self.arrangeAntis(pl, lo, am, self.rAntis)
+				self.drawAntisLines(pl, lo, am, self.pshiftantis, self.r30, self.rAntisLines)
+
+			elif self.options.showfixstars == options.Options.ARABICPARTS:
+				# Use Arabic Parts from the active wheel (outer if chart2 exists, else inner)
+				C = self.chart2 if self.chart2 is not None else self.chart
+				parts_obj = getattr(C, 'parts', None)
+				if parts_obj and getattr(parts_obj, 'parts', None):
+					parts_ap = list(parts_obj.parts)
+					try:
+						lof_lon  = C.fortune.fortune[fortune.Fortune.LON]
+						lof_name = mtexts.txts.get('LotOfFortune', 'Fortuna')
+						parts_ap.append({ arabicparts.ArabicParts.LONG: lof_lon,
+										arabicparts.ArabicParts.NAME: lof_name })
+					except Exception:
+						pass
+
+					if C is self.chart2:
+						self._parts_ap2 = parts_ap
+						self.apshow2    = list(range(len(parts_ap)))
+						_rText = (self.rOuterLine + self.symbolSize * 0.2)
+						self.apshift2   = self.arrangeParts(parts_ap, self.apshow2, _rText)
+						self.apyoffs2   = self.arrangeyParts(parts_ap, self.apshow2, self.apshift2, _rText)
+						self.drawArabicPartsLines(parts_ap, self.apshow2, self.apshift2, C)
+					else:
+						self._parts_ap = parts_ap
+						self.apshow    = list(range(len(parts_ap)))
+						_rText = (self.rOuterLine + self.symbolSize * 0.2)
+						self.apshift   = self.arrangeParts(parts_ap, self.apshow, _rText)
+						self.apyoffs   = self.arrangeyParts(parts_ap, self.apshow, self.apshift, _rText)
+						self.drawArabicPartsLines(parts_ap, self.apshow, self.apshift, C)
+				else:
+					self._fortune_outer_shift = 0.0
+					self.drawOuterFortuneLine(self.chart2 if self.chart2 is not None else self.chart)
+
+
 		wxImag = self.buffer.ConvertToImage()
+
 		self.img = Image.new('RGB', (wxImag.GetWidth(), wxImag.GetHeight()))
 		self.img.frombytes(wxImag.GetData())
 		self.draw = ImageDraw.Draw(self.img)
@@ -413,24 +435,41 @@ class GraphChart:
 			self.drawChartTimeTopLeft()
 			self.drawChartPlaceBottomLeft()
 
-		if self.chart2 == None and self.planetaryday and self.options.showfixstars != options.Options.NONE: #If planetaryday is True => radix chart
+		#if self.chart2 == None and self.planetaryday and self.options.showfixstars != options.Options.NONE:  # radix 차트
+		if self.chart2 == None and self.options.showfixstars != options.Options.NONE:
 			if self.options.showfixstars == options.Options.FIXSTARS:
 				self.drawFixstars(self.showfss)
-			elif self.options.showfixstars == options.Options.DODECATEMORIA:
-				self.drawAntis(self.chart, self.chart.antiscia.pldodecatemoria, self.chart.antiscia.lofdodec, self.chart.antiscia.ascmcdodec, self.pshiftantis, self.rAntis)
+
 			elif self.options.showfixstars == options.Options.ANTIS:
-				self.drawAntis(self.chart, self.chart.antiscia.plantiscia, self.chart.antiscia.lofant, self.chart.antiscia.ascmcant, self.pshiftantis, self.rAntis)
+				pl, lo, am = self._get_overlay_data('ANTIS')
+				self.drawAntis(self.chart, pl, lo, am, self.pshiftantis, self.rAntis)
+
+			elif self.options.showfixstars == options.Options.DODECATEMORIA:
+				pl, lo, am = self._get_overlay_data('DODEC')
+				self.drawAntis(self.chart, pl, lo, am, self.pshiftantis, self.rAntis)
+
 			elif self.options.showfixstars == options.Options.CANTIS:
-				self.drawAntis(self.chart, self.chart.antiscia.plcontraant, self.chart.antiscia.lofcontraant, self.chart.antiscia.ascmccontraant, self.pshiftantis, self.rAntis)
+				pl, lo, am = self._get_overlay_data('CANTIS')
+				self.drawAntis(self.chart, pl, lo, am, self.pshiftantis, self.rAntis)
 
 			elif self.options.showfixstars == options.Options.ARABICPARTS:
-				if self.chart.parts and self.chart.parts.parts:
-					self.drawArabicParts(self._parts_ap, self.apshow, self.apshift, self.apyoffs)
-				else:
-					# 아라빅 파츠가 0개일 때: 포르투나 텍스트만 바깥 wheel에 출력
-					self.drawOuterFortuneText()
+				# 외곽/내측 어디에 parts를 만들었는지에 따라 각각 그려준다.
+				drew = False
+				if hasattr(self, "_parts_ap2") and hasattr(self, "apshow2") and hasattr(self, "apshift2") and hasattr(self, "apyoffs2") and self.chart2 is not None:
+					# 외곽 휠(Transit/Return/Election/Secondary 등)에 생성된 아라빅 파츠
+					self.drawArabicParts(self._parts_ap2, self.apshow2, self.apshift2, self.apyoffs2, C=self.chart2)
+					drew = True
+				if hasattr(self, "_parts_ap") and hasattr(self, "apshow") and hasattr(self, "apshift") and hasattr(self, "apyoffs"):
+					# 내측(라딕스) 차트에 생성된 아라빅 파츠
+					self.drawArabicParts(self._parts_ap, self.apshow, self.apshift, self.apyoffs, C=self.chart)
+					drew = True
+				if not drew:
+					# 둘 다 없으면 포르투나만 텍스트로 표기
+					self.drawOuterFortuneText(self.chart2 if self.chart2 is not None else self.chart)
+
 
 		wxImg = wx.Image(self.img.size[0], self.img.size[1])
+
 		wxImg.SetData(self.img.tobytes())
 		self.buffer = wx.Bitmap(wxImg)
 
@@ -460,7 +499,8 @@ class GraphChart:
 			self.bdc.DrawCircle(cx, cy, self.rOuterHouse)
 
 		#r30 circle
-		if self.chart2 != None or (self.planetaryday and self.options.showfixstars != options.Options.NONE): #If planetaryday is True => radix chart
+		#if self.chart2 != None or (self.planetaryday and self.options.showfixstars != options.Options.NONE): #If planetaryday is True => radix chart
+		if self.chart2 != None or (self.options.showfixstars != options.Options.NONE):
 			clr = self.options.clrframe
 			if self.bw:
 				clr = (0,0,0)
@@ -591,7 +631,8 @@ class GraphChart:
 		self.drawLines(GraphChart.DEG1, asclon, self.r0, self.r1)
 
 		#Outer 10, 5, 1 -degs
-		if self.chart2 != None or (self.planetaryday and self.options.showfixstars != options.Options.NONE): #If planetaryday is True => radix chart
+		#if self.chart2 != None or (self.planetaryday and self.options.showfixstars != options.Options.NONE): #If planetaryday is True => radix chart
+		if self.chart2 != None or (self.options.showfixstars != options.Options.NONE):
 			#10-degs
 			clr = self.options.clrframe
 			if self.bw:
@@ -1066,24 +1107,64 @@ class GraphChart:
 		if self.bw:
 			clr_lbl = (0,0,0)
 
+		# 외측 차트가 있으면 외측 차트 기준으로 요일/시주 계산
+		C = self.chart2 if self.chart2 is not None else self.chart
+
+		# 요일 → 행성 인덱스 매핑 (Mon=0 … Sun=6)
 		ar = (1, 4, 2, 5, 3, 6, 0)
-		x = self.w-self.w/8
+
+		x = self.w - self.w/8
 		y = self.h/25
 		size = self.symbolSize/4*3
-		# Planetary Hours 보장: ph가 없으면 정확 계산으로 즉시 생성
-		if getattr(self.chart.time, 'ph', None) is None:
-			try:
-				self.chart.time.calcPHs(self.chart.place)
-			except Exception:
-				return
-		if getattr(self.chart.time, 'ph', None) is None:
+
+		# Planetary Hours 재계산: 리턴(GMT)이어도 '현지 기준' 일출/일몰로 강제
+		try:
+			# 기준 차트
+			# C = self.chart2 if self.chart2 is not None else self.chart  # (이미 위에서 계산됨)
+
+			# 경/위도(부호 포함)
+			lon = C.place.deglon + C.place.minlon/60.0
+			if not C.place.east:
+				lon *= -1
+			lat = C.place.deglat + C.place.minlat/60.0
+			if not C.place.north:
+				lat *= -1
+
+			# tz_hours 결정
+			if C.time.zt == chart.Time.ZONE:
+				tz_hours = (1 if C.time.plus else -1) * (C.time.zh + C.time.zm/60.0) + (1.0 if getattr(C.time, 'daylightsaving', False) else 0.0)
+			elif C.time.zt == chart.Time.LOCALMEAN:
+				tz_hours = lon / 15.0
+			elif C.time.zt == chart.Time.LOCALAPPARENT:
+				ret, te, serr = astrology.swe_time_equ(C.time.jd)  # te: day 단위
+				tz_hours = (lon / 15.0) + te*24.0
+			else:
+				# GREENWICH (리턴 차트 기본) → LMT로 보정해서 현지 일출/일몰 확보
+				tz_hours = lon / 15.0
+
+			# 현지 요일(월=0 … 일=6), JD 기반
+			offs = float(tz_hours) / 24.0
+			jd_local = C.time.jd + offs
+			weekday = int(math.floor(jd_local + 0.5)) % 7
+
+			# Planetary Hours 계산/갱신
+			C.time.ph = hours.PlanetaryHours(lon, lat, C.place.altitude, weekday, C.time.jd, tz_hours)
+		except Exception:
+			# 실패 시 기존 로직으로 폴백
+			if getattr(C.time, 'ph', None) is None:
+				try:
+					C.time.calcPHs(C.place)
+				except Exception:
+					return
+
+		if getattr(C.time, 'ph', None) is None:
 			return
 
-		# 일주/시주 행성 인덱스
-		idx_day  = ar[self.chart.time.ph.weekday]
-		idx_hour = self.chart.time.ph.planetaryhour
+		# 일주/시주 인덱스
+		idx_day  = ar[C.time.ph.weekday]
+		idx_hour = C.time.ph.planetaryhour
 
-		# 사용자 색 결정(옵션 켜져있고 BW가 아닐 때만)
+		# 사용자 행성색 적용 (가능할 때만)
 		if (not self.bw) and getattr(self.options, 'useplanetcolors', False):
 			try:
 				clr_day = self.options.clrindividual[idx_day]
@@ -1097,24 +1178,23 @@ class GraphChart:
 			clr_day  = clr_lbl
 			clr_hour = clr_lbl
 
-		# 출력: 기호는 사용자 색, 라벨은 라벨 색
-		# --- 줄 높이/패딩을 텍스트 실제 크기로 계산 ---
+		# 출력
 		glyph_day  = common.common.Planets[idx_day]
 		glyph_hour = common.common.Planets[idx_hour]
 
 		w_day,  h_icon_day  = self.fntMorinus2.getsize(glyph_day)
 		w_hour, h_icon_hour = self.fntMorinus2.getsize(glyph_hour)
-		_,      h_label     = self.fntBigText.getsize("Ag")  # 라벨 기준 높이
+		_,      h_label     = self.fntBigText.getsize("Ag")
 
-		line_h = int(max(h_icon_day, h_icon_hour, h_label) * 1.1)  # 날짜/시간 라벨과 동일한 규칙
+		line_h = int(max(h_icon_day, h_icon_hour, h_label) * 1.1)
 		pad_x  = int(self.symbolSize * 0.25)
-		w_icon = max(w_day, w_hour)  # 두 줄 아이콘 열 너비 동일화
+		w_icon = max(w_day, w_hour)
 
 		# 1행
 		self.draw.text((x, y), glyph_day, fill=clr_day, font=self.fntMorinus2)
-		self.draw.text((x + w_icon + pad_x, y), mtexts.txts['Day'], fill=clr_lbl, font=self.fntBigText)
+		self.draw.text((x + w_icon + pad_x, y), mtexts.txts['Day'],  fill=clr_lbl, font=self.fntBigText)
 
-		# 2행: y를 line_h만큼만 내린다
+		# 2행
 		y2 = y + line_h
 		self.draw.text((x, y2), glyph_hour, fill=clr_hour, font=self.fntMorinus2)
 		self.draw.text((x + w_icon + pad_x, y2), mtexts.txts['Hour'], fill=clr_lbl, font=self.fntBigText)
@@ -1346,6 +1426,9 @@ class GraphChart:
 
 
 	def drawFixstars(self, showfss):
+		if not hasattr(self.chart, 'fixstars') or not getattr(self.chart.fixstars, 'data', None):
+			return
+
 		(cx, cy) = self.center.Get()
 
 		clr = self.options.clrtexts
@@ -1382,6 +1465,9 @@ class GraphChart:
 
 
 	def drawFixstarsLines(self, showfss):
+		if not hasattr(self.chart, 'fixstars') or not getattr(self.chart.fixstars, 'data', None):
+			return
+
 		(cx, cy) = self.center.Get()
 
 		clr = self.options.clrframe
@@ -1511,7 +1597,8 @@ class GraphChart:
 		return fshift[:]
 
 
-	def drawArabicParts(self, parts, showidxs, fshift, yoffs):
+	def drawArabicParts(self, parts, showidxs, fshift, yoffs, C=None):
+		C = C or self.chart
 		(cx, cy) = self.center.Get()
 		clr = self.options.clrtexts if not self.bw else (0, 0, 0)
 
@@ -1519,7 +1606,8 @@ class GraphChart:
 			lon  = parts[idx][arabicparts.ArabicParts.LONG]
 			name = parts[idx][arabicparts.ArabicParts.NAME]
 
-			base = self.chart.houses.ascmc[houses.Houses.ASC] - lon
+			base = C.houses.ascmc[houses.Houses.ASC] - lon
+
 			ang = util.normalize(base - fshift[i])
 			rad = math.pi + math.radians(ang)
 
@@ -1539,11 +1627,14 @@ class GraphChart:
 			x, y, r_text = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize*0.10))
 			self.draw.text((x, y - h/2), name, fill=clr, font=self.fntText)
 
-	def drawOuterFortuneText(self):
-		if not hasattr(self.chart, "fortune") or self.chart.fortune is None:
+	def drawOuterFortuneText(self, C=None):
+		C = C or self.chart
+
+		# 기존에는 self.chart만 검사/사용해서 외곽 휠에서는 빠졌음 → C를 기준으로 사용
+		if not hasattr(C, "fortune") or C.fortune is None:
 			return
 		try:
-			lon = self.chart.fortune.fortune[fortune.Fortune.LON]
+			lon = C.fortune.fortune[fortune.Fortune.LON]
 		except Exception:
 			return
 
@@ -1551,7 +1642,7 @@ class GraphChart:
 		clr  = self.options.clrtexts if not self.bw else (0, 0, 0)
 		name = mtexts.txts.get('LotOfFortune', 'Fortuna')
 
-		base = self.chart.houses.ascmc[houses.Houses.ASC] - lon
+		base = C.houses.ascmc[houses.Houses.ASC] - lon
 		# ★ AP와의 충돌 시 포르투나는 반대 부호로 이동하도록, drawArabicPartsLines에서 저장한 값을 그대로 사용
 		ang  = util.normalize(base + getattr(self, "_fortune_outer_shift", 0.0))
 
@@ -1605,7 +1696,9 @@ class GraphChart:
 
 		self.draw.text((x, y - h/2), name, fill=clr, font=self.fntText)
 
-	def drawArabicPartsLines(self, parts, showidxs, fshift):
+	def drawArabicPartsLines(self, parts, showidxs, fshift, C=None):
+		C = C or self.chart
+
 		(cx, cy) = self.center.Get()
 		clr = self.options.clrframe if not self.bw else (0, 0, 0)
 		w = 2 if self.chartsize > GraphChart.MEDIUM_SIZE else 1
@@ -1622,7 +1715,7 @@ class GraphChart:
 		# 핵심: 시작점은 ‘원래 황경 각’(r30), 끝점은 ‘겹침 보정 후 라벨 각’(rOuterLine)
 		for i, idx in enumerate(showidxs):
 			lon  = parts[idx][arabicparts.ArabicParts.LONG]
-			base = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC] - lon)
+			base = util.normalize(C.houses.ascmc[houses.Houses.ASC] - lon)
 			#shift = fshift[i] + (self._af_split_deg if self._af_split_idx == i else 0.0)
 			shift = fshift[i]
 			rad_in  = math.pi + math.radians(base)                          # r30: 원래 황경
@@ -1659,16 +1752,22 @@ class GraphChart:
 			elif i == planets.Planets.PLANETS_NUM+2:
 				lon = ascmc[1].lon
 
-			ayanoffs = 0.0
+			selected_chart = (self.chart2 if self.chart2 is not None else self.chart)
+			base = selected_chart.houses.ascmc[houses.Houses.ASC]
 			if self.options.ayanamsha != 0:
-				ayanoffs = self.chart.ayanamsha
+				base = util.normalize(base - selected_chart.ayanamsha)
 
-			x1 = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-ayanoffs-lon))*r1
-			y1 = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-ayanoffs-lon))*r1
-			x2 = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-ayanoffs-lon-pshift[i]))*r2
-			y2 = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-ayanoffs-lon-pshift[i]))*r2
+			# 시작/끝 각도
+			ang1 = math.pi + math.radians(base - lon)
+			ang2 = math.pi + math.radians(base - lon - pshift[i])
+
+			# 라인 좌표
+			x1 = cx + math.cos(ang1) * r1
+			y1 = cy + math.sin(ang1) * r1
+			x2 = cx + math.cos(ang2) * r2
+			y2 = cy + math.sin(ang2) * r2
+
 			self.bdc.DrawLine(x1, y1, x2, y2)
-
 
 	def drawAntis(self, chrt, plnts, lof, ascmc, pshift, r):
 		(cx, cy) = self.center.Get()
@@ -1719,15 +1818,16 @@ class GraphChart:
 				if not self.bw:
 					clr = clrtxt
 
-			ayanoffs = 0.0
+			selected_chart = (self.chart2 if self.chart2 is not None else self.chart)
+			base = selected_chart.houses.ascmc[houses.Houses.ASC]
 			if self.options.ayanamsha != 0:
-				ayanoffs = self.chart.ayanamsha
+				base = util.normalize(base - selected_chart.ayanamsha)
 
-			x = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-ayanoffs-lon-pshift[i]))*r
-			y = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-ayanoffs-lon-pshift[i]))*r
-			
+			ang = math.pi + math.radians(base - lon - pshift[i])
+			x = cx + math.cos(ang) * r
+			y = cy + math.sin(ang) * r
+
 			self.draw.text((x-self.symbolSize/2, y-self.symbolSize/2), txt, fill=clr, font=fnt)
-
 
 	def arrange(self, plnts, frtn, rPlanet):
 		'''Arranges planets so they won't overlap each other'''
@@ -1896,9 +1996,98 @@ class GraphChart:
 
 		return new_x, new_y, new_r
 
+	# --- antiscia / contra-antiscia / dodecatemoria 안전 계산 ---
+	def _mk_lon_obj(self, lon):
+		class _O: pass
+		o = _O()
+		o.lon = util.normalize(lon)
+		return o
+
+	def _antis_lon(self, lon):
+		# 솔스티스 축(Cancer/Capricorn) 기준 반사 (antiscia.py 구현과 동일한 규칙)
+		L = util.normalize(lon)
+		if 90.0 < L < 270.0:
+			ant = util.normalize(270.0 + (270.0 - L))
+		elif L < 90.0:
+			ant = util.normalize(90.0 + (90.0 - L))
+		elif L > 270.0:
+			ant = util.normalize(270.0 - (L - 270.0))
+		else:  # 정확히 0 Cancer/Capricorn
+			ant = L
+
+		# 아야남샤 적용 시 antiscia.py처럼 반사 후 ayan 만큼 빼서 그려준다
+		if self.options.ayanamsha != 0:
+			C = self.chart2 if (self.chart2 is not None) else self.chart
+			ant = util.normalize(ant - C.ayanamsha)
+		return ant
+
+	def _contra_lon(self, lon):
+		return util.normalize(self._antis_lon(lon) + 180.0)
+
+	def _dodec_lon(self, lon):
+		# 사인 기준 12분할(12th-parts), 아야남샤 반영: (lon-ayan)을 12배 → 다시 ayan 더함
+		ayan = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
+		sid  = util.normalize(lon - ayan)
+		s    = int(sid / chart.Chart.SIGN_DEG)
+		d    = sid - s * chart.Chart.SIGN_DEG
+		return util.normalize(s * chart.Chart.SIGN_DEG + d * 12.0)
+
+	def _get_overlay_data(self, kind):
+		"""
+		kind: 'ANTIS' | 'CANTIS' | 'DODEC'
+		chart.antiscia 가 없거나 필드가 None이어도 즉석 계산해서 반환
+		반환: (pl_list, lof_obj, [asc_obj, mc_obj])  각각 .lon 속성 보유
+		"""
+		# chart2(바깥 휠)가 있으면 그것 기준으로, 없으면 chart(안쪽) 기준
+		C = self.chart2 if (self.chart2 is not None) else self.chart
+		has_antis = getattr(C, "antiscia", None)
+		if has_antis is None and hasattr(C, "calcAntiscia"):
+			try:
+				C.calcAntiscia()
+				has_antis = getattr(C, "antiscia", None)
+			except Exception:
+				has_antis = None
+
+		pl_lons = [C.planets.planets[i].data[planets.Planet.LONG]
+				   for i in range(planets.Planets.PLANETS_NUM)]
+		lof_lon = C.fortune.fortune[fortune.Fortune.LON]
+		asc_lon = C.houses.ascmc[houses.Houses.ASC]
+		mc_lon  = C.houses.ascmc[houses.Houses.MC]
+
+		def pick(calc_fn, attr):
+			return getattr(has_antis, attr) if (has_antis is not None and hasattr(has_antis, attr)) else calc_fn()
+
+		if kind == 'ANTIS':
+			pl = pick(lambda: [self._mk_lon_obj(self._antis_lon(l)) for l in pl_lons], "plantiscia")
+			lo = pick(lambda: self._mk_lon_obj(self._antis_lon(lof_lon)),         "lofant")
+			am = pick(lambda: [self._mk_lon_obj(self._antis_lon(asc_lon)),
+							   self._mk_lon_obj(self._antis_lon(mc_lon))],       "ascmcant")
+		elif kind == 'CANTIS':
+			pl = pick(lambda: [self._mk_lon_obj(self._contra_lon(l)) for l in pl_lons], "plcontraant")
+			lo = pick(lambda: self._mk_lon_obj(self._contra_lon(lof_lon)),            "lofcontraant")
+			am = pick(lambda: [self._mk_lon_obj(self._contra_lon(asc_lon)),
+							   self._mk_lon_obj(self._contra_lon(mc_lon))],        "ascmccontraant")
+		elif kind == 'DODEC':
+			pl = pick(lambda: [self._mk_lon_obj(self._dodec_lon(l)) for l in pl_lons], "pldodecatemoria")
+			lo = pick(lambda: self._mk_lon_obj(self._dodec_lon(lof_lon)),             "lofdodec")
+			am = pick(lambda: [self._mk_lon_obj(self._dodec_lon(asc_lon)),
+							   self._mk_lon_obj(self._dodec_lon(mc_lon))],         "ascmcdodec")
+		else:
+			pl = [self._mk_lon_obj(l) for l in pl_lons]
+			lo = self._mk_lon_obj(lof_lon)
+			am = [self._mk_lon_obj(asc_lon), self._mk_lon_obj(mc_lon)]
+
+		return pl, lo, am
 
 	def mergefsaspmatrices(self):
 		showfss = []
+		# Revolution/Election 등에서 fsaspmatrix가 없을 수 있음 → 안전 가드
+		if not hasattr(self.chart, 'fsaspmatrix') or self.chart.fsaspmatrix is None:
+			# 매트릭스가 없으면 일단 모든 항성을 후보로 (겹침 정렬 로직은 그대로 작동)
+			try:
+				return list(range(len(self.chart.fixstars.data)))
+			except Exception:
+				return []
 
 		num = len(self.chart.fsaspmatrix)
 		for i in range(num):
@@ -2101,6 +2290,50 @@ class GraphChart:
 
 		return shifted
 
+		class _LonOnly:
+			def __init__(self, lon):
+				self.lon = util.normalize(lon)
+
+	def _dodec_from_lon_with_ayan(self, lon):
+		ayan = self.chart.ayanamsha if self.options.ayanamsha != 0 else 0.0
+		sid  = util.normalize(lon - ayan)
+		s    = int(sid / chart.Chart.SIGN_DEG)
+		d    = sid - s * chart.Chart.SIGN_DEG
+		return util.normalize(s * chart.Chart.SIGN_DEG + d * 12.0)
+
+	def _build_dodec_overlay(self, C):
+		# C: chart 또는 chart2
+		pl = []
+		for i in range(planets.Planets.PLANETS_NUM):
+			lon = C.planets.planets[i].data[planets.Planet.LONG]
+			pl.append(_LonOnly(self._dodec_from_lon_with_ayan(lon)))
+
+		lof_lon = C.fortune.fortune[fortune.Fortune.LON]
+		lof     = _LonOnly(self._dodec_from_lon_with_ayan(lof_lon))
+
+		asc_lon = C.houses.ascmc[houses.Houses.ASC]
+		mc_lon  = C.houses.ascmc[houses.Houses.MC]
+		am      = [
+			_LonOnly(self._dodec_from_lon_with_ayan(asc_lon)),
+			_LonOnly(self._dodec_from_lon_with_ayan(mc_lon))
+		]
+		return (pl, lof, am)
+
+	def _ensure_ap_for_chart(self, C):
+		try:
+			if not (hasattr(C, 'parts') and C.parts and getattr(C.parts, 'parts', None)):
+				if hasattr(C, 'calcArabicParts'):
+					C.calcArabicParts()
+				else:
+					# calcArabicParts가 없거나 parts가 여전히 비어 있으면 직접 생성
+					try:
+						# arabicparts 모듈은 이미 본 파일에서 참조 중
+						C.parts = arabicparts.ArabicParts(C, self.options)
+					except Exception:
+						C.parts = None
+
+		except Exception:
+			pass
 
 	def arrangeAntis(self, plnts, lof, ascmc, rPlanet):
 		'''Arranges antiscia of planets so they won't overlap each other'''
@@ -2295,7 +2528,9 @@ class GraphChart:
 
 		return res
 
-	def drawOuterFortuneLine(self):
+	def drawOuterFortuneLine(self, C=None):
+		C = C or self.chart
+
 		if not (self.chart and getattr(self.chart, "fortune", None)):
 			return
 		try:

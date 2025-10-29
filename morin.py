@@ -418,16 +418,9 @@ class MFrame(wx.Frame):
 		self.o_digs.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
 
 		self.moptions.Append(self.ID_DignitiesOptMenu, mtexts.txts['Dignities'], self.o_digs)
-
-
-		self.malmutens = wx.Menu()
-		self.malmutens.Append(self.ID_ChartAlmuten, mtexts.menutxts['OMChartAlmuten'], mtexts.menutxts['OMChartAlmutenDoc'])
-		self.malmutens.Append(self.ID_Topical, mtexts.menutxts['OMTopical'], mtexts.menutxts['OMTopicalDoc'])
-
-		self.moptions.Append(self.ID_Almutens, mtexts.menutxts['OMAlmutens'], self.malmutens)
-		self.moptions.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
-
-		self.moptions.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
+		self.o_appearance.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
+		self.o_appearance.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
+		self.o_appearance.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
 
 		self.setHouse()
 
@@ -435,12 +428,9 @@ class MFrame(wx.Frame):
 		self.meanitem = self.mnodes.Append(self.ID_NodeMean, mtexts.menutxts['OMNMean'], '', wx.ITEM_RADIO)
 		self.trueitem = self.mnodes.Append(self.ID_NodeTrue, mtexts.menutxts['OMNTrue'], '', wx.ITEM_RADIO)
 
-		self.moptions.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
+		self.o_appearance.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
 
 		self.setNode()
-
-		# Orbs 그대로 탑레벨
-		self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
 
 		# [ArabicParts] submenu: Arabic Parts(first) + Fortuna(second)
 		self.o_arabic = wx.Menu()
@@ -450,6 +440,11 @@ class MFrame(wx.Frame):
 
 		# Syzygy / Fixed Stars는 탑레벨 유지
 		self.moptions.Append(self.ID_Syzygy,      mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
+
+		self.malmutens = wx.Menu()
+		self.malmutens.Append(self.ID_ChartAlmuten, mtexts.menutxts['OMChartAlmuten'], mtexts.menutxts['OMChartAlmutenDoc'])
+		self.malmutens.Append(self.ID_Topical, mtexts.menutxts['OMTopical'], mtexts.menutxts['OMTopicalDoc'])
+		self.moptions.Append(self.ID_Almutens, mtexts.menutxts['OMAlmutens'], self.malmutens)
 		self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
 		
 		# [TimeLords] submenu: Profections + Firdaria
@@ -2183,61 +2178,50 @@ class MFrame(wx.Frame):
 				pass
 			self.revdlg = None
 
-
-
 	def calcPrecNutCorrectedSolar(self, revs):
-		time = chart.Time(revs.t[0], revs.t[1], revs.t[2], revs.t[3], revs.t[4], revs.t[5], False, self.horoscope.time.cal, chart.Time.GREENWICH, False, 0, 0, False, self.horoscope.place, False)
-		#The algorithm of the Janus astrological program
-		jdSol = time.jd
-		JD1900 = 2415020.5
-		FBAyanamsa1900 = astrology.swe_get_ayanamsa_ut(JD1900)
+		"""
+		Sidereal Solar Return finder:
+		- Swiss Ephemeris를 시데럴 플래그로 직접 호출해
+		'트랜짓 태양(시데럴) 경도 == 네이탈 태양(시데럴) 경도'를 만족하는 JD를
+		뉴턴 방식으로 수렴 계산한다.
+		- 별도의 세차/넛테이션 보정이 필요 없으므로 1°대 잔여 오차를 제거.
+		"""
+		# 1) 초기 JD: 기존 compute()가 준 결과를 시드로 사용
+		time0 = chart.Time(revs.t[0], revs.t[1], revs.t[2], revs.t[3], revs.t[4], revs.t[5],
+						False, self.horoscope.time.cal, chart.Time.GREENWICH,
+						False, 0, 0, False, self.horoscope.place, False)
+		jd = time0.jd
 
-		serr, dat  = astrology.swe_calc_ut(JD1900, astrology.SE_ECL_NUT, 0)
-		NutLon1900 = dat[2]
-		SVP1900 = 360.0-FBAyanamsa1900-NutLon1900
+		# 2) 시데럴 계산 플래그
+		pflag = (astrology.SEFLG_SWIEPH |
+				astrology.SEFLG_SPEED  |
+				astrology.SEFLG_SIDEREAL)
 
-		#calc natalprecfrom1900
-		serr, dat  = astrology.swe_calc_ut(self.horoscope.time.jd, astrology.SE_ECL_NUT, 0)
-		NutLonNatal = dat[2]
-		SVPNatal = 360.0-self.horoscope.ayanamsha-NutLonNatal
-		NatalChartPrecessionFrom1900 = SVPNatal-SVP1900
+		# 3) 네이탈 시데럴 태양 경도
+		nat_jd = self.horoscope.time.jd
+		serr, dat_nat = astrology.swe_calc_ut(nat_jd, astrology.SE_SUN, pflag)
+		nat_lon_sid = util.normalize(dat_nat[0])
 
-		#Calc SVP for return date
-		NatalSunLon = self.horoscope.planets.planets[astrology.SE_SUN].data[planets.Planet.LONG]
-		DiffAngle = 50.0 # this is my idea
-		pflag = astrology.SEFLG_SWIEPH+astrology.SEFLG_SPEED
+		# 4) 수렴 루프
+		#    공차는 1e-6도(≈0.0036")로 충분히 타이트
+		diff = 1.0
+		while abs(diff) > 1e-6:
+			serr, dat = astrology.swe_calc_ut(jd, astrology.SE_SUN, pflag)
+			trn_lon_sid = util.normalize(dat[0])
+			trn_vel     = dat[3]  # deg/day
 
-		#Keep recalculating transiting Sun position using new jdSol until
-		#DiffAngle is small enough.
-		while (DiffAngle > 0.00001):
-			serr, dat  = astrology.swe_calc_ut(jdSol, astrology.SE_SUN, pflag)
-			TranSunLon = dat[0]
-			TranSunVel = dat[3]
+			# 차이가 -180~+180에 들도록 정규화
+			diff = nat_lon_sid - trn_lon_sid
+			if abs(diff) > 180.0:
+				diff -= util.sgn(diff) * 360.0
 
-			serr, dat  = astrology.swe_calc_ut(jdSol, astrology.SE_ECL_NUT, 0)
-			FBAyanamsaReturn = astrology.swe_get_ayanamsa_ut(jdSol)
-			NutLonReturn = dat[2]
-			SVPReturn = 360.0-FBAyanamsaReturn-NutLonReturn
+			# 뉴턴 보정: ΔJD = Δλ / (dλ/dt)
+			jd += (diff / trn_vel)
 
-			SolPrecessionFrom1900 = SVPReturn-SVP1900
-			Precession = SolPrecessionFrom1900-NatalChartPrecessionFrom1900 #
-
-			TranSunLon = TranSunLon+Precession
-
-			DiffAngle = NatalSunLon-TranSunLon
-
-			if math.fabs(DiffAngle) > 180.0:
-				DiffAngle = DiffAngle-util.sgn(DiffAngle)*360.0
-
-			CorrectionJD = DiffAngle/TranSunVel
-
-			jdSol = jdSol+CorrectionJD
-
-			fromjdtime = astrology.swe_revjul(jdSol, astrology.SE_GREG_CAL)
-
-		h, mi, s = util.decToDeg(fromjdtime[3])
-		return fromjdtime[0], fromjdtime[1], fromjdtime[2], h, mi, s
-
+		# 5) JD → (Y,M,D,h,m,s)
+		y, m, d, hour = astrology.swe_revjul(jd, astrology.SE_GREG_CAL)
+		h, mi, s = util.decToDeg(hour)
+		return int(y), int(m), int(d), h, mi, s
 
 	def onSunTransits(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
@@ -3065,11 +3049,12 @@ class MFrame(wx.Frame):
 
 				mtexts.setLang(self.options.langid)
 
-				self.menubar.Remove(0)
-				self.menubar.Remove(0)
-				self.menubar.Remove(0)
-				self.menubar.Remove(0)
-				self.menubar.Remove(0)
+				try:
+					# 프레임에서 메뉴바를 안전하게 떼고(분리) 새로 붙인다
+					self.SetMenuBar(None)
+				except Exception:
+					pass
+				# 새 메뉴바 생성
 
 				self.menubar = wx.MenuBar()
 				self.mhoros = wx.Menu()
@@ -3273,21 +3258,16 @@ class MFrame(wx.Frame):
 				# [Dignities] submenu: Dignities + Minor Dignities(submenu)
 				self.o_digs = wx.Menu()
 				self.o_digs.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
-
+				self.o_appearance.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
 				self.mdignities = wx.Menu()
 				self.mdignities.Append(self.ID_Triplicities, mtexts.menutxts['OMTriplicities'], mtexts.menutxts['OMTriplicitiesDoc'])
 				self.mdignities.Append(self.ID_Terms,        mtexts.menutxts['OMTerms'],        mtexts.menutxts['OMTermsDoc'])
 				self.mdignities.Append(self.ID_Decans,       mtexts.menutxts['OMDecans'],       mtexts.menutxts['OMDecansDoc'])
 				self.o_digs.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
-
 				self.moptions.Append(self.ID_DignitiesOptMenu, mtexts.txts['Dignities'], self.o_digs)
 
-				self.malmutens = wx.Menu()
-				self.malmutens.Append(self.ID_ChartAlmuten, mtexts.menutxts['OMChartAlmuten'], mtexts.menutxts['OMChartAlmutenDoc'])
-				self.malmutens.Append(self.ID_Topical, mtexts.menutxts['OMTopical'], mtexts.menutxts['OMTopicalDoc'])
-
-				self.moptions.Append(self.ID_Almutens, mtexts.menutxts['OMAlmutens'], self.malmutens)
-				self.moptions.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
+				self.o_appearance.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
+				self.o_appearance.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
 
 				self.moptions.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
 
@@ -3297,13 +3277,9 @@ class MFrame(wx.Frame):
 				self.meanitem = self.mnodes.Append(self.ID_NodeMean, mtexts.menutxts['OMNMean'], '', wx.ITEM_RADIO)
 				self.trueitem = self.mnodes.Append(self.ID_NodeTrue, mtexts.menutxts['OMNTrue'], '', wx.ITEM_RADIO)
 
-				self.moptions.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
+				self.o_appearance.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
 
 				self.setNode()
-
-				# Orbs 그대로 탑레벨
-				self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
-
 				# [ArabicParts] submenu: Arabic Parts(first) + Fortuna(second)
 				self.o_arabic = wx.Menu()
 				self.o_arabic.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'],  mtexts.menutxts['OMArabicPartsDoc'])
@@ -3312,6 +3288,10 @@ class MFrame(wx.Frame):
 
 				# Syzygy / Fixed Stars는 탑레벨 유지
 				self.moptions.Append(self.ID_Syzygy,      mtexts.menutxts['OMSyzygy'],      mtexts.menutxts['OMSyzygyDoc'])
+				self.malmutens = wx.Menu()
+				self.malmutens.Append(self.ID_ChartAlmuten, mtexts.menutxts['OMChartAlmuten'], mtexts.menutxts['OMChartAlmutenDoc'])
+				self.malmutens.Append(self.ID_Topical, mtexts.menutxts['OMTopical'], mtexts.menutxts['OMTopicalDoc'])
+				self.moptions.Append(self.ID_Almutens, mtexts.menutxts['OMAlmutens'], self.malmutens)
 				self.moptions.Append(self.ID_FixStarsOpt, mtexts.menutxts['OMFixStarsOpt'], mtexts.menutxts['OMFixStarsOptDoc'])
 				
 				# [TimeLords] submenu: Profections + Firdaria
@@ -3853,7 +3833,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.2.7'
+		info.Version = '9.2.8'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
@@ -4029,6 +4009,8 @@ class MFrame(wx.Frame):
 
 	def handleStatusBar(self, bHor):
 		sb = self.GetStatusBar()
+		if sb is None:
+			sb = self.CreateStatusBar(name='status_line')
 		if bHor:
 			sb.SetFieldsCount(4)
 			sb.SetStatusWidths([160, 80, 220, 220])

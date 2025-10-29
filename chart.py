@@ -409,11 +409,10 @@ class Chart:
 		# chart.create()와 동일한 규칙으로 pflag 구성
 		pflag = astrology.SEFLG_SWIEPH | astrology.SEFLG_SPEED
 
-		# 시데럴이면 모드 세팅 + 플래그 부여
+		# 시데럴이면 모드 세팅 (플래그는 쓰지 않음; 하위 모듈에서 수동 보정)
 		if self.options.ayanamsha != 0:
 			astrology.swe_set_sid_mode(self.options.ayanamsha-1, 0, 0)
 			self.ayanamsha = astrology.swe_get_ayanamsa_ut(self.time.jd)
-			pflag |= astrology.SEFLG_SIDEREAL
 
 		# 토포센트릭이면 플래그 부여
 		if self.options.topocentric:

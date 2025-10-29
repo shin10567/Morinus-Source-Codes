@@ -4,7 +4,7 @@ import chart
 import fortune
 import planets
 import util
-
+import arabicparts
 
 class Transit:
 	NONE = -1
@@ -53,12 +53,7 @@ class Transits:
 		self.flags = astrology.SEFLG_SPEED+astrology.SEFLG_SWIEPH
 		if chrt.options.topocentric:
 			self.flags += astrology.SEFLG_TOPOCTR
-			# sidereal if ayanamsha is enabled
-			if chrt.options.ayanamsha != 0:
-				self.flags += astrology.SEFLG_SIDEREAL
-		# Sidereal mode for transits if ayanamsha is enabled
-		if chrt.options.ayanamsha != 0:
-			self.flags += astrology.SEFLG_SIDEREAL
+		# 810 방식: 리턴 탐색은 항상 트로피컬. 시데럴 플래그 금지.
 
 		lastday = 1
 		for day in range(1, 31):
@@ -98,15 +93,7 @@ class Transits:
 			self.flags = astrology.SEFLG_SPEED+astrology.SEFLG_SWIEPH
 			if chrt.options.topocentric:
 				self.flags += astrology.SEFLG_TOPOCTR
-				# sidereal if ayanamsha is enabled
-				if chrt.options.ayanamsha != 0:
-					self.flags += astrology.SEFLG_SIDEREAL
-			# sidereal if ayanamsha is enabled
-			if chrt.options.ayanamsha != 0:
-				self.flags += astrology.SEFLG_SIDEREAL
-			# Sidereal mode for transits if ayanamsha is enabled
-			if chrt.options.ayanamsha != 0:
-				self.flags += astrology.SEFLG_SIDEREAL
+		# 810 방식: 리턴 탐색은 트로피컬 고정
 
 		time1 = chart.Time(year, month, day, 0, 0, 0, False, chrt.time.cal, chart.Time.GREENWICH, True, 0, 0, False, chrt.place, False)
 		time2 = chart.Time(year, month, day+1, 0, 0, 0, False, chrt.time.cal, chart.Time.GREENWICH, True, 0, 0, False, chrt.place, False)
@@ -149,8 +136,7 @@ class Transits:
 						continue
 					for k in range (planets.Planets.PLANETS_NUM-2):
 						lon = chrt.planets.planets[k].data[planets.Planet.LONG]
-						if chrt.options.ayanamsha != 0:
-							lon = util.normalize(lon - chrt.ayanamsha)
+						# 810 방식: 리턴 탐색은 트로피컬 목표각 사용 (수동 -아야남샤 금지)
 						if l == 0:
 								lon += chart.Chart.Aspects[a]
 								if lon > 360.0:
@@ -167,9 +153,7 @@ class Transits:
 					#ascmc
 					for h in range(2):
 						lon = chrt.houses.ascmc[h]
-						if chrt.options.ayanamsha != 0:
-							lon = util.normalize(lon - chrt.ayanamsha)
-
+						# 810 방식: 트로피컬 목표각 사용
 						if l == 0:
 							lon += chart.Chart.Aspects[a]
 							if lon > 360.0:
@@ -193,38 +177,33 @@ class Transits:
 
 			#Antiscia
 			for p in range (planets.Planets.PLANETS_NUM-2):
+				# 이미 시데럴 보정된 값이므로 추가 보정 금지
 				lona = chrt.antiscia.plantiscia[p].lon
+				# 810 방식: 비교는 트로피컬이어야 하므로, 저장값이 시데럴이면 +아야남샤로 트로피컬 복원
 				if chrt.options.ayanamsha != 0:
-					lona = util.normalize(lona - chrt.ayanamsha)
-#!?				if chrt.options.ayanamsha != 0:
-#					lona += chrt.ayanamsha
-#					lona = util.normalize(lona)
-
+					lona = util.normalize(lona + chrt.ayanamsha)
 				tr = self.get(planet1, planet2, time1, chrt, lona, j, p, chart.Chart.CONJUNCTIO, Transits.HOUR, Transit.ANTISCION)
+
 				if tr != None:
-					self.transits.append(tr)													
+					self.transits.append(tr)
 
 			#ContraAntiscia
 			for p in range (planets.Planets.PLANETS_NUM-2):
+				# 이미 시데럴 보정된 값이므로 추가 보정 금지
 				lona = chrt.antiscia.plcontraant[p].lon
 				if chrt.options.ayanamsha != 0:
-					lona = util.normalize(lona - chrt.ayanamsha)
-#!?				if chrt.options.ayanamsha != 0:
-#					lona += chrt.ayanamsha
-#					lona = util.normalize(lona)
+					lona = util.normalize(lona + chrt.ayanamsha)
+				tr = self.get(planet1, planet2, time1, chrt, lona, j, p, chart.Chart.CONJUNCTIO, Transits.HOUR, Transit.ANTISCION)
 
-				tr = self.get(planet1, planet2, time1, chrt, lona, j, p, chart.Chart.CONJUNCTIO, Transits.HOUR, Transit.CONTRAANTISCION)
 				if tr != None:
-					self.transits.append(tr)													
+					self.transits.append(tr)												
 
 			#LoF
 			lona = chrt.fortune.fortune[fortune.Fortune.LON]
-			if chrt.options.ayanamsha != 0:
-				lona = util.normalize(lona - chrt.ayanamsha)
+			# 810 방식: 트로피컬 목표각 사용
 			tr = self.get(planet1, planet2, time1, chrt, lona, j, 0, 0, Transits.HOUR, Transit.LOF)
 			if tr != None:
 				self.transits.append(tr)													
-
 
 	def cycleplanet(self, time1, chrt, time2, planet, pos):
 		planet1 = planets.Planet(time1.jd, planet, self.flags)
@@ -232,11 +211,14 @@ class Transits:
 
 		lon = chrt.planets.planets[planet].data[planets.Planet.LONG]
 		if planet != Transits.NONE and pos != None:
-			lon = pos
+			# 810 방식: pos가 시데럴 프레임일 수 있으므로 트로피컬로 되돌려 사용
+			lon = util.normalize(pos + chrt.ayanamsha) if chrt.options.ayanamsha != 0 else pos
+		else:
+			# 810 방식: 네이털 목표각도 트로피컬 그대로 사용 (수동 -아야남샤 금지)
+			pass
 		tr = self.get(planet1, planet2, time1, chrt, lon, planet, planet, chart.Chart.CONJUNCTIO, Transits.HOUR, Transit.PLANET)
 		if tr != None:
 			self.transits.append(tr)
-
 
 	def get(self, planet1, planet2, time1, chrt, lon, j, k, a, unit, typ):
 		if self.check(planet1.data[planets.Planet.LONG], planet2.data[planets.Planet.LONG], lon):

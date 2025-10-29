@@ -1,4 +1,4 @@
-## [9.2.7] Updated Version from 8.1.0 
+## [9.2.8] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -176,3 +176,11 @@
 - Chart information is now displayed inside the chart image.
 #### 9.2.7
 - Added Valens-style Decennials.
+#### 9.2.8
+- Changed the default start date for Revolution scan.
+- Fixed Hour Lord and Day Lord displaying incorrectly in Revolution charts.
+- Fixed Dodecatemoria when Ayanamsha is enabled.
+- Fixed Antiscia when Ayanamsha is enabled.
+- Fixed Revolutions when Ayanamsha is enabled.
+- Reordered items in the Options menu.
+- When outer-wheel overlays (Dodecatemoria, Antiscia/Contra-Antiscia, Arabic Parts, etc.) are enabled, they now also appear in Profections, Secondary Progressions, Elections, Revolutions, Transits, and Sun Transits.

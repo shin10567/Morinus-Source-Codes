@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 import astrology
@@ -173,12 +174,11 @@ class AntisciaWnd(commonwnd.CommonWnd):
 			d,m,s = util.decToDeg(data[i])
 
 			if i == 0 or i == 2:
-				if self.options.ayanamsha != 0:
-					lona = data[i]+self.chart.ayanamsha
-					lona = util.normalize(lona)
-					d,m,s = util.decToDeg(lona)
+				# 이미 최종 프레임(시데럴) 값이므로 재보정 금지
+				d, m, s = util.decToDeg(util.normalize(data[i]))
 
 				sign = int(d/chart.Chart.SIGN_DEG)
+
 				pos = d%chart.Chart.SIGN_DEG
 				wsp,hsp = draw.textsize(' ', self.fntText)
 				wsg,hsg = draw.textsize(self.signs[sign], self.fntMorinus)

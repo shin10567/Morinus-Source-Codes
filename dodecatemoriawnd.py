@@ -183,10 +183,11 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 			d,m,s = util.decToDeg(data[i])
 
 			if i == 0 or i == 2:
-				if self.options.ayanamsha != 0:
-					lona = data[i]+self.chart.ayanamsha
-					lona = util.normalize(lona)
-					d,m,s = util.decToDeg(lona)
+				# dodecatemoria는 antiscia.calcDodecatemoria()에서 이미
+				# self.options.ayanamsha에 따라 시데럴로 계산됨.
+				# 표시 단계에서 아야남샤를 다시 적용하지 않는다.
+				d, m, s = util.decToDeg(util.normalize(data[i]))
+
 
 				sign = int(d/chart.Chart.SIGN_DEG)
 				pos = d%chart.Chart.SIGN_DEG
