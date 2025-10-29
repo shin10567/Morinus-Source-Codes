@@ -1096,7 +1096,7 @@ class GraphChart2:
 		# 날짜 문자열 (월은 현지화)
 		sign = '-' if self.chart.time.bc else ''
 		month_txt = common.common.months[self.chart.time.origmonth - 1]
-		date_txt = f"{sign}{self.chart.time.origyear}.{month_txt}.{str(self.chart.time.origday).zfill(2)}."
+		date_txt = f"{sign}{self.chart.time.origyear}.{month_txt}.{str(self.chart.time.origday).zfill(2)}"
 
 		# 시간 표기 + 기준(ZN/UT/LC) 현지화
 		ztxt = mtexts.txts['UT']

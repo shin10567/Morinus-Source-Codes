@@ -4027,7 +4027,7 @@ class MFrame(wx.Frame):
 				ztxt = mtexts.txts['ZN']
 			if self.horoscope.time.zt == chart.Time.LOCALMEAN or self.horoscope.time.zt == chart.Time.LOCALAPPARENT:
 				ztxt = mtexts.txts['LC']
-			txt = signtxt+str(self.horoscope.time.origyear)+'.'+common.common.months[self.horoscope.time.origmonth-1]+'.'+(str(self.horoscope.time.origday)).zfill(2)+'. '+(str(self.horoscope.time.hour)).zfill(2)+':'+(str(self.horoscope.time.minute)).zfill(2)+':'+(str(self.horoscope.time.second)).zfill(2)+ztxt
+			txt = signtxt+str(self.horoscope.time.origyear)+'.'+common.common.months[self.horoscope.time.origmonth-1]+'.'+(str(self.horoscope.time.origday)).zfill(2)+', '+(str(self.horoscope.time.hour)).zfill(2)+':'+(str(self.horoscope.time.minute)).zfill(2)+':'+(str(self.horoscope.time.second)).zfill(2)+ztxt
 			self.SetStatusText(txt, 2)
 			deg_symbol = u':'
 			t1 = mtexts.txts['Long']+'.: '
