@@ -122,46 +122,59 @@ class SecDirFrame(transitframe.TransitFrame):
         return astrology.SE_JUL_CAL if self.chart.time.cal == chart.Time.JULIAN else astrology.SE_GREG_CAL
 
     def _update_age_and_realdate(self):
-
+        # JD 기반 나이 산출(세컨더리: 1년=1일)
         birth_jd = self.radix.time.jd
         prog_jd  = self.chart.time.jd
-        age_years_int = int(round(prog_jd - birth_jd))  
+        age_years_int = int(round(prog_jd - birth_jd))
 
-   
+        # 'Real date' = 출생일 + (정수 나이) * 365.2422
         real_jd = birth_jd + age_years_int * NAIBOD_YEAR_DAYS
         calflag = self._calflag_from_chart()
         y, m, d, _ = astrology.swe_revjul(real_jd, calflag)
 
-   
-        try:
-            if not self.GetStatusBar():
-                self.CreateStatusBar(2)
-                sb = self.GetStatusBar()
+        # 상태바: 항상 2필드로 강제 재설정(TransitFrame이 바꿔놔도 되돌림)
+        sb = self.GetStatusBar()
+        if not sb:
+            self.CreateStatusBar(2)
+            sb = self.GetStatusBar()
+            try:
                 app = wx.GetApp()
                 top = app.GetTopWindow() if app else None
                 main_sb = top.GetStatusBar() if top else None
-                if sb and main_sb:
+                if main_sb:
                     sb.SetFont(main_sb.GetFont())
-                    self.SendSizeEvent()
+            except Exception:
+                pass
+        try:
+            sb.SetFieldsCount(2)
+            self.SetStatusWidths([-1, -1])
+        except Exception:
+            pass
 
-                self.SetStatusWidths([-1, -1])
+        # 텍스트 반영
+        try:
             self.SetStatusText("%s: %d" % (mtexts.txts['Age'], age_years_int), 0)
             self.SetStatusText("%s: %04d.%02d.%02d" % (mtexts.txts['Real'], y, m, d), 1)
         except Exception:
             pass
 
-
+        # 타이틀 꼬리표도 동기화
         base = self.GetTitle()
         tag = " | %s: %d | %s: %04d.%02d.%02d" % (mtexts.txts['Age'], age_years_int, mtexts.txts['Real'], y, m, d)
         marker = " | " + mtexts.txts['Age'] + ":"
         if marker in base:
             base = base.split(marker)[0]
-
         self.SetTitle(base + tag)
+
+        # idle 훅의 불필요한 재갱신 방지를 위한 시그니처 저장
+        self._last_status_sig = (age_years_int, y, m, d)
 
     def __init__(self, parent, title, chrt, radix, options):
         transitframe.TransitFrame.__init__(self, parent, title, chrt, radix, options)
         self._update_age_and_realdate()
+        # 창 전환 시 Transit 스타일이 끼어들어도 즉시 되돌리도록 idle 훅
+        self._last_status_sig = None
+        self.Bind(wx.EVT_IDLE, self._on_idle_keep_secdir_statusbar)
 
 
     def change(self, chrt, title):
@@ -174,6 +187,26 @@ class SecDirFrame(transitframe.TransitFrame):
         title = title.replace(mtexts.txts['Radix'], mtexts.txts['SecondaryDir']+' ('+str(self.chart.time.year)+'.'+common.common.months[self.chart.time.month-1]+'.'+str(self.chart.time.day)+' '+str(self.chart.time.hour)+':'+str(self.chart.time.minute).zfill(2)+':'+str(self.chart.time.second).zfill(2)+')')
         self.SetTitle(title)
         self._update_age_and_realdate()
+    def _on_idle_keep_secdir_statusbar(self, evt):
+        """Transit 쪽이 상태바를 바꿔도 세컨더리 전용 포맷(2필드: Age/Real)으로 즉시 복원."""
+        sb = self.GetStatusBar()
+        if not sb:
+            evt.Skip(); return
+        try:
+            need_fix = (sb.GetFieldsCount() != 2)
+            if not need_fix:
+                # 필드 수는 2인데, 텍스트가 Age/Real 형식이 아닌 경우
+                t0 = sb.GetStatusText(0) if hasattr(sb, 'GetStatusText') else u""
+                t1 = sb.GetStatusText(1) if hasattr(sb, 'GetStatusText') else u""
+                if (mtexts.txts.get('Age', u'Age') not in t0) or (mtexts.txts.get('Real', u'Real') not in t1):
+                    need_fix = True
+            if need_fix:
+                self._update_age_and_realdate()
+        except Exception:
+            # 뭔가 꼬였으면 안전하게 다시 덮어쓰기
+            self._update_age_and_realdate()
+        evt.Skip()
+
 class SecProgPosWnd(commonwnd.CommonWnd):
     """
     Positions for date — CommonWnd + PIL 표.

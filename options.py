@@ -65,6 +65,10 @@ class Options:
 # ########################################
 
 		self.intime = False
+		# Dodecatemorion in Speculum (Placidian / Regiomontan)
+		self.speculumdodecat = [False, False]
+		self.def_speculumdodecat = copy.deepcopy(self.speculumdodecat)
+
 		self.def_intime = self.intime
 
 		#Symbols
@@ -467,6 +471,7 @@ class Options:
 		#AppearanceII
 		self.speculums = copy.deepcopy(self.def_speculums)
 		self.intime = self.def_intime
+		self.speculumdodecat = copy.deepcopy(self.def_speculumdodecat)
 
 		#Symbols
 		self.uranus = self.def_uranus
@@ -712,6 +717,11 @@ class Options:
 			f = open(optfile, 'rb')		
 			self.speculums = pickle.load(f)
 			self.intime = pickle.load(f)
+			# Backward-compatible: speculum dodecat toggle (2 items: Placidian/Regiomontan)
+			try:
+				self.speculumdodecat = pickle.load(f)
+			except Exception:
+				self.speculumdodecat = copy.deepcopy(self.def_speculumdodecat)
 			f.close()
 		except IOError:
 			res = False
@@ -1050,6 +1060,7 @@ class Options:
 			f = open(optfile, 'wb')		
 			pickle.dump(self.speculums, f)
 			pickle.dump(self.intime, f)
+			pickle.dump(self.speculumdodecat, f)
 			f.close()
 			return True
 		except IOError:

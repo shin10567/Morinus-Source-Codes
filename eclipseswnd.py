@@ -40,6 +40,11 @@ class EclipsesWnd(commonwnd.CommonWnd):
         self.fntTextBold = None  # 볼드 미사용 고정
 
         self.signs = common.common.Signs1 if self.options.signs else common.common.Signs2
+        # 아야남샤(시데럴) 사용 여부: 옵션 키 존재/값 기반으로 유연 탐지
+        self._ayan_enabled = bool(getattr(self.options, 'ayanamsha', 0) or
+                                  getattr(self.options, 'ayanamsa', 0) or
+                                  getattr(self.options, 'sidereal', False) or
+                                  getattr(self.options, 'siderealmode', False))
 
         # 데이터 생성
         with wx.BusyCursor():
@@ -84,6 +89,54 @@ class EclipsesWnd(commonwnd.CommonWnd):
         if font is None:
             font = self.fntText
         draw.text(xy, s, fill=fill, font=font)
+
+    def _ayan_deg(self, jdut):
+        """이벤트 시점(jdut)의 아야남샤(도) — 옵션 미사용이면 0.0"""
+        if not getattr(self, '_ayan_enabled', False):
+            return 0.0
+        try:
+            # Swiss Ephemeris 래퍼 (Morinus 기본 의존): 존재 시 사용
+            return float(astrology.swe_get_ayanamsa_ut(jdut))
+        except Exception:
+            # 환경에 따라 심볼이 다를 수 있으니 실패 시 무효 처리(트로피컬 유지)
+            return 0.0
+            
+    def _dodek_from_lon(self, Ldeg):
+        """
+        절대 경도 Ldeg(0..360) → (결과 사인, 그 사인 안의 도·분·초).
+        규칙:
+          base_sign   = floor(L/30)
+          within      = L - base_sign*30           # 0.. <30
+          total_arc   = within * 12.0              # 0.. <360
+          sign_offset = floor(total_arc / 30.0)    # 0..11
+          sign_idx    = (base_sign + sign_offset) % 12
+          inner       = total_arc - sign_offset*30 # 0.. <30
+        """
+        L = eclipses._normalize_deg(float(Ldeg))
+        base_sign = int(math.floor(L / 30.0)) % 12
+        within = L - base_sign * 30.0
+
+        total_arc = within * 12.0
+        sign_offset = int(math.floor(total_arc / 30.0 + 1e-12))
+        sign_idx = (base_sign + sign_offset) % 12
+
+        inner = total_arc - sign_offset * 30.0  # 이 값이 사인 내부각(0.. <30)
+
+        d = int(math.floor(inner + 1e-9))
+        rem = (inner - d) * 60.0
+        m = int(math.floor(rem + 1e-9))
+        s = int(round((rem - m) * 60.0))
+
+        # 자리올림 정규화
+        if s >= 60:
+            s -= 60; m += 1
+        if m >= 60:
+            m -= 60; d += 1
+        if d >= 30:
+            d -= 30
+            sign_idx = (sign_idx + 1) % 12
+
+        return sign_idx, d, m, s
 
     def drawBkg(self):
         opt = getattr(self, 'options', None)
@@ -180,14 +233,16 @@ class EclipsesWnd(commonwnd.CommonWnd):
             self._text(draw, draw_xy, type_txt, bold=ev.bold, font=self.fntText, fill=txtclr)
             colx += self.colw[1]
 
-            # 3) Longitude: 사인 + 도분초
-            # 사인/도분초 분해
-            L = eclipses._normalize_deg(ev.elon)
-            sign_idx = int(math.floor((L + 1e-12)/30.0)) % 12
-            within = L - sign_idx*30.0
+            # 3) Longitude: 사인 + 도분초 (아야남샤 적용)
+            ayan = self._ayan_deg(ev.jdut)
+            Lsid = eclipses._normalize_deg(ev.elon - ayan) if ayan else eclipses._normalize_deg(ev.elon)
+            sign_idx = int(math.floor((Lsid + 1e-12)/30.0)) % 12
+            within = Lsid - sign_idx*30.0
             d, m, s = eclipses._dms(within)
+
             # 숫자 + 사인기호
             lon_dms = u"%02d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
+
             w_num, h_num = draw.textsize(lon_dms+u" ", self.fntText)
             w_sig, h_sig = draw.textsize(self.signs[sign_idx], self.fntMorinus)
             total_w = w_num + w_sig
@@ -202,8 +257,18 @@ class EclipsesWnd(commonwnd.CommonWnd):
 
             colx += self.colw[2]
 
-            # 4) Dodecatemorion — 숫자+DMS와 사인기호 묶어서 가운데 정렬
-            dms_txt, sign_sym = self._dodek_text(ev.dodek_sign, ev.dodek_d, ev.dodek_m, ev.dodek_s)
+            # 4) Dodecatemorion — 숫자+DMS와 사인기호 묶어서 가운데 정렬 (아야남샤 적용)
+            ayan = self._ayan_deg(ev.jdut)
+            Lsid = eclipses._normalize_deg(ev.elon - ayan) if ayan else eclipses._normalize_deg(ev.elon)
+
+            # eclipses 모듈의 도데카 변환에 시데럴 경도 전달
+            try:
+                dodek_sign, dd, mm, ss = eclipses._dodek_from_ecliptic(Lsid)
+            except Exception:
+                # (FIX) 아야남샤 적용된 경도 Lsid로 직접 도데카 산출
+                dodek_sign, dd, mm, ss = self._dodek_from_lon(Lsid)
+
+            dms_txt, sign_sym = self._dodek_text(dodek_sign, dd, mm, ss)
             w_num, h_num = draw.textsize(dms_txt+u" ", self.fntText)
             w_sig, h_sig = draw.textsize(sign_sym, self.fntMorinus)
             total_w = w_num + w_sig
@@ -212,6 +277,7 @@ class EclipsesWnd(commonwnd.CommonWnd):
                     dms_txt+u" ", bold=ev.bold, font=self.fntText, fill=txtclr)
             self._text(draw, (base_x + w_num, rowy + (self.LINE_HEIGHT-h_sig)//2),
                     sign_sym, bold=ev.bold, font=self.fntMorinus, fill=txtclr)
+
             colx += self.colw[3]
 
             # 행 구분 라인

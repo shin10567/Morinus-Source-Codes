@@ -25,8 +25,8 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 		self.bw = self.options.bw
 		self.ID_DODEK_CONV = wx.NewId()
 		self.pmenu.Append(self.ID_DODEK_CONV, mtexts.txts["DodecatemoriaCalculator"],mtexts.txts["Converteclipticlongitude"])
-		self.Bind(wx.EVT_MENU, self.on_open_dodek_converter, id=self.ID_DODEK_CONV)
-		wx.CallAfter(self.on_open_dodek_converter, None)
+		#self.Bind(wx.EVT_MENU, self.on_open_dodek_converter, id=self.ID_DODEK_CONV)
+		#wx.CallAfter(self.on_open_dodek_converter, None)
 		self.FONT_SIZE = int(21*self.options.tablesize) #Change fontsize to change the size of the table!
 		self.COLUMN_NUM = 2
 		self.SPACE = self.FONT_SIZE/2

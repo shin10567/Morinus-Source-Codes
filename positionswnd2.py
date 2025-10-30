@@ -11,6 +11,7 @@ import Image, ImageDraw, ImageFont
 import util
 import mtexts
 import fortune
+import math
 
 
 class PositionsWnd2(wx.Window):
@@ -39,7 +40,9 @@ class PositionsWnd2(wx.Window):
 		BOR = PositionsWnd2.BORDER
 
 		self.FONT_SIZE = int(21*self.options.tablesize) #Change fontsize to change the size of the table!
-		self.COLUMN_NUM = column_num + 1  # RA와 Decl 사이 (Dodecatemorion) 1칸 추가
+		# selected columns + (dodecatemorion extra)
+		self.COLUMN_NUM = column_num + (1 if self.options.speculumdodecat[self.speculum] else 0)
+
 		self.SPACE = self.FONT_SIZE/2
 		self.LINE_HEIGHT = (self.SPACE+self.FONT_SIZE+self.SPACE)
 
@@ -176,18 +179,36 @@ class PositionsWnd2(wx.Window):
 # ########################################
 
 		j = 0
+
+		# 도데카 ON & Longitude OFF이면, 도데카 헤더를 선두에 추가
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			label = mtexts.txts['Dodecatemorion']
+			wC, hC = draw.textsize(label, self.fntText)
+			draw.text((BOR+self.SMALL_CELL_WIDTH+self.CELL_WIDTH*j+(self.CELL_WIDTH-wC)/2,
+					   BOR+(self.LINE_HEIGHT-hC)/2), label, fill=txtclr, font=self.fntText)
+			j += 1
+
+		long_drawn = False
+
 		for i in range(len(txt[self.speculum])):
-			if self.options.speculums[self.speculum][i]:
-				w,h = draw.textsize(txt[self.speculum][i], self.fntText)
-				draw.text((BOR+self.SMALL_CELL_WIDTH+self.CELL_WIDTH*j+(self.CELL_WIDTH-w)/2, BOR+(self.LINE_HEIGHT-h)/2), txt[self.speculum][i], fill=txtclr, font=self.fntText)
+			if not self.options.speculums[self.speculum][i]:
+				continue
+
+			# 기본 헤더 셀
+			w,h = draw.textsize(txt[self.speculum][i], self.fntText)
+			draw.text((BOR+self.SMALL_CELL_WIDTH+self.CELL_WIDTH*j+(self.CELL_WIDTH-w)/2,
+					   BOR+(self.LINE_HEIGHT-h)/2), txt[self.speculum][i], fill=txtclr, font=self.fntText)
+			# 해당 칼럼 하나 소비
+			j += 1
+
+			# Longitude 바로 뒤에 도데카 헤더 삽입(독립 토글)
+			if i == planets.Planet.LONG and self.options.speculumdodecat[self.speculum]:
+				label = mtexts.txts['Dodecatemorion']
+				wC, hC = draw.textsize(label, self.fntText)
+				draw.text((BOR+self.SMALL_CELL_WIDTH+self.CELL_WIDTH*j+(self.CELL_WIDTH-wC)/2,
+						   BOR+(self.LINE_HEIGHT-hC)/2), label, fill=txtclr, font=self.fntText)
 				j += 1
-				if i == planets.Planet.RA:
-					label = mtexts.txts['Dodecatemorion']
-					wC, hC = draw.textsize(label, self.fntText)
-					draw.text((BOR + self.SMALL_CELL_WIDTH + self.CELL_WIDTH*j + (self.CELL_WIDTH - wC)/2,
-							BOR + (self.LINE_HEIGHT - hC)/2),
-							label, fill=txtclr, font=self.fntText)
-					j += 1
+				long_drawn = True
 
 		x = BOR
 		y = BOR+self.TITLE_HEIGHT+self.SPACE_TITLEY
@@ -230,21 +251,16 @@ class PositionsWnd2(wx.Window):
 			else:
 				self.drawregiomontanline(draw, x, y+j*self.LINE_HEIGHT, tableclr, common.common.Planets[i], self.chart.planets.planets[i].speculums[self.speculum], lons[j], i, self.chart.planets.planets[i].data[planets.Planet.SPLON])
 			j += 1
-		# --- Lot of Fortune (LoF) 1행 추가 ---
-		# 1) Lot 종류 결정 (옵션 기본값 2)
-		lot_idx = getattr(self.options, 'lotoffortune', 2)
+
+		lot_idx = getattr(self.options, 'lotoffortune', 2) 
 		if   lot_idx == 0: lftype = chart.Chart.LFMOONSUN
 		elif lot_idx == 1: lftype = chart.Chart.LFDSUNMOON
 		else:              lftype = chart.Chart.LFDMOONSUN
-
-		# 2) 주/야 판정(태양 고도)
 		sun_elv = self.chart.planets.planets[astrology.SE_SUN].speculums[1][planets.Planet.ELV]
 		aboveh = (sun_elv > 0.0)
 
-		# 3) 적도 경사
 		obl_val = self.chart.obl[0] if isinstance(self.chart.obl, (list, tuple)) else self.chart.obl
 
-		# 4) 포르투나 계산
 		fort = fortune.Fortune(
 			lftype,
 			self.chart.houses.ascmc2,
@@ -255,19 +271,17 @@ class PositionsWnd2(wx.Window):
 			aboveh
 		)
 
-		# 5) 경도(아야남샤 보정)
 		lof_lon = fort.fortune[fortune.Fortune.LON]
 		if self.options.ayanamsha != 0:
 			lof_lon -= self.chart.ayanamsha
 			lof_lon = util.normalize(lof_lon)
 
-		# 6) LoF 1행 그리기
 		if self.speculum == 0:
 			self.drawplacidianline(draw, x, y + j*self.LINE_HEIGHT, tableclr,
-				self.LOF_CHAR, fort.speculum.speculum, lof_lon, 0, 1.0)
+								self.LOF_CHAR, fort.speculum.speculum, lof_lon, 0, 1.0)
 		else:
 			self.drawregiomontanline(draw, x, y + j*self.LINE_HEIGHT, tableclr,
-				self.LOF_CHAR, fort.speculum2.speculum, lof_lon, 0, 1.0)
+									self.LOF_CHAR, fort.speculum2.speculum, lof_lon, 0, 1.0)
 		j += 1
 
 		#Houses
@@ -285,7 +299,7 @@ class PositionsWnd2(wx.Window):
 				(lons[3], 0.0, self.chart.houses.cusps2[hidx[3]-1][0], self.chart.houses.cusps2[hidx[3]-1][1]), 
 				(lons[4], 0.0, self.chart.houses.cusps2[hidx[4]-1][0], self.chart.houses.cusps2[hidx[4]-1][1]), 
 				(lons[5], 0.0, self.chart.houses.cusps2[hidx[5]-1][0], self.chart.houses.cusps2[hidx[5]-1][1]))
-			y = y+(realnum+1)*self.LINE_HEIGHT+self.SPACE_PLANETSHCSY
+			y = y + (realnum+1)*self.LINE_HEIGHT + self.SPACE_PLANETSHCSY
 			draw.line((x, y, x+self.TABLE_WIDTH, y), fill=tableclr)
 			for i in range(len(hidx)):
 				self.drawanglesline(draw, x, y+i*self.LINE_HEIGHT, tableclr, common.common.Housenames2[hidx[i]-1], data[i])
@@ -301,12 +315,11 @@ class PositionsWnd2(wx.Window):
 
 		#vertical lines
 		offs = (0, self.SMALL_CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
-		draw.line((x + self.TABLE_WIDTH, y, x + self.TABLE_WIDTH, y + self.LINE_HEIGHT), fill=clr)
 
 		SPEC = 2
 		j = 0
 		summa = 0
-		for i in range(len(self.options.speculums[self.speculum])+1+1):#+1 is the leftmost column
+		for i in range(len(self.options.speculums[self.speculum]) + 1 + 1):  # +1: 좌측 심볼 칸, +1: 우측 경계 #+1 is the leftmost column
 			if i >= SPEC and not self.options.speculums[self.speculum][i-SPEC]:
 				continue
 
@@ -314,6 +327,14 @@ class PositionsWnd2(wx.Window):
 
 			j += 1
 			summa += offs[i]
+			if i >= 2 and (i - 2) == planets.Planet.LONG and self.options.speculums[self.speculum][planets.Planet.LONG] and self.options.speculumdodecat[self.speculum]:
+				summa += self.CELL_WIDTH
+				# 이제 '도데카테모리온 오른쪽 경계'(= Decl 왼쪽선)를 찍는다
+				draw.line((x+summa, y, x+summa, y+self.LINE_HEIGHT), fill=clr)
+		# LONG이 꺼져 있고 도데카만 켜져 있으면, 우측 끝 경계선을 추가하여 표를 닫아준다
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			summa += self.CELL_WIDTH
+			draw.line((x+summa, y, x+summa, y+self.LINE_HEIGHT), fill=clr)
 
 		txtclr = (0,0,0)
 		if not self.bw:
@@ -328,11 +349,40 @@ class PositionsWnd2(wx.Window):
 		draw.text((x+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=fnt)
 
 		#data
-		offs = (self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
+		offs = tuple(self.CELL_WIDTH for _ in range(len(self.options.speculums[self.speculum])))
 		j = 0
 		summa = 0
-		for i in range(planets.Planet.DECL+1):
+		# (Asc/MC) 도데카 단독이면, 선두 셀을 먼저 그려주고 시작 칸을 1칸 시프트
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			lon_deg = data[planets.Planet.LONG]
+			sign_size = chart.Chart.SIGN_DEG
+			base = int(lon_deg / sign_size) * sign_size
+			pos_in_sign = lon_deg % sign_size
+			dodec_lon = util.normalize(base + pos_in_sign * 12.0)
+			signC = int(dodec_lon / sign_size)
+			posC = dodec_lon - signC * sign_size
+			dC, mC, sC = util.decToDeg(posC + 1e-8)
+			txtC = (str(dC)).rjust(2)+self.deg_symbol+(str(mC)).zfill(2)+"'"+(str(sC)).zfill(2)+'"'
+			wC, hC = draw.textsize(txtC, self.fntText)
+			wspC, _  = draw.textsize(' ', self.fntText)
+			wsgC, hsgC = draw.textsize(self.signs[signC], self.fntMorinus)
+			offC = (self.CELL_WIDTH - (wC + wspC + wsgC)) / 2
+			draw.text((x + self.SMALL_CELL_WIDTH + offC, y + (self.LINE_HEIGHT - hC)/2), txtC, fill=txtclr, font=self.fntText)
+			draw.text((x + self.SMALL_CELL_WIDTH + offC + wC + wspC, y + (self.LINE_HEIGHT - hsgC)/2), self.signs[signC], fill=txtclr, font=self.fntMorinus)
+			summa = self.CELL_WIDTH
+
+		for i in range(len(self.options.speculums[self.speculum])):
 			if not self.options.speculums[self.speculum][i]:
+				continue
+			# Asc/MC/하우스: Decl 이후 칼럼은 값이 없으므로 먼저 '—' 출력 후 다음 칸으로
+			if i > planets.Planet.DECL:
+				txt = u'—'
+				w,h = draw.textsize(txt, self.fntText)
+				offset = (offs[i]-w)/2
+				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2),
+						  txt, fill=txtclr, font=self.fntText)
+				j += 1
+				summa += offs[i]
 				continue
 
 			d,m,s = util.decToDeg(data[i])
@@ -365,41 +415,40 @@ class PositionsWnd2(wx.Window):
 				w,h = draw.textsize(txt, self.fntText)				
 				offset = (offs[i]-w)/2
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
-				# ── RA 텍스트를 그린 직후에 추가 ──
-				# 1) C 칸의 왼쪽 경계선
+
+			# --- Dodecatemorion: Longitude 출력 직후 한 칸만 추가 ---
+			if i == planets.Planet.LONG and self.options.speculumdodecat[self.speculum]:
+				# 새 칼럼의 왼쪽 경계
 				draw.line((x + self.SMALL_CELL_WIDTH + summa + offs[i], y,
-						x + self.SMALL_CELL_WIDTH + summa + offs[i], y + self.LINE_HEIGHT), fill=clr)
+						   x + self.SMALL_CELL_WIDTH + summa + offs[i], y + self.LINE_HEIGHT), fill=clr)
 
-				# 2) 도데카테모리온 계산(경도 기준) 및 출력
-				lon_for_c = data[planets.Planet.LONG]          # 이 행(Asc/MC/하우스)의 경도
-				dodec_lon  = self._dodecatemoria_lon(lon_for_c)
+				# 경도 기반 도데카테모리온 계산 (이미 data[LONG]은 위에서 아야남샤 적용 여부 반영됨)
+				lon_deg = data[planets.Planet.LONG]
+				sign_size = chart.Chart.SIGN_DEG
+				base = int(lon_deg / sign_size) * sign_size
+				pos_in_sign = lon_deg % sign_size
+				dodec_lon = util.normalize(base + pos_in_sign * 12.0)
 
-				# 1) 사인 인덱스와 사인 안의 각도 분리
-				signC = int(dodec_lon / chart.Chart.SIGN_DEG)
-				pos_in_sign = dodec_lon - signC * chart.Chart.SIGN_DEG
+				signC = int(dodec_lon / sign_size)
+				posC = dodec_lon - signC * sign_size
+				dC, mC, sC = util.decToDeg(posC + 1e-8)
 
-				# 2) 분·초는 pos_in_sign에서 다시 계산  (작은 eps로 59.999.. 보정)
-				dpos, mpos, spos = util.decToDeg(pos_in_sign + 1e-8)
-
-				# 3) 출력
-				txtC = (str(dpos)).rjust(2)+self.deg_symbol+(str(mpos)).zfill(2)+"'"+(str(spos)).zfill(2)+'"'
-
+				txtC = (str(dC)).rjust(2) + self.deg_symbol + (str(mC)).zfill(2) + "'" + (str(sC)).zfill(2) + '"'
 				wC, hC = draw.textsize(txtC, self.fntText)
-				wsp, _  = draw.textsize(' ', self.fntText)
-				wsg, hsg = draw.textsize(self.signs[signC], self.fntMorinus)
-				offC = (self.CELL_WIDTH - (wC + wsp + wsg)) / 2
+				wspC, _ = draw.textsize(' ', self.fntText)
+				wsgC, hsgC = draw.textsize(self.signs[signC], self.fntMorinus)
+				offC = (self.CELL_WIDTH - (wC + wspC + wsgC)) / 2
 
-				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC,
-						y + (self.LINE_HEIGHT - hC)/2), txtC, fill=txtclr, font=self.fntText)
-				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC + wC + wsp,
-						y + (self.LINE_HEIGHT - hsg)/2), self.signs[signC], fill=txtclr, font=self.fntMorinus)
+				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC, y + (self.LINE_HEIGHT - hC)/2),
+						  txtC, fill=txtclr, font=self.fntText)
+				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC + wC + wspC, y + (self.LINE_HEIGHT - hsgC)/2),
+						  self.signs[signC], fill=txtclr, font=self.fntMorinus)
 
-				# 3) 이후 칼럼들을 한 칸 오른쪽으로
+				# 이후 칼럼들이 오른쪽으로 1칸 밀리도록
 				summa += self.CELL_WIDTH
 
 			j += 1
 			summa += offs[i]
-
 
 	def drawplacidianline(self, draw, x, y, clr, txt, data, ayanlon, idxpl=0, speed=0.0):
 		#bottom horizontal line
@@ -407,12 +456,11 @@ class PositionsWnd2(wx.Window):
 
 		#vertical lines
 		offs = (0, self.SMALL_CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
-		draw.line((x + self.TABLE_WIDTH, y, x + self.TABLE_WIDTH, y + self.LINE_HEIGHT), fill=clr)
 
 		SPEC = 2
 		j = 0
 		summa = 0
-		for i in range(len(self.options.speculums[self.speculum])+1+1):#+1 is the leftmost column
+		for i in range(len(self.options.speculums[self.speculum]) + 1 + 1):  # +1: 좌측 심볼 칸, +1: 우측 경계 #+1 is the leftmost column
 			if i >= SPEC and not self.options.speculums[self.speculum][i-SPEC]:
 				continue
 
@@ -420,6 +468,14 @@ class PositionsWnd2(wx.Window):
 
 			j += 1
 			summa += offs[i]
+			if i >= 2 and (i - 2) == planets.Planet.LONG and self.options.speculums[self.speculum][planets.Planet.LONG] and self.options.speculumdodecat[self.speculum]:
+				summa += self.CELL_WIDTH
+				draw.line((x+summa, y, x+summa, y+self.LINE_HEIGHT), fill=clr)
+
+		# LONG이 꺼져있고 도데카가 켜져 있으면, 선두(심볼 오른쪽)에 도데카 1칸을 선점하고 수직선 추가
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			summa += self.CELL_WIDTH
+			draw.line((x+summa, y, x+summa, y+self.LINE_HEIGHT), fill=clr)
 
 		#draw symbols
 		clrpl = (0,0,0)
@@ -429,15 +485,14 @@ class PositionsWnd2(wx.Window):
 			else:
 				dign = self.chart.dignity(idxpl)
 				clrpl = self.clrs[dign]
-		# --- LoF(포르투나) 전용 색: positionswnd와 동일한 방식의 사용자 색 적용 ---
+
+		# LoF(포르투나): 사용자 개인 색 반영
 		if txt == self.LOF_CHAR:
 			if self.bw:
 				clrpl = (0,0,0)
-			elif self.options.useplanetcolors and len(self.options.clrindividual) > astrology.SE_PLUTO + 2:
-				# 행성 개수 뒤에 예약해 둔 색 슬롯(예: Pluto+2)을 LoF 색으로 사용
-				clrpl = self.options.clrindividual[astrology.SE_PLUTO + 2]
+			elif self.options.useplanetcolors:
+				clrpl = self.options.clrindividual[astrology.SE_PLUTO+2]
 			else:
-				# 사용자 텍스트 색(컬러 모드)로 통일
 				clrpl = self.options.clrtexts
 
 		fnt = self.fntMorinus
@@ -454,8 +509,42 @@ class PositionsWnd2(wx.Window):
 		offs = (self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
 		j = 0
 		summa = 0
+		# LONG이 꺼져있고 도데카만 ON이면, 첫 칸에 도데카를 먼저 출력하고 시작 위치를 1칸 시프트
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			sign_size = chart.Chart.SIGN_DEG
+			src = ayanlon if self.options.ayanamsha != 0 else data[planets.Planet.LONG]
+			base = int(src / sign_size) * sign_size
+			pos_in_sign = src % sign_size
+			dodec_lon = util.normalize(base + pos_in_sign * 12.0)
+
+			signC = int(dodec_lon / sign_size)
+			posC = dodec_lon - signC * sign_size
+			dC, mC, sC = util.decToDeg(posC + 1e-8)
+
+			txtC = (str(dC)).rjust(2)+self.deg_symbol+(str(mC)).zfill(2)+"'"+(str(sC)).zfill(2)+'"'
+			wC, hC = draw.textsize(txtC, self.fntText)
+			wspC, _  = draw.textsize(' ', self.fntText)
+			wsgC, hsgC = draw.textsize(self.signs[signC], self.fntMorinus)
+			offC = (self.CELL_WIDTH - (wC + wspC + wsgC)) / 2
+
+			draw.text((x + self.SMALL_CELL_WIDTH + offC, y + (self.LINE_HEIGHT - hC)/2),
+					  txtC, fill=clrpl, font=self.fntText)
+			draw.text((x + self.SMALL_CELL_WIDTH + offC + wC + wspC, y + (self.LINE_HEIGHT - hsgC)/2),
+					  self.signs[signC], fill=clrpl, font=self.fntMorinus)
+
+			summa = self.CELL_WIDTH
+
 		for i in range(len(self.options.speculums[self.speculum])):
 			if not self.options.speculums[self.speculum][i]:
+				continue
+			# LoF는 Asc/MC가 '—'로 표시되는 구간(Decl 이후)에서는 값이 있어도 '—'로 표시
+			if txt == self.LOF_CHAR and i > planets.Planet.DECL:
+				txtdash = u'—'
+				w,h = draw.textsize(txtdash, self.fntText)
+				offset = (offs[i]-w)/2
+				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txtdash, fill=clrpl, font=self.fntText)
+				j += 1
+				summa += offs[i]
 				continue
 
 			d,m,s = util.decToDeg(data[i])
@@ -477,20 +566,16 @@ class PositionsWnd2(wx.Window):
 				sign = ''
 				if data[i] < 0.0:
 					sign = '-'
-# ###################################
-# Roberto change v 8.0.1
 				if i == planets.Planet.LAT and idxpl == 0:#Sun's latitude is always zero
-				#	d, m, s = 0, 0, 0
+					d, m, s = 0, 0, 0
 					sign = ''
-# In pseudo-astronomic techniques the Sun's latitude may be positive or negative too
-# ###################################
 				txt = sign+(str(d)).rjust(2)+self.deg_symbol+(str(m)).zfill(2)+"'"+(str(s)).zfill(2)+'"'
 				w,h = draw.textsize(txt, self.fntText)				
 				offset = (offs[i]-w)/2
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=clrpl, font=self.fntText)
 			elif i == planets.Planet.RA or i == planets.Planet.PMP or i == planets.Planet.ADPH or i == planets.Planet.POH:
 				txt = (str(d)).rjust(2)+self.deg_symbol+(str(m)).zfill(2)+"'"+(str(s)).zfill(2)+'"'
-				if i == planets.Planet.RA:
+				if i == planets.Planet.RA and self.options.speculumdodecat[self.speculum]:
 					if self.options.intime:
 						d,m,s = util.decToDeg(data[i]/15.0)
 						txt = (str(d)).rjust(2)+':'+(str(m)).zfill(2)+":"+(str(s)).zfill(2)
@@ -499,37 +584,31 @@ class PositionsWnd2(wx.Window):
 				w,h = draw.textsize(txt, self.fntText)				
 				offset = (offs[i]-w)/2
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=clrpl, font=self.fntText)
-				# ── 여기서 'C'(Dodecatemorion) 칸 삽입 ──
-				draw.line(
-					(x + self.SMALL_CELL_WIDTH + summa + offs[i], y,
-					x + self.SMALL_CELL_WIDTH + summa + offs[i], y + self.LINE_HEIGHT),
-					fill=clr
-				)
+			# --- Dodecatemorion: Longitude 출력 직후 한 칸 추가 ---
+			if i == planets.Planet.LONG and self.options.speculumdodecat[self.speculum]:
+				draw.line((x + self.SMALL_CELL_WIDTH + summa + offs[i], y,
+						   x + self.SMALL_CELL_WIDTH + summa + offs[i], y + self.LINE_HEIGHT), fill=clr)
 
-				# 2) 경도에서 Dodecatemorion 계산해 ‘C’ 칸에 출력
-				dodec_lon = self._dodecatemoria_lon(ayanlon)  # 또는 lon_for_c
-				# 1) 사인 인덱스와 사인 안의 각도 분리
-				signC = int(dodec_lon / chart.Chart.SIGN_DEG)
-				pos_in_sign = dodec_lon - signC * chart.Chart.SIGN_DEG
+				sign_size = chart.Chart.SIGN_DEG
+				src = ayanlon if self.options.ayanamsha != 0 else data[planets.Planet.LONG]
+				base = int(src / sign_size) * sign_size
+				pos_in_sign = src % sign_size
+				dodec_lon = util.normalize(base + pos_in_sign * 12.0)
 
-				# 2) 분·초는 pos_in_sign에서 다시 계산  (작은 eps로 59.999.. 보정)
-				dpos, mpos, spos = util.decToDeg(pos_in_sign + 1e-8)
+				signC = int(dodec_lon / sign_size)
+				posC = dodec_lon - signC * sign_size
+				dC, mC, sC = util.decToDeg(posC + 1e-8)
 
-				# 3) 출력
-				txtC = (str(dpos)).rjust(2)+self.deg_symbol+(str(mpos)).zfill(2)+"'"+(str(spos)).zfill(2)+'"'
-
+				txtC = (str(dC)).rjust(2) + self.deg_symbol + (str(mC)).zfill(2) + "'" + (str(sC)).zfill(2) + '"'
 				wC, hC = draw.textsize(txtC, self.fntText)
-				wsp, _  = draw.textsize(' ', self.fntText)
-				wsg, hsg = draw.textsize(self.signs[signC], self.fntMorinus)
-				offC = (self.CELL_WIDTH - (wC + wsp + wsg)) / 2
+				wspC, _  = draw.textsize(' ', self.fntText)
+				wsgC, hsgC = draw.textsize(self.signs[signC], self.fntMorinus)
+				offC = (self.CELL_WIDTH - (wC + wspC + wsgC)) / 2
 
-				# 값 + 사인 심볼
-				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC,
-						y + (self.LINE_HEIGHT - hC)/2), txtC, fill=clrpl, font=self.fntText)
-				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC + wC + wsp,
-						y + (self.LINE_HEIGHT - hsg)/2), self.signs[signC], fill=clrpl, font=self.fntMorinus)
-
-				# 3) 이후 칼럼들을 한 칸 오른쪽으로
+				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC, y + (self.LINE_HEIGHT - hC)/2),
+						  txtC, fill=clrpl, font=self.fntText)
+				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC + wC + wspC, y + (self.LINE_HEIGHT - hsgC)/2),
+						  self.signs[signC], fill=clrpl, font=self.fntMorinus)
 				summa += self.CELL_WIDTH
 
 			elif i == planets.Planet.SA or i == planets.Planet.MD or i == planets.Planet.HD or i == planets.Planet.TH or i == planets.Planet.HOD or i == planets.Planet.AODO:
@@ -558,22 +637,20 @@ class PositionsWnd2(wx.Window):
 			j += 1
 			summa += offs[i]
 
-
 	def drawregiomontanline(self, draw, x, y, clr, txt, data, ayanlon, idxpl=0, speed=0.0):
 		#bottom horizontal line
 		draw.line((x, y+self.LINE_HEIGHT, x+self.TABLE_WIDTH, y+self.LINE_HEIGHT), fill=clr)
 
 		#vertical lines
 		offs = (0, self.SMALL_CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
-		draw.line((x + self.TABLE_WIDTH, y, x + self.TABLE_WIDTH, y + self.LINE_HEIGHT), fill=clr)
-
+# ########################################
 # Roberto change - V 7.1.0
 # ########################################
 
 		SPEC = 2
 		j = 0
 		summa = 0
-		for i in range(len(self.options.speculums[self.speculum])+1+1):#+1 is the leftmost column
+		for i in range(len(self.options.speculums[self.speculum]) + 1 + 1):  # +1: 좌측 심볼 칸, +1: 우측 경계 #+1 is the leftmost column
 			if i >= SPEC and not self.options.speculums[self.speculum][i-SPEC]:
 				continue
 
@@ -581,6 +658,13 @@ class PositionsWnd2(wx.Window):
 
 			j += 1
 			summa += offs[i]
+			if i >= 2 and (i - 2) == planets.Planet.LONG and self.options.speculums[self.speculum][planets.Planet.LONG] and self.options.speculumdodecat[self.speculum]:			
+				summa += self.CELL_WIDTH
+				draw.line((x+summa, y, x+summa, y+self.LINE_HEIGHT), fill=clr)
+		# LONG OFF + 도데카 ON이면 선두 1칸 시프트
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			summa += self.CELL_WIDTH
+			draw.line((x+summa, y, x+summa, y+self.LINE_HEIGHT), fill=clr)
 
 		#draw symbols
 		clrpl = (0,0,0)
@@ -590,15 +674,14 @@ class PositionsWnd2(wx.Window):
 			else:
 				dign = self.chart.dignity(idxpl)
 				clrpl = self.clrs[dign]
-		# --- LoF(포르투나) 전용 색: positionswnd와 동일한 방식의 사용자 색 적용 ---
+
+		# LoF(포르투나): 사용자 개인 색 반영
 		if txt == self.LOF_CHAR:
 			if self.bw:
 				clrpl = (0,0,0)
-			elif self.options.useplanetcolors and len(self.options.clrindividual) > astrology.SE_PLUTO + 2:
-				# 행성 개수 뒤에 예약해 둔 색 슬롯(예: Pluto+2)을 LoF 색으로 사용
-				clrpl = self.options.clrindividual[astrology.SE_PLUTO + 2]
+			elif self.options.useplanetcolors:
+				clrpl = self.options.clrindividual[astrology.SE_PLUTO+2]
 			else:
-				# 사용자 텍스트 색(컬러 모드)로 통일
 				clrpl = self.options.clrtexts
 
 		fnt = self.fntMorinus
@@ -619,8 +702,40 @@ class PositionsWnd2(wx.Window):
 
 		j = 0
 		summa = 0
+		# LONG OFF + 도데카 ON → 첫 칸에 도데카 출력 후 시작 위치 1칸 시프트
+		if self.options.speculumdodecat[self.speculum] and not self.options.speculums[self.speculum][planets.Planet.LONG]:
+			sign_size = chart.Chart.SIGN_DEG
+			src = ayanlon
+			base = int(src / sign_size) * sign_size
+			pos_in_sign = src % sign_size
+			dodec_lon = util.normalize(base + pos_in_sign * 12.0)
+
+			signC = int(dodec_lon / sign_size)
+			posC = dodec_lon - signC * sign_size
+			dC, mC, sC = util.decToDeg(posC + 1e-8)
+
+			txtC = (str(dC)).rjust(2)+self.deg_symbol+(str(mC)).zfill(2)+"'"+(str(sC)).zfill(2)+'"'
+			wC, hC  = draw.textsize(txtC, self.fntText)
+			wspC, _ = draw.textsize(' ', self.fntText)
+			wsgC, hsgC = draw.textsize(self.signs[signC], self.fntMorinus)
+			offC = (self.CELL_WIDTH - (wC + wspC + wsgC)) / 2
+
+			draw.text((x + self.SMALL_CELL_WIDTH + offC, y + (self.LINE_HEIGHT - hC)/2), txtC, fill=clrpl, font=self.fntText)
+			draw.text((x + self.SMALL_CELL_WIDTH + offC + wC + wspC, y + (self.LINE_HEIGHT - hsgC)/2), self.signs[signC], fill=clrpl, font=self.fntMorinus)
+
+			summa = self.CELL_WIDTH
+
 		for i in range(len(self.options.speculums[self.speculum])):
 			if not self.options.speculums[self.speculum][i]:
+				continue
+			# LoF는 Asc/MC가 '—'로 표시되는 구간(Decl 이후)에서는 값이 있어도 '—'로 표시
+			if txt == self.LOF_CHAR and i > planets.Planet.DECL:
+				txtdash = u'—'
+				w,h = draw.textsize(txtdash, self.fntText)
+				offset = (offs[i]-w)/2
+				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txtdash, fill=clrpl, font=self.fntText)
+				j += 1
+				summa += offs[i]
 				continue
 
 			d,m,s = util.decToDeg(data[i])
@@ -638,20 +753,39 @@ class PositionsWnd2(wx.Window):
 				offset = (offs[i]-(w+wsp+wsg))/2
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=clrpl, font=self.fntText)
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset+w+wsp, y+(self.LINE_HEIGHT-hsg)/2), self.signs[sign], fill=clrpl, font=self.fntMorinus)
+				# --- Dodecatemorion: LONG 직후 칼럼 삽입 (Regiomontanus) ---
+				if self.options.speculumdodecat[self.speculum]:
+					# 왼쪽 경계
+					draw.line((x + self.SMALL_CELL_WIDTH + summa + offs[i], y,
+							   x + self.SMALL_CELL_WIDTH + summa + offs[i], y + self.LINE_HEIGHT), fill=clr)
+					sign_size = chart.Chart.SIGN_DEG
+					src = ayanlon
+					base = int(src / sign_size) * sign_size
+					pos_in_sign = src % sign_size
+					dodec_lon = util.normalize(base + pos_in_sign * 12.0)
+					signC = int(dodec_lon / sign_size)
+					posC = dodec_lon - signC * sign_size
+					dC, mC, sC = util.decToDeg(posC + 1e-8)
+					txtC = (str(dC)).rjust(2)+self.deg_symbol+(str(mC)).zfill(2)+"'"+(str(sC)).zfill(2)+'"'
+					wC, hC = draw.textsize(txtC, self.fntText)
+					wspC, _ = draw.textsize(' ', self.fntText)
+					wsgC, hsgC = draw.textsize(self.signs[signC], self.fntMorinus)
+					offC = (self.CELL_WIDTH - (wC + wspC + wsgC)) / 2
+					draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC, y + (self.LINE_HEIGHT - hC)/2), txtC, fill=clrpl, font=self.fntText)
+					draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC + wC + wspC, y + (self.LINE_HEIGHT - hsgC)/2), self.signs[signC], fill=clrpl, font=self.fntMorinus)
+					# 다음 칸들이 오른쪽으로 1칸 밀리도록
+					summa += self.CELL_WIDTH
+
 			elif i == planets.Planet.LAT or i == planets.Planet.DECL or i == planets.Planet.Q or i == planets.Planet.ELV:
 # ########################################
 # Roberto change - V 7.1.0
-# ########################################				
+# ########################################
 				sign = ''
 				if data[i] < 0.0:
 					sign = '-'
-# ###################################
-# Roberto change v 8.0.1
 				if i == planets.Planet.LAT and idxpl == 0:#Sun's latitude is always zero
-				#	d, m, s = 0, 0, 0
+					d, m, s = 0, 0, 0
 					sign = ''
-# In pseudo-astronomic techniques the Sun's latitude may be positive or negative too
-# ###################################				
 				txt = sign+(str(d)).rjust(2)+self.deg_symbol+(str(m)).zfill(2)+"'"+(str(s)).zfill(2)+'"'
 				w,h = draw.textsize(txt, self.fntText)				
 				offset = (offs[i]-w)/2
@@ -676,36 +810,6 @@ class PositionsWnd2(wx.Window):
 				w,h = draw.textsize(txt, self.fntText)				
 				offset = (offs[i]-w)/2
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=clrpl, font=self.fntText)
-				# ── 여기서 'C'(Dodecatemorion) 칸 삽입 ──
-				# 1) RA 오른쪽에 세로줄 하나 더 (C 칸의 왼쪽 경계)
-				draw.line((x + self.SMALL_CELL_WIDTH + summa + offs[i], y,
-						x + self.SMALL_CELL_WIDTH + summa + offs[i], y + self.LINE_HEIGHT), fill=clr)
-
-				# 2) 도데카테모리온 값 계산 (표시용 경도는 ayanlon 기반)
-				dodec_lon = self._dodecatemoria_lon(ayanlon)  # 또는 lon_for_c
-				# 1) 사인 인덱스와 사인 안의 각도 분리
-				signC = int(dodec_lon / chart.Chart.SIGN_DEG)
-				pos_in_sign = dodec_lon - signC * chart.Chart.SIGN_DEG
-
-				# 2) 분·초는 pos_in_sign에서 다시 계산  (작은 eps로 59.999.. 보정)
-				dpos, mpos, spos = util.decToDeg(pos_in_sign + 1e-8)
-
-				# 3) 출력
-				txtC = (str(dpos)).rjust(2)+self.deg_symbol+(str(mpos)).zfill(2)+"'"+(str(spos)).zfill(2)+'"'
-
-				wC, hC = draw.textsize(txtC, self.fntText)
-				offC = (self.CELL_WIDTH - wC)/2
-
-				# 3) C 칸 텍스트 (사인 심볼 포함)
-				draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC, y+(self.LINE_HEIGHT-hC)/2), txtC, fill=clrpl, font=self.fntText)
-				wsp, hsp = draw.textsize(' ', self.fntText)
-				wsg, hsg = draw.textsize(self.signs[signC], self.fntMorinus)
-				# 사인 심볼은 수치 뒤 공백 하나 두고 배치하고 싶으면 아래 두 줄을 대신 써라:
-				# draw.text((x + self.SMALL_CELL_WIDTH + summa + offs[i] + offC + wC + wsp, y+(self.LINE_HEIGHT-hsg)/2), self.signs[signC], fill=clrpl, font=self.fntMorinus)
-
-				# 4) 이후 칼럼들이 한 칸 오른쪽으로 밀리게 누적폭(summa)을 한 셀 추가
-				summa += self.CELL_WIDTH
-
 			elif i == planets.Planet.RMD or i == planets.Planet.RHD:
 				sign = ''
 				if i == planets.Planet.RMD:
@@ -724,3 +828,4 @@ class PositionsWnd2(wx.Window):
 
 			j += 1
 			summa += offs[i]
+

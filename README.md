@@ -1,4 +1,4 @@
-## [9.2.8] Updated Version from 8.1.0 
+## [9.2.9] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -184,3 +184,8 @@
 - Fixed Revolutions when Ayanamsha is enabled.
 - Reordered items in the Options menu.
 - When outer-wheel overlays (Dodecatemoria, Antiscia/Contra-Antiscia, Arabic Parts, etc.) are enabled, they now also appear in Profections, Secondary Progressions, Elections, Revolutions, Transits, and Sun Transits.
+#### 9.2.9
+- Secondary Progressions: unified status-bar behavior.
+- Options/Speculum: Dodecatemoria can be toggled on/off.
+- Dodecatemoria Calculator: now inherits from CommonWnd and supports saving as an image; removed the absolute ecliptic-longitude input.
+- Reorganized Options.

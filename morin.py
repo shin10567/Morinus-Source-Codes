@@ -129,6 +129,7 @@ import json
 import urllib.request as urllib2
 import urllib
 import eclipsesframe
+import dodecacalcframe
 
 # morin.py 상단 어딘가 (import wx 아래)
 LANG_MAP = {
@@ -156,6 +157,23 @@ pdlock = _thread.allocate_lock()
 #menubar
 
 class MFrame(wx.Frame):
+
+	def _close_non_main_frames(self):
+		import wx
+		# 메인 프레임(self)을 제외한 모든 TopLevel Frame을 닫는다.
+		for w in wx.GetTopLevelWindows():
+			try:
+				# 메인 프레임은 제외
+				if w is self:
+					continue
+				# Options 같은 wx.Dialog는 건드리지 않고,
+				# 보조 차트 창(대부분 wx.Frame 파생)을 닫는다.
+				if isinstance(w, wx.Frame) and not isinstance(w, wx.Dialog):
+					# True로 강제 종료해 누수 방지
+					w.Close(True)
+			except Exception:
+				# 개별 창에서 에러 나도 전체 동작은 유지
+				pass
 
 	def __init__(self, parent, id, title, opts):
 # ###########################################
@@ -402,36 +420,30 @@ class MFrame(wx.Frame):
 		# [Appearance1] submenu: Appearance1/Speculum(=Appearance2)/Colors/Symbols
 		self.o_appearance = wx.Menu()
 		self.o_appearance.Append(self.ID_Appearance1, mtexts.menutxts['OMAppearance1'], mtexts.menutxts['OMAppearance1Doc'])
-		self.o_appearance.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
+
 		self.o_appearance.Append(self.ID_Colors,      mtexts.menutxts['OMColors'],      mtexts.menutxts['OMColorsDoc'])
 		self.o_appearance.Append(self.ID_Symbols,     mtexts.menutxts['OMSymbols'],     mtexts.menutxts['OMSymbolsDoc'])
 		self.moptions.Append(self.ID_AppearanceOptMenu, mtexts.txts['Appearance1'], self.o_appearance)
+		self.moptions.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
+		self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
 
+		self.o_appearance.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
+		self.o_appearance.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
+		self.setHouse()
 		# [Dignities] submenu: Dignities + Minor Dignities(submenu)
 		self.o_digs = wx.Menu()
 		self.o_digs.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
-
 		self.mdignities = wx.Menu()
 		self.mdignities.Append(self.ID_Triplicities, mtexts.menutxts['OMTriplicities'], mtexts.menutxts['OMTriplicitiesDoc'])
 		self.mdignities.Append(self.ID_Terms,        mtexts.menutxts['OMTerms'],        mtexts.menutxts['OMTermsDoc'])
 		self.mdignities.Append(self.ID_Decans,       mtexts.menutxts['OMDecans'],       mtexts.menutxts['OMDecansDoc'])
 		self.o_digs.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
-
 		self.moptions.Append(self.ID_DignitiesOptMenu, mtexts.txts['Dignities'], self.o_digs)
-		self.o_appearance.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
-		self.o_appearance.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
-		self.o_appearance.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
-
-		self.setHouse()
-
 		self.mnodes = wx.Menu()
 		self.meanitem = self.mnodes.Append(self.ID_NodeMean, mtexts.menutxts['OMNMean'], '', wx.ITEM_RADIO)
 		self.trueitem = self.mnodes.Append(self.ID_NodeTrue, mtexts.menutxts['OMNTrue'], '', wx.ITEM_RADIO)
-
-		self.o_appearance.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
-
+		self.moptions.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
 		self.setNode()
-
 		# [ArabicParts] submenu: Arabic Parts(first) + Fortuna(second)
 		self.o_arabic = wx.Menu()
 		self.o_arabic.Append(self.ID_ArabicParts,  mtexts.menutxts['OMArabicParts'],  mtexts.menutxts['OMArabicPartsDoc'])
@@ -1260,7 +1272,7 @@ class MFrame(wx.Frame):
 			speculum = 0
 			if self.options.primarydir == primdirs.PrimDirs.REGIOMONTAN:
 				speculum = 1
-			if True in self.options.speculums[speculum]:
+			if (True in self.options.speculums[speculum]) or self.options.speculumdodecat[speculum]:
 				wait = wx.BusyCursor()
 				posframe = positionsframe.PositionsFrame(self, self.title, self.horoscope, self.options)
 				posframe.Show(True)
@@ -1603,7 +1615,7 @@ class MFrame(wx.Frame):
 			speculum = 0
 			if self.options.primarydir == primdirs.PrimDirs.REGIOMONTAN:
 				speculum = 1
-			if True in self.options.speculums[speculum]:
+			if (True in self.options.speculums[speculum]) or self.options.speculumdodecat[speculum]:
 					if self.horoscope.cpd != None:
 						wait = wx.BusyCursor()
 						custframe = customerframe.CustomerFrame(self, self.title, self.horoscope, self.options, self.horoscope.cpd)
@@ -1635,16 +1647,38 @@ class MFrame(wx.Frame):
 
 # ###################################
 # Roberto change v 8.0.1
+	#def onDodecatemoria(self, event):
+		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
+		#if wx.Platform == '__WXMSW__' and not self.splash:
+			#self.handleStatusBar(True)
+	
+		#if not self.splash:
+			#wait = wx.BusyCursor()
+			#dodecatemoriafr = dodecatemoriaframe.DodecatemoriaFrame(self, self.title, self.horoscope, self.options)
+			#dodecatemoriafr.Show(True)
+# ###################################
 	def onDodecatemoria(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
 		if wx.Platform == '__WXMSW__' and not self.splash:
 			self.handleStatusBar(True)
-	
+
 		if not self.splash:
 			wait = wx.BusyCursor()
-			dodecatemoriafr = dodecatemoriaframe.DodecatemoriaFrame(self, self.title, self.horoscope, self.options)
-			dodecatemoriafr.Show(True)
-# ###################################
+			try:
+				# 1) 기존 도데카테모리온 창
+				dodeca_table_fr = dodecatemoriaframe.DodecatemoriaFrame(self, self.title, self.horoscope, self.options)
+				dodeca_table_fr.Show(True)
+
+				# 2) 새 도데카테모리온 계산기 창
+				#    - 새 텍스트 키 추가 없이, 기존 키를 재사용
+				calc_title = self.title.replace(
+					mtexts.typeList[self.horoscope.htype],
+					mtexts.txts.get('Dodecatemorion', 'Dodecatemoria')
+				)
+				dodeca_calc_fr = dodecacalcframe.DodecaCalcFrame(self, calc_title, self.horoscope, self.options)
+				dodeca_calc_fr.Show(True)
+			finally:
+				del wait
 
 	def onCircumambulation(self, event):
 		if self.horoscope.time.bc:
@@ -2370,14 +2404,15 @@ class MFrame(wx.Frame):
 
 		def make_progressed_chart(yy, mm_, dd_):
 			# 현실 날짜 → age → 진행차트 + 진행(점성술) 날짜
-			target_jd = astrology.swe_julday(int(yy), int(mm_), int(dd_), 0.0, calflag)
+			ut_anchor = float(nt.hour) + float(nt.minute)/60.0 + float(nt.second)/3600.0
+			target_jd = astrology.swe_julday(int(yy), int(mm_), int(dd_), ut_anchor, calflag)
 			age_years = (target_jd - birth_jd) / NAIBOD_YEAR_DAYS
 			py, pm, pd, ptime = astrology.swe_revjul(birth_jd + age_years, calflag)
 			ph = int(ptime); pmi = int((ptime - ph) * 60.0 + 1e-6); ps = int(round(((ptime - ph) * 60.0 - pmi) * 60.0))
 			tm = chart.Time(int(py), int(pm), int(pd), ph, pmi, ps, False, nt.cal,
-				chart.Time.GREENWICH, True, 0, 0, False, self.horoscope.place, False)
+							chart.Time.GREENWICH, True, 0, 0, False, self.horoscope.place, False)
 			prg = chart.Chart(self.horoscope.name, self.horoscope.male, tm, self.horoscope.place,
-							  chart.Chart.TRANSIT, '', self.options, False)
+							chart.Chart.TRANSIT, '', self.options, False)
 			return age_years, (int(py), int(pm), int(pd)), prg
 
 		def _apply(yy, mm_, dd_):
@@ -3021,6 +3056,8 @@ class MFrame(wx.Frame):
 				#if self.options.autosave:
 				#	if self.options.saveLanguages():
 				self.moptions.Enable(self.ID_SaveOpts, True)
+				if not self.splash:
+					self.closeChildWnds()
 #-------------------------------------------------------------------------------
 				self.enableOptMenus(True)
 
@@ -3251,34 +3288,29 @@ class MFrame(wx.Frame):
 				# [Appearance1] submenu: Appearance1/Speculum(=Appearance2)/Colors/Symbols
 				self.o_appearance = wx.Menu()
 				self.o_appearance.Append(self.ID_Appearance1, mtexts.menutxts['OMAppearance1'], mtexts.menutxts['OMAppearance1Doc'])
-				self.o_appearance.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
+
 				self.o_appearance.Append(self.ID_Colors,      mtexts.menutxts['OMColors'],      mtexts.menutxts['OMColorsDoc'])
 				self.o_appearance.Append(self.ID_Symbols,     mtexts.menutxts['OMSymbols'],     mtexts.menutxts['OMSymbolsDoc'])
 				self.moptions.Append(self.ID_AppearanceOptMenu, mtexts.txts['Appearance1'], self.o_appearance)
+				self.moptions.Append(self.ID_Appearance2, mtexts.menutxts['OMAppearance2'], mtexts.menutxts['OMAppearance2Doc'])
+				self.moptions.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
+
+				self.o_appearance.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
+				self.o_appearance.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
+				self.setHouse()
 				# [Dignities] submenu: Dignities + Minor Dignities(submenu)
 				self.o_digs = wx.Menu()
 				self.o_digs.Append(self.ID_Dignities, mtexts.menutxts['OMDignities'], mtexts.menutxts['OMDignitiesDoc'])
-				self.o_appearance.Append(self.ID_Orbs, mtexts.menutxts['OMOrbs'], mtexts.menutxts['OMOrbsDoc'])
 				self.mdignities = wx.Menu()
 				self.mdignities.Append(self.ID_Triplicities, mtexts.menutxts['OMTriplicities'], mtexts.menutxts['OMTriplicitiesDoc'])
 				self.mdignities.Append(self.ID_Terms,        mtexts.menutxts['OMTerms'],        mtexts.menutxts['OMTermsDoc'])
 				self.mdignities.Append(self.ID_Decans,       mtexts.menutxts['OMDecans'],       mtexts.menutxts['OMDecansDoc'])
 				self.o_digs.Append(self.ID_MinorDignities, mtexts.menutxts['OMMinorDignities'], self.mdignities)
 				self.moptions.Append(self.ID_DignitiesOptMenu, mtexts.txts['Dignities'], self.o_digs)
-
-				self.o_appearance.Append(self.ID_Ayanamsha, mtexts.menutxts['OMAyanamsha'], mtexts.menutxts['OMAyanamshaDoc'])
-				self.o_appearance.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
-
-				self.moptions.Append(self.ID_HouseSystem, mtexts.menutxts['OMHouseSystem'], self.mhousesystem)
-
-				self.setHouse()
-
 				self.mnodes = wx.Menu()
 				self.meanitem = self.mnodes.Append(self.ID_NodeMean, mtexts.menutxts['OMNMean'], '', wx.ITEM_RADIO)
 				self.trueitem = self.mnodes.Append(self.ID_NodeTrue, mtexts.menutxts['OMNTrue'], '', wx.ITEM_RADIO)
-
-				self.o_appearance.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
-
+				self.moptions.Append(self.ID_Nodes, mtexts.menutxts['OMNodes'], self.mnodes)
 				self.setNode()
 				# [ArabicParts] submenu: Arabic Parts(first) + Fortuna(second)
 				self.o_arabic = wx.Menu()
@@ -3833,7 +3865,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.2.8'
+		info.Version = '9.2.9'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

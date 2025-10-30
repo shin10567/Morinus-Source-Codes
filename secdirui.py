@@ -78,7 +78,7 @@ class SecDirDialog(wx.Dialog):
            progressed_tuple: (Y,M,D) progressed astrologic date to display (optional)
         """
         try:
-            self.lbl_age.SetLabel(mtexts.txts["Age"]+": %d" % int(age_int))
+            self.lbl_age.SetLabel(mtexts.txts["Age"]+": %d," % int(age_int))
         except Exception:
             pass
         try:

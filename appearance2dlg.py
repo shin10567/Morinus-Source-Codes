@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import  wx
 import planets
 import chart
@@ -13,17 +14,17 @@ wx.HelpProvider.Set(provider)
 
 class Appearance2Dlg(wx.Dialog):
 	def __init__(self, parent):
-        # Instead of calling wx.Dialog.__init__ we precreate the dialog
-        # so we can set an extra style that must be set before
-        # creation, and then we create the GUI object using the Create
-        # method.
+		# Instead of calling wx.Dialog.__init__ we precreate the dialog
+		# so we can set an extra style that must be set before
+		# creation, and then we create the GUI object using the Create
+		# method.
 #		pre = wx.PreDialog()
 #		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 #		pre.Create(parent, -1, mtexts.txts['Appearance2'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
-        # This next step is the most important, it turns this Python
-        # object into the real wrapper of the dialog (instead of pre)
-        # as far as the wxPython extension is concerned.
+		# This next step is the most important, it turns this Python
+		# object into the real wrapper of the dialog (instead of pre)
+		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['Appearance2'], size=wx.DefaultSize)
 		#main vertical sizer
@@ -37,6 +38,9 @@ class Appearance2Dlg(wx.Dialog):
 
 		self.longckb = wx.CheckBox(self, -1, mtexts.txts['Longitude'])
 		placidiansizer.Add(self.longckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
+		# Dodecatemorion (Placidian)
+		self.placdodecckb = wx.CheckBox(self, -1, mtexts.txts['Dodecatemorion'])
+		placidiansizer.Add(self.placdodecckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		self.latckb = wx.CheckBox(self, -1, mtexts.txts['Latitude'])
 		placidiansizer.Add(self.latckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		self.rectascckb = wx.CheckBox(self, -1, mtexts.txts['Rectascension'])
@@ -73,6 +77,9 @@ class Appearance2Dlg(wx.Dialog):
 
 		self.reglongckb = wx.CheckBox(self, -1, mtexts.txts['Longitude'])
 		regiomontansizer.Add(self.reglongckb, 0, wx.ALIGN_LEFT|wx.ALL|wx.TOP, 2)
+		# Dodecatemorion (Regiomontan)
+		self.regdodecckb = wx.CheckBox(self, -1, mtexts.txts['Dodecatemorion'])
+		regiomontansizer.Add(self.regdodecckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		self.reglatckb = wx.CheckBox(self, -1, mtexts.txts['Latitude'])
 		regiomontansizer.Add(self.reglatckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
 		self.regrectascckb = wx.CheckBox(self, -1, mtexts.txts['Rectascension'])
@@ -106,10 +113,10 @@ class Appearance2Dlg(wx.Dialog):
 		self.elvckb = wx.CheckBox(self, -1, mtexts.txts['ELV'])
 		self.elvckb.SetHelpText(mtexts.txts['HelpELV'])
 		regiomontansizer.Add(self.elvckb, 0, wx.ALIGN_LEFT|wx.ALL, 2)
-# ###########################################
-# Roberto change V 7.1.0
-# ###########################################
 
+		# ###########################################
+		# Roberto change V 7.1.0
+		# ###########################################
 
 		mhsizer.Add(regiomontansizer, 1, wx.GROW|wx.RIGHT, 5)
 
@@ -162,6 +169,7 @@ class Appearance2Dlg(wx.Dialog):
 		self.ascdiffpoleckb.SetValue(options.speculums[chart.Chart.PLACIDIAN][planets.Planet.ADPH])  
 		self.poleheightckb.SetValue(options.speculums[chart.Chart.PLACIDIAN][planets.Planet.POH])  
 		self.ascdescoblckb.SetValue(options.speculums[chart.Chart.PLACIDIAN][planets.Planet.AODO])
+		self.placdodecckb.SetValue(options.speculumdodecat[chart.Chart.PLACIDIAN])
 
 		self.reglongckb.SetValue(options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.LONG]) 
 		self.reglatckb.SetValue(options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.LAT])  
@@ -177,6 +185,8 @@ class Appearance2Dlg(wx.Dialog):
 		self.rmpckb.SetValue(options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.RMP])
 		self.azmckb.SetValue(options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.AZM])
 		self.elvckb.SetValue(options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.ELV])
+		self.regdodecckb.SetValue(options.speculumdodecat[chart.Chart.REGIOMONTAN])
+
 # ###########################################
 # Roberto change V 7.1.0
 # ###########################################
@@ -230,6 +240,9 @@ class Appearance2Dlg(wx.Dialog):
 		if options.speculums[chart.Chart.PLACIDIAN][planets.Planet.AODO] != self.ascdescoblckb.GetValue():
 			options.speculums[chart.Chart.PLACIDIAN][planets.Planet.AODO] = self.ascdescoblckb.GetValue()
 			changed = True
+		if options.speculumdodecat[chart.Chart.PLACIDIAN] != self.placdodecckb.GetValue():
+			options.speculumdodecat[chart.Chart.PLACIDIAN] = self.placdodecckb.GetValue()
+			changed = True
 
 		#Regiomontan
 		if options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.LONG] != self.reglongckb.GetValue():
@@ -277,6 +290,11 @@ class Appearance2Dlg(wx.Dialog):
 		if options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.ELV] != self.elvckb.GetValue():
 			options.speculums[chart.Chart.REGIOMONTAN][planets.Planet.ELV] = self.elvckb.GetValue()
 			changed = True
+
+		if options.speculumdodecat[chart.Chart.REGIOMONTAN] != self.regdodecckb.GetValue():
+			options.speculumdodecat[chart.Chart.REGIOMONTAN] = self.regdodecckb.GetValue()
+			changed = True
+
 # ###########################################
 # Roberto change V 7.1.0
 # ###########################################
