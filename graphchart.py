@@ -1208,25 +1208,55 @@ class GraphChart:
 		if self.bw:
 			clr = (0,0,0)
 
-		# 오른쪽 여백 기준(좌측과 동일 여백)
+		# 오른쪽 여백(좌측과 대칭)
 		xR = self.w - self.w/25
-		y  = self.h - self.h/25
+
+		# 줄 높이
+		_, h = self.fntBigText.getsize("Ag")
+		dy = h * 1.2  # 기존 함수에서 쓰던 1.2 유지
+
+		# 차트 외곽 원의 상·하단 y
+		(cx, cy) = self.center.Get()
+		R = self.rOuterMax if (self.chart2 is not None) else self.r30
+		y_chart_top    = cy - R
+		y_chart_bottom = cy + R
+
+		# 상단-우측 블록(일주/시주)의 하단 y를 이용해 동일 간격 계산
+		gap_right = None
+		if getattr(self.options, 'planetarydayhour', False):
+			y_top = self.h/25
+			# drawPlanetaryDayAndHour와 동일한 라인 높이 근사
+			_, h_label     = self.fntBigText.getsize("Ag")
+			# 아이콘 높이(최대값 사용)
+			_, h_icon_day  = self.fntMorinus2.getsize(common.common.Planets[0])
+			_, h_icon_hour = self.fntMorinus2.getsize(common.common.Planets[1])
+			line_h = int(max(h_icon_day, h_icon_hour, h_label) * 1.1)
+			y_top_block_bottom = y_top + line_h + max(h_icon_day, h_icon_hour, h_label)
+			gap_right = y_chart_top - y_top_block_bottom
+
+		# 만약 상단-우측 블록이 꺼져 있으면, 상단-좌측(날짜/시간) 간격으로 대체
+		if gap_right is None:
+			y_top_left = self.h/25
+			y_top_left_bottom = y_top_left + (h * 1.1) + h  # drawChartTimeTopLeft와 동일한 2줄 블록 높이
+			gap_right = y_chart_top - y_top_left_bottom
+
+		if gap_right < 0:
+			gap_right = 0
+
+		# 아랫줄(하우스시스템) 기준선 y
+		y  = y_chart_bottom + gap_right + dy
 
 		hs_txt = self.hsystem[self.options.hsys]
 		w_hs, h_hs = self.fntBigText.getsize(hs_txt)
 		x_hs = xR - w_hs
-
-		# 하우스시스템(아랫줄) 우측 정렬
 		self.draw.text((x_hs, y), hs_txt, fill=clr, font=self.fntBigText)
 
-		# 아야남샤(윗줄) 우측 정렬
+		# 윗줄(아야남샤)
 		if self.options.ayanamsha != 0:
 			aya_txt = self.ayans[self.options.ayanamsha]
 			w_aya, h_aya = self.fntBigText.getsize(aya_txt)
-			dy = max(h_hs, h_aya) * 1.2
 			x_aya = xR - w_aya
-			y2 = y - dy
-			self.draw.text((x_aya, y2), aya_txt, fill=clr, font=self.fntBigText)
+			self.draw.text((x_aya, y - dy), aya_txt, fill=clr, font=self.fntBigText)
 
 	def drawChartTimeTopLeft(self):
 		# 좌상단: 윗줄 = 날짜(예: 1998.July.23), 아랫줄 = 시간+표준(예: 11:20:24ZN)
@@ -1266,19 +1296,34 @@ class GraphChart:
 			clr = (0, 0, 0)
 
 		x = self.w/25
-		# 하단 기준선 맞추기 (housesystem 텍스트 위치와 균형)
-		base_y = self.h - self.h/25
 
 		# 줄 간격
 		_, h = self.fntBigText.getsize("Ag")
 		dy = h * 1.1
 
-		# 장소명(현지화 X)
-		name_txt = str(self.chart.place.place)
+		# 차트 외곽 원(바깥 휠 있으면 rOuterMax, 없으면 r30) 기준 상·하단 y
+		(cx, cy) = self.center.Get()
+		R = self.rOuterMax if (self.chart2 is not None) else self.r30
+		y_chart_top    = cy - R
+		y_chart_bottom = cy + R
+
+		# 상단-좌측 블록(날짜/시간)의 하단 y(두 줄이므로 y_top + dy + 글자높이)
+		y_top_block = self.h/25
+		y_top_block_bottom = y_top_block + dy + h
+
+		# 상단 텍스트와 차트 상단 끝의 간격(px)
+		top_gap = y_chart_top - y_top_block_bottom
+		if top_gap < 0:
+			top_gap = 0  # 겹치면 0으로 클램프
+
+		# 동일 간격을 하단에도 적용: 하단 블록의 두 번째 줄 y(= base_y)를 맞춘다
+		base_y = y_chart_bottom + top_gap + dy
 
 		# 방위문자 현지화
 		dir_lon = mtexts.txts['E'] if self.chart.place.east  else mtexts.txts['W']
 		dir_lat = mtexts.txts['N'] if self.chart.place.north else mtexts.txts['S']
+		# 장소명
+		name_txt = str(self.chart.place.place)
 
 		# 각도 표기(도°/분′), 초는 생략(원하면 동일한 방식으로 추가 가능)
 		lon_txt = (str(self.chart.place.deglon)).zfill(2) + self.deg_symbol + (str(self.chart.place.minlon)).zfill(2) + "'" + dir_lon
