@@ -1113,8 +1113,8 @@ class GraphChart:
 		# 요일 → 행성 인덱스 매핑 (Mon=0 … Sun=6)
 		ar = (1, 4, 2, 5, 3, 6, 0)
 
-		x = self.w - self.w/8
-		y = self.h/25
+		xR = self.w - self.w/25  # 오른쪽 정렬 기준(좌측 여백과 대칭)
+		y  = self.h/25
 		size = self.symbolSize/4*3
 
 		# Planetary Hours 재계산: 리턴(GMT)이어도 '현지 기준' 일출/일몰로 강제
@@ -1184,36 +1184,49 @@ class GraphChart:
 
 		w_day,  h_icon_day  = self.fntMorinus2.getsize(glyph_day)
 		w_hour, h_icon_hour = self.fntMorinus2.getsize(glyph_hour)
+		w_lbl_day, _  = self.fntBigText.getsize(mtexts.txts['Day'])
+		w_lbl_hour, _ = self.fntBigText.getsize(mtexts.txts['Hour'])
 		_,      h_label     = self.fntBigText.getsize("Ag")
 
 		line_h = int(max(h_icon_day, h_icon_hour, h_label) * 1.1)
 		pad_x  = int(self.symbolSize * 0.25)
 		w_icon = max(w_day, w_hour)
+		# 각 줄을 우측 정렬: (아이콘 + 패딩 + 라벨)의 오른쪽 끝이 xR에 맞게
+		x_day  = xR - (w_day  + pad_x + w_lbl_day)
+		x_hour = xR - (w_hour + pad_x + w_lbl_hour)
+		# 1행 (일주)
+		self.draw.text((x_day, y), glyph_day, fill=clr_day, font=self.fntMorinus2)
+		self.draw.text((x_day + w_day + pad_x, y), mtexts.txts['Day'],  fill=clr_lbl, font=self.fntBigText)
 
-		# 1행
-		self.draw.text((x, y), glyph_day, fill=clr_day, font=self.fntMorinus2)
-		self.draw.text((x + w_icon + pad_x, y), mtexts.txts['Day'],  fill=clr_lbl, font=self.fntBigText)
-
-		# 2행
+		# 2행 (시주)
 		y2 = y + line_h
-		self.draw.text((x, y2), glyph_hour, fill=clr_hour, font=self.fntMorinus2)
-		self.draw.text((x + w_icon + pad_x, y2), mtexts.txts['Hour'], fill=clr_lbl, font=self.fntBigText)
+		self.draw.text((x_hour, y2), glyph_hour, fill=clr_hour, font=self.fntMorinus2)
+		self.draw.text((x_hour + w_hour + pad_x, y2), mtexts.txts['Hour'], fill=clr_lbl, font=self.fntBigText)
 
 	def drawHousesystemName(self):
 		clr = self.options.clrtexts
 		if self.bw:
 			clr = (0,0,0)
 
-		x = self.w-self.w/6
-		y = self.h-self.h/20
+		# 오른쪽 여백 기준(좌측과 동일 여백)
+		xR = self.w - self.w/25
+		y  = self.h - self.h/20
 
-		#ayanamsha
+		hs_txt = self.hsystem[self.options.hsys]
+		w_hs, h_hs = self.fntBigText.getsize(hs_txt)
+		x_hs = xR - w_hs
+
+		# 하우스시스템(아랫줄) 우측 정렬
+		self.draw.text((x_hs, y), hs_txt, fill=clr, font=self.fntBigText)
+
+		# 아야남샤(윗줄) 우측 정렬
 		if self.options.ayanamsha != 0:
-			w, h = self.fntBigText.getsize(self.hsystem[self.options.hsys])
-			y2 = y-h*1.2
-			self.draw.text((x,y2), self.ayans[self.options.ayanamsha], fill=clr, font=self.fntBigText)
-
-		self.draw.text((x,y), self.hsystem[self.options.hsys], fill=clr, font=self.fntBigText)
+			aya_txt = self.ayans[self.options.ayanamsha]
+			w_aya, h_aya = self.fntBigText.getsize(aya_txt)
+			dy = max(h_hs, h_aya) * 1.2
+			x_aya = xR - w_aya
+			y2 = y - dy
+			self.draw.text((x_aya, y2), aya_txt, fill=clr, font=self.fntBigText)
 
 	def drawChartTimeTopLeft(self):
 		# 좌상단: 윗줄 = 날짜(예: 1998.July.23), 아랫줄 = 시간+표준(예: 11:20:24ZN)

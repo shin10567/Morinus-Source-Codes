@@ -1,4 +1,4 @@
-## [9.3.0] Updated Version from 8.1.0 
+## [9.3.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -193,3 +193,5 @@
 - Fixed Almuten label overlap and adjusted table sizing
 - Added borders and separators to the Topical Almuten settings section
 - Grouped and reorganized the Options menu
+#### 9.3.1
+- Right-aligned the Planetary Day/Hour, House System, and Ayanamsha labels.
