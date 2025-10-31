@@ -193,7 +193,7 @@ menutxtseng.update({
 })
 
 
-txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Different Charts','TimeLords':'Time Lords',
+txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Time Lords',
 'PlanetsPoints':'Planets/Points',
 'HourLord':'Hour Lord',
 'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'Partial', 'Penumbral':'Penumbral', 'Unknown':'Unknown', 'EclipsesFailed':'Eclipses failed',
@@ -552,8 +552,8 @@ menutxtshun.setdefault('TMEclipses', u'Nap-/Holdfogyatkozások\tCtrl+6')
 menutxtshun.setdefault('TMEclipsesDoc', u'Fogyatkozások a képlet dátuma körül.')
 
 
-txtshun = {'DDCharts': 'Diagramok Rajzolása',
-'DCharts': 'Különböző Diagramok','HourLord':u'Óra ura',
+txtshun = {'DDCharts': 'Diagramok rajzolása',
+'DCharts': 'Speciális képletek','HourLord':u'Óra ura',
 'TimeLords':u'Időurak',
 'PlanetsPoints':u'Bolygók/Pontok',
 'Total2':'Teljes', 'Annular':'Gyűrűs', 'Hybrid':'Hibrid', 'Partial':'Részleges', 'Penumbral':'Félárnyékos', 'Unknown':'Ismeretlen', 'EclipsesFailed':'Fogyatkozások számítása sikertelen',
@@ -914,7 +914,7 @@ menutxtsrus.setdefault('TMEclipsesDoc', u'Показать затмения ок
 
 
 txtsrus = {'DDCharts': 'Построить карты',
-'DCharts': 'Разные карты','HourLord':u'Упр. часа',
+'DCharts': 'Специальные карты','HourLord':u'Упр. часа',
 'TimeLords':u'Владыки времени',
 'PlanetsPoints':u'Планеты/Точки',
 'Total2':'Полное', 'Annular':'Кольцеобразное', 'Hybrid':'Гибридное', 'Partial':'Частичное', 'Penumbral':'Полутеневое', 'Unknown':'Неизвестно', 'EclipsesFailed':'Сбой расчёта затмений',
@@ -1273,8 +1273,8 @@ menutxtsesp.setdefault('TMEclipses', u'Eclipses\tCtrl+6')
 menutxtsesp.setdefault('TMEclipsesDoc', u'Mostrar eclipses alrededor de la fecha de la carta.')
 
 
-txtsesp = {'DDCharts': 'Dibujar Cartas',
-'DCharts': 'Cartas Diferentes','HourLord':u'Señor de la Hora',
+txtsesp = {'DDCharts': 'Dibujar cartas',
+'DCharts': 'Cartas especiales','HourLord':u'Señor de la Hora',
 'TimeLords':u'Señores del Tiempo',
 'PlanetsPoints':u'Planetas/Puntos',
 'Total2':'Total', 'Annular':'Anular', 'Hybrid':'Híbrido', 'Partial':'Parcial', 'Penumbral':'Penumbral', 'Unknown':'Desconocido', 'EclipsesFailed':'Error al calcular los eclipses',
@@ -1630,8 +1630,8 @@ menutxtsita.setdefault('TMEclipses', u'Eclissi\tCtrl+6')
 menutxtsita.setdefault('TMEclipsesDoc', u'Mostra le eclissi attorno alla data della carta.')
 
 
-txtsita = {'DDCharts': 'Disegnare Carte',
-'DCharts': 'Carte Differenti','HourLord':u'Signore dell’ora',
+txtsita = {'DDCharts': 'Disegnare carte',
+'DCharts': 'Carte speciali','HourLord':u'Signore dell’ora',
 'TimeLords':u'Signori del Tempo',
 'PlanetsPoints':u'Pianeti/Punti',
 'Total2':'Totale', 'Annular':'Anulare', 'Hybrid':'Ibrido', 'Partial':'Parziale', 'Penumbral':'Penombrale', 'Unknown':'Sconosciuto', 'EclipsesFailed':'Errore nel calcolo delle eclissi',
@@ -1645,7 +1645,7 @@ txtsita = {'DDCharts': 'Disegnare Carte',
 'Description':u'Programma astrologico di facile uso e di estrema precisione astronomica.\nSwiss Ephemeris versione: ',
 'NumFieldsCannotBeEmpty':u'Errore! I campi numerici non possono essere vuoti! Clicca sul punto interrogativo e poi controlla il range!',
 'RangeError':u'Errore! Clicca sul punto interrogativo e poi controlla il range!',
- 'HelpType':u'Tipo di oroscopo da calcolare',
+'HelpType':u'Tipo di oroscopo da calcolare',
 'HelpLonDeg':u'Valore tra 0 e 180', 'HelpMin':u'Valore tra 0 e 59', 'HelpLatDeg':u'Valore tra 0 e 90',
 'HelpZone':u'Selezione della zona', 'HelpHour':u'Valore tra 0 e 23', 'HelpZoneHour':u'Valore tra 0 e 12',
 'HelpPlace':u"Luogo dell'oroscopo", 'HelpUse':u'Usa i dati del dialogo Dati Personali se selezionato', 'HelpOk':u'Accetta cambiamenti',
@@ -1992,8 +1992,8 @@ menutxtsfre.setdefault('TMEclipses', u'Éclipses\tCtrl+6')
 menutxtsfre.setdefault('TMEclipsesDoc', u'Afficher les éclipses autour de la date du thème.')
 
 
-txtsfre = {'DDCharts': 'Tracer des Cartes',
-'DCharts': 'Cartes Différentes', 'HourLord':u'Maître de l’heure',
+txtsfre = {'DDCharts': 'Tracer des cartes',
+'DCharts': 'Cartes spéciales', 'HourLord':u'Maître de l’heure',
 'TimeLords':u'Maîtres du Temps',
 'PlanetsPoints':u'Planètes/Points',
 'Total2':'Totale', 'Annular':'Annulaire', 'Hybrid':'Hybride', 'Partial':'Partielle', 'Penumbral':'Pénombrale', 'Unknown':'Inconnu', 'EclipsesFailed':'Échec du calcul des éclipses',
@@ -2449,7 +2449,7 @@ menutxtscht.setdefault('TMEclipses', u'日月食\tCtrl+6')
 menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食')
 
 txtschs = {'DDCharts': '绘制星盘',
-'DCharts': '不同星盘','HourLord':u'時主星',
+'DCharts': '特殊星盘','HourLord':u'時主星',
 'TimeLords':u'时间主宰',
 'PlanetsPoints':u'行星/点',
 'Total2':'全食', 'Annular':'环食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食计算失败',
@@ -2705,7 +2705,7 @@ txtschs.setdefault('NoPartsToRemove',  u'没有可删除的点（保留福点）
 txtschs.setdefault('RE', u'引用')             # Chinese (Simplified)
 
 txtscht = {'DDCharts': '繪製星盤',
-'DCharts': '不同星盤','HourLord':u'時主星',
+'DCharts': '特殊星盤','HourLord':u'時主星',
 'TimeLords':u'時間主宰',
 'PlanetsPoints':u'行星/點',
 'Total2':'全食', 'Annular':'環食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食計算失敗',
@@ -3091,7 +3091,7 @@ menutxtsko.setdefault('TMEclipses', u'일월식\tCtrl+6')
 menutxtsko.setdefault('TMEclipsesDoc', u'일식과 월식을 표로 보여줍니다.')
 
 txtsko = {'DDCharts': '차트 그리기',
-'DCharts': '다른 차트','HourLord':u'시주',
+'DCharts': '특수 차트','HourLord':u'시주',
 'TimeLords':u'타임 로드',
 'PlanetsPoints':u'행성/감응점',
 'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Partial':'부분식', 'Penumbral':'반영식', 'Unknown':'미상', 'EclipsesFailed':'일월식 계산 실패',
