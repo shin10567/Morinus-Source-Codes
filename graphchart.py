@@ -1210,7 +1210,7 @@ class GraphChart:
 
 		# 오른쪽 여백 기준(좌측과 동일 여백)
 		xR = self.w - self.w/25
-		y  = self.h - self.h/20
+		y  = self.h - self.h/25
 
 		hs_txt = self.hsystem[self.options.hsys]
 		w_hs, h_hs = self.fntBigText.getsize(hs_txt)
@@ -1267,7 +1267,7 @@ class GraphChart:
 
 		x = self.w/25
 		# 하단 기준선 맞추기 (housesystem 텍스트 위치와 균형)
-		base_y = self.h - self.h/20
+		base_y = self.h - self.h/25
 
 		# 줄 간격
 		_, h = self.fntBigText.getsize("Ag")
