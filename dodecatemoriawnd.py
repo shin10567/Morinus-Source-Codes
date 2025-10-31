@@ -11,7 +11,7 @@ import Image, ImageDraw, ImageFont
 import util
 import mtexts
 import dodek_converter
-
+import dodecacalcframe
 
 class DodecatemoriaWnd(commonwnd.CommonWnd):
 
@@ -24,8 +24,8 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 		self.mainfr = mainfr
 		self.bw = self.options.bw
 		self.ID_DODEK_CONV = wx.NewId()
-		self.pmenu.Append(self.ID_DODEK_CONV, mtexts.txts["DodecatemoriaCalculator"],mtexts.txts["Converteclipticlongitude"])
-		#self.Bind(wx.EVT_MENU, self.on_open_dodek_converter, id=self.ID_DODEK_CONV)
+		self.pmenu.Insert(0, self.ID_DODEK_CONV, mtexts.txts["DodecatemoriaCalculator"])
+		self.Bind(wx.EVT_MENU, self.on_open_dodek_converter, id=self.ID_DODEK_CONV)
 		#wx.CallAfter(self.on_open_dodek_converter, None)
 		self.FONT_SIZE = int(21*self.options.tablesize) #Change fontsize to change the size of the table!
 		self.COLUMN_NUM = 2
@@ -208,16 +208,26 @@ class DodecatemoriaWnd(commonwnd.CommonWnd):
 				draw.text((x+self.SMALL_CELL_WIDTH+summa+offset, y+(self.LINE_HEIGHT-h)/2), txt, fill=clr, font=self.fntText)
 
 			summa += offs[i]
+
 	def on_open_dodek_converter(self, evt):
-		# 이미 떠 있으면 앞으로 가져오기
-		if getattr(self, "_dlg_dodek", None):
-			self._dlg_dodek.Raise()
-			self._dlg_dodek.SetFocus()
-			return
-		# 새로 띄우기 (모델리스)
-		self._dlg_dodek = dodek_converter.DodekConverterDialog(self)
-		self._dlg_dodek.Bind(wx.EVT_CLOSE, self._on_dodek_close)
-		self._dlg_dodek.Show()  # ← ShowModal() 대신 Show()
+		# Dodecatemoria Calculator 프레임 호출
+		try:
+			# 메인 프레임 타이틀의 차트 타입명을 "Dodecatemoria" 로 대체 (morin.onDodecatemoria 방식과 동일 컨벤션)
+			try:
+				calc_title = self.mainfr.title.replace(
+					mtexts.typeList[self.chart.horoscope.htype],
+					mtexts.txts.get('DodecatemoriaCalculator', 'Dodecatemoria')
+				)
+			except Exception:
+				# title 치환 실패 시 기본값
+				calc_title = mtexts.txts.get('DodecatemoriaCalculator', 'Dodecatemoria')
+
+			fr = dodecacalcframe.DodecaCalcFrame(self.mainfr, calc_title, self.chart, self.options)
+			fr.Show(True)
+		except Exception:
+			# 타이틀 구성 등에서 문제가 나도 계산기 띄우기는 보장
+			fr = dodecacalcframe.DodecaCalcFrame(self.mainfr, mtexts.txts.get('DodecatemoriaCalculator', 'Dodecatemoria'), self.chart, self.options)
+			fr.Show(True)
 
 	def _on_dodek_close(self, evt):
 		self._dlg_dodek.Destroy()

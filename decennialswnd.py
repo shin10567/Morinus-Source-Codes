@@ -99,7 +99,7 @@ class DecWnd(commonwnd.CommonWnd):
         if lvl == 2:
             # L2 → L3+L4 합본 팝업(발렌스식)
             parent_fr = self.GetTopLevelParent() or self.GetParent()
-            fr = DecPopupFrame(parent_fr, self.chart, self.options, parent_row=row, level=34,
+            fr = DecPopupFrame(parent_fr, self.chart, self.options, self.mainfr, parent_row=row, level=34,
                                         title=u"Decennials L3+L4")
             fr.Show(True); self._child_frames.append(fr)
 
@@ -277,6 +277,14 @@ class _DecPopupWnd(commonwnd.CommonWnd):
         w,h = im.size
         wx_img = wx.Image(w,h); wx_img.SetData(im.tobytes())
         return wx.Bitmap(wx_img)
+    # Save As Bitmap 기본 파일명 접미사 (CommonWnd.onSaveAsBitmap에서 사용)
+    def getExt(self):
+        try:
+            lvl = int(self.level)
+        except Exception:
+            lvl = None
+        # L3/L4 팝업이면 레벨을 이름에 반영, 그 외 예외적으로 기본명 사용
+        return u"Decennials_L%d.bmp" % lvl if lvl in (3, 4) else u"Decennials.bmp"
 
     def _recalc_sizes(self, nlines):
         BOR = commonwnd.CommonWnd.BORDER
@@ -313,7 +321,7 @@ class _DecPopupWnd(commonwnd.CommonWnd):
         ri = self._row_at(y)
         if ri < 0: return
         row = self.rows[ri]
-        fr = DecPopupFrame(self, self.chart, self.options, parent_row=row, level=4,
+        fr = DecPopupFrame(self, self.chart, self.options, self.mainfr, parent_row=row, level=4,
                         title=u"Decennials L4")
         fr.Show(True); self._child_frames.append(fr)
 
@@ -400,8 +408,7 @@ class _DecPopupWnd(commonwnd.CommonWnd):
 class DecPopupFrame(wx.Frame):
     XSIZE = 380
     YSIZE = 480
-    def __init__(self, parent, chrt, opts, parent_row, level, title=u"Decennials"):
+    def __init__(self, parent, chrt, opts, mainfr, parent_row, level, title=u"Decennials"):
         wx.Frame.__init__(self, parent, -1, title, wx.DefaultPosition, wx.Size(DecPopupFrame.XSIZE, DecPopupFrame.YSIZE))
-        self.w = _DecPopupWnd(self, chrt, opts, parent, parent_row, level)
-        self.SetMinSize((200, 200))
-        self.Bind(wx.EVT_CLOSE, lambda e: e.Skip())
+        self.w = _DecPopupWnd(self, chrt, opts, mainfr, parent_row, level)
+

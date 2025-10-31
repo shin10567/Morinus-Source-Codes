@@ -775,7 +775,10 @@ class ParanatellontaWnd(cw.CommonWnd):
         except Exception:
             pass
 
-    def drawBkg(self, draw):
+    def drawBkg(self, draw=None):
+        if draw is None:
+            return self.refreshBkg()
+
         BOR  = self.PAD
         txt  = self.clTxt
         tbl  = self.clTbl

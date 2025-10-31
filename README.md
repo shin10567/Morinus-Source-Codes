@@ -1,4 +1,4 @@
-## [9.3.1] Updated Version from 8.1.0 
+## [9.3.2] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -195,3 +195,8 @@
 - Grouped and reorganized the Options menu
 #### 9.3.1
 - Right-aligned the Planetary Day/Hour, House System, and Ayanamsha labels.
+#### 9.3.2
+- Enabled saving on Decennials L3/L4.
+- Fixed an issue where planetary glyph colors did not update in Black & White mode for Heliacal Risings/Settings and Paranatellonta.
+- Dodecatemoria: moved the “Dodecatemoria Calculator” context-menu item above “Save as Bitmap”; clicking it now opens the calculator.
+

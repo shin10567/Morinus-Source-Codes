@@ -4,13 +4,13 @@ import wx, datetime
 import astrology
 import common
 import commonwnd
-import Image, ImageDraw, ImageFont
 import mtexts
 from phasiscalc import (PLANET_IDS, PLANET_NAMES, visibility_flags_around,
                         is_outer, _local_date_tuple)
 import mtexts
-import chart  # ← 추가
-# 라벨 매핑을 '지연 평가'로 바꾼다
+import chart  
+from PIL import Image as PILImage, ImageDraw as PILImageDraw, ImageFont as PILImageFont
+
 def get_PHASE_LABELS():
     return {
         'MF': mtexts.txts['MorningFirst'],
@@ -215,8 +215,8 @@ class PhasisWnd(commonwnd.CommonWnd):
         self.TITLE_WIDTH  = (self.W_SYM + self.W_PHAS + self.W_TIME)
 
         # ③ 폰트 로드 (심볼/텍스트)
-        self.fntMorinus = ImageFont.truetype(common.common.symbols, self.FONT_SIZE)  # 행성 기호
-        self.fntText    = ImageFont.truetype(common.common.abc,     self.FONT_SIZE)  # 일반 텍스트
+        self.fntMorinus = PILImageFont.truetype(common.common.symbols, self.FONT_SIZE)
+        self.fntText    = PILImageFont.truetype(common.common.abc,     self.FONT_SIZE)
 
         # ④ 행 수 및 버퍼 크기 계산
         self.rows = self._compute_rows()     # 각 행: (ipl, symbol, phasis_text, time_text, color)
@@ -348,7 +348,26 @@ class PhasisWnd(commonwnd.CommonWnd):
 
     # ------------------------------------------------------------
     # 렌더: 헤더/세로선/가로선/텍스트 모두 PIL로 직접 그리기
-    def drawBkg(self):
+    def refreshBkg(self):
+        return self.drawBkg()
+
+    def drawBkg(self, draw=None):
+        # --- BW 토글 반영(공용핸들러/옵션 어디서 바뀌든 감지) ---
+        _bw = None
+        # 1) CommonWnd가 self.bw만 토글하는 케이스 우선 반영
+        if hasattr(self, 'bw') and isinstance(self.bw, bool):
+            _bw = self.bw
+        # 2) 옵션에서 토글하는 빌드도 존재 → 보조 소스
+        elif hasattr(self, 'options') and isinstance(getattr(self.options, 'bw', None), bool):
+            _bw = self.options.bw
+        # 3) 안전망
+        if _bw is None:
+            _bw = False
+        self.bw = bool(_bw)
+
+        # 모드가 바뀌면 팔레트/개별색이 달라지므로 항상 재계산
+        self.rows = self._compute_rows()
+
         # 색/배경
         self.bkgclr = (255,255,255) if self.bw else self.options.clrbackground
         self.SetBackgroundColour(self.bkgclr)
@@ -356,11 +375,11 @@ class PhasisWnd(commonwnd.CommonWnd):
         txtclr   = (0,0,0) if self.bw else self.options.clrtexts
 
         BOR = commonwnd.CommonWnd.BORDER
-        img  = Image.new('RGB', (self.WIDTH, self.HEIGHT), self.bkgclr)
-        draw = ImageDraw.Draw(img)
+        img  = PILImage.new('RGB', (self.WIDTH, self.HEIGHT), self.bkgclr)
+        draw = PILImageDraw.Draw(img)
 
         # --- [A] info 2행 (세로줄 없음, 중앙정렬) ---
-        txt_info1 = (mtexts.txts["HeliacalRisingsSettings"]+ u"\u00B1%d " + mtexts.txts["Days"]) % (PHASIS_WINDOW_DAYS,)
+        txt_info1 = (mtexts.txts["HeliacalRisingsSettings"]+ ' '+u"\u00B1%d " + mtexts.txts["Days"]) % (PHASIS_WINDOW_DAYS,)
 
         info_x = BOR
         info_w = self.TITLE_WIDTH
@@ -430,3 +449,7 @@ class PhasisWnd(commonwnd.CommonWnd):
         wxImg.SetData(img.tobytes())
         self.buffer = wx.Bitmap(wxImg)
         self.Refresh()
+        if hasattr(self, "Update"): self.Update()
+        if hasattr(self.parent, "Refresh"): self.parent.Refresh(False)
+        if hasattr(self.parent, "Update"):  self.parent.Update()
+
