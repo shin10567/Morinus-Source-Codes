@@ -193,7 +193,7 @@ menutxtseng.update({
 })
 
 
-txtseng = {'TimeLords':'Time Lords',
+txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Different Charts','TimeLords':'Time Lords',
 'PlanetsPoints':'Planets/Points',
 'HourLord':'Hour Lord',
 'Total2':'Total', 'Annular':'Annular', 'Hybrid':'Hybrid', 'Partial':'Partial', 'Penumbral':'Penumbral', 'Unknown':'Unknown', 'EclipsesFailed':'Eclipses failed',
@@ -219,7 +219,7 @@ txtseng = {'TimeLords':'Time Lords',
 'BMPFiles':'BMP Files (*.bmp)|*.bmp', 'SaveTable':'Save the table as bitmap', 'SaveAsBmp':'Save As Bitmap', 'SaveAsText':'Save As Text', 
 'SavePDs':'Save PDs as text', 'InvalidDate':'Invalid Date!', 'NoPDsWithSettings':'There are no primary directions with the current settings!', 
 'PersonalData':'Personal Data', 'OpenHor':'Open Horoscope', 'Error':'Error', 'SaveHor':'Save Horoscope', 'Message':'Message', 'Horoscope':'Horoscope',
-'Appearance1':'Draw Charts', 'Appearance2':'Speculum', 
+'Appearance1':'Appearance', 'Appearance2':'Speculum', 
 'Symbols':'Symbols', 'Colors':'Colors', 'Orbis':'Orbis', 
 'Score':'Score', 'Scores':'Scores', 'Morinus':'Morinus', 'FreeSoft':'Free Software', 'License':'GPLv3', 
 'January':'January', 'February':'February', 'March':'March', 'April':'April', 'May':'May', 'June':'June', 'July':'July',
@@ -335,7 +335,7 @@ txtseng = {'TimeLords':'Time Lords',
 'DayRulerScores1':'Day Ruler', 'DayRulerScores2':'Scores', 'HourRulerScores1':'Hour Ruler', 'HourRulerScores2':'Scores', 
 'Total':'Total', 'EssentialScores1':'Essential', 'EssentialScores2':'Scores', 'AccidentalScores1':'Accidental', 'AccidentalScores2':'Scores',
 'GrandScores1':'Grand', 'GrandScores2':'Scores',
-'TopicalPlanet':'Planet', 'TopicalPlanets':'Planets', 'TopicalHousecusp':'Housecusp', 'TopicalArabicPart':'Arabic part', 
+'TopicalPlanet':'Planet', 'TopicalPlanets':'Planets', 'TopicalHousecusp':'House Cusp', 'TopicalArabicPart':'Arabic Part', 
 'TopicalHouse1':'1', 'TopicalHouse2':'2', 'TopicalHouse3':'3', 'TopicalHouse4':'4', 'TopicalHouse5':'5', 'TopicalHouse6':'6', 'TopicalHouse7':'7', 'TopicalHouse8':'8', 'TopicalHouse9':'9', 'TopicalHouse10':'10', 'TopicalHouse11':'11', 'TopicalHouse12':'12', 
 'TopicalinHouse1':'in 1st house', 'TopicalinHouse2':'in 2nd house', 'TopicalinHouse3':'in 3rd house', 'TopicalinHouse4':'in 4th house', 'TopicalinHouse5':'in 5th house', 'TopicalinHouse6':'in 6th house', 'TopicalinHouse7':'in 7th house', 'TopicalinHouse8':'in 8th house', 'TopicalinHouse9':'in 9th house', 'TopicalinHouse10':'in 10th house', 'TopicalinHouse11':'in 11th house', 'TopicalinHouse12':'in 12th house', 
 'TopicalSelf':'Self', 'TopicalSign':'Sign', 'TopicalExaltation':'Exaltation', 'TopicalTriplicity1':'Tricplicity1', 'TopicalTriplicity2':'Tricplicity2', 'TopicalTriplicity3':'Tricplicity3', 'TopicalTerm':'Term', 'TopicalDecan':'Decan', 
@@ -368,7 +368,7 @@ txtseng = {'TimeLords':'Time Lords',
 # ###############
 'TopicalSyzygy':'Syzygy','TopicalDefault':'Default', 'TopicalConjunction':'Conjunction', 'TopicalOpposition':'Opposition', 
 'TopicalOppositionRadix':'Opposition(Radix)', 'TopicalMoon':'Moon', 'Dozen':'Dozen', 'Pro':'Pro',
-'ProfsMainSignificatorsOnly':'Main Significators Only', 'ProfsAll':'All', 'LightOfTheTime':'Light of the time', 
+'ProfsMainSignificatorsOnly':'Main Significators Only', 'ProfsAll':'All', 'LightOfTheTime':'Light of the Time', 
 'MercuryInVirgo':'Use Exaltation (Mercury in Virgo)', 'TimeSmallerThanBirthTime':'Time can not be smaller than the time of birth!', 
 'HelpApproxDeg':'Must be between 0 and 4', 'MonthlyProfections':'Monthly Profections', 'Steps12':'12 Steps', 'Steps13':'13 Steps', 
 'LeftClick':'Mouse Left Click on the Age Cell to Activate the Monthly Profections', 
@@ -552,7 +552,8 @@ menutxtshun.setdefault('TMEclipses', u'Nap-/Holdfogyatkozások\tCtrl+6')
 menutxtshun.setdefault('TMEclipsesDoc', u'Fogyatkozások a képlet dátuma körül.')
 
 
-txtshun = {'HourLord':u'Óra ura',
+txtshun = {'DDCharts': 'Diagramok Rajzolása',
+'DCharts': 'Különböző Diagramok','HourLord':u'Óra ura',
 'TimeLords':u'Időurak',
 'PlanetsPoints':u'Bolygók/Pontok',
 'Total2':'Teljes', 'Annular':'Gyűrűs', 'Hybrid':'Hibrid', 'Partial':'Részleges', 'Penumbral':'Félárnyékos', 'Unknown':'Ismeretlen', 'EclipsesFailed':'Fogyatkozások számítása sikertelen',
@@ -912,7 +913,8 @@ menutxtsrus.setdefault('TMEclipses', u'Затмения\tCtrl+6')
 menutxtsrus.setdefault('TMEclipsesDoc', u'Показать затмения около даты карты.')
 
 
-txtsrus = {'HourLord':u'Упр. часа',
+txtsrus = {'DDCharts': 'Построить карты',
+'DCharts': 'Разные карты','HourLord':u'Упр. часа',
 'TimeLords':u'Владыки времени',
 'PlanetsPoints':u'Планеты/Точки',
 'Total2':'Полное', 'Annular':'Кольцеобразное', 'Hybrid':'Гибридное', 'Partial':'Частичное', 'Penumbral':'Полутеневое', 'Unknown':'Неизвестно', 'EclipsesFailed':'Сбой расчёта затмений',
@@ -1271,7 +1273,8 @@ menutxtsesp.setdefault('TMEclipses', u'Eclipses\tCtrl+6')
 menutxtsesp.setdefault('TMEclipsesDoc', u'Mostrar eclipses alrededor de la fecha de la carta.')
 
 
-txtsesp = {'HourLord':u'Señor de la Hora',
+txtsesp = {'DDCharts': 'Dibujar Cartas',
+'DCharts': 'Cartas Diferentes','HourLord':u'Señor de la Hora',
 'TimeLords':u'Señores del Tiempo',
 'PlanetsPoints':u'Planetas/Puntos',
 'Total2':'Total', 'Annular':'Anular', 'Hybrid':'Híbrido', 'Partial':'Parcial', 'Penumbral':'Penumbral', 'Unknown':'Desconocido', 'EclipsesFailed':'Error al calcular los eclipses',
@@ -1627,7 +1630,8 @@ menutxtsita.setdefault('TMEclipses', u'Eclissi\tCtrl+6')
 menutxtsita.setdefault('TMEclipsesDoc', u'Mostra le eclissi attorno alla data della carta.')
 
 
-txtsita = {'HourLord':u'Signore dell’ora',
+txtsita = {'DDCharts': 'Disegnare Carte',
+'DCharts': 'Carte Differenti','HourLord':u'Signore dell’ora',
 'TimeLords':u'Signori del Tempo',
 'PlanetsPoints':u'Pianeti/Punti',
 'Total2':'Totale', 'Annular':'Anulare', 'Hybrid':'Ibrido', 'Partial':'Parziale', 'Penumbral':'Penombrale', 'Unknown':'Sconosciuto', 'EclipsesFailed':'Errore nel calcolo delle eclissi',
@@ -1988,7 +1992,8 @@ menutxtsfre.setdefault('TMEclipses', u'Éclipses\tCtrl+6')
 menutxtsfre.setdefault('TMEclipsesDoc', u'Afficher les éclipses autour de la date du thème.')
 
 
-txtsfre = {'HourLord':u'Maître de l’heure',
+txtsfre = {'DDCharts': 'Tracer des Cartes',
+'DCharts': 'Cartes Différentes', 'HourLord':u'Maître de l’heure',
 'TimeLords':u'Maîtres du Temps',
 'PlanetsPoints':u'Planètes/Points',
 'Total2':'Totale', 'Annular':'Annulaire', 'Hybrid':'Hybride', 'Partial':'Partielle', 'Penumbral':'Pénombrale', 'Unknown':'Inconnu', 'EclipsesFailed':'Échec du calcul des éclipses',
@@ -2443,7 +2448,8 @@ menutxtscht = {'MHoroscope':'(&H)星盤',
 menutxtscht.setdefault('TMEclipses', u'日月食\tCtrl+6')
 menutxtscht.setdefault('TMEclipsesDoc', u'以表格顯示星盤日期前後一年的日/月食')
 
-txtschs = {'HourLord':u'時主星',
+txtschs = {'DDCharts': '绘制星盘',
+'DCharts': '不同星盘','HourLord':u'時主星',
 'TimeLords':u'时间主宰',
 'PlanetsPoints':u'行星/点',
 'Total2':'全食', 'Annular':'环食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食计算失败',
@@ -2698,7 +2704,8 @@ txtschs.setdefault('RemovedExceptLoF', u'已删除除福点外的所有点。')
 txtschs.setdefault('NoPartsToRemove',  u'没有可删除的点（保留福点）。')
 txtschs.setdefault('RE', u'引用')             # Chinese (Simplified)
 
-txtscht = {'HourLord':u'時主星',
+txtscht = {'DDCharts': '繪製星盤',
+'DCharts': '不同星盤','HourLord':u'時主星',
 'TimeLords':u'時間主宰',
 'PlanetsPoints':u'行星/點',
 'Total2':'全食', 'Annular':'環食', 'Hybrid':'混合食', 'Partial':'偏食', 'Penumbral':'半影食', 'Unknown':'未知', 'EclipsesFailed':'食計算失敗',
@@ -3083,7 +3090,8 @@ menutxtsko = {'MHoroscope':u'천궁도',
 menutxtsko.setdefault('TMEclipses', u'일월식\tCtrl+6')
 menutxtsko.setdefault('TMEclipsesDoc', u'일식과 월식을 표로 보여줍니다.')
 
-txtsko = {'HourLord':u'시주',
+txtsko = {'DDCharts': '차트 그리기',
+'DCharts': '다른 차트','HourLord':u'시주',
 'TimeLords':u'타임 로드',
 'PlanetsPoints':u'행성/감응점',
 'Total2':'개기식', 'Annular':'금환식', 'Hybrid':'혼성식', 'Partial':'부분식', 'Penumbral':'반영식', 'Unknown':'미상', 'EclipsesFailed':'일월식 계산 실패',
@@ -3135,7 +3143,7 @@ txtsko = {'HourLord':u'시주',
 'Error':u'오류',
 'SaveHor':u'천궁도 저장하기',
 'Message':u'메시지',
-'Horoscope':u'천궁도', 'Appearance1':u'차트 그리기', 'Appearance2':u'위치', 'Symbols':u'기호', 'Colors':u'색깔', 'Orbis':u'오브',
+'Horoscope':u'천궁도', 'Appearance1':u'보기', 'Appearance2':u'위치', 'Symbols':u'기호', 'Colors':u'색깔', 'Orbis':u'오브',
 'Score':u'점수', 'Scores':u'점수', 'Morinus':u'모리누스', 'FreeSoft':u'무료 소프트웨어', 'License':'GPLv3',
 'January':u'01', 'February':u'02', 'March':u'03', 'April':u'04', 'May':u'05', 'June':u'06', 'July':u'07',
 'August':u'08', 'September':u'09', 'October':u'10', 'November':u'11',

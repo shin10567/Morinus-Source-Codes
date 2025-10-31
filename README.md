@@ -1,4 +1,4 @@
-## [9.2.9] Updated Version from 8.1.0 
+## [9.3.0] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -189,3 +189,7 @@
 - Options/Speculum: Dodecatemoria can be toggled on/off.
 - Dodecatemoria Calculator: now inherits from CommonWnd and supports saving as an image; removed the absolute ecliptic-longitude input.
 - Reorganized Options.
+#### 9.3.0
+- Fixed Almuten label overlap and adjusted table sizing
+- Added borders and separators to the Topical Almuten settings section
+- Grouped and reorganized the Options menu

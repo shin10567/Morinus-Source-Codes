@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 import astrology
@@ -30,7 +31,7 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 		self.DLINE_HEIGHT = 2*self.LINE_HEIGHT
 		self.COLUMN_NUM = 7# +leftmost +degreewins
 		self.LONGITUDE_CELL_WIDTH = 7*self.FONT_SIZE
-		self.DEGREEWINS_CELL_WIDTH = 7*self.FONT_SIZE
+		self.DEGREEWINS_CELL_WIDTH = 8*self.FONT_SIZE
 		self.CELL_WIDTH = 7*self.FONT_SIZE
 		self.TITLE_HEIGHT = self.LINE_HEIGHT
 		self.TABLE_WIDTH = (self.LONGITUDE_CELL_WIDTH+(self.COLUMN_NUM)*(self.CELL_WIDTH)+self.DEGREEWINS_CELL_WIDTH)
@@ -91,9 +92,25 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 
 		x = BOR+self.LONGITUDE_CELL_WIDTH
 		y = BOR+self.TITLE_HEIGHT
-		draw.line((x, y, x, y+self.TABLE_HEIGHT-self.TITLE_HEIGHT), fill=tableclr)
-		for i in range(self.COLUMN_NUM+1):
-			draw.line((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH, y, x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH, y+self.TABLE_HEIGHT-self.TITLE_HEIGHT), fill=tableclr)
+
+		yTop = y 
+		yBot = BOR + self.TABLE_HEIGHT
+
+		# (1) Longitude 오른쪽 경계
+		draw.line((x, yTop, x, yBot), fill=tableclr)
+
+		# (2) 7개 행성 칸 분할선
+		for i in range(1, self.COLUMN_NUM):
+			xline = x + i*self.CELL_WIDTH
+			draw.line((xline, yTop, xline, yBot), fill=tableclr)
+
+		# (3) Degree Wins 왼쪽 경계
+		xDW_L = x + self.COLUMN_NUM*self.CELL_WIDTH
+		draw.line((xDW_L, yTop, xDW_L, yBot), fill=tableclr)
+
+		# (4) Degree Wins 오른쪽 외곽선 (행 구간까지만)
+		xDW_R = xDW_L + self.DEGREEWINS_CELL_WIDTH
+		draw.line((xDW_R, yTop, xDW_R, yBot), fill=tableclr)
 
 		x = BOR+self.LONGITUDE_CELL_WIDTH
 		y = BOR
@@ -120,7 +137,7 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 			self.drawLong(draw, x, y+i*self.LINE_HEIGHT, lon, txtclr)
 
 			for j in range(astrology.SE_SATURN+1):
-				txt = self.chart.almutens.topicals.data[self.idx][j][i][0]
+				txt = self.chart.almutens.topicals.data[self.idx][j][i][0] or u'—'
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+self.LONGITUDE_CELL_WIDTH+j*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
@@ -132,6 +149,11 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 		txt = mtexts.txts['TotalShares2']
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((x+(self.LONGITUDE_CELL_WIDTH-w)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+		# Degree Wins 칸 대시(Share 2줄)
+		xDW_L = BOR + self.LONGITUDE_CELL_WIDTH + 7*self.CELL_WIDTH
+		dash = u'—'; dw,dh = draw.textsize(dash, self.fntText)
+		draw.text((xDW_L+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+		draw.text((xDW_L+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
 
 		y += self.DLINE_HEIGHT
 		txt = mtexts.txts['TotalScores1']
@@ -140,6 +162,11 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 		txt = mtexts.txts['TotalScores2']
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((x+(self.LONGITUDE_CELL_WIDTH-w)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+		# Degree Wins 칸 대시(Scores 2줄)
+		xDW_L = BOR + self.LONGITUDE_CELL_WIDTH + 7*self.CELL_WIDTH
+		dash = u'—'; dw,dh = draw.textsize(dash, self.fntText)
+		draw.text((xDW_L+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+		draw.text((xDW_L+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
 
 		x = BOR+self.LONGITUDE_CELL_WIDTH
 		y = BOR+self.TITLE_HEIGHT+self.LINE_NUM*self.LINE_HEIGHT
@@ -202,7 +229,7 @@ class AlmutenTopicalsWnd(commonwnd.CommonWnd):
 					w,h = draw.textsize(txt, self.fntText)
 					prev = 0
 					for p in range(j):
-						prev += aux[j][2]+wsp
+						prev += aux[p][2] + wsp
 
 					draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), pltxt, fill=clr, font=self.fntMorinus)
 					draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev+wpl+wsp, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)

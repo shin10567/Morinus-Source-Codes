@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import chart
 import almutentopicalswnd
@@ -18,6 +19,9 @@ class AlmutenTopicalsFrame(wx.Frame):
 
 		self.namescb = wx.ComboBox(self.tb, -1, self.chart.almutens.topicals.names[0], size=(230, -1), choices=self.chart.almutens.topicals.names, style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		self.namescb.SetSelection(0)
+		# 좌측 여백용 스페이서
+		self.tb.AddControl(wx.StaticText(self.tb, -1, ' '))
+
 		self.tb.AddControl(self.namescb)
 
 		self.tb.Realize()

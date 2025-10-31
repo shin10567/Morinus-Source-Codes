@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import wx
 import intvalidator
@@ -233,17 +234,17 @@ class AlmutenTopicalsDlg(wx.Dialog):
 
 	def __init__(self, parent, opts):
 
-        # Instead of calling wx.Dialog.__init__ we precreate the dialog
-        # so we can set an extra style that must be set before
-        # creation, and then we create the GUI object using the Create
-        # method.
+		# Instead of calling wx.Dialog.__init__ we precreate the dialog
+		# so we can set an extra style that must be set before
+		# creation, and then we create the GUI object using the Create
+		# method.
 #		pre = wx.PreDialog()
 #		pre.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 #		pre.Create(parent, -1, mtexts.txts['TopicalAlmutens'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
 
-        # This next step is the most important, it turns this Python
-        # object into the real wrapper of the dialog (instead of pre)
-        # as far as the wxPython extension is concerned.
+		# This next step is the most important, it turns this Python
+		# object into the real wrapper of the dialog (instead of pre)
+		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['TopicalAlmutens'], size=wx.DefaultSize)
 		self.tpcls = None
@@ -312,9 +313,12 @@ class AlmutenTopicalsDlg(wx.Dialog):
 		if self.tpcls != None:
 			self.name.SetValue(self.tpcls[0][0])
 			rows = self.tpcls[0][1]
-		self.li = RowsListCtrl(self, ID_Rows, rows, opts, size=(3*COMBOSIZE,200), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
-		editorsizer.Add(self.li, 0, wx.ALL, 5)
+		#self.li = RowsListCtrl(self, ID_Rows, rows, opts, size=(3*COMBOSIZE,200), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
+		self.li = RowsListCtrl(self, ID_Rows, rows, opts, size=(3*COMBOSIZE,200),
+							style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SIMPLE|wx.LC_VRULES)
 
+		self.li.SetBackgroundColour(wx.WHITE)
+		editorsizer.Add(self.li, 0, wx.ALL, 5)
 		hsizer = wx.BoxSizer(wx.HORIZONTAL)
 		ID_AddRow = wx.NewId()
 		self.btnAddRow = wx.Button(self, ID_AddRow, mtexts.txts['AddRow'])

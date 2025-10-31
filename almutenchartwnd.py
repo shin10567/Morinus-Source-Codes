@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 import astrology
@@ -30,7 +31,7 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 		self.ECOLUMN_NUM = 7# +leftmost +degreewins
 		self.ESMALL_CELL_WIDTH = 5*self.FONT_SIZE
 		self.ELONGITUDE_CELL_WIDTH = 7*self.FONT_SIZE
-		self.DEGREEWINS_CELL_WIDTH = 7*self.FONT_SIZE
+		self.DEGREEWINS_CELL_WIDTH = 8*self.FONT_SIZE
 		self.ECELL_WIDTH = 7*self.FONT_SIZE
 		self.ETITLE_HEIGHT = self.LINE_HEIGHT
 		self.ETITLE_WIDTH = 10*self.FONT_SIZE
@@ -126,9 +127,17 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 
 		x = BOR+self.ESMALL_CELL_WIDTH
 		y = BOR+self.ETITLE_HEIGHT
-		draw.line((x, y, x, y+self.ETABLE_HEIGHT-self.ETITLE_HEIGHT), fill=tableclr)
+		# 헤더 줄은 비우고 그 아래부터
+		draw.line((x, y+self.LINE_HEIGHT, x, y+self.ETABLE_HEIGHT-self.ETITLE_HEIGHT), fill=tableclr)
+		# 헤더: 경도 라벨
+		txt = mtexts.txts['Longitude']
+		w,h = draw.textsize(txt, self.fntText)
+		draw.text((x + (self.ELONGITUDE_CELL_WIDTH - w)/2, y + (self.LINE_HEIGHT - h)/2), txt, fill=txtclr, font=self.fntText)
+
 		for i in range(self.ECOLUMN_NUM+1):
-			draw.line((x+self.ELONGITUDE_CELL_WIDTH+i*self.ECELL_WIDTH, y, x+self.ELONGITUDE_CELL_WIDTH+i*self.ECELL_WIDTH, y+self.ETABLE_HEIGHT-self.ETITLE_HEIGHT), fill=tableclr)
+			xline = x + self.ELONGITUDE_CELL_WIDTH + i*self.ECELL_WIDTH
+			# 헤더 줄은 아예 세로선 없음(경도/마지막 경계 포함)
+			draw.line((xline, y+self.LINE_HEIGHT, xline, y+self.ETABLE_HEIGHT-self.ETITLE_HEIGHT), fill=tableclr)
 
 		for i in range(astrology.SE_SATURN+1):
 			clr = (0, 0, 0)
@@ -197,24 +206,43 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 		txt = mtexts.txts['TotalShares1']
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((x+(self.ESMALL_CELL_WIDTH-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+		# Longitude 칸 대시
+		dash = u'—'; dw,dh = draw.textsize(dash, self.fntText)
+		draw.text((x+self.ESMALL_CELL_WIDTH+(self.ELONGITUDE_CELL_WIDTH-dw)/2, y+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+
 		txt = mtexts.txts['TotalShares2']
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((x+(self.ESMALL_CELL_WIDTH-w)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+		# Longitude 칸 대시
+		draw.text((x+self.ESMALL_CELL_WIDTH+(self.ELONGITUDE_CELL_WIDTH-dw)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+		# Degree Wins 칸 대시 (Shares1/2)
+		xDW = BOR+self.ESMALL_CELL_WIDTH+self.ELONGITUDE_CELL_WIDTH+7*self.ECELL_WIDTH
+		draw.text((xDW+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+		draw.text((xDW+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
 
 		y += self.ELINE_HEIGHT
 		txt = mtexts.txts['TotalScores1']
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((x+(self.ESMALL_CELL_WIDTH-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+		# Longitude 칸 대시
+		draw.text((x+self.ESMALL_CELL_WIDTH+(self.ELONGITUDE_CELL_WIDTH-dw)/2, y+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+
 		txt = mtexts.txts['TotalScores2']
 		w,h = draw.textsize(txt, self.fntText)
 		draw.text((x+(self.ESMALL_CELL_WIDTH-w)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+		# Longitude 칸 대시
+		draw.text((x+self.ESMALL_CELL_WIDTH+(self.ELONGITUDE_CELL_WIDTH-dw)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+		# Degree Wins 칸 대시 (Scores1/2)
+		xDW = BOR+self.ESMALL_CELL_WIDTH+self.ELONGITUDE_CELL_WIDTH+7*self.ECELL_WIDTH
+		draw.text((xDW+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
+		draw.text((xDW+(self.DEGREEWINS_CELL_WIDTH-dw)/2, y+self.LINE_HEIGHT+(self.LINE_HEIGHT-dh)/2), dash, fill=txtclr, font=self.fntText)
 
 		x = BOR+self.ESMALL_CELL_WIDTH+self.ELONGITUDE_CELL_WIDTH
 		y = BOR+2*self.ETITLE_HEIGHT
 		subnum = len(self.chart.almutens.essentials.essentials[0])
 		for i in range(astrology.SE_SATURN+1):
 			for j in range(subnum):
-				txt = self.chart.almutens.essentials.essentials[i][j][0]
+				txt = self.chart.almutens.essentials.essentials[i][j][0] or u'—'
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+i*self.ECELL_WIDTH+(self.ECELL_WIDTH-w)/2, y+j*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
@@ -277,7 +305,7 @@ class AlmutenChartWnd(commonwnd.CommonWnd):
 					w,h = draw.textsize(txt, self.fntText)
 					prev = 0
 					for p in range(j):
-						prev += aux[j][2]+wsp
+						prev += aux[p][2] + wsp
 
 					draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), pltxt, fill=clr, font=self.fntMorinus)
 					draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev+wpl+wsp, y+i*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)

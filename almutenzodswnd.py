@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 import astrology
@@ -30,7 +31,7 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 		self.SMALL_CELL_WIDTH = 5*self.FONT_SIZE
 		self.LONGITUDE_CELL_WIDTH = 7*self.FONT_SIZE
 		self.CELL_WIDTH = 7*self.FONT_SIZE
-		self.DEGREEWINS_CELL_WIDTH = 7*self.FONT_SIZE
+		self.DEGREEWINS_CELL_WIDTH = 8*self.FONT_SIZE
 		self.TITLE_HEIGHT = self.LINE_HEIGHT
 		self.TITLE_WIDTH = 10*self.FONT_SIZE
 		self.TABLE_WIDTH = (self.SMALL_CELL_WIDTH+self.LONGITUDE_CELL_WIDTH+(self.COLUMN_NUM)*(self.CELL_WIDTH)+self.DEGREEWINS_CELL_WIDTH)
@@ -85,12 +86,32 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 		for i in range(self.LINE_NUM+1):
 			draw.line((x, y+i*self.LINE_HEIGHT, x+self.TABLE_WIDTH, y+i*self.LINE_HEIGHT), fill=tableclr)
 
-		draw.line((x, y, x, y+self.TABLE_HEIGHT-self.LINE_HEIGHT), fill=tableclr)
+		# (1) 표 맨 왼쪽 외곽선: 헤더 제외(행 구간만)
+		draw.line((x, BOR+self.LINE_HEIGHT, x, BOR+self.TABLE_HEIGHT), fill=tableclr)
+		# (2) Longitude 왼쪽 세로 구분선(= 작은칸 오른쪽 경계): 헤더 제외
+		draw.line((x+self.SMALL_CELL_WIDTH, BOR+self.LINE_HEIGHT, x+self.SMALL_CELL_WIDTH, BOR+self.TABLE_HEIGHT), fill=tableclr)
+
 		x += self.SMALL_CELL_WIDTH
 		y -= self.LINE_HEIGHT
-		draw.line((x, y, x, y+self.TABLE_HEIGHT), fill=tableclr)
-		for i in range(self.COLUMN_NUM+2):
-			draw.line((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH, y, x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH, y+self.TABLE_HEIGHT), fill=tableclr)
+
+		# (중복 제거) 내부 첫 세로선은 더 이상 그리지 않음
+
+		# 헤더: 경도 라벨
+		txt = mtexts.txts['Longitude']
+		w,h = draw.textsize(txt, self.fntText)
+
+		draw.text((x + (self.LONGITUDE_CELL_WIDTH - w)/2, y + (self.LINE_HEIGHT - h)/2), txt, fill=txtclr, font=self.fntText)
+		# 헤더 전용: Longitude 왼쪽 세로 구분선
+		draw.line((x, y, x, y+self.LINE_HEIGHT), fill=tableclr)
+
+		# 행성 열 내부 세로선: 헤더 줄은 아예 그리지 않음(0..COLUMN_NUM 모두 헤더 비움)
+		for i in range(self.COLUMN_NUM+1):
+			xline = x + self.LONGITUDE_CELL_WIDTH + i*self.CELL_WIDTH
+			draw.line((xline, y+self.LINE_HEIGHT, xline, y+self.TABLE_HEIGHT), fill=tableclr)
+
+		# 맨 오른쪽 닫는 외곽선: DEGREEWINS 폭을 반영해서 테이블 바깥쪽에 정확히 그린다
+		xright = x + self.LONGITUDE_CELL_WIDTH + self.COLUMN_NUM*self.CELL_WIDTH + self.DEGREEWINS_CELL_WIDTH
+		draw.line((xright, y, xright, y+self.TABLE_HEIGHT), fill=tableclr)
 
 		for i in range(astrology.SE_SATURN+1):
 			clr = (0, 0, 0)
@@ -110,27 +131,27 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 
 			for j in range(astrology.SE_SATURN+1):
 				if j == astrology.SE_SUN or j == astrology.SE_MOON:
-					txt = self.chart.almutens.essentials.essentials[i][j][0]
+					txt = self.chart.almutens.essentials.essentials[i][j][0] or u'—'
 					w,h = draw.textsize(txt, self.fntText)
 					draw.text((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+(j+1)*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 				else:
-					txt = self.chart.almutens.essentials.essentials2[i][j-2][0]
+					txt = self.chart.almutens.essentials.essentials2[i][j-2][0] or u'—'
 					w,h = draw.textsize(txt, self.fntText)
 					draw.text((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+(j+1)*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
-			txt = self.chart.almutens.essentials.essentials[i][3][0]
+			txt = self.chart.almutens.essentials.essentials[i][3][0] or u'—'
 			w,h = draw.textsize(txt, self.fntText)
 			draw.text((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+8*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
-			txt = self.chart.almutens.essentials.essentials[i][4][0]
+			txt = self.chart.almutens.essentials.essentials[i][4][0] or u'—'
 			w,h = draw.textsize(txt, self.fntText)
 			draw.text((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+9*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
-			txt = self.chart.almutens.essentials.essentials[i][2][0]
+			txt = self.chart.almutens.essentials.essentials[i][2][0] or u'—'
 			w,h = draw.textsize(txt, self.fntText)
 			draw.text((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+10*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
-			txt = self.chart.almutens.essentials.essentialsmc[i][0]
+			txt = self.chart.almutens.essentials.essentialsmc[i][0] or u'—'
 			w,h = draw.textsize(txt, self.fntText)
 			draw.text((x+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+11*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
@@ -217,7 +238,7 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 					w,h = draw.textsize(txt, self.fntText)
 					draw.text((x+(self.SMALL_CELL_WIDTH-w)/2, y+11*self.LINE_HEIGHT+j*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
-				txt = self.chart.almutens.essentials.essentialshcs[i][j][0]
+				txt = self.chart.almutens.essentials.essentialshcs[i][j][0] or u'—'
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+self.SMALL_CELL_WIDTH+self.LONGITUDE_CELL_WIDTH+i*self.CELL_WIDTH+(self.CELL_WIDTH-w)/2, y+11*self.LINE_HEIGHT+j*self.LINE_HEIGHT+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
@@ -234,6 +255,9 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 		num = len(self.chart.almutens.essentials.degwinnerhcs)
 		for i in range(num):
 			self.drawDegWinner(draw, x+self.LONGITUDE_CELL_WIDTH, y, i, False, self.chart.almutens.essentials.degwinnerhcs, txtclr)
+		# Overlay: 왼쪽 외곽선 & longitude 왼쪽 구분선(헤더 제외)
+		draw.line((BOR, BOR+self.LINE_HEIGHT, BOR, BOR+self.TABLE_HEIGHT), fill=tableclr)
+		draw.line((BOR+self.SMALL_CELL_WIDTH, BOR+self.LINE_HEIGHT, BOR+self.SMALL_CELL_WIDTH, BOR+self.TABLE_HEIGHT), fill=tableclr)
 
 		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
@@ -278,7 +302,7 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 				w,h = draw.textsize(txt, self.fntText)
 				prev = 0
 				for p in range(j):
-					prev += aux[j][2]+wsp
+					prev += aux[p][2] + wsp
 
 				offs = i
 				if onlyone:
@@ -325,7 +349,7 @@ class AlmutenZodsWnd(commonwnd.CommonWnd):
 				w,h = draw.textsize(txt, self.fntText)
 				prev = 0
 				for p in range(j):
-					prev += aux[j][2]+wsp
+					prev += aux[p][2] + wsp
 
 				draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev, y+(self.LINE_HEIGHT-h)/2), pltxt, fill=clr, font=self.fntMorinus)
 				draw.text((x+(self.DEGREEWINS_CELL_WIDTH-(mwidth))/2+prev+wpl+wsp, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
