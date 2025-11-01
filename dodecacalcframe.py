@@ -186,6 +186,7 @@ class DodecaCalcWnd(commonwnd.CommonWnd):
 class DodecaCalcFrame(wx.Frame):
     def __init__(self, parent, title, chrt, options):
         wx.Frame.__init__(self, parent, -1, title)
+        self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
         self.options = options
         self._parent_main = parent
 
@@ -225,8 +226,13 @@ class DodecaCalcFrame(wx.Frame):
         self.ch_sign.SetSelection(0)
 
         self.sp_deg = wx.SpinCtrl(self.tb, -1, min=0, max=29, initial=0)
+        self.sp_deg.SetHelpText(mtexts.txts.get('HelpDegree', u'Must be between 0 and 29'))
+
         self.sp_min = wx.SpinCtrl(self.tb, -1, min=0, max=59, initial=0)
+        self.sp_min.SetHelpText(mtexts.txts.get('HelpMin', u'Must be between 0 and 59'))
+
         self.sp_sec = wx.SpinCtrl(self.tb, -1, min=0, max=59, initial=0)
+        self.sp_sec.SetHelpText(mtexts.txts.get('HelpMin', u'Must be between 0 and 59'))
 
         btn_calc = wx.Button(self.tb, -1, mtexts.txts.get('Calculate', 'Calculate'), size=(-1, TOPBAR_H))
 

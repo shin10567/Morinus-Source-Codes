@@ -32,7 +32,6 @@ class PrimaryKeysDlg(wx.Dialog):
 		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['PrimaryDirs'], size=wx.DefaultSize)
-		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 		self.dynsel = options.pdkeyd
 		self.statsel = options.pdkeys
 

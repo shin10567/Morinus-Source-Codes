@@ -6,6 +6,6 @@ import paranwnd
 class ParanFrame(wx.Frame):
     def __init__(self, parent, title, horoscope, options):
         wx.Frame.__init__(self, parent, -1, "Paranatellonta" + title,
-                          size=(560, 360))
+                          size=(530, 360))
         self.panel = paranwnd.ParanatellontaWnd(self, horoscope, options, mainfr=self)
         self.Centre()

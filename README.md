@@ -1,4 +1,4 @@
-## [9.3.3] Updated Version from 8.1.0 
+## [9.3.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -201,3 +201,7 @@
 - Dodecatemoria: moved the “Dodecatemoria Calculator” context-menu item above “Save as Bitmap”; clicking it now opens the calculator.
 #### 9.3.3
 - Partially restored the Help (?) button in the top-right corner.
+#### 9.3.4
+- Zodiacal Releasing bug fixes
+- Adjusted the Angles at Birth input parameter to a maximum of 12 minutes
+- Added “?” help to Angles at Birth parameters, Arabic Parts Options, and the Dodecatemoria Calculator

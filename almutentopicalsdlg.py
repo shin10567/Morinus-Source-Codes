@@ -318,7 +318,14 @@ class AlmutenTopicalsDlg(wx.Dialog):
 							style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SIMPLE|wx.LC_VRULES)
 
 		self.li.SetBackgroundColour(wx.WHITE)
-		editorsizer.Add(self.li, 0, wx.ALL, 5)
+
+		# 하얀 리스트 박스 가운데 정렬
+		_liwrap = wx.BoxSizer(wx.HORIZONTAL)
+		_liwrap.AddStretchSpacer(1)
+		_liwrap.Add(self.li, 0, wx.ALL, 5)
+		_liwrap.AddStretchSpacer(1)
+		editorsizer.Add(_liwrap, 0, wx.EXPAND|wx.ALL, 0)
+
 		hsizer = wx.BoxSizer(wx.HORIZONTAL)
 		ID_AddRow = wx.NewId()
 		self.btnAddRow = wx.Button(self, ID_AddRow, mtexts.txts['AddRow'])

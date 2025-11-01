@@ -1535,7 +1535,7 @@ class MFrame(wx.Frame):
 		# 열기
 		import angleatbirthframe
 		fr = angleatbirthframe.AngleAtBirthFrame(self, self.title, self.horoscope, self.options)
-		fr.Show(True)  # AngleAtBirthFrame 내부에서도 Show(True)를 호출하지만, 중복 호출해도 무방
+		#fr.Show(True)  # AngleAtBirthFrame 내부에서도 Show(True)를 호출하지만, 중복 호출해도 무방
 
 	def onProfections(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
@@ -1759,13 +1759,10 @@ class MFrame(wx.Frame):
 		if wx.Platform == '__WXMSW__' and not self.splash:
 			self.handleStatusBar(True)
 		if not self.splash:
-			wait = wx.BusyCursor()
-			try:
-				import zodiacalreleasingframe
-				fr = zodiacalreleasingframe.ZRFrame(self, self.title, self.horoscope, self.options)
-				fr.Show(True)
-			finally:
-				del wait
+			import zodiacalreleasingframe
+			fr = zodiacalreleasingframe.ZRFrame(self, self.title, self.horoscope, self.options)
+			#fr.Show(True)
+
 	def onDecennials(self, event):
 		if self.horoscope.time.bc:
 			dlgm = wx.MessageDialog(self, mtexts.txts['NotAvailable'], '', wx.OK|wx.ICON_INFORMATION)
@@ -3872,7 +3869,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.3.3'
+		info.Version = '9.3.4'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

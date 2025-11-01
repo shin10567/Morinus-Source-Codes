@@ -622,7 +622,7 @@ class CircumFrame(wx.Frame):
             t = title.replace(mtexts.typeList[horoscope.htype], mtexts.txts['Circumambulation'])
         except:
             pass
-        wx.Frame.__init__(self, parent, -1, t, wx.DefaultPosition, wx.Size(900, 520))
+        wx.Frame.__init__(self, parent, -1, t, wx.DefaultPosition, wx.Size(850, 520))
         self.horoscope = horoscope
         self.options   = options
         self.key       = key

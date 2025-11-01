@@ -666,16 +666,19 @@ class ArabicPartsDlg(wx.Dialog):
 		colA = wx.BoxSizer(wx.VERTICAL)
 		self.deA_sign = wx.ComboBox(self, -1, self._signs[0], choices=self._signs, size=(COMBOSIZE,-1), style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		self.deA_deg  = wx.SpinCtrl(self, -1, '', min=0, max=29, size=(81,-1))
+		self.deA_deg.SetHelpText(mtexts.txts.get('HelpDegree', u'Must be between 0 and 29'))
 		colA.Add(self.deA_sign, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 2); colA.Add(self.deA_deg, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT|wx.BOTTOM, 2)
 
 		colB = wx.BoxSizer(wx.VERTICAL)
 		self.deB_sign = wx.ComboBox(self, -1, self._signs[0], choices=self._signs, size=(COMBOSIZE,-1), style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		self.deB_deg  = wx.SpinCtrl(self, -1, '', min=0, max=29, size=(81,-1))
+		self.deB_deg.SetHelpText(mtexts.txts.get('HelpDegree', u'Must be between 0 and 29'))
 		colB.Add(self.deB_sign, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 2); colB.Add(self.deB_deg, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT|wx.BOTTOM, 2)
 
 		colC = wx.BoxSizer(wx.VERTICAL)
 		self.deC_sign = wx.ComboBox(self, -1, self._signs[0], choices=self._signs, size=(COMBOSIZE,-1), style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		self.deC_deg  = wx.SpinCtrl(self, -1, '', min=0, max=29, size=(81,-1))
+		self.deC_deg.SetHelpText(mtexts.txts.get('HelpDegree', u'Must be between 0 and 29'))
 		colC.Add(self.deC_sign, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 2); colC.Add(self.deC_deg, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT|wx.BOTTOM, 2)
 
 		desizer.Add(colA, 0, wx.ALL, ROW_PAD)
