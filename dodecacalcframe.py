@@ -209,15 +209,20 @@ class DodecaCalcFrame(wx.Frame):
             st = wx.StaticText(self.tb, -1, u'')
             st.SetMinSize((w, -1))
             self.tb.AddControl(st)
+        def _tb_punct(ch):
+            st = wx.StaticText(self.tb, -1, ch)
+            # 너무 붙지 않도록 최소 폭만 아주 살짝
+            st.SetMinSize((8, -1))
+            self.tb.AddControl(st)
 
         TOPBAR_H = 30  # Circum의 버튼 높이와 동일 기준
 
         # 라벨들
         st_lon  = wx.StaticText(self.tb, -1, mtexts.txts.get('Longitude', 'Longitude') + ':')
         st_sign = wx.StaticText(self.tb, -1, mtexts.txts.get('TopicalSign', 'Sign') + ':')
-        st_deg  = wx.StaticText(self.tb, -1, mtexts.txts.get('Deg', 'Deg') + ':')
-        st_min  = wx.StaticText(self.tb, -1, mtexts.txts.get('Min', 'Min') + ':')
-        st_sec  = wx.StaticText(self.tb, -1, mtexts.txts.get('Sec', 'Sec') + ':')
+        st_deg  = wx.StaticText(self.tb, -1, mtexts.txts.get('Degree', 'Degree') + ':')
+        st_min  = wx.StaticText(self.tb, -1, mtexts.txts.get('Minute', 'Minute') + ':')
+        st_sec  = wx.StaticText(self.tb, -1, mtexts.txts.get('Second', 'Second') + ':')
 
         # 사인 콤보/스핀 (툴바에 직접 AddControl)
         sign_labels = [mtexts.txts.get(n, n) for n in
@@ -257,16 +262,16 @@ class DodecaCalcFrame(wx.Frame):
         for sp in (self.sp_deg, self.sp_min, self.sp_sec):
             _w_specs.append((sp, _fix_width(sp)))
 
-        _tb_spacer(12)  # 프레임 좌측 경계 여백 (툴바 맨 앞에 둬야 유효)
-        self.tb.AddControl(st_lon);  _tb_spacer(8)
-        self.tb.AddControl(st_sign); _tb_spacer(4)
-        self.tb.AddControl(self.ch_sign); _tb_spacer(10)
-        self.tb.AddControl(st_deg);  _tb_spacer(4)
-        self.tb.AddControl(self.sp_deg);  _tb_spacer(10)
-        self.tb.AddControl(st_min);  _tb_spacer(4)
-        self.tb.AddControl(self.sp_min);  _tb_spacer(10)
-        self.tb.AddControl(st_sec);  _tb_spacer(4)
-        self.tb.AddControl(self.sp_sec);  _tb_spacer(12)
+        _tb_spacer(15)  # 프레임 좌측 경계 여백 (툴바 맨 앞에 둬야 유효)
+        self.tb.AddControl(st_lon);  _tb_spacer(12)
+        self.tb.AddControl(st_sign); _tb_spacer(2)
+        self.tb.AddControl(self.ch_sign); _tb_punct(','); _tb_spacer(10)
+        self.tb.AddControl(st_deg);  _tb_spacer(2)
+        self.tb.AddControl(self.sp_deg); _tb_punct(','); _tb_spacer(10)
+        self.tb.AddControl(st_min);  _tb_spacer(2)
+        self.tb.AddControl(self.sp_min); _tb_punct(','); _tb_spacer(10)
+        self.tb.AddControl(st_sec);  _tb_spacer(2)
+        self.tb.AddControl(self.sp_sec); _tb_punct('.'); _tb_spacer(12)
         self.tb.AddControl(btn_calc)
 
         self.tb.Realize()

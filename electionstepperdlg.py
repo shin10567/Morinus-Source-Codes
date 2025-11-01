@@ -69,7 +69,7 @@ class ElectionStepperDlg(wx.Dialog):
 		hsizer.Add(btnDecrHour, 0, wx.ALIGN_CENTER|wx.ALL, 2)
 		gsizer.Add(hsizer, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Min'])
+		label = wx.StaticText(self, -1, mtexts.txts['Minute'])
 		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		btnIncrMin = wx.Button(self, ID_IncrMin, '++', size=(40,30))
 		hsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -78,7 +78,7 @@ class ElectionStepperDlg(wx.Dialog):
 		hsizer.Add(btnDecrMin, 0, wx.ALIGN_CENTER|wx.ALL, 2)
 		gsizer.Add(hsizer, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Sec'])
+		label = wx.StaticText(self, -1, mtexts.txts['Second'])
 		gsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		btnIncrSec = wx.Button(self, ID_IncrSec, '++', size=(40,30))
 		hsizer = wx.BoxSizer(wx.HORIZONTAL)

@@ -99,7 +99,7 @@ class ProfDlg(wx.Dialog):
 		fgsizer.Add(vsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		self.minutetxt = wx.StaticText(self, -1, mtexts.txts['Min']+':')
+		self.minutetxt = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
 		vsizer.Add(self.minutetxt, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.minute = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(50,-1))
 		self.minute.SetHelpText(mtexts.txts['HelpMin'])
@@ -108,7 +108,7 @@ class ProfDlg(wx.Dialog):
 		fgsizer.Add(vsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		self.secondtxt = wx.StaticText(self, -1, mtexts.txts['Sec']+':')
+		self.secondtxt = wx.StaticText(self, -1, mtexts.txts['Second']+':')
 		vsizer.Add(self.secondtxt, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.second = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(50,-1))
 		self.second.SetHelpText(mtexts.txts['HelpMin'])

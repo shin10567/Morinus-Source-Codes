@@ -42,10 +42,10 @@ class PlaceListCtrl(wx.ListCtrl):
 
 	def Populate(self):
 		self.InsertColumn(PlaceListCtrl.PLACE, mtexts.txts['Place'])
-		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Long']+'.')
-		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Lat']+'.')
+		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Longitude'])
+		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Latitude'])
 		self.InsertColumn(PlaceListCtrl.ZONE, mtexts.txts['Zone'])
-		self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt2']+'.')
+		self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt'])
 
 		items = self.placedata.items()
 		for key, data in items:
@@ -58,9 +58,9 @@ class PlaceListCtrl(wx.ListCtrl):
 			self.SetItemData(index, key)
 
 		self.SetColumnWidth(PlaceListCtrl.PLACE, 200)#wx.LIST_AUTOSIZE)
-		self.SetColumnWidth(PlaceListCtrl.LON, 60)
+		self.SetColumnWidth(PlaceListCtrl.LON, 70)
 		self.SetColumnWidth(PlaceListCtrl.LAT, 60)
-		self.SetColumnWidth(PlaceListCtrl.ZONE, 60)
+		self.SetColumnWidth(PlaceListCtrl.ZONE, 45)
 		self.SetColumnWidth(PlaceListCtrl.ALT, 60)
 
 		self.currentItem = -1
@@ -196,11 +196,11 @@ class PlacesDlg(wx.Dialog):
 
 		self.splace =wx.StaticBox(self, label='')
 		placesizer = wx.StaticBoxSizer(self.splace, wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Long']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Longitude']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.londeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 180), size=(40,-1))
 		self.londeg.SetValue('0')
@@ -210,7 +210,7 @@ class PlacesDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.lonmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.lonmin.SetValue('0')
@@ -227,10 +227,10 @@ class PlacesDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 #		fgsizer.AddGrowableCol(4, 0)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Lat']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Latitude']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 5)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 90), size=(40,-1))
 		self.latdeg.SetValue('0')
@@ -240,7 +240,7 @@ class PlacesDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.latmin.SetValue('0')
@@ -304,7 +304,7 @@ class PlacesDlg(wx.Dialog):
 		vvsizer.Add(self.zhour, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.zminute = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40,-1))
 		self.zminute.SetValue('0')

@@ -41,8 +41,8 @@ class PlaceListCtrl(wx.ListCtrl):
 	def Populate(self):
 		self.InsertColumn(PlaceListCtrl.PLACE, mtexts.txts['Place'])
 		self.InsertColumn(PlaceListCtrl.COUNTRY, mtexts.txts['Country'])
-		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Long']+'.')
-		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Lat']+'.')
+		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Longitude'])
+		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Latitude'])
 		#self.InsertColumn(PlaceListCtrl.ZONE, mtexts.txts['Zone'])
 		#self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt']+'.')
 
@@ -59,7 +59,7 @@ class PlaceListCtrl(wx.ListCtrl):
 
 		self.SetColumnWidth(PlaceListCtrl.PLACE, 200)#wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(PlaceListCtrl.COUNTRY, 100)
-		self.SetColumnWidth(PlaceListCtrl.LON, 60)
+		self.SetColumnWidth(PlaceListCtrl.LON, 70)
 		self.SetColumnWidth(PlaceListCtrl.LAT, 60)
 		#self.SetColumnWidth(PlaceListCtrl.ZONE, 60)
 		#self.SetColumnWidth(PlaceListCtrl.ALT, 60)
@@ -173,7 +173,7 @@ class PlacesListDlg(wx.Dialog):
 		placessizer = wx.StaticBoxSizer(splaces, wx.VERTICAL)
 		ID_Places = wx.NewId()
 		#self.li = PlaceListCtrl(self, li, ID_Places, size=(570,230), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
-		self.li = PlaceListCtrl(self, li, ID_Places, size=(420,230), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
+		self.li = PlaceListCtrl(self, li, ID_Places, size=(443,230), style=wx.LC_VRULES|wx.LC_REPORT|wx.LC_SINGLE_SEL)
 		placessizer.Add(self.li, 1, wx.GROW|wx.ALL, 5)
 
 		mhsizer.Add(placessizer, 0, wx.GROW|wx.ALIGN_LEFT|wx.ALL, 0)
@@ -202,4 +202,10 @@ class PlacesListDlg(wx.Dialog):
 		mvsizer.Fit(self)
 
 		btnOk.SetFocus()
+	def _on_close(self, evt):
+		# X로 닫을 때는 선택 확정 없이 조용히 취소로 종료
+		try:
+			self.EndModal(wx.ID_CANCEL)
+		except Exception:
+			self.Destroy()
 

@@ -4067,8 +4067,8 @@ class MFrame(wx.Frame):
 			txt = signtxt+str(self.horoscope.time.origyear)+'.'+common.common.months[self.horoscope.time.origmonth-1]+'.'+(str(self.horoscope.time.origday)).zfill(2)+', '+(str(self.horoscope.time.hour)).zfill(2)+':'+(str(self.horoscope.time.minute)).zfill(2)+':'+(str(self.horoscope.time.second)).zfill(2)+ztxt
 			self.SetStatusText(txt, 2)
 			deg_symbol = u':'
-			t1 = mtexts.txts['Long']+'.: '
-			t2 = ', '+mtexts.txts['Lat']+'.: '
+			t1 = mtexts.txts['Longitude']+': '
+			t2 = ', '+mtexts.txts['Latitude']+': '
 			dirlontxt = mtexts.txts['E']
 			if not self.horoscope.place.east:
 				dirlontxt = mtexts.txts['W']

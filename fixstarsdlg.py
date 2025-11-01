@@ -141,8 +141,8 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
         self.InsertColumn(FixStarListCtrl.NUM, '')
         self.InsertColumn(FixStarListCtrl.NAME, mtexts.txts['Name'])
         self.InsertColumn(FixStarListCtrl.NOMNAME, mtexts.txts['Nomencl'])
-        self.InsertColumn(FixStarListCtrl.LON, mtexts.txts['Long']+'.')
-        self.InsertColumn(FixStarListCtrl.LAT, mtexts.txts['Lat']+'.')
+        self.InsertColumn(FixStarListCtrl.LON, mtexts.txts['Longitude'])
+        self.InsertColumn(FixStarListCtrl.LAT, mtexts.txts['Latitude'])
 
         items = self.fixstardata.items()
         cnt = 0

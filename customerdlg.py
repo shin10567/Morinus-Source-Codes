@@ -38,11 +38,11 @@ class CustomerDlg(wx.Dialog):
 
 		self.scustomer =wx.StaticBox(self, label='')
 		customersizer = wx.StaticBoxSizer(self.scustomer, wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Long']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Longitude']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.londeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 359), size=(40,-1))
 		self.londeg.SetHelpText(mtexts.txts['HelpPDDeg'])
@@ -51,7 +51,7 @@ class CustomerDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.lonmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.lonmin.SetHelpText(mtexts.txts['HelpMin'])
@@ -60,7 +60,7 @@ class CustomerDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Sec']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Second']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.lonsec = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.lonsec.SetHelpText(mtexts.txts['HelpMin'])
@@ -68,10 +68,10 @@ class CustomerDlg(wx.Dialog):
 		vvsizer.Add(self.lonsec, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Lat']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Latitude']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 5)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 90), size=(40,-1))
 		self.latdeg.SetHelpText(mtexts.txts['HelpLatDeg'])
@@ -80,7 +80,7 @@ class CustomerDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.latmin.SetHelpText(mtexts.txts['HelpMin'])
@@ -89,7 +89,7 @@ class CustomerDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Sec']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Second']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latsec = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.latsec.SetHelpText(mtexts.txts['HelpMin'])
