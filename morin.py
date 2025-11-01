@@ -361,9 +361,9 @@ class MFrame(wx.Frame):
 		self.ttimelords = wx.Menu()
 		self.ttimelords.Append(self.ID_Profections,        mtexts.menutxts['TMProfections'],        mtexts.menutxts['TMProfectionsDoc'])
 		self.ttimelords.Append(self.ID_Firdaria,           mtexts.menutxts['TMFirdaria'],           mtexts.menutxts['TMFirdariaDoc'])
+		self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 		self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
 		self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
-		self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 		self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
 
 		# Primary Directions
@@ -3231,9 +3231,9 @@ class MFrame(wx.Frame):
 				self.ttimelords = wx.Menu()
 				self.ttimelords.Append(self.ID_Profections,        mtexts.menutxts['TMProfections'],        mtexts.menutxts['TMProfectionsDoc'])
 				self.ttimelords.Append(self.ID_Firdaria,           mtexts.menutxts['TMFirdaria'],           mtexts.menutxts['TMFirdariaDoc'])
+				self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 				self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
 				self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
-				self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 				self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
 
 				# Primary Directions
