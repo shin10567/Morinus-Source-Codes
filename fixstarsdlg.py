@@ -13,7 +13,7 @@ import fixstars
 #import pdb
 
 class FixStars:
-    signtxts = (mtexts.txts['Ari'], mtexts.txts['Tau'], mtexts.txts['Gem'], mtexts.txts['Can'], mtexts.txts['Leo'], mtexts.txts['Vir'], mtexts.txts['Lib'], mtexts.txts['Sco'], mtexts.txts['Sag'], mtexts.txts['Cap'], mtexts.txts['Aqu'], mtexts.txts['Pis'])
+    signtxts = (mtexts.txts['Ari'], mtexts.txts['Tau'], mtexts.txts['Gem'], mtexts.txts['Can'], mtexts.txts['Leo2'], mtexts.txts['Vir'], mtexts.txts['Lib'], mtexts.txts['Sco'], mtexts.txts['Sag'], mtexts.txts['Cap'], mtexts.txts['Aqu'], mtexts.txts['Pis'])
 
     class FixStar:
         NAME = 0

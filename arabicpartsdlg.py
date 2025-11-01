@@ -380,7 +380,7 @@ class RefDegDlg(wx.Dialog):
 		self.values = [init_triplet[0], init_triplet[1], init_triplet[2]]
 		vsizer = wx.BoxSizer(wx.VERTICAL)
 		self.rows = []
-		self.signs = [mtexts.txts['Aries'], mtexts.txts['Taurus'], mtexts.txts['Gemini'], mtexts.txts['Cancer'], mtexts.txts['Leo'], mtexts.txts['Virgo'], mtexts.txts['Libra'], mtexts.txts['Scorpio'], mtexts.txts['Sagittarius'], mtexts.txts['Capricornus'], mtexts.txts['Aquarius'], mtexts.txts['Pisces']]
+		self.signs = [mtexts.txts['Aries'], mtexts.txts['Taurus'], mtexts.txts['Gemini'], mtexts.txts['Cancer'], mtexts.txts['Leo2'], mtexts.txts['Virgo'], mtexts.txts['Libra'], mtexts.txts['Scorpio'], mtexts.txts['Sagittarius'], mtexts.txts['Capricornus'], mtexts.txts['Aquarius'], mtexts.txts['Pisces']]
 		for idx,need in enumerate([needA, needB, needC]):
 			if not need:
 				self.rows.append(None)
