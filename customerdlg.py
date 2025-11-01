@@ -3,7 +3,7 @@ import chart
 import intvalidator
 import mtexts
 import util
-
+import dlgutils
 
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
@@ -30,7 +30,7 @@ class CustomerDlg(wx.Dialog):
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
-		wx.Dialog.__init__(self, None, -1, titletxt, size=wx.DefaultSize)
+		dlgutils.precreate_context_help_dialog(self, parent, titletxt)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 

@@ -16,7 +16,7 @@ import rangechecker
 import primdirs
 import mtexts
 import util
-
+import dlgutils
 
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
@@ -51,11 +51,9 @@ class PDsInChartStepperDlg(wx.Dialog):
 		# 1) precreate wrapper
 		wx.Dialog.__init__(self)
 		# 2) set extra style before Create
-		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+		#self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 		# 3) actual create
-		self.Create(parent, wx.ID_ANY, mtexts.txts['PDsInChart'],
-					pos=wx.DefaultPosition, size=wx.DefaultSize,
-					style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+		dlgutils.precreate_context_help_dialog(self, parent, mtexts.txts['PDsInChart'])
 
 		# This next step is the most important, it turns this Python
 		# object into the real wrapper of the dialog (instead of pre)

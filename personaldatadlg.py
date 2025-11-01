@@ -40,6 +40,7 @@ class PersonalDataDlg(wx.Dialog):
         # as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['PersonalData'], size=wx.DefaultSize)
+		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 		#main horizontal sizer

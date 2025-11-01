@@ -9,6 +9,7 @@ import geonames
 import mtexts
 import util
 import threading
+import dlgutils
 
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
@@ -180,7 +181,7 @@ class PlacesDlg(wx.Dialog):
 		# object into the real wrapper of the dialog (instead of pre)
 		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
-		wx.Dialog.__init__(self, None, -1, mtexts.txts['Places'], size=wx.DefaultSize)
+		dlgutils.precreate_context_help_dialog(self, parent, mtexts.txts['Places'])
 		self.langid = langid
 		self._busy = None   # BusyInfo 핸들
 

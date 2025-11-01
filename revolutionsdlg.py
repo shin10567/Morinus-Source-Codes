@@ -29,6 +29,7 @@ class RevolutionYearStepper(wx.Dialog):
 	def __init__(self, parent, get_year_cb, set_year_cb):
 		wx.Dialog.__init__(self, parent, -1, mtexts.txts["Revolution"]+ " "+mtexts.txts["Year"],
 						style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+		
 		# (선택) parent가 TopLevel이면 효과: 부모 위에만 뜸
 		try:
 			self.SetWindowStyleFlag(self.GetWindowStyleFlag() | wx.FRAME_FLOAT_ON_PARENT)
@@ -97,6 +98,7 @@ class RevolutionMonthStepper(wx.Dialog):
 	def __init__(self, parent, get_ym_cb, set_ym_cb):
 		wx.Dialog.__init__(self, parent, -1, mtexts.txts["Revolution"]+ " "+mtexts.txts["Month"],
 						   style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+		
 		try:
 			self.SetWindowStyleFlag(self.GetWindowStyleFlag() | wx.FRAME_FLOAT_ON_PARENT)
 		except Exception:
@@ -175,6 +177,7 @@ class RevolutionsDlg(wx.Dialog):
 		# as far as the wxPython extension is concerned.
 #        self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['Revolutions'], size=wx.DefaultSize)
+		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 		# 팝업이 뜨기 '직전'의 top window를 기억해 둔다(대개 리턴 차트 프레임).
 		self._prev_top = wx.GetActiveWindow()
 		if not isinstance(self._prev_top, wx.TopLevelWindow) or self._prev_top is self:

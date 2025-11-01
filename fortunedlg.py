@@ -1,6 +1,6 @@
 import  wx
 import mtexts
-
+import dlgutils
 
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
@@ -25,7 +25,7 @@ class FortuneDlg(wx.Dialog):
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
-		wx.Dialog.__init__(self, None, -1, mtexts.txts['LotOfFortune'], size=wx.DefaultSize)
+		dlgutils.precreate_context_help_dialog(self, parent, mtexts.txts['LotOfFortune'])
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 

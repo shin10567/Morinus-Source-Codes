@@ -4,7 +4,7 @@ import wx
 import intvalidator
 import placesdlg
 import mtexts
-
+import dlgutils
 # ###################
 # import options
 # import rangechecker
@@ -41,7 +41,7 @@ class DefaultLocDlg(wx.Dialog):
         # object into the real wrapper of the dialog (instead of pre)
         # as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
-		wx.Dialog.__init__(self, None, -1, mtexts.txts['DefaultLocation'], size=wx.DefaultSize)
+		dlgutils.precreate_context_help_dialog(self, parent, mtexts.txts['DefaultLocation'])
 		#main vertical sizer
 		mvsizer = wx.BoxSizer(wx.VERTICAL)
 		#main horizontal sizer

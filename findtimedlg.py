@@ -18,6 +18,7 @@ import pickle
 import options
 import math
 import options
+import dlgutils
 
 (FTReadyEvent, EVT_FTREADY) = wx.lib.newevent.NewEvent()
 (FTDataReadyEvent, EVT_FTDATAREADY) = wx.lib.newevent.NewEvent()
@@ -137,7 +138,7 @@ class FindTimeDlg(wx.Dialog):
 	
 
 	def __init__(self, parent):
-		wx.Dialog.__init__(self, parent, -1, mtexts.txts['FindTime'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE)
+		dlgutils.precreate_context_help_dialog(self, parent, mtexts.txts['FindTime'])
 
 		self.parent = parent
 

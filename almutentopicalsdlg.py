@@ -8,7 +8,7 @@ import arabicparts
 import options
 import mtexts
 import copy
-
+import dlgutils
 #---------------------------------------------------------------------------
 # Create and set a help provider.  Normally you would do this in
 # the app's OnInit as it must be done before any SetHelpText calls.
@@ -246,7 +246,7 @@ class AlmutenTopicalsDlg(wx.Dialog):
 		# object into the real wrapper of the dialog (instead of pre)
 		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
-		wx.Dialog.__init__(self, None, -1, mtexts.txts['TopicalAlmutens'], size=wx.DefaultSize)
+		dlgutils.precreate_context_help_dialog(self, parent, mtexts.txts['TopicalAlmutens'])
 		self.tpcls = None
 		if opts.topicals != None:
 			self.tpcls = copy.deepcopy(opts.topicals)

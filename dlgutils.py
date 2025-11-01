@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import wx
 import mtexts
+import wx
+import mtexts
 
 def _build_gmd(parent, msg, title, style):
     dlg = wx.GenericMessageDialog(parent, msg, title, style)
@@ -39,3 +41,21 @@ def ask_yes_no(parent, msg_key_or_text, title_key='Confirm', default_yes=False, 
         return dlg.ShowModal() == wx.ID_YES
     finally:
         dlg.Destroy()
+        
+def precreate_context_help_dialog(self, parent, title, style=wx.DEFAULT_DIALOG_STYLE):
+    # MSW에서는 "?"가 뜨려면 리사이즈/최대/최소가 없어야 함
+    if wx.Platform == '__WXMSW__':
+        style &= ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
+
+    # 2-phase create: __init__만 먼저(아직 창 생성 X)
+    wx.Dialog.__init__(self)
+
+    # Extra style은 Create 전에 넣어야 함
+    if hasattr(wx, "DIALOG_EX_CONTEXTHELP"):
+        self.SetExtraStyle(self.GetExtraStyle() | wx.DIALOG_EX_CONTEXTHELP)
+
+    # 이제 실제 생성
+    self.Create(parent, -1, title,
+                pos=wx.DefaultPosition, size=wx.DefaultSize, style=style)
+    return self
+

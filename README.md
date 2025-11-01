@@ -1,4 +1,4 @@
-## [9.3.2] Updated Version from 8.1.0 
+## [9.3.3] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -199,4 +199,5 @@
 - Enabled saving on Decennials L3/L4.
 - Fixed an issue where planetary glyph colors did not update in Black & White mode for Heliacal Risings/Settings and Paranatellonta.
 - Dodecatemoria: moved the “Dodecatemoria Calculator” context-menu item above “Save as Bitmap”; clicking it now opens the calculator.
-
+#### 9.3.3
+- Partially restored the Help (?) button in the top-right corner.

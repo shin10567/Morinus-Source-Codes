@@ -230,10 +230,10 @@ txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Tim
 'Houses':'Houses', 'Positions':'Speculum', 'Sun':'Sun', 'Moon':'Moon', 'Mercury':'Mercury', 'Venus':'Venus', 'Mars':'Mars', 'Jupiter':'Jupiter', 
 'Saturn':'Saturn', 'Uranus':'Uranus', 'Neptune':'Neptune', 'Pluto':'Pluto', 'AscNode':'Asc. Node', 'DescNode':'Dsc. Node', 'PosTable':'Positions Table', 
 'Longitude':'Longitude', 'Latitude':'Latitude', 'Rectascension':'Rectascension', 'InTime':'In Time', 'Declination':'Declination', 
-'Semiarcus':'Semiarcus', 'AscDiffLat':'AD (Lat)', 'Meridiandist':'Meridiandist', 'Horizondist':'Horizondist', 'TemporalHour':'Temporalhour', 'HourlyDist':'Hourlydist', 'PMP':'PMP', 'HelpPMP':'Placidus Mundane Position', 
+'Semiarcus':'Semiarcus', 'AscDiffLat':'AD (Lat)', 'Meridiandist':'Meridiandist', 'Horizondist':'Horizondist', 'TemporalHour':'Temporalhour', 'HourlyDist':'Hourlydist', 'PMP':'PMP', 'HelpPMP':'Placidus mundane position', 
 'AscDiffPole':'AD (Pole H.)', 'PoleHeight':'Pole Height', 'AscDescObl':'AO/DO (PH)', 'ZD':'ZD', 'HelpZD':'Zenith distance', 'Pole':'Pole', 'Q':'Q', 
 'HelpQ':'Ascensional difference under own pole', 'WReg':'W', 'HelpW':'Oblique ascension/descension under its own pole', 
-'CMP':'CMP Vrt. Azmt.', 'HelpCMP':'Campanian Mundane Position', 'Color':'Color', 
+'CMP':'CMP Vrt. Azmt.', 'HelpCMP':'Campanian mundane position', 'Color':'Color', 
 'InColor':'Color', 'BlackAndWhite':'Black and White', 'TableSize':'Table Size', 'PlanetaryHour':'Planetary Hour', 
 'ShowPlanetary':'Show', 'TableBW':'Table in BW', 'Chart':'Chart', 'Frame':'Frame', 'Signs':'Signs', 'AscMC':'Asc, MC', 'House':'House', 
 'Housenames':'Housenames', 'Dignities':'Dignities', 'Domicil':'Domicile', 'Exal':'Exaltation', 'Peregrin':'Peregrine', 'Casus':'Fall', 'Exil':'Detriment', 
@@ -267,15 +267,15 @@ txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Tim
 'SZPromissor':'Promissor', 'HelpSZPromissor':'The latitude of the promissor is used', 'SZSignificator':'Significator', 
 'HelpSZSignificator':'The latitude of the significator is used', 'SZBoth':'Both', 'Bianchini':'Bianchini', 
 'HelpSZBoth':'Both the latitude of the promissor and that of the significator are used', 
-'HouseCusps':'House Cusps', 'UseLatitude':'Use latitudes', 
-'UseLatitudeHelp':'Use the planets in the houses not their ecliptical projections', 'PlanetsInHouses':'Planets In Houses', 'Hrs':'Hrs', 
+'HouseCusps':'House Cusps', 'UseLatitude':'Use Latitudes', 
+'UseLatitudeHelp':'Use the planets in the houses not their ecliptical projections', 'PlanetsInHouses':'Planets in Houses', 'Hrs':'Hrs', 
 'Monday':'Monday', 'Tuesday':'Tuesday', 'Wednesday':'Wednesday', 'Thursday':'Thursday', 'Friday':'Friday', 'Saturday':'Saturday', 
 'Sunday':'Sunday', 'RiseTime':'Sunrise', 'SetTime':'Sunset', 'Length':'Length', 'RaptParallel':'Rapt Parallel', 
 'PlanetInNextHouse1':'Planet is in next house', 'PlanetInNextHouse2':'when reached', 
 'PlanetInNextHouseHelp':'Planet counts to next house when its position reached x percent of its current house', 'Both':'Both',
 'Deselect':'Deselect', 'SelectAll':'Select All', 'PrimaryKeys':'Primary Keys', 'Keys':'Keys', 'Dynamic':'Dynamic', 'Static':'Static', 
 'Coefficient':'Coefficient', 'TrueSolarEquatorialArc':'True Solar Equatorial Arc', 'TrueSolarEclipticalArc':'True Solar Ecliptical Arc', 
-'BirthdaySolarEquatorialArc':'True Solar Equatorial Arc(Birthday)', 'BirthdaySolarEclipticalArc':'True Solar Ecliptical Arc(Birthday)', 
+'BirthdaySolarEquatorialArc':'True Solar Equatorial Arc (Birthday)', 'BirthdaySolarEclipticalArc':'True Solar Ecliptical Arc (Birthday)', 
 'Naibod':'Naibod', 'Cardan':'Cardan', 'Ptolemy':'Ptolemy', 
 'Customer':'UserP', 'User2':'UserS',
 'DynamicKey':'Dynamic Key', 'StaticKey':'Static Key', 'Start':'Start', 'Back':'Back', 
@@ -291,7 +291,7 @@ txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Tim
 'LotOfFortune':'Fortuna','LFMoonSun':'Fortuna = Asc+(Moon-Sun)', 
 'LFDSunMoon':'Fortuna = Asc+(Sun-Moon) [Diurnal]', 'LFNMoonSun':'Fortuna = Asc+(Moon-Sun) [Nocturnal]', 
 'LFDMoonSun':'Fortuna = Asc+(Moon-Sun) [Diurnal]', 'LFNSunMoon':'Fortuna = Asc+(Sun-Moon) [Nocturnal]',
-'HelpMP':'MP is Mundane Position', 'MidPoints':'MidPoints', 'MidPoint':'MidPoint', 'NotAvailable':'Not available for BC charts', 
+'HelpMP':'MP is mundane position', 'MidPoints':'MidPoints', 'MidPoint':'MidPoint', 'NotAvailable':'Not available for BC charts', 
 'FixStars':'Fixed Stars', 'IntermHCS':'Interm. HCs', 'FixStarRef':'1950.01.01 Midnight(GMT)', 'DeselectAll':'Deselect All', 'All':'All', 
 'LeftToSelect':'Left to Select', 'Nomencl':'Nomencl.', 'NotFound':'not found', 'NoSelFixStars':'There are no fixed stars selected!', 
 'FixStars2':'Fixed Stars', 'Terms':'Terms', 'Egyptian':'Egyptian', 'Ptolemaic':'Ptolemaic', 'MultiPlanets':'A planet is selected several times', 
@@ -318,7 +318,7 @@ txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Tim
 'Diurnal':'Diurnal', 'Nocturnal':'Nocturnal', 'Formula':'Formula', 'Par':'Par', 'AC':'Asc', 'DC2':'Dsc', 
 'MaxArabicPartsNum':'The maximum number of the arabic parts is ', 'FSAsps':'FSAsps', 'Ara':'Ara', 'Squ':'Squ', 'UT':'UT', 'ZN':'ZN', 'LC':'LC',
 'J':'J', 'Square':'Square', 'CheckUser':'Check the UserP or UserS in the Primary Directions dialog in the Options menu.', 'Cpt':'Cpt',
-'NewMoon':'New Moon', 'FullMoon':'Full Moon', 'Syzygy':'Syzygy', 'Date2':'Date(GMT)', 'LF':'LF', 'SY':'Syzygy', 'DayNightOrb':'Day/Night Orb', 
+'NewMoon':'New Moon', 'FullMoon':'Full Moon', 'Syzygy':'Syzygy', 'Date2':'Date (GMT)', 'LF':'LF', 'SY':'Syzygy', 'DayNightOrb':'Day/Night Orb', 
 'HelpDayNightOrbDeg':'Must be between 0 and 6', 'SyzMoon':'Moon', 'SyzAbove':'Above Horizon', 'SyzAboveNatal':'Above Horizon (Radix)', 
 'Synastry':'Synastry', 'Themes':'Themes', 'theme1':'Theme 1', 'theme2':'Theme 2', 'AscMCWidth':'Asc-MC Width', 
 'Individual':'Individual', 'UseIndividual':'Use Individual', 
@@ -362,7 +362,7 @@ txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Tim
 # ############### V 7.2.0
 'DefaultLocation':'Default location', 'Long':'Long', 'Lat':'Lat', 'E':'E', 'W':'W', 'N':'N', 'S':'S',
 'Min':'Minute', 'HelpMin':'Must be between 0 and 59', 'Deg':'Degree', 'HelpLonDeg':'Must be between 0 and 180', 'HelpLatDeg':'Must be between 0 and 90', 
-'Place':'Place', 'HelpPlace':'The place of the horoscope', 'GMT':'GMT', 'HelpZoneHour':'Must be between 0 and 12', 'HereAndNow':'Here and now',
+'Place':'Place', 'HelpPlace':'The place of the horoscope', 'GMT':'GMT', 'HelpZoneHour':'Must be between 0 and 12', 'HereAndNow':'Here and Now',
 'Altitude':'Altitude of the Place', 'HelpAltitude':'Must be between 0-10000', 'Hour':'Hour', 'HelpZoneHour':'Must be between 0 and 12',
 'HelpDaylight':'Subtracts one hour', 'Daylight':'Daylight Saving',
 # ###############
@@ -379,9 +379,9 @@ txtseng = {'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Tim
 'PDsInChartInMun':'PDs in Chart: Terrestrial', 'PDClickError':'Right-click on a PD in the list', 'Search':'Search', 
 'OnlineSearch':'Search', 'NotFound':'Not found!\nPerhaps there is no Internet-connection \n or you misspelled the city', 
 'PlaceEmpty':'The place-field is empty!', 'TooFewChars':'Please enter at least three characters in the Place-field.', 
-'MaxNumberOnlineSearch':'Max. items in online-list', 'Country':'Country', 'RMP':'RMP', 'HelpRMP':'Regiomantanian Mundane Position', 
-'AZM':'Astrl.Azimuth', 'HelpAZM':'Astrological azimuth, 0 at east, counterclockwise', 
-'ELV':'Altitude', 'HelpELV':'Astronomical Altitude', 
+'MaxNumberOnlineSearch':'Max. Items in Online-List', 'Country':'Country', 'RMP':'RMP', 'HelpRMP':'Regiomantanian mundane position', 
+'AZM':'Astrl. Azimuth', 'HelpAZM':'Astrological azimuth, 0 at east, counterclockwise', 
+'ELV':'Altitude', 'HelpELV':'Astronomical altitude', 
 'MunAbbr':'Mun', 
 'SwitchToEnglish':'Switch to english please.',
 'NotAvailableWithPDSettings':'Not available with the current PD-settings',
@@ -396,11 +396,6 @@ u"StartSign":u"Start Sign",'Compute':'Compute',u"HeliacalRisingsSettings":u"Heli
 "SignDegMinSec":"Sign + Degree / Minute / Second",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real Date:","Location":u"Location",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real Date:","Location":u"Location",'Open':'Open','Save':'Save', 'Circumambulation': 'Circumambulations',
 'CircumPolarLatErr': 'Circumambulations are not available at high latitudes (absolute latitude {0:.2f}°, limit {1:.2f}°).',
 }
-
-txtseng.update({
-	'NumFieldsCannotBeEmpty': 'Problem with data! Numeric fields cannot be empty.',
-	'RangeError': 'Range error! The value is outside the allowed range.',
-})
 txtseng.update({
 	'UseAltitude': 'Use Altitude',
 	'PleaseWait': 'Please wait.',
@@ -758,10 +753,6 @@ u"StartSign":u"Bejelentkezés indítása",'Compute':'Számítás',u"HeliacalRisi
 "SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
 }
 txtshun.update({
-	'NumFieldsCannotBeEmpty': u'Probléma az adatokkal! A numerikus mezők nem maradhatnak üresen!',
-	'RangeError': u'Érték Hiba! Adjon meg helyes értéket a megengedett tartományon belül.',
-})
-txtshun.update({
 	'UseAltitude': u'Magasság használata',
 	'PleaseWait': u'Kérem, várjon.',
 	'RetrievingZoneOnly': u'Kérem, várjon. Időzóna lekérése.',
@@ -1115,10 +1106,6 @@ u"StartSign":u"Начать подписываться",'Compute':'Вычисл�
 "SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
 }
 txtsrus.update({
-	'NumFieldsCannotBeEmpty': u'Неправильные данные! Числовые поля не могут быть пустыми.',
-	'RangeError': u'Ошибка диапазона! Значение вне допустимого диапазона.',
-})
-txtsrus.update({
 	'UseAltitude': u'Использовать высоту',
 	'PleaseWait': u'Пожалуйста, подождите.',
 	'RetrievingZoneOnly': u'Пожалуйста, подождите. Получение часового пояса.',
@@ -1471,10 +1458,6 @@ u"StartSign":u"Iniciar Firmar",'Compute':'Computación',u"HeliacalRisingsSetting
 "InputSignandDegree":"Entrada: signo y grado","InputEclipticLongitude":"Entrada: Longitud eclíptica (0 - 360)",
 "SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
 }
-txtsesp.update({
-	'NumFieldsCannotBeEmpty': u'¡Problema con los datos! Los campos numéricos no pueden estar vacíos.',
-	'RangeError': u'¡Error de rango! El valor está fuera del intervalo permitido.',
-})
 txtsesp.update({
 	'UseAltitude': u'Usar altitud',
 	'PleaseWait': u'Por favor, espere.',
@@ -1836,10 +1819,6 @@ txtsita = {'DDCharts': 'Disegnare carte',
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 txtsita.update({
-	'NumFieldsCannotBeEmpty': u'Errore! I campi numerici non possono essere vuoti.',
-	'RangeError': u'Errore di intervallo! Il valore è fuori dall’intervallo consentito.',
-})
-txtsita.update({
 	'UseAltitude': u"Usa l'altitudine",
 	'PleaseWait': u'Attendere, prego.',
 	'RetrievingZoneOnly': u'Attendere, prego. Recupero fuso orario.',
@@ -2191,11 +2170,6 @@ u"StartSign":u"Start Sign",'Compute':'Compute',"HeliacalRisingsSettings":u"Helia
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
-
-txtsfre.update({
-	'NumFieldsCannotBeEmpty': u'Problème de données ! Les champs numériques ne peuvent pas être vides.',
-	'RangeError': u'Erreur d’intervalle ! La valeur est en dehors de l’intervalle autorisé.',
-})
 txtsfre.update({
 	'UseAltitude': u"Utiliser l'altitude",
 	'PleaseWait': u'Veuillez patienter.',
@@ -2654,10 +2628,6 @@ u"StartSign":u"起始星座",'Compute':'计算',u"HeliacalRisingsSettings":u"谐
 "SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
 txtschs.update({
-	'NumFieldsCannotBeEmpty': u'数据问题！数值字段不能为空。',
-	'RangeError': u'范围错误！该值超出允许范围。',
-})
-txtschs.update({
 	'UseAltitude': u'使用海拔高度',
 	'PleaseWait': u'请稍候.',
 	'RetrievingZoneOnly': u'请稍候. 正在获取时区.',
@@ -2909,10 +2879,6 @@ txtscht = {'DDCharts': '繪製星盤',
 "InputSignandDegree":"输入：星卒和度数","InputEclipticLongitude":"输入：黄道经度(0-360)",
 "SignDegMinSec":"星座 / 度 / 分 / 秒",'TimeofBirth':u'出生日期',"Modify":"修改","MundaneOnly":u"仅 Mundane 盘",'FixStarAngleDirs':'恒星的角推运',"Realdate":u"真实的日期:","Location":u"位置",'Open':'打开','Save':'保存'
 }
-txtscht.update({
-	'NumFieldsCannotBeEmpty': u'數據問題！數值欄位不能為空。',
-	'RangeError': u'範圍錯誤！該值超出允許範圍。',
-})
 txtscht.update({
 	'UseAltitude': u'使用海拔高度',
 	'PleaseWait': u'請稍候.',
@@ -3348,10 +3314,6 @@ txtsko = {'DDCharts': '차트 그리기',
 'InputEclipticLongitude':u'입력: 황경(0 - 360)',
 'SignDegMinSec':u'사인 + 도 / 분 / 초','TimeofBirth':u'출생 시간',"Modify":"수정","MundaneOnly":u"먼데인만",'FixStarAngleDirs':'항성의 앵글 디렉션',"Realdate":u"실제 날짜:","Location":u"위치",'Open':'열기','Save':'저장'
 }
-txtsko.update({
-	'NumFieldsCannotBeEmpty': u'데이터에 문제가 있습니다! 숫자 입력란은 비워둘 수 없습니다.',
-	'RangeError': u'범위 오류입니다! 허용 범위 내의 값을 입력하세요.',
-})
 txtsko.update({
 	'UseAltitude': u'고도 사용',
 	'PleaseWait': u'잠시만 기다려 주세요.',
