@@ -42,8 +42,8 @@ class PlaceListCtrl(wx.ListCtrl):
 
 	def Populate(self):
 		self.InsertColumn(PlaceListCtrl.PLACE, mtexts.txts['Place'])
-		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Longitude'])
-		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Latitude'])
+		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Long'])
+		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Lat'])
 		self.InsertColumn(PlaceListCtrl.ZONE, mtexts.txts['Zone'])
 		self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt'])
 
@@ -196,11 +196,11 @@ class PlacesDlg(wx.Dialog):
 
 		self.splace =wx.StaticBox(self, label='')
 		placesizer = wx.StaticBoxSizer(self.splace, wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Longitude']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Long']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.londeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 180), size=(40,-1))
 		self.londeg.SetValue('0')
@@ -227,10 +227,10 @@ class PlacesDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 #		fgsizer.AddGrowableCol(4, 0)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Latitude']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Lat']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 5)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 90), size=(40,-1))
 		self.latdeg.SetValue('0')
@@ -258,7 +258,7 @@ class PlacesDlg(wx.Dialog):
 
 		vsizer.Add(fgsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Place']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Place'])
 		vsizer.Add(label, 0, wx.ALIGN_LEFT|wx.TOP|wx.LEFT|wx.RIGHT, 5)
 		self.birthplace = wx.TextCtrl(self, -1, '', size=(170,-1))
 		self.birthplace.SetHelpText(mtexts.txts['HelpPlace'])

@@ -41,8 +41,8 @@ class PlaceListCtrl(wx.ListCtrl):
 	def Populate(self):
 		self.InsertColumn(PlaceListCtrl.PLACE, mtexts.txts['Place'])
 		self.InsertColumn(PlaceListCtrl.COUNTRY, mtexts.txts['Country'])
-		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Longitude'])
-		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Latitude'])
+		self.InsertColumn(PlaceListCtrl.LON, mtexts.txts['Long'])
+		self.InsertColumn(PlaceListCtrl.LAT, mtexts.txts['Lat'])
 		#self.InsertColumn(PlaceListCtrl.ZONE, mtexts.txts['Zone'])
 		#self.InsertColumn(PlaceListCtrl.ALT, mtexts.txts['Alt']+'.')
 

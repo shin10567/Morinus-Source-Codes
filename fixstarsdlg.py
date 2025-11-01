@@ -13,7 +13,7 @@ import fixstars
 #import pdb
 
 class FixStars:
-    signtxts = (mtexts.txts['Ari'], mtexts.txts['Tau'], mtexts.txts['Gem'], mtexts.txts['Can'], mtexts.txts['Leo2'], mtexts.txts['Vir'], mtexts.txts['Lib'], mtexts.txts['Sco'], mtexts.txts['Sag'], mtexts.txts['Cap'], mtexts.txts['Aqu'], mtexts.txts['Pis'])
+    signtxts = (mtexts.txts['Ari'], mtexts.txts['Tau'], mtexts.txts['Gem'], mtexts.txts['Can'], mtexts.txts['Leo'], mtexts.txts['Vir'], mtexts.txts['Lib'], mtexts.txts['Sco'], mtexts.txts['Sag'], mtexts.txts['Cap'], mtexts.txts['Aqu'], mtexts.txts['Pis'])
 
     class FixStar:
         NAME = 0
@@ -141,8 +141,8 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
         self.InsertColumn(FixStarListCtrl.NUM, '')
         self.InsertColumn(FixStarListCtrl.NAME, mtexts.txts['Name'])
         self.InsertColumn(FixStarListCtrl.NOMNAME, mtexts.txts['Nomencl'])
-        self.InsertColumn(FixStarListCtrl.LON, mtexts.txts['Longitude'])
-        self.InsertColumn(FixStarListCtrl.LAT, mtexts.txts['Latitude'])
+        self.InsertColumn(FixStarListCtrl.LON, mtexts.txts['Long'])
+        self.InsertColumn(FixStarListCtrl.LAT, mtexts.txts['Lat'])
 
         items = self.fixstardata.items()
         cnt = 0

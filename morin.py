@@ -343,8 +343,9 @@ class MFrame(wx.Frame):
 
 		# Almutens (existing submenu)
 		self.talmutens = wx.Menu()
-		self.talmutens.Append(self.ID_AlmutenZodiacal, mtexts.menutxts['TMAlmutenZodiacal'], mtexts.menutxts['TMAlmutenZodiacalDoc'])
 		self.talmutens.Append(self.ID_AlmutenChart,    mtexts.menutxts['TMAlmutenChart'],    mtexts.menutxts['TMAlmutenChartDoc'])
+		self.talmutens.Append(self.ID_AlmutenZodiacal, mtexts.menutxts['TMAlmutenZodiacal'], mtexts.menutxts['TMAlmutenZodiacalDoc'])
+		
 		self.talmutens.Append(self.ID_AlmutenTopical,  mtexts.menutxts['TMAlmutenTopical'],  mtexts.menutxts['TMAlmutenTopicalDoc'])
 		self.mtable.Append(self.ID_TAlmutens, mtexts.menutxts['TMAlmutens'], self.talmutens)
 		# (Almutens 서브메뉴가 이미 존재하는 형태는 파일에 보임) :contentReference[oaicite:4]{index=4}
@@ -364,6 +365,7 @@ class MFrame(wx.Frame):
 		self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 		self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
 		self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
+		
 		self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
 
 		# Primary Directions
@@ -1535,7 +1537,6 @@ class MFrame(wx.Frame):
 		# 열기
 		import angleatbirthframe
 		fr = angleatbirthframe.AngleAtBirthFrame(self, self.title, self.horoscope, self.options)
-		#fr.Show(True)  # AngleAtBirthFrame 내부에서도 Show(True)를 호출하지만, 중복 호출해도 무방
 
 	def onProfections(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
@@ -1761,8 +1762,6 @@ class MFrame(wx.Frame):
 		if not self.splash:
 			import zodiacalreleasingframe
 			fr = zodiacalreleasingframe.ZRFrame(self, self.title, self.horoscope, self.options)
-			#fr.Show(True)
-
 	def onDecennials(self, event):
 		if self.horoscope.time.bc:
 			dlgm = wx.MessageDialog(self, mtexts.txts['NotAvailable'], '', wx.OK|wx.ICON_INFORMATION)
@@ -3213,8 +3212,9 @@ class MFrame(wx.Frame):
 
 				# Almutens (existing submenu)
 				self.talmutens = wx.Menu()
-				self.talmutens.Append(self.ID_AlmutenZodiacal, mtexts.menutxts['TMAlmutenZodiacal'], mtexts.menutxts['TMAlmutenZodiacalDoc'])
 				self.talmutens.Append(self.ID_AlmutenChart,    mtexts.menutxts['TMAlmutenChart'],    mtexts.menutxts['TMAlmutenChartDoc'])
+				self.talmutens.Append(self.ID_AlmutenZodiacal, mtexts.menutxts['TMAlmutenZodiacal'], mtexts.menutxts['TMAlmutenZodiacalDoc'])
+				
 				self.talmutens.Append(self.ID_AlmutenTopical,  mtexts.menutxts['TMAlmutenTopical'],  mtexts.menutxts['TMAlmutenTopicalDoc'])
 				self.mtable.Append(self.ID_TAlmutens, mtexts.menutxts['TMAlmutens'], self.talmutens)
 				# (Almutens 서브메뉴가 이미 존재하는 형태는 파일에 보임) :contentReference[oaicite:4]{index=4}
@@ -3234,6 +3234,7 @@ class MFrame(wx.Frame):
 				self.ttimelords.Append(self.ID_Decennials,        mtexts.menutxts['TMDecennials'],        mtexts.menutxts['TMDecennialsDoc'])
 				self.ttimelords.Append(self.ID_ZodiacalReleasing,  mtexts.menutxts['TMZodiacalReleasing'],  mtexts.menutxts['TMZodiacalReleasingDoc'])
 				self.ttimelords.Append(self.ID_Circumambulation,   mtexts.menutxts['TMCircumambulation'],   mtexts.menutxts['TMCircumambulationDoc'])
+				
 				self.mtable.Append(self.ID_TimeLordsMenu, mtexts.txts['TimeLords'], self.ttimelords)
 
 				# Primary Directions
@@ -3869,7 +3870,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.3.4'
+		info.Version = '9.3.3'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
@@ -4067,8 +4068,8 @@ class MFrame(wx.Frame):
 			txt = signtxt+str(self.horoscope.time.origyear)+'.'+common.common.months[self.horoscope.time.origmonth-1]+'.'+(str(self.horoscope.time.origday)).zfill(2)+', '+(str(self.horoscope.time.hour)).zfill(2)+':'+(str(self.horoscope.time.minute)).zfill(2)+':'+(str(self.horoscope.time.second)).zfill(2)+ztxt
 			self.SetStatusText(txt, 2)
 			deg_symbol = u':'
-			t1 = mtexts.txts['Longitude']+': '
-			t2 = ', '+mtexts.txts['Latitude']+': '
+			t1 = mtexts.txts['Long']+': '
+			t2 = ', '+mtexts.txts['Lat']+': '
 			dirlontxt = mtexts.txts['E']
 			if not self.horoscope.place.east:
 				dirlontxt = mtexts.txts['W']

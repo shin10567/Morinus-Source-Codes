@@ -135,7 +135,7 @@ class PersonalDataDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.minute = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(50,-1))
 		self.minute.SetHelpText(mtexts.txts['HelpMin'])
@@ -144,7 +144,7 @@ class PersonalDataDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Second']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Sec']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.sec = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(50,-1))
 		self.sec.SetHelpText(mtexts.txts['HelpMin'])
@@ -163,11 +163,11 @@ class PersonalDataDlg(wx.Dialog):
 
 		self.splace =wx.StaticBox(self, label='')
 		placesizer = wx.StaticBoxSizer(self.splace, wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Longitude']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Long']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.londeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 180), size=(40,-1))
 		self.londeg.SetHelpText(mtexts.txts['HelpLonDeg'])
@@ -176,7 +176,7 @@ class PersonalDataDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.lonmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.lonmin.SetHelpText(mtexts.txts['HelpMin'])
@@ -192,10 +192,10 @@ class PersonalDataDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 #		fgsizer.AddGrowableCol(4, 0)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Latitude']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Lat']+':')
 		fgsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 5)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 90), size=(40,-1))
 		self.latdeg.SetHelpText(mtexts.txts['HelpLatDeg'])
@@ -204,7 +204,7 @@ class PersonalDataDlg(wx.Dialog):
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
 		vvsizer.Add(label, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.latmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40, -1))
 		self.latmin.SetHelpText(mtexts.txts['HelpMin'])
@@ -222,7 +222,7 @@ class PersonalDataDlg(wx.Dialog):
 		vsizer.Add(fgsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		ID_PlaceButton = wx.NewId()
-		placebtn = wx.Button(self, ID_PlaceButton, mtexts.txts['Place']+':', size=(100, -1))
+		placebtn = wx.Button(self, ID_PlaceButton, mtexts.txts['Place'], size=(100, -1))
 		vsizer.Add(placebtn, 0, wx.ALIGN_LEFT|wx.TOP|wx.LEFT|wx.RIGHT, 5)
 		self.birthplace = wx.TextCtrl(self, -1, '', size=(170,-1))
 		self.birthplace.SetHelpText(mtexts.txts['HelpPlace'])
@@ -258,7 +258,7 @@ class PersonalDataDlg(wx.Dialog):
 		vvsizer.Add(self.zhour, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		fgsizer.Add(vvsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 		vvsizer = wx.BoxSizer(wx.VERTICAL)
-		self.zminutelabel = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
+		self.zminutelabel = wx.StaticText(self, -1, mtexts.txts['Min']+':')
 		vvsizer.Add(self.zminutelabel, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.zminute = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40,-1))
 		self.zminute.SetHelpText(mtexts.txts['HelpMin'])

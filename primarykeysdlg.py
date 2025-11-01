@@ -32,6 +32,7 @@ class PrimaryKeysDlg(wx.Dialog):
 		# as far as the wxPython extension is concerned.
 #		self.PostCreate(pre)
 		wx.Dialog.__init__(self, None, -1, mtexts.txts['PrimaryDirs'], size=wx.DefaultSize)
+		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
 		self.dynsel = options.pdkeyd
 		self.statsel = options.pdkeys
 
@@ -66,14 +67,14 @@ class PrimaryKeysDlg(wx.Dialog):
 
 		hsizer = wx.BoxSizer(wx.HORIZONTAL)
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Degree']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Deg']+':')
 		vsizer.Add(label, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.deg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 9), size=(40,-1))
 		vsizer.Add(self.deg, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 5)
 		self.deg.SetMaxLength(1)
 		hsizer.Add(vsizer, 1, wx.LEFT, 5)
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Min']+':')
 		vsizer.Add(label, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT, 5)
 		self.minu = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40,-1))
 		self.minu.SetMaxLength(2)
@@ -81,7 +82,7 @@ class PrimaryKeysDlg(wx.Dialog):
 		vsizer.Add(self.minu, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT, 5)
 		hsizer.Add(vsizer, 1, wx.LEFT, 5)
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		label = wx.StaticText(self, -1, mtexts.txts['Second']+':')
+		label = wx.StaticText(self, -1, mtexts.txts['Sec']+':')
 		vsizer.Add(label, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT|wx.RIGHT, 5)
 		self.sec = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40,-1))
 		self.sec.SetMaxLength(2)

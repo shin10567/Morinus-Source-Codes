@@ -194,10 +194,10 @@ class TransitFrame(wx.Frame):
 		dir_lat = mtexts.txts['N'] if p.north else mtexts.txts['S']
 
 		right_txt = (
-			f"{mtexts.txts['Longitude']}: "
+			f"{mtexts.txts['Long']}: "
 			f"{str(p.deglon).zfill(2)}{deg_symbol}{str(p.minlon).zfill(2)}'"
 			f"{dir_lon},"
-			f" {mtexts.txts['Latitude']}: "
+			f" {mtexts.txts['Lat']}: "
 			f"{str(p.deglat).zfill(2)}{deg_symbol}{str(p.minlat).zfill(2)}'"
 			f"{dir_lat}"
 		)
