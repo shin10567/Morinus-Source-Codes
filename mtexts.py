@@ -173,8 +173,8 @@ menutxtseng.update({
 	'OMOrbsDoc':'Opens the orbs settings dialog.',
 	'OMPrimaryDirsDoc':'Opens the primary directions settings dialog.',
 	'OMPrimaryKeysDoc':'Opens the primary keys dialog.',
-	'OMPDsInChartOptZodDoc':'Opens the PDs-in-chart selection dialog.',
-	'OMPDsInChartOptMunDoc':'Opens the PDs-in-chart selection dialog.',
+	'OMPDsInChartOptZodDoc':'Opens the PDs in chart selection dialog.',
+	'OMPDsInChartOptMunDoc':'Opens the PDs in chart selection dialog.',
 	'OMLotFortuneDoc':'Opens the fortuna dialog.',
 	'OMArabicPartsDoc':'Opens the arabic parts settings dialog.',
 	'OMSyzygyDoc':'Opens the syzygy dialog.',
@@ -251,7 +251,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'AODO':'AO/DO(ph)', 'Nodes':'Nodes', 'Parallel':'Parallel', 'Contraparallel':'Contraparallel', 'Planets':'Planets', 'Lunar':'Lunar', 'Male':'Male', 
 'Female':'Female', 'SaveChart':'Save the chart as bitmap', 'ChartBW':'Chart in BW', 'Time':'Time', 'Transits':'Transits', 'Revolutions':'Revolutions', 
 'StartingDate':'Starting Date (Midnight, GMT)', 'CouldnotComputeRevolution':'Could not compute revolution!', 'Comparison':'Comparison', 
-'Windows':'Windows', 'SunTransits':'Sun-Transits', 'CouldnotComputeTransit':'Could not compute transit!', 'Ascendant':'Ascendant', 
+'Windows':'Windows', 'SunTransits':'Sun Transits', 'CouldnotComputeTransit':'Could not compute transit!', 'Ascendant':'Ascendant', 
 'MediumCoeli':'Medium Coeli', 'SecondaryDirs':'Secondary Progressions', 'Direct':'Direct', 'Converse':'Converse', 'Age':'Age', 
 'ApparentSolarTime':'Apparent Solar Time', 'MeanTime':'Mean Time', 'SecondaryDir':'Secondary Progressions', 
 'Ok':'OK', 'Cancel':'Cancel', 'Close':'Close', 'ZodiacalOpts':'Zodiacal Options', 'Calculating':'Calculating', 'Information':'Information', 
@@ -300,7 +300,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'Antiscia':'Antiscia', 'ContraAntiscia':'Contraantiscia', 'Antiscion':'Antiscion', 'Contraantiscion':'Contraantiscion', 
 'Rectification':'Rectification', 'Calculate':'Calculate', 'Ant':'Ant', 'ZodPars':'Zodiacal Parallels', 'Par':'Par', 'ContraParallel':'Contraparallel', 
 'Strip':'Strip', 'Tab':'Tab', 'Spe':'Spe', 'Decans':'Decans', 'Asps2LoF':'Aspects to Fortuna', 'Asps2Nodes':'Aspects to Nodes', 
-'ShowTradFSNamesInPDList':'Show Traditional Names of Fixed Stars in PD-Lists', 
+'ShowTradFSNamesInPDList':'Show Traditional Names of Fixed Stars in PD-lists', 
 'AspectRing':'Aspect ring', 'Triplicity':'Triplicity', 
 'Topocentric':'Topocentric', 'Chaldean':'Chaldean', 'Dorothean':'Dorothean', 'MorinusTrip':'Morinus', 'Primary':'Primary', 
 'Secondary':'Secondary', 'Participating':'Participating', 'None':'None', 'Triplicities':'Triplicities', 'InTables':'In Tables', 
@@ -321,7 +321,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'J':'J', 'Square':'Square', 'CheckUser':'Check the UserP or UserS in the Primary Directions dialog in the Options menu.', 'Cpt':'Cpt',
 'NewMoon':'New Moon', 'FullMoon':'Full Moon', 'Syzygy':'Syzygy', 'Date2':'Date (GMT)', 'LF':'LF', 'SY':'Syzygy', 'DayNightOrb':'Day/Night Orb', 
 'HelpDayNightOrbDeg':'Must be between 0 and 6', 'SyzMoon':'Moon', 'SyzAbove':'Above Horizon', 'SyzAboveNatal':'Above Horizon (Radix)', 
-'Synastry':'Synastry', 'Themes':'Themes', 'theme1':'Theme 1', 'theme2':'Theme 2', 'AscMCWidth':'Asc-MC Width', 
+'Synastry':'Synastry', 'Themes':'Themes', 'theme1':'Theme 1', 'theme2':'Theme 2', 'AscMCWidth':'Asc, MC Width', 
 'Individual':'Individual', 'UseIndividual':'Use Individual', 
 'Housesystem':'Housesystem', 'HSPlacidus':'Placidus', 'HSKoch':'Koch', 'HSRegiomontanus':'Regiomontanus', 'HSCampanus':'Campanus', 
 'HSEqual':'Equal', 'HSWholeSign':'Whole sign', 'HSAxial':'Axial', 'HSMorinus':'Morinus', 'HSHorizontal':'Horizontal', 'HSPagePolich':'Page-Polich', 
@@ -364,7 +364,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'DefaultLocation':'Default location', 'Long':'Longitude', 'Lat':'Latitude', 'E':'E', 'W':'W', 'N':'N', 'S':'S',
 'Min':'Minute', 'HelpMin':'Must be between 0 and 59', 'Deg':'Degree', 'HelpLonDeg':'Must be between 0 and 180', 'HelpLatDeg':'Must be between 0 and 90', 
 'Place':'Place', 'HelpPlace':'The place of the horoscope', 'GMT':'GMT', 'HelpZoneHour':'Must be between 0 and 12', 'HereAndNow':'Here and Now',
-'Altitude':'Altitude of the Place', 'HelpAltitude':'Must be between 0-10000', 'Hour':'Hour', 'HelpZoneHour':'Must be between 0 and 12',
+'Altitude':'Altitude of the Place', 'HelpAltitude':'Must be between 0 and 10000', 'Hour':'Hour', 'HelpZoneHour':'Must be between 0 and 12',
 'HelpDaylight':'Subtracts one hour', 'Daylight':'Daylight Saving',
 # ###############
 'TopicalSyzygy':'Syzygy','TopicalDefault':'Default', 'TopicalConjunction':'Conjunction', 'TopicalOpposition':'Opposition', 
@@ -376,17 +376,17 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'YE':'Y', 'MO2':'M', 'DA':'D', 'HO':'H', 'MI':'M', 'SE':'S', 'ForceTheDate':'Force the Date (Find Place Only); In GMT',
 'InvalidAsc':'For Asc=0 or 180 the native latitude is indeterminate', 'smiter1':'1.Iteration', 'smiter2':'2.Iteration', 'smiter3':'3.Iteration', 
 'PDsInChart':'PDs in Chart', 'FromMundanePos':'From the Planets', 'FromZodiacalPos':'From Their Ecliptic Feet', 
-'PseudoAstronomical':'Full Pseudo-Astronomic', 'PDsInChartIngress':'Ingresses', 'PDsInChartInZod':'PDs in Chart: Celestial', 
+'PseudoAstronomical':'Full Pseudo-astronomic', 'PDsInChartIngress':'Ingresses', 'PDsInChartInZod':'PDs in Chart: Celestial', 
 'PDsInChartInMun':'PDs in Chart: Terrestrial', 'PDClickError':'Right-click on a PD in the list', 'Search':'Search', 
 'OnlineSearch':'Search', 'NotFound':'Not found!\nPerhaps there is no Internet-connection \n or you misspelled the city', 
-'PlaceEmpty':'The place-field is empty!', 'TooFewChars':'Please enter at least three characters in the Place-field.', 
-'MaxNumberOnlineSearch':'Max. Items in Online-List', 'Country':'Country', 'RMP':'RMP', 'HelpRMP':'Regiomantanian mundane position', 
+'PlaceEmpty':'The Place-field is empty!', 'TooFewChars':'Please enter at least three characters in the Place-field.', 
+'MaxNumberOnlineSearch':'Max. Items in Online-list', 'Country':'Country', 'RMP':'RMP', 'HelpRMP':'Regiomantanian mundane position', 
 'AZM':'Astrl. Azimuth', 'HelpAZM':'Astrological azimuth, 0 at east, counterclockwise', 
 'ELV':'Altitude', 'HelpELV':'Astronomical altitude', 
 'MunAbbr':'Mun', 
 'SwitchToEnglish':'Switch to english please.',
 'NotAvailableWithPDSettings':'Not available with the current PD-settings',
-'AngleatBirth':u'Angle at Birth - Parameters',
+'AngleatBirth':u'Angle at Birth Parameters',
 u'FixedStar':u'Fixed Star',u'Angle':u'Angle',u'ExactTime':u'Exact Time','ZodiacalReleasing':'Zodiacal releasing',
 u"StartSign":u"Start Sign",'Compute':'Compute',u"HeliacalRisingsSettings":u"Heliacal Risings/Settings",'AtmosphericExtinction':'Atmospheric Extinction:',"ExactHeliacalRisingsSettings":"Exact Heliacal Risings/Settings",
 'Phasis':'Phasis','TimeDays':'Time (Days)',"Angles":"Angles",'TermLord':'Term Lord','Degree':u'Degree','Participator':'Participator',
@@ -755,9 +755,9 @@ u"StartSign":u"Bejelentkezés indítása",'Compute':'Számítás',u"HeliacalRisi
 "SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
 }
 txtshun.update({
-    'Deg': u'Fok',
-    'Min': u'Perc',
-    'Sec': u'Másodperc'
+	'Deg': u'Fok',
+	'Min': u'Perc',
+	'Sec': u'Másodperc'
 })
 txtshun.update({
 	'UseAltitude': u'Magasság használata',
@@ -1114,9 +1114,9 @@ u"StartSign":u"Начать подписываться",'Compute':'Вычисл�
 "SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
 }
 txtsrus.update({
-    'Deg': u'Градус',
-    'Min': u'Минута',
-    'Sec': u'Секунда'
+	'Deg': u'Градус',
+	'Min': u'Минута',
+	'Sec': u'Секунда'
 })
 txtsrus.update({
 	'UseAltitude': u'Использовать высоту',
@@ -1473,9 +1473,9 @@ u"StartSign":u"Iniciar Firmar",'Compute':'Computación',u"HeliacalRisingsSetting
 "SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
 }
 txtsesp.update({
-    'Deg': u'Grado',
-    'Min': u'Minuto',
-    'Sec': u'Segundo'
+	'Deg': u'Grado',
+	'Min': u'Minuto',
+	'Sec': u'Segundo'
 })
 txtsesp.update({
 	'UseAltitude': u'Usar altitud',
@@ -1839,9 +1839,9 @@ txtsita = {'HelpDegree':u'Valore tra 0 e 29',
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 txtsita.update({
-    'Deg': u'Grado',
-    'Min': u'Minuto',
-    'Sec': u'Secondo'
+	'Deg': u'Grado',
+	'Min': u'Minuto',
+	'Sec': u'Secondo'
 })
 txtsita.update({
 	'UseAltitude': u"Usa l'altitudine",
@@ -2197,9 +2197,9 @@ u"StartSign":u"Start Sign",'Compute':'Compute',"HeliacalRisingsSettings":u"Helia
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 txtsfre.update({
-    'Deg': u'Degré',
-    'Min': u'Minute',
-    'Sec': u'Seconde'
+	'Deg': u'Degré',
+	'Min': u'Minute',
+	'Sec': u'Seconde'
 })
 txtsfre.update({
 	'UseAltitude': u"Utiliser l'altitude",

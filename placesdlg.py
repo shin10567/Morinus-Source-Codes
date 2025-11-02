@@ -258,7 +258,7 @@ class PlacesDlg(wx.Dialog):
 
 		vsizer.Add(fgsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
-		label = wx.StaticText(self, -1, mtexts.txts['Place'])
+		label = wx.StaticText(self, -1, mtexts.txts['Place']+':')
 		vsizer.Add(label, 0, wx.ALIGN_LEFT|wx.TOP|wx.LEFT|wx.RIGHT, 5)
 		self.birthplace = wx.TextCtrl(self, -1, '', size=(170,-1))
 		self.birthplace.SetHelpText(mtexts.txts['HelpPlace'])

@@ -538,12 +538,22 @@ class ArabicPartsDlg(wx.Dialog):
 
 		#AscRef
 		self.sascref =wx.StaticBox(self, label='')
-		refsizer = wx.StaticBoxSizer(self.sascref, wx.HORIZONTAL)
+		refsizer = wx.StaticBoxSizer(self.sascref, wx.VERTICAL)
+
+		row = wx.BoxSizer(wx.HORIZONTAL)
+
 		label = wx.StaticText(self, -1, mtexts.txts['Ascendant']+':')
-		refsizer.Add(label, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-		self.refcb = wx.ComboBox(self, -1, mtexts.partsreftxts[0], size=(COMBOSIZE, -1), choices=mtexts.partsreftxts, style=wx.CB_DROPDOWN|wx.CB_READONLY)
+		row.Add(label, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+
+		self.refcb = wx.ComboBox(self, -1, mtexts.partsreftxts[0], size=(COMBOSIZE, -1),
+								choices=mtexts.partsreftxts, style=wx.CB_DROPDOWN|wx.CB_READONLY)
 		self.refcb.SetStringSelection(mtexts.partsreftxts[0])
-		refsizer.Add(self.refcb, 0, wx.ALL, 5)
+		row.Add(self.refcb, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+
+		# 박스 안에서 위·아래 여유공간을 동일하게 분배 → 정확한 수직 중앙 정렬
+		refsizer.AddStretchSpacer(1)
+		refsizer.Add(row, 0, wx.ALIGN_LEFT)
+		refsizer.AddStretchSpacer(1)
 
 		vsubsizer = wx.BoxSizer(wx.VERTICAL)
 		vsubsizer.Add(refsizer, 1, wx.GROW|wx.ALIGN_LEFT|wx.RIGHT, 5)
