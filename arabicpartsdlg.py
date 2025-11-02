@@ -1400,66 +1400,99 @@ class ArabicPartsDlg(wx.Dialog):
 		dlg.Destroy()
 
 	def _OnRowSelected(self, event):
-		# (기존)
+		# 안전한 선택 인덱스 취득
 		i = getattr(self.li, 'currentItem', -1)
 		try:
 			i = event.GetIndex()
-		except:
+		except Exception:
 			pass
 		if i is None or i < 0:
 			return
 
-		# ★ 핵심 1: 리스트의 현재 행을 직접 갱신
+		# 리스트의 현재 행을 동기화
 		self.li.currentItem = i
 
-		# (기존) 이름/주야(diurnal) UI 싱크
-		self.name.SetValue(self.li.getColumnText(i, self.li.NAME))
-		self.diurnalckb.SetValue(bool(self.li.getColumnText(i, self.li.DIURNAL)))
-		# LoF(#1) 선택 시, 글로벌 옵션에 맞춰 표시/비활성화
+		# 이름/주야(diurnal) UI 싱크
+		try:
+			self.name.SetValue(self.li.getColumnText(i, self.li.NAME))
+		except Exception:
+			pass
+		try:
+			self.diurnalckb.SetValue(bool(self.li.getColumnText(i, self.li.DIURNAL)))
+		except Exception:
+			pass
+
+		# Active 체크박스 동기화
+		on_label = mtexts.txts.get('On', u'On')
+		cur_txt  = self.li.getColumnText(i, self.li.ACTIVE)
+		if i == 0:
+			# LoF(#1): Active 비활성, 항상 On
+			self.activeckb.SetValue(True)
+			self.activeckb.Enable(False)
+		else:
+			self.activeckb.Enable(True)
+			try:
+				key = self.li.GetItemData(i)
+				cur_active = bool(self.li.parts_active.get(key, True))
+			except Exception:
+				cur_active = (cur_txt == on_label)
+			self.activeckb.SetValue(cur_active)
+			self.diurnalckb.Enable(True)
+
+		# 선택된 파츠의 (A,B,C) 코드 → 콤보 반영
+		try:
+			key = self.li.GetItemData(i)
+			codes = self.li.parts_codes.get(key)
+			if isinstance(codes, tuple) and len(codes) == 3:
+				self.acb.SetSelection(self._index_for_code(codes[0]))
+				self.bcb.SetSelection(self._index_for_code(codes[1]))
+				self.ccb.SetSelection(self._index_for_code(codes[2]))
+		except Exception:
+			pass
+
+		# LoF(#1) 선택 시: 옵션 타입을 '주간식'으로 강제 반영 + Diurnal 켜진 채 비활성(2·3번)
 		if i == 0:
 			try:
 				_typ = options.lotoffortune
 			except Exception:
 				_typ = getattr(chart.Chart, 'LFMOONSUN', 0)
-			self.diurnalckb.SetValue(_typ in (chart.Chart.LFDSUNMOON, chart.Chart.LFDMOONSUN))
-			self.diurnalckb.Enable(False)
-		else:
-			self.diurnalckb.Enable(True)
+			lbl_AC = mtexts.txts.get('AC', u'Asc')
+			lbl_SU = mtexts.txts.get('SU', u'Sun')
+			lbl_MO = mtexts.txts.get('MO', u'Moon')
+			ACcode = mtexts.conv.get(lbl_AC)
+			SUcode = mtexts.conv.get(lbl_SU)
+			MOcode = mtexts.conv.get(lbl_MO)
+			if ACcode is not None:
+				self.acb.SetSelection(self._index_for_code(ACcode))
+			if _typ == getattr(chart.Chart, 'LFDSUNMOON', -9999):
+				if SUcode is not None: self.bcb.SetSelection(self._index_for_code(SUcode))   # B=SUN
+				if MOcode is not None: self.ccb.SetSelection(self._index_for_code(MOcode))   # C=MOON
+			else:
+				if MOcode is not None: self.bcb.SetSelection(self._index_for_code(MOcode))   # B=MOON
+				if SUcode is not None: self.ccb.SetSelection(self._index_for_code(SUcode))   # C=SUN
 
-		# ★ 핵심 2: Active 체크박스도 선택 행 상태로 동기화
-		key = self.li.GetItemData(i)
-		if i == 0:
-			# LoF는 항상 활성, 토글 불가
-			self.activeckb.SetValue(True)
-			self.activeckb.Enable(False)
-		else:
-			self.activeckb.Enable(True)
-		# 선택된 파츠의 (A,B,C) 코드 → 콤보 선택 반영
-		try:
-			key = self.li.GetItemData(i)
-			codes = self.li.parts_codes.get(key)  # (f1,f2,f3) 정수 코드
-			if isinstance(codes, tuple) and len(codes) == 3:
-				self.acb.SetSelection(self._index_for_code(codes[0]))
-				self.bcb.SetSelection(self._index_for_code(codes[1]))
-				self.ccb.SetSelection(self._index_for_code(codes[2]))
-		except:
-			pass
+			self.diurnalckb.SetValue(_typ in (getattr(chart.Chart, 'LFDSUNMOON', -9999),
+											  getattr(chart.Chart, 'LFDMOONSUN', -9999)))
+			self.diurnalckb.Enable(False)
 
 		# 인라인 RE/DE 컨트롤도 선택 행 값으로 동기화
 		try:
 			name = self.li.getColumnText(i, self.li.NAME)
 			vals = self.refdeg_by_name.get(name, tuple(self.pending_refdeg))
 			self.pending_refdeg = [int(vals[0]), int(vals[1]), int(vals[2])]
-		except:
+		except Exception:
 			pass
 		self._rebuild_re_choices()
 		self._update_inline_refdeg_enabled()
 		self._sync_inline_from_pending()
 		self._update_inline_visibility()
-		# ★ 권장: 리스트의 자체 핸들러도 돌게 해 이벤트 전파
+
+		try:
+			event.Skip()
+		except Exception:
+			pass
+
 		event.Skip()
-
-
 
 	def OnRemoveAll(self):
 
