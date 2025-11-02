@@ -466,17 +466,16 @@ class ArabicPartsDlg(wx.Dialog):
 			typ = getattr(chart.Chart, 'LFMOONSUN', 0)
 		# 공식 문자열 구성(옵션 + 현재 주/야 반영)
 		if typ == chart.Chart.LFMOONSUN:
+			# 고정식: AC + MO - SU (항상 주간식 그대로 표시)
 			return u'%s + %s - %s' % (A, MO, SU)
 		elif typ == getattr(chart.Chart, 'LFDMOONSUN', -1):
-			above = True
-			try:
-				above = bool(parent.horoscope.planets.planets[astrology.SE_SUN].abovehorizon)
-			except Exception:
-				pass
-			return (u'%s + %s - %s' % (A, MO, SU)) if above else (u'%s + %s - %s' % (A, SU, MO))
+			# 주/야 스왑형(달-해)이라도, 옵션 창에서는 '항상 주간식'으로 표시
+			# 주간식: AC + MO - SU
+			return u'%s + %s - %s' % (A, MO, SU)
 		else:
+			# 주/야 스왑형(해-달)이라도, 옵션 창에서는 '항상 주간식'으로 표시
+			# 주간식: AC + SU - MO
 			return u'%s + %s - %s' % (A, SU, MO)
-
 
 	def _make_lof_header(self, options, parent):
 
@@ -491,17 +490,13 @@ class ArabicPartsDlg(wx.Dialog):
 			typ = getattr(chart.Chart, 'LFMOONSUN', 0)
 		# 공식 문자열 구성
 		if typ == chart.Chart.LFMOONSUN:
+			# 고정식: AC + MO - SU (항상 주간식)
 			formula = u'%s + %s - %s' % (A, MO, SU)
 		elif typ == getattr(chart.Chart, 'LFDMOONSUN', -1):
-			# 현재 차트의 주/야에 맞춰 하나만 표시
-			above = True
-			try:
-				above = bool(parent.horoscope.planets.planets[astrology.SE_SUN].abovehorizon)
-			except Exception:
-				pass
-			formula = (u'%s + %s - %s' % (A, MO, SU)) if above else (u'%s + %s - %s' % (A, SU, MO))
+			# (달-해) 스왑형도 '항상 주간식'으로 표시
+			formula = u'%s + %s - %s' % (A, MO, SU)
 		else:
-			# AC + SU - MO
+			# (해-달) 스왑형도 '항상 주간식'으로 표시
 			formula = u'%s + %s - %s' % (A, SU, MO)
 
 		title = mtexts.txts.get('LotOfFortune', u'Fortuna')
@@ -800,8 +795,15 @@ class ArabicPartsDlg(wx.Dialog):
 		self.li.SetItem(lof_row, self.li.ACTIVE, mtexts.txts['On'])
 		self.li.SetItem(lof_row, self.li.NAME, mtexts.txts.get('LotOfFortune', u'Fortuna'))
 		self.li.SetItem(lof_row, self.li.FORMULA, self._get_lof_formula_text(options, self.GetParent() or parent))
-		diur_mark = PartsListCtrl.DIURNALTXT if getattr(chart.Chart, 'LFDMOONSUN', -1) == getattr(options, 'lotoffortune', 0) else u''
+		# LoF의 Diurnal 표시는 옵션(lotoffortune)에 따라 결정
+		try:
+			_typ = options.lotoffortune
+		except Exception:
+			_typ = getattr(chart.Chart, 'LFMOONSUN', 0)
+
+		diur_mark = PartsListCtrl.DIURNALTXT if _typ in (chart.Chart.LFDSUNMOON, chart.Chart.LFDMOONSUN) else u''
 		self.li.SetItem(lof_row, self.li.DIURNAL, diur_mark)
+
 		# LoF 행은 저장 대상이 아니므로 ItemData(키)를 지정하지 않음
 		self.li._renumber_rows()
 		self._rebuild_re_choices()
@@ -1413,6 +1415,16 @@ class ArabicPartsDlg(wx.Dialog):
 		# (기존) 이름/주야(diurnal) UI 싱크
 		self.name.SetValue(self.li.getColumnText(i, self.li.NAME))
 		self.diurnalckb.SetValue(bool(self.li.getColumnText(i, self.li.DIURNAL)))
+		# LoF(#1) 선택 시, 글로벌 옵션에 맞춰 표시/비활성화
+		if i == 0:
+			try:
+				_typ = options.lotoffortune
+			except Exception:
+				_typ = getattr(chart.Chart, 'LFMOONSUN', 0)
+			self.diurnalckb.SetValue(_typ in (chart.Chart.LFDSUNMOON, chart.Chart.LFDMOONSUN))
+			self.diurnalckb.Enable(False)
+		else:
+			self.diurnalckb.Enable(True)
 
 		# ★ 핵심 2: Active 체크박스도 선택 행 상태로 동기화
 		key = self.li.GetItemData(i)
