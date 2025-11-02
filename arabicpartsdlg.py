@@ -650,8 +650,9 @@ class ArabicPartsDlg(wx.Dialog):
 					   mtexts.txts['Sagittarius'], mtexts.txts['Capricornus'], mtexts.txts['Aquarius'], mtexts.txts['Pisces']]
 
 		# RE 제목
-		sre = wx.StaticBox(self, label=mtexts.txts.get('RE', u'RE'))
-		re_box = wx.StaticBoxSizer(sre, wx.VERTICAL)
+		self.sre = wx.StaticBox(self, label=mtexts.txts.get('RE', u'RE'))
+		self.re_box = wx.StaticBoxSizer(self.sre, wx.VERTICAL)
+
 		# RE 행: A + ( B - C )
 		resizer = wx.BoxSizer(wx.HORIZONTAL)
 		self.reA = wx.ComboBox(self, -1, u'#1', size=(COMBOSIZE, -1), choices=[u'#1'], style=wx.CB_DROPDOWN|wx.CB_READONLY)
@@ -672,14 +673,14 @@ class ArabicPartsDlg(wx.Dialog):
 		op_close2 = wx.StaticText(self, -1, u')');  op_close2.SetMinSize((OPW_CLOSE, -1))
 		resizer.Add(op_close2, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, ROW_PAD)
 
-		re_box.Add(resizer, 0, wx.ALIGN_CENTER|wx.ALL, ROW_PAD)
+		self.re_box.Add(resizer, 0, wx.ALIGN_CENTER|wx.ALL, ROW_PAD)
 
-		editorsizer.Add(re_box, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
-
+		editorsizer.Add(self.re_box, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
 
 		# DE 제목
-		sde = wx.StaticBox(self, label=mtexts.txts.get('Degree', u'Degree'))
-		de_box = wx.StaticBoxSizer(sde, wx.VERTICAL)
+		self.sde = wx.StaticBox(self, label=mtexts.txts.get('Degree', u'Degree'))
+		self.de_box = wx.StaticBoxSizer(self.sde, wx.VERTICAL)
+
 		# DE 행: A + ( B - C )  — 각 항은 (별자리 콤보 위 / 돗수 스핀 아래)로 세로 스택
 		desizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -717,9 +718,9 @@ class ArabicPartsDlg(wx.Dialog):
 		desizer.Add(op_close3, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, ROW_PAD)
 
 
-		de_box.Add(desizer, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+		self.de_box.Add(desizer, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
-		editorsizer.Add(de_box, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
+		editorsizer.Add(self.de_box, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
 
 
 		# 초기엔 전부 잠금 + 이벤트 바인딩
@@ -857,6 +858,7 @@ class ArabicPartsDlg(wx.Dialog):
 		self.SetMinSize((875, cur_h))    # 최소폭도 같이 잡아두면 Fit이 줄이지 못함
 		self.SetSize((875, cur_h))
 		self.Layout()
+		self._update_inline_visibility()
 		btnOk.SetFocus()
 
 	def OnToggleActive(self, event):
@@ -913,6 +915,42 @@ class ArabicPartsDlg(wx.Dialog):
 			except: pass
 			try: de_sgs[idx].Enable(isDE); de_dgs[idx].Enable(isDE)
 			except: pass
+	def _show_sizer(self, sizer, show):
+		# StaticBoxSizer 전체를 토글 표시
+		try:
+			sizer.ShowItems(show)
+		except Exception:
+			# 구버전 대비: 아이템 순회로 처리
+			try:
+				for i in range(sizer.GetItemCount()):
+					itm = sizer.GetItem(i)
+					win = itm.GetWindow()
+					if win:
+						win.Show(show)
+			except:
+				pass
+
+	def _update_inline_visibility(self):
+		# 박스는 항상 보이게 유지. 필요 여부는 Enable/Disable로만 제어.
+		try:
+			self._show_sizer(self.re_box, True)
+		except:
+			pass
+		try:
+			self._show_sizer(self.de_box, True)
+		except:
+			pass
+		self.Layout()
+
+	def _index_for_code(self, code_val):
+		# mtexts.conv 역탐색: parts_codes의 정수 코드 → partstxts 인덱스
+		for idx, label in enumerate(mtexts.partstxts):
+			try:
+				if mtexts.conv[label] == code_val:
+					return idx
+			except:
+				pass
+		return 0
 
 	def _sync_inline_from_pending(self):
 		sels  = [self.acb.GetCurrentSelection(), self.bcb.GetCurrentSelection(), self.ccb.GetCurrentSelection()]
@@ -977,17 +1015,17 @@ class ArabicPartsDlg(wx.Dialog):
 		elif base == mtexts.txts.get('RE', u'RE'):
 			need = 'RE'
 
-		# RE/DE가 아니면 해당 칸 임시값만 리셋하고 종료
 		if not need:
 			self.pending_refdeg[which] = 0
+			self._update_inline_refdeg_enabled()
+			self._update_inline_visibility()
 			return
 
-		# 인라인 RE/DE 컨트롤 사용으로 전환
 		self._rebuild_re_choices()
 		self._update_inline_refdeg_enabled()
 		self._sync_inline_from_pending()
+		self._update_inline_visibility()
 		return
-
 
 		# 초기값: 현재 선택된 랏이 있으면 그 랏의 저장값, 없으면 임시버퍼
 		init_triplet = tuple(self.pending_refdeg)
@@ -1249,7 +1287,16 @@ class ArabicPartsDlg(wx.Dialog):
 			self.activeckb.Enable(False)
 		else:
 			self.activeckb.Enable(True)
-			self.activeckb.SetValue(self.li.parts_active.get(key, True))
+		# 선택된 파츠의 (A,B,C) 코드 → 콤보 선택 반영
+		try:
+			key = self.li.GetItemData(i)
+			codes = self.li.parts_codes.get(key)  # (f1,f2,f3) 정수 코드
+			if isinstance(codes, tuple) and len(codes) == 3:
+				self.acb.SetSelection(self._index_for_code(codes[0]))
+				self.bcb.SetSelection(self._index_for_code(codes[1]))
+				self.ccb.SetSelection(self._index_for_code(codes[2]))
+		except:
+			pass
 
 		# 인라인 RE/DE 컨트롤도 선택 행 값으로 동기화
 		try:
@@ -1261,7 +1308,7 @@ class ArabicPartsDlg(wx.Dialog):
 		self._rebuild_re_choices()
 		self._update_inline_refdeg_enabled()
 		self._sync_inline_from_pending()
-
+		self._update_inline_visibility()
 		# ★ 권장: 리스트의 자체 핸들러도 돌게 해 이벤트 전파
 		event.Skip()
 

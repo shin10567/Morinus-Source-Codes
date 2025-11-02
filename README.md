@@ -1,4 +1,4 @@
-## [9.3.4] Updated Version from 8.1.0 
+## [9.3.5] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -205,3 +205,5 @@
 - Zodiacal Releasing bug fixes
 - Adjusted the Angles at Birth input parameter to a maximum of 12 minutes
 - Added “?” help to Angles at Birth parameters, Arabic Parts Options, and the Dodecatemoria Calculator
+#### 9.3.5
+- Arabic Parts Options bug fix
