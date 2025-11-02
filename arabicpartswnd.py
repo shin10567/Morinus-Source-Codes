@@ -873,8 +873,18 @@ class ArabicPartsWnd(commonwnd.CommonWnd):
 		# 칼럼 인덱스
 		COL_REF, COL_NAME, COL_FORM, COL_LONG, COL_DODEC, COL_DECL = 0, 1, 2, 3, 4, 5
 
-		# Ref: R{idx+1}
-		ref = u'#%d' % (idx+2)
+
+		# Ref: 원본 옵션 순서(절대 인덱스) 기반 번호 고정
+		try:
+			name_for_ref = data[idx][arabicparts.ArabicParts.NAME]
+			# self.options.arabicparts(전체 목록)에서 동일 이름의 원본 인덱스 찾기
+			abs_idx = next(i for i, it in enumerate(self.options.arabicparts)
+						   if isinstance(it, (list, tuple)) and it[arabicparts.ArabicParts.NAME] == name_for_ref)
+		except Exception:
+			# 혹시 못 찾으면 이전 동작에 최대한 가깝게(LoF가 #1이므로 +2) 폴백
+			abs_idx = idx
+
+		ref = u'#%d' % (abs_idx + 2)  # LoF가 #1 → 옵션 0번은 #2
 		tw, th = draw.textsize(ref, self.fntText)
 		draw.text((xs[COL_REF] + (self.COLWIDTHS[COL_REF]-tw)/2.0, y + (self.LINE_HEIGHT-th)/2.0),
 				  ref, fill=txtclr, font=self.fntText)

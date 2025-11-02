@@ -99,6 +99,225 @@ class ArabicParts:
             ic = util.normalize(hs.ascmc[houses.Houses.MC]+180.0)
 
             cps = (asc, cusps[2], cusps[3], ic, cusps[5], cusps[6], desc, cusps[8], cusps[9], mc, cusps[11], cusps[12])
+            # --- FORWARD RE SUPPORT: enable forward references (R{future}) ---
+            # 활성(표시)되는 항목들의 원본 인덱스 목록을 만든다.
+            enabled_idx = []
+            for ii in range(len(ar)):
+                try:
+                    if len(ar[ii]) > 4 and not bool(ar[ii][4]):
+                        continue
+                except:
+                    pass
+                enabled_idx.append(ii)
+
+            def _lof_lon():
+                idAsc = self.adjustAscendant(ArabicParts.ASC, opts)
+                asclon = cps[idAsc]
+                return self.getLoFLon(opts.lotoffortune, asclon, pls, fort.abovehorizon)
+
+            # k: 표시 리스트(LoF 제외)에서 0-based 인덱스
+            def _calc_lon_by_k(k, visiting):
+                # 범위 밖이면 LoF로 폴백
+                if k < 0 or k >= len(enabled_idx):
+                    return _lof_lon()
+                # 순환 참조 감지 → LoF 폴백
+                if k in visiting:
+                    return _lof_lon()
+
+                ii = enabled_idx[k]
+                # === 아래는 기존 본문과 동일한 계산을 요약 재구성 (A/B/C 만들기) ===
+                A_id, B_id, C_id = ar[ii][ArabicParts.FORMULA]
+                # 공통: RE/REFLORD 참조를 lon으로 바꿔 주는 헬퍼
+                def _re_resolve(idX, ref_value):
+                    ref = int(ref_value)
+                    if ref == 0:
+                        lonX = _lof_lon()
+                    else:
+                        # R1 → k=0
+                        lonX = _calc_lon_by_k(ref-1, visiting | {k})
+                    if idX in (ArabicParts.REFLORD,):
+                        sign = int(lonX/chart.Chart.SIGN_DEG)
+                        lord = -1
+                        for pid in range(astrology.SE_SATURN+1):
+                            if opts.dignities[pid][0][sign]:
+                                lord = pid
+                        if lord != -1:
+                            lonX = pls.planets[lord].data[planets.Planet.LONG]
+                        else:
+                            # 유효 군주 없으면 LoF로 폴백
+                            lonX = _lof_lon()
+                    return lonX
+
+                # --- A ---
+                lonA = 0.0
+                if A_id < ArabicParts.PLOFFS:
+                    A_id2 = self.adjustAscendant(A_id, opts)
+                    lonA = cps[A_id2]
+                elif A_id < ArabicParts.LORDOFFS:
+                    lonA = pls.planets[A_id-ArabicParts.PLOFFS].data[planets.Planet.LONG]
+                elif A_id < ArabicParts.SPECIAL:
+                    A_id2 = self.adjustAscendant(A_id-ArabicParts.LORDOFFS, opts)
+                    lonTmp = cps[A_id2]
+                    sign = int(lonTmp/chart.Chart.SIGN_DEG)
+                    lord = -1
+                    for pid in range(astrology.SE_SATURN+1):
+                        if opts.dignities[pid][0][sign]:
+                            lord = pid
+                    if lord != -1:
+                        lonA = pls.planets[lord].data[planets.Planet.LONG]
+                    else:
+                        lonA = _lof_lon()
+                else:
+                    if A_id < ArabicParts.SYZ:
+                        lonA = _lof_lon()
+                        if A_id == ArabicParts.LOFLORD:
+                            sign = int(lonA/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonA = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                    elif A_id <= ArabicParts.SYZLORD:
+                        lonA = syz.lon
+                        if A_id == ArabicParts.SYZLORD:
+                            sign = int(lonA/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonA = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                    elif A_id < ArabicParts.RE:
+                        # DEG / DEGLORD
+                        refA, refB, refC = self._get_refordeg_triplet(ar[ii])
+                        val = float((refA, refB, refC)[0]) % 360.0
+                        if A_id == ArabicParts.DEGLORD:
+                            sign = int(val/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonA = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                        else:
+                            lonA = val
+                    else:
+                        # RE / REFLORD
+                        refA, refB, refC = self._get_refordeg_triplet(ar[ii])
+                        lonA = _re_resolve(A_id, (refA, refB, refC)[0])
+
+                # --- B ---
+                lonB = 0.0
+                if B_id < ArabicParts.PLOFFS:
+                    B_id2 = self.adjustAscendant(B_id, opts)
+                    lonB = cps[B_id2]
+                elif B_id < ArabicParts.LORDOFFS:
+                    lonB = pls.planets[B_id-ArabicParts.PLOFFS].data[planets.Planet.LONG]
+                elif B_id < ArabicParts.SPECIAL:
+                    B_id2 = self.adjustAscendant(B_id-ArabicParts.LORDOFFS, opts)
+                    lonTmp = cps[B_id2]
+                    sign = int(lonTmp/chart.Chart.SIGN_DEG)
+                    lord = -1
+                    for pid in range(astrology.SE_SATURN+1):
+                        if opts.dignities[pid][0][sign]:
+                            lord = pid
+                    lonB = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                else:
+                    if B_id < ArabicParts.SYZ:
+                        lonB = _lof_lon()
+                        if B_id == ArabicParts.LOFLORD:
+                            sign = int(lonB/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonB = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                    elif B_id <= ArabicParts.SYZLORD:
+                        lonB = syz.lon
+                        if B_id == ArabicParts.SYZLORD:
+                            sign = int(lonB/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonB = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                    elif B_id < ArabicParts.RE:
+                        refA, refB, refC = self._get_refordeg_triplet(ar[ii])
+                        val = float((refA, refB, refC)[1]) % 360.0
+                        if B_id == ArabicParts.DEGLORD:
+                            sign = int(val/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonB = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                        else:
+                            lonB = val
+                    else:
+                        refA, refB, refC = self._get_refordeg_triplet(ar[ii])
+                        lonB = _re_resolve(B_id, (refA, refB, refC)[1])
+
+                # --- C ---
+                lonC = 0.0
+                if C_id < ArabicParts.PLOFFS:
+                    C_id2 = self.adjustAscendant(C_id, opts)
+                    lonC = cps[C_id2]
+                elif C_id < ArabicParts.LORDOFFS:
+                    lonC = pls.planets[C_id-ArabicParts.PLOFFS].data[planets.Planet.LONG]
+                elif C_id < ArabicParts.SPECIAL:
+                    C_id2 = self.adjustAscendant(C_id-ArabicParts.LORDOFFS, opts)
+                    lonTmp = cps[C_id2]
+                    sign = int(lonTmp/chart.Chart.SIGN_DEG)
+                    lord = -1
+                    for pid in range(astrology.SE_SATURN+1):
+                        if opts.dignities[pid][0][sign]:
+                            lord = pid
+                    lonC = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                else:
+                    if C_id < ArabicParts.SYZ:
+                        lonC = _lof_lon()
+                        if C_id == ArabicParts.LOFLORD:
+                            sign = int(lonC/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonC = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                    elif C_id <= ArabicParts.SYZLORD:
+                        lonC = syz.lon
+                        if C_id == ArabicParts.SYZLORD:
+                            sign = int(lonC/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonC = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                    elif C_id < ArabicParts.RE:
+                        refA, refB, refC = self._get_refordeg_triplet(ar[ii])
+                        val = float((refA, refB, refC)[2]) % 360.0
+                        if C_id == ArabicParts.DEGLORD:
+                            sign = int(val/chart.Chart.SIGN_DEG)
+                            lord = -1
+                            for pid in range(astrology.SE_SATURN+1):
+                                if opts.dignities[pid][0][sign]:
+                                    lord = pid
+                            lonC = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
+                        else:
+                            lonC = val
+                    else:
+                        refA, refB, refC = self._get_refordeg_triplet(ar[ii])
+                        lonC = _re_resolve(C_id, (refA, refB, refC)[2])
+
+                # 밤차트면 B/C 스왑
+                if ar[ii][ArabicParts.DIURNAL] and (not fort.abovehorizon):
+                    lonB, lonC = lonC, lonB
+
+                diff = lonB - lonC
+                if diff < 0.0:
+                    diff += 360.0
+                lon = lonA + diff
+                if lon > 360.0:
+                    lon -= 360.0
+                return lon
+            # --- /FORWARD RE SUPPORT ---
 
             self.parts = []
             num = len(ar)
@@ -194,20 +413,18 @@ class ArabicParts:
                                     continue
                         else:
                             ref -= 1  # R1→parts[0]
-                            if 0 <= ref < len(self.parts):
-                                lonA = self.parts[ref][ArabicParts.LONG]
-                                if idA == ArabicParts.REFLORD:
-                                    sign = int(lonA/chart.Chart.SIGN_DEG)
-                                    lord = -1
-                                    for pid in range(astrology.SE_SATURN+1):
-                                        if opts.dignities[pid][0][sign]:
-                                            lord = pid
-                                    if lord != -1:
-                                        lonA = pls.planets[lord].data[planets.Planet.LONG]
-                                    else:
-                                        continue
-                            else:
-                                continue
+                            # FORWARD RE: 앞/뒤 모두 허용, 순환 시 LoF 폴백
+                            lonA = _calc_lon_by_k(ref, {len(self.parts)})
+                            if idA == ArabicParts.REFLORD:
+                                sign = int(lonA/chart.Chart.SIGN_DEG)
+                                lord = -1
+                                for pid in range(astrology.SE_SATURN+1):
+                                    if opts.dignities[pid][0][sign]:
+                                        lord = pid
+                                if lord != -1:
+                                    lonA = pls.planets[lord].data[planets.Planet.LONG]
+                                else:
+                                    lonA = _lof_lon()
 
                 #B
                 idB = part[ArabicParts.FORMULA][1]
@@ -291,20 +508,17 @@ class ArabicParts:
                                     continue
                         else:
                             ref -= 1  # R1→parts[0]
-                            if 0 <= ref < len(self.parts):
-                                lonB = self.parts[ref][ArabicParts.LONG]
-                                if idB == ArabicParts.REFLORD:
-                                    sign = int(lonB/chart.Chart.SIGN_DEG)
-                                    lord = -1
-                                    for pid in range(astrology.SE_SATURN+1):
-                                        if opts.dignities[pid][0][sign]:
-                                            lord = pid
-                                    if lord != -1:
-                                        lonB = pls.planets[lord].data[planets.Planet.LONG]
-                                    else:
-                                        continue
-                            else:
-                                continue
+                            lonB = _calc_lon_by_k(ref, {len(self.parts)})
+                            if idB == ArabicParts.REFLORD:
+                                sign = int(lonB/chart.Chart.SIGN_DEG)
+                                lord = -1
+                                for pid in range(astrology.SE_SATURN+1):
+                                    if opts.dignities[pid][0][sign]:
+                                        lord = pid
+                                if lord != -1:
+                                    lonB = pls.planets[lord].data[planets.Planet.LONG]
+                                else:
+                                    lonB = _lof_lon()
 
                 #C
                 idC = part[ArabicParts.FORMULA][2]
@@ -388,20 +602,18 @@ class ArabicParts:
                                     continue
                         else:
                             ref -= 1  # R1→parts[0]
-                            if 0 <= ref < len(self.parts):
-                                lonC = self.parts[ref][ArabicParts.LONG]
-                                if idC == ArabicParts.REFLORD:
-                                    sign = int(lonC/chart.Chart.SIGN_DEG)
-                                    lord = -1
-                                    for pid in range(astrology.SE_SATURN+1):
-                                        if opts.dignities[pid][0][sign]:
-                                            lord = pid
-                                    if lord != -1:
-                                        lonC = pls.planets[lord].data[planets.Planet.LONG]
-                                    else:
-                                        continue
-                            else:
-                                continue
+                            lonC = _calc_lon_by_k(ref, {len(self.parts)})
+                            if idC == ArabicParts.REFLORD:
+                                sign = int(lonC/chart.Chart.SIGN_DEG)
+                                lord = -1
+                                for pid in range(astrology.SE_SATURN+1):
+                                    if opts.dignities[pid][0][sign]:
+                                        lord = pid
+                                if lord != -1:
+                                    lonC = pls.planets[lord].data[planets.Planet.LONG]
+                                else:
+                                    lonC = _lof_lon()
+ 
                 # Diurnal 스위치: 밤차트(태양 지평선 아래)에서는 B와 C를 바꿔 A + C - B로
                 if part[ArabicParts.DIURNAL] and (not fort.abovehorizon):
                     tmp = lonB

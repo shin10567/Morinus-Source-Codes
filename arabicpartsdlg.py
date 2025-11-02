@@ -887,18 +887,64 @@ class ArabicPartsDlg(wx.Dialog):
 		self._handle_token_click(2)
 
 	def _rebuild_re_choices(self):
-		# 현재 리스트 아이템 수 기준으로 #1..#N 구성 (선택값 보존)
+		# 현재 리스트 아이템 수 기준으로 #1..#N 구성, 단 "자기 자신(#현재 선택된 행)"은 제외
 		try:
 			maxref = self.li.GetItemCount()
 		except Exception:
 			maxref = 1
-		choices = [u'#%d' % (k+1) for k in range(maxref)]
+
+		# 현재 선택된 행(LoF=#1은 제외 대상 아님)
+		try:
+			self_idx = getattr(self.li, 'currentItem', -1)
+		except Exception:
+			self_idx = -1
+		if self_idx is None or self_idx <= 0:
+			self_idx = None  # 자기 자신 제외 없음 (LoF 선택/미선택/신규 추가 시)
+
+		# 전체 Rn 후보(0..maxref-1)에서 자기 자신만 제외
+		rn_all = list(range(maxref))
+		if self_idx is not None and self_idx in rn_all:
+			rn_all.remove(self_idx)
+
+		# 표시에 쓸 라벨과 내부 매핑 구성
+		labels = [u'#%d' % (rn + 1) for rn in rn_all]
+
 		for cb in (self.reA, self.reB, self.reC):
+			# 이전에 선택돼 있던 "실제 Rn" 복원 시도
+			prev_rn = None
 			try:
-				sel = cb.GetSelection()
-				cb.SetItems(choices)
-				cb.SetSelection(sel if 0 <= sel < len(choices) else 0)
-			except:
+				# 기존 매핑이 있으면 그걸로 역추적
+				if hasattr(cb, '_rn_map') and isinstance(cb._rn_map, list):
+					prev_sel = cb.GetSelection()
+					if 0 <= prev_sel < len(cb._rn_map):
+						prev_rn = int(cb._rn_map[prev_sel])
+				else:
+					# 구버전: 선택 인덱스 == 실제 Rn
+					prev_rn = int(cb.GetSelection())
+			except Exception:
+				prev_rn = None
+
+			# 새 아이템/매핑 반영
+			cb.SetItems(labels)
+			cb._rn_map = list(rn_all)  # 표시 인덱스 -> 실제 Rn
+
+			# 이전 Rn이 여전히 유효하면 그 위치로, 아니면 0번
+			sel_index = 0
+			if prev_rn is not None:
+				try:
+					sel_index = cb._rn_map.index(prev_rn)
+				except ValueError:
+					sel_index = 0
+			# 가드
+			if not cb._rn_map:
+				# 리스트가 비어버리는 경우는 사실상 없음(LoF만 있어도 R0은 남음)
+				cb._rn_map = [0]
+				cb.SetItems([u'#1'])
+				sel_index = 0
+
+			try:
+				cb.SetSelection(sel_index)
+			except Exception:
 				pass
 
 	def _update_inline_refdeg_enabled(self):
@@ -959,15 +1005,21 @@ class ArabicPartsDlg(wx.Dialog):
 		# RE: 콤보 인덱스 == Rn
 		for idx in (0,1,2):
 			if bases[idx] == mtexts.txts.get('RE', u'RE'):
+				# 실제 Rn 값을 현재 콤보의 표시 인덱스로 역매핑
 				try:
-					sel = int(self.pending_refdeg[idx])
-				except:
-					sel = 0
+					rn = int(self.pending_refdeg[idx])
+				except Exception:
+					rn = 0
 				cb = (self.reA, self.reB, self.reC)[idx]
 				try:
-					cb.SetSelection(sel if 0 <= sel < cb.GetCount() else 0)
-				except:
+					if hasattr(cb, '_rn_map') and rn in cb._rn_map:
+						cb.SetSelection(cb._rn_map.index(rn))
+					else:
+						# 매핑이 없거나 rn이 제외되었으면 0번으로 대체
+						cb.SetSelection(0)
+				except Exception:
 					pass
+
 			if bases[idx] == mtexts.txts.get('DE', u'DE'):
 				try:
 					absd = int(self.pending_refdeg[idx]) % 360
@@ -979,14 +1031,70 @@ class ArabicPartsDlg(wx.Dialog):
 					(self.deA_deg,  self.deB_deg,  self.deC_deg)[idx].SetValue(dg)
 				except:
 					pass
+	def _compute_triplet_for_add(self):
+		"""
+		새 랏 추가 시 사용할 (refA, refB, refC) 계산:
+		1) 현재 선택된 행의 저장값(parts_refdeg/refdeg_by_name)으로 기본값 구성
+		2) 현재 A/B/C 토큰이 RE/DE이면, 인라인 컨트롤 값으로 그 위치만 덮어쓰기
+		"""
+		# 1) 선택된 행의 저장값을 기본으로
+		base = list(getattr(self, 'pending_refdeg', [0, 0, 0]))
+		try:
+			selrow = getattr(self.li, 'currentItem', -1)
+		except:
+			selrow = -1
+		if selrow is not None and selrow >= 0 and selrow != 0:
+			try:
+				key = self.li.GetItemData(selrow)
+				trip = self.li.parts_refdeg.get(key)
+				if not trip:
+					# 이름 기반 백업
+					nm = self.li.getColumnText(selrow, self.li.NAME)
+					trip = self.refdeg_by_name.get(nm)
+				if isinstance(trip, (tuple, list)) and len(trip) == 3:
+					base = [int(trip[0]), int(trip[1]), int(trip[2])]
+			except:
+				pass
+
+		# 2) 현재 토큰이 RE/DE인 위치만 인라인 값으로 덮어쓰기
+		sels  = [self.acb.GetCurrentSelection(), self.bcb.GetCurrentSelection(), self.ccb.GetCurrentSelection()]
+		toks  = [mtexts.partstxts[s] for s in sels]
+		bases = [t[:-1] if t.endswith(u'!') else t for t in toks]
+
+		for idx, tk in enumerate(bases):
+			if tk == mtexts.txts.get('RE', u'RE'):
+				try:
+					cb = (self.reA, self.reB, self.reC)[idx]
+					base[idx] = int(cb.GetSelection())
+				except:
+					base[idx] = 0
+			elif tk == mtexts.txts.get('DE', u'DE'):
+				try:
+					sg = (self.deA_sign, self.deB_sign, self.deC_sign)[idx].GetSelection()
+					dg = (self.deA_deg,  self.deB_deg,  self.deC_deg)[idx].GetValue()
+					sg = max(0, int(sg))
+					dg = max(0, min(29, int(dg)))
+					base[idx] = int((sg * 30) + dg) % 360
+				except:
+					base[idx] = 0
+
+		return tuple(base)
 
 	def _OnInlineREChanged(self, idx):
 		cb = (self.reA, self.reB, self.reC)[idx]
 		try:
-			sel = cb.GetSelection()
-		except:
-			sel = 0
-		self.pending_refdeg[idx] = int(sel)
+			sel_index = cb.GetSelection()
+		except Exception:
+			sel_index = 0
+		# 표시 인덱스를 실제 Rn으로 변환(자기 자신 제외 매핑 반영)
+		try:
+			if hasattr(cb, '_rn_map') and 0 <= sel_index < len(cb._rn_map):
+				rn = int(cb._rn_map[sel_index])
+			else:
+				rn = int(sel_index)
+		except Exception:
+			rn = 0
+		self.pending_refdeg[idx] = rn
 
 	def _OnInlineDEChanged(self, idx):
 		sg = (self.deA_sign, self.deB_sign, self.deC_sign)[idx].GetSelection()
@@ -1117,7 +1225,8 @@ class ArabicPartsDlg(wx.Dialog):
 		if self.diurnalckb.GetValue():
 			diurnal = PartsListCtrl.DIURNALTXT
 
-		trip = tuple(getattr(self, 'pending_refdeg', [0,0,0]))  # 선택 즉시 정해둔 값 사용
+		# 선택된 행의 저장값을 기본으로 하고, RE/DE인 위치만 인라인 값으로 덮어써서 사용
+		trip = self._compute_triplet_for_add()
 
 		# compute codes (기존 그대로)
 		f1 = mtexts.conv[mtexts.partstxts[self.acb.GetCurrentSelection()]]
