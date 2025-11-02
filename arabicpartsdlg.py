@@ -1127,6 +1127,7 @@ class ArabicPartsDlg(wx.Dialog):
 		disp = self.li._format_formula_text(f1, f2, f3, trip)
 		self.refdeg_by_name[name] = trip
 		self.li.AddFullItem(name, disp, diurnal, (f1, f2, f3), trip)
+		self._rebuild_re_choices()
 
 		# 추가 후엔 임시버퍼 초기화
 		self.pending_refdeg = [0,0,0]
@@ -1168,20 +1169,45 @@ class ArabicPartsDlg(wx.Dialog):
 		c_sel = self.ccb.GetCurrentSelection()
 
 		# RE/DE 값: 저장된 값 우선, 없으면 임시버퍼
-		vals = self.refdeg_by_name.get(old_name, tuple(getattr(self, 'pending_refdeg', [0,0,0])))
-
+		vals_saved = self.refdeg_by_name.get(old_name, tuple(getattr(self, 'pending_refdeg', [0,0,0])))
+		# 현재 A/B/C 토큰이 RE/DE인 위치는 '인라인에서 막 바꾼 값(pending)'으로 덮어쓴다
+		vals_list = list(vals_saved)
+		for idx, sel in enumerate((a_sel, b_sel, c_sel)):
+			tok = mtexts.partstxts[sel]
+			base = tok[:-1] if tok.endswith(u'!') else tok
+			if base == mtexts.txts.get('RE', u'RE') or base == mtexts.txts.get('DE', u'DE'):
+				try:
+					vals_list[idx] = int(self.pending_refdeg[idx])
+				except:
+					vals_list[idx] = 0
+		vals = tuple(vals_list)
 		# 자기 자신을 RE로 가리키면 루프 방지(R0로 강등)
-		self_index_1based = i + 1
+		self_index_zero_based = i  # RE 값은 '#1 -> 0'의 0-based 인덱스
 		vals = list(vals)
+		maxref = max(0, self.li.GetItemCount() - 1)  # 유효 범위 가드
+
 		for idx, sel in enumerate((a_sel, b_sel, c_sel)):
 			tok = mtexts.partstxts[sel]
 			base = tok[:-1] if tok.endswith(u'!') else tok
 			if base == mtexts.txts.get('RE', u'RE'):
+				# 범위 클램프 + 자기참조 방지
 				try:
-					if int(vals[idx]) == self_index_1based:
-						vals[idx] = 0
+					v = int(vals[idx])
 				except:
-					vals[idx] = 0
+					v = 0
+				if v < 0 or v > maxref:
+					v = 0
+				if v == self_index_zero_based:
+					v = 0
+				vals[idx] = v
+			elif base == mtexts.txts.get('DE', u'DE'):
+				# DE는 0..359로만 클램프
+				try:
+					v = int(vals[idx]) % 360
+				except:
+					v = 0
+				vals[idx] = v
+
 		vals = tuple(vals)
 
 		# 내부 코드 갱신(실제 계산용)
