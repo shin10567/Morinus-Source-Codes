@@ -175,7 +175,7 @@
 #### 9.2.6
 - Chart information is now displayed inside the chart image.
 #### 9.2.7
-- Added Valens-style Decennials.
+- Added Decennials. L3/L4 use the Valens method.
 #### 9.2.8
 - Changed the default start date for Revolution scan.
 - Fixed Hour Lord and Day Lord displaying incorrectly in Revolution charts.
