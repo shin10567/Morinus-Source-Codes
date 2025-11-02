@@ -284,7 +284,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'ToLastPage':'Goes to the last page', 'MZ':'M/Z', 'Prom':'Prom.', 'DC':'D/C', 'M':'M', 'Z':'Z', 'D':'D', 'C':'C', 'Sig':'Sig.', 
 'Arc':'Arc', 'Date':'Date', 'TXTFiles':'TXT Files (*.txt)|*.txt', 
 'BusyInfo':'Depending on the speed of your computer and the PD-settings this may take some time.', 
-'UseRegrSun1':'In Case of True Solar Arc and Converse Directions Use Regressive Sun', 'UseRegrSun2':'',
+'UseRegrSun1':'In Case of True Solar Arc and Converse Directions,', 'UseRegrSun2':'Use Regressive Sun',
 'DBFileError':"Place database-file couldn't be opened!", 'InitChars':'Initial letters', 'InitCharError':'Please enter at least one letter!', 
 'TextError':'Text fields can only contain alphanumeric characters, space and comma!', 'Add':'Add', 'Remove':'Remove', 'RemoveAll':'Remove All', 
 'LocalBirthTime':'Local time of birth', 'AreYouSure':'Are you sure?', 'Confirm':'Confirm', 'TextEmpty':'Text-field cannot be empty!', 'Misc':'Misc', 
@@ -755,6 +755,7 @@ u"StartSign":u"Bejelentkezés indítása",'Compute':'Számítás',u"HeliacalRisi
 "SignDegMinSec":"Jelzés / fok. / min. / sec.",'TimeofBirth':u'Születési idő',"Modify":"Módosítás","MundaneOnly":u"Csak mundán",'FixStarAngleDirs':'A rögzített csillagok szögi irányai',"Realdate":u"Valódi dátum:","Location":u"Helyszín",'Open':'Open','Save':'Save'
 }
 txtshun.update({
+    'Deg': u'Fok',
     'Min': u'Perc',
     'Sec': u'Másodperc'
 })
@@ -1113,6 +1114,7 @@ u"StartSign":u"Начать подписываться",'Compute':'Вычисл�
 "SignDegMinSec":"Подпись / градус / мин. / сек.",'TimeofBirth':u'Время рождения',"Modify":"Изменить","MundaneOnly":u"Только Mundane",'FixStarAngleDirs':'Угольные направления фиксированных звезд',"Realdate":u"Реальная дата:","Location":u"Расположение",'Open':'Open','Save':'Save'
 }
 txtsrus.update({
+    'Deg': u'Градус',
     'Min': u'Минута',
     'Sec': u'Секунда'
 })
@@ -1471,6 +1473,7 @@ u"StartSign":u"Iniciar Firmar",'Compute':'Computación',u"HeliacalRisingsSetting
 "SignDegMinSec":"Firma / Deg. / Min. / Sec.",'TimeofBirth':'Hora de nacimiento',"Modify":"Modificar","MundaneOnly":u"Solo mundanos",'FixStarAngleDirs':'Direcciones angulares de estrellas fijas',"Realdate":u"Fecha real:","Location":u"Ubicación",'Open':'Open','Save':'Save'
 }
 txtsesp.update({
+    'Deg': u'Grado',
     'Min': u'Minuto',
     'Sec': u'Segundo'
 })
@@ -1836,6 +1839,7 @@ txtsita = {'HelpDegree':u'Valore tra 0 e 29',
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
 txtsita.update({
+    'Deg': u'Grado',
     'Min': u'Minuto',
     'Sec': u'Secondo'
 })
@@ -2192,8 +2196,8 @@ u"StartSign":u"Start Sign",'Compute':'Compute',"HeliacalRisingsSettings":u"Helia
 "InputSignandDegree":"Input: Sign and Degree","InputEclipticLongitude":"Input: Ecliptic Longitude (0 - 360)",
 "SignDegMinSec":"Sign / Deg. / Min. / Sec.",'TimeofBirth':'Time of Birth',"Modify":"Modify","MundaneOnly":u"Mundane Only",'FixStarAngleDirs':'Angular Directions of Fixed Stars',"Realdate":u"Real date:","Location":u"Location",'Open':'Open','Save':'Save'
 }
-# Français (French)
 txtsfre.update({
+    'Deg': u'Degré',
     'Min': u'Minute',
     'Sec': u'Seconde'
 })
@@ -3205,7 +3209,7 @@ txtsko = {'HelpDegree':u'0에서 29 사이여야 합니다.',
 'BusyInfo':u'컴퓨터 속도와 프라이머리 디렉션 설정(PT) 등에 따라 시간이 다소 걸릴 수 있습니다.',
 'PleaseWait':u'잠시만 기다려 주세요…',
 'FetchingZoneAlt':u'잠시만 기다려 주세요… 시간대와 고도를 가져오는 중입니다…',
-'UseRegrSun1':u'진태양 아크 및 역방향 디렉션에서는 퇴행하는 태양을 사용합니다.', 'UseRegrSun2':u'',
+'UseRegrSun1':u'진태양 아크 및 역방향 디렉션에서는,', 'UseRegrSun2':u'퇴행하는 태양을 사용합니다.',
 'DBFileError':u'장소 데이터베이스 파일을 열 수 없습니다!', 'InitChars':u'첫 글자', 'InitCharError':u'한 글자 이상 입력하세요!',
 'TextError':u'텍스트 입력란에는 알파벳, 숫자, 공백, 쉼표만 사용할 수 있습니다!', 'Add':u'추가', 'Remove':u'제거', 'RemoveAll':u'모두 제거',
 'LocalBirthTime':u'현지 출생 시각', 'AreYouSure':u'확실합니까?', 'Confirm':u'확인', 'TextEmpty':u'텍스트 입력란은 비워둘 수 없습니다!', 'Misc':u'기타',

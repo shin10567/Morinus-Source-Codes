@@ -374,6 +374,7 @@ class FixedStarDirsFrame(wx.Frame):
         bmp_down    = wx.ArtProvider.GetBitmap(wx.ART_GO_DOWN,    wx.ART_TOOLBAR, tsize)
 
         self.tb.SetToolBitmapSize(tsize)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, u'   '))
 
         # PD와 같은 ID/순서: Start(UP=첫 페이지) → Back(이전 페이지) → Forward(다음 페이지) → End(DOWN=마지막 페이지)
         self.ID_Start   = 10
@@ -418,7 +419,7 @@ class FixedStarDirsFrame(wx.Frame):
         self.year.SetMaxLength(4)
         self.year.SetValue(str(getattr(t, 'origyear', getattr(t, 'year', 0))))
         self.tb.AddControl(self.year)
-        self.tb.AddControl(wx.StaticText(self.tb, -1, ' '))
+        self.tb.AddControl(wx.StaticText(self.tb, -1, '.'))
 
         # MM
         self.month = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(1, 12),
@@ -426,7 +427,7 @@ class FixedStarDirsFrame(wx.Frame):
         self.month.SetMaxLength(2)
         self.month.SetValue(str(getattr(t, 'origmonth', getattr(t, 'month', 1))).zfill(2))
         self.tb.AddControl(self.month)
-        self.tb.AddControl(wx.StaticText(self.tb, -1, ' '))
+        self.tb.AddControl(wx.StaticText(self.tb, -1, '.'))
 
         # DD
         self.day = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(1, 31),
@@ -436,7 +437,7 @@ class FixedStarDirsFrame(wx.Frame):
         self.tb.AddControl(self.day)
 
         # 날짜와 시간 사이 여백 (PD 간격)
-        self.tb.AddControl(wx.StaticText(self.tb, -1, '   '))
+        self.tb.AddControl(wx.StaticText(self.tb, -1, '     '))
 
         # hh:mm:ss  (PD처럼 ':'로 구분)
         self.hour = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(0, 23),

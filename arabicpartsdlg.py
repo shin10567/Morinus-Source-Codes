@@ -551,18 +551,28 @@ class ArabicPartsDlg(wx.Dialog):
 		#DayNight Orb
 		self.sorb =wx.StaticBox(self, label=mtexts.txts['DayNightOrb'])
 		orbsizer = wx.StaticBoxSizer(self.sorb, wx.HORIZONTAL)
-		self.orbdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 6), size=(40,-1))
+		# 'Deg:' 라벨 → deg 입력칸 → ',' → 'Min:' 라벨 → min 입력칸
+		lbl_deg = wx.StaticText(self, -1, mtexts.txts['Deg'] + u':')
+		orbsizer.Add(lbl_deg, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+
+		self.orbdeg = wx.TextCtrl(self, -1, '',
+								validator=intvalidator.IntValidator(0, 6),
+								size=(40,-1))
 		self.orbdeg.SetHelpText(mtexts.txts['HelpDayNightOrbDeg'])
 		self.orbdeg.SetMaxLength(1)
 		orbsizer.Add(self.orbdeg, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-		label = wx.StaticText(self, -1, mtexts.txts['Degree'])
-		orbsizer.Add(label, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-		self.orbmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40,-1))
+
+		orbsizer.Add(wx.StaticText(self, -1, u'   '), 0, wx.ALL|wx.ALIGN_LEFT, 5)
+
+		lbl_min = wx.StaticText(self, -1, mtexts.txts['Min'] + u':')
+		orbsizer.Add(lbl_min, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+
+		self.orbmin = wx.TextCtrl(self, -1, '',
+								validator=intvalidator.IntValidator(0, 59),
+								size=(40,-1))
 		self.orbmin.SetHelpText(mtexts.txts['HelpMin'])
 		self.orbmin.SetMaxLength(2)
 		orbsizer.Add(self.orbmin, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-		label = wx.StaticText(self, -1, mtexts.txts['Minute'])
-		orbsizer.Add(label, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
 		vsubsizer.Add(orbsizer, 1, wx.GROW|wx.ALIGN_LEFT|wx.RIGHT, 5)
 

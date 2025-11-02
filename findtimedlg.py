@@ -396,9 +396,9 @@ class FindTimeDlg(wx.Dialog):
 		#Use
 		suse = wx.StaticBox(self, label=mtexts.txts['Use'])
 		susesizer = wx.StaticBoxSizer(suse, wx.VERTICAL)
-		self.useminckb = wx.CheckBox(self, -1, mtexts.txts['Minute'])
+		self.useminckb = wx.CheckBox(self, -1, mtexts.txts['Min'])
 		susesizer.Add(self.useminckb, 0, wx.ALIGN_LEFT|wx.LEFT|wx.TOP, 5)
-		self.usesecckb = wx.CheckBox(self, -1, mtexts.txts['Second'])
+		self.usesecckb = wx.CheckBox(self, -1, mtexts.txts['Sec'])
 		susesizer.Add(self.usesecckb, 0, wx.ALIGN_LEFT|wx.LEFT|wx.TOP, 5)
 		self.useretrckb = wx.CheckBox(self, -1, mtexts.txts['Retrograde'])
 		susesizer.Add(self.useretrckb, 0, wx.ALIGN_LEFT|wx.LEFT|wx.TOP, 5)
@@ -548,7 +548,7 @@ class FindTimeDlg(wx.Dialog):
 		sapprox = wx.StaticBox(self, label=mtexts.txts['ApproxPlanets'])
 		sapproxsizer = wx.StaticBoxSizer(sapprox, wx.VERTICAL)
 		self.useapproxckb = wx.CheckBox(self, -1, mtexts.txts['Use'])
-		self.approxdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 4), size=(30,-1))
+		self.approxdeg = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 4), size=(40,-1))
 		self.approxdeg.SetHelpText(mtexts.txts['HelpApproxDeg'])
 		self.approxdeg.SetMaxLength(1)
 		self.approxmin = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(40,-1))
@@ -559,15 +559,15 @@ class FindTimeDlg(wx.Dialog):
 		self.approxsec.SetMaxLength(2)
 		hsizerDeg = wx.BoxSizer(wx.HORIZONTAL)#
 		hsizerDeg.Add(self.approxdeg, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
-		self.approxdegtxt = wx.StaticText(self, -1, mtexts.txts['D'])
+		self.approxdegtxt = wx.StaticText(self, -1, mtexts.txts['D2'])
 		hsizerDeg.Add(self.approxdegtxt, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		hsizerMin = wx.BoxSizer(wx.HORIZONTAL)#
 		hsizerMin.Add(self.approxmin, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
-		self.approxmintxt = wx.StaticText(self, -1, mtexts.txts['M'])
+		self.approxmintxt = wx.StaticText(self, -1, mtexts.txts['M2'])
 		hsizerMin.Add(self.approxmintxt, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		hsizerSec = wx.BoxSizer(wx.HORIZONTAL)#
 		hsizerSec.Add(self.approxsec, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
-		self.approxsectxt = wx.StaticText(self, -1, mtexts.txts['S'])
+		self.approxsectxt = wx.StaticText(self, -1, mtexts.txts['S2'])
 		hsizerSec.Add(self.approxsectxt, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
 		hsizerLon = wx.BoxSizer(wx.HORIZONTAL)#
 		hsizerLon.Add(hsizerDeg, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)

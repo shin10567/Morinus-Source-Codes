@@ -637,6 +637,7 @@ class CircumFrame(wx.Frame):
             self.tb.SetMargins(12, 0)   # (left=12px, top=0px)
         except Exception:
             pass
+        self.tb.AddControl(wx.StaticText(self.tb, -1, u'   '))
 
         # 픽셀 간격 유틸(툴바 컨트롤 사이 간격을 PD와 유사하게 고정)
         def _tb_spacer(w):
@@ -661,13 +662,13 @@ class CircumFrame(wx.Frame):
                                 size=(50,-1), style=wx.TE_READONLY)
         self.year.SetMaxLength(4)
         self.year.SetValue(str(getattr(t, 'origyear', getattr(t, 'year', 0))))
-        self.tb.AddControl(self.year); _tb_spacer(6)
+        self.tb.AddControl(self.year); self.tb.AddControl(wx.StaticText(self.tb, -1, u'.'))
 
         self.month = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(1, 12),
                                 size=(30,-1), style=wx.TE_READONLY)
         self.month.SetMaxLength(2)
         self.month.SetValue(str(getattr(t, 'origmonth', getattr(t, 'month', 1))).zfill(2))
-        self.tb.AddControl(self.month); _tb_spacer(6)
+        self.tb.AddControl(self.month); self.tb.AddControl(wx.StaticText(self.tb, -1, u'.'))
 
         self.day = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(1, 31),
                             size=(30,-1), style=wx.TE_READONLY)
@@ -676,7 +677,7 @@ class CircumFrame(wx.Frame):
         self.tb.AddControl(self.day)
 
         # 날짜-시간 사이 간격
-        _tb_spacer(12)  # ← 공백 없이 붙었으면 스페이스가 누락된 것, 반드시 한 칸 띄워줘
+        self.tb.AddControl(wx.StaticText(self.tb, -1, '     '))
 
         # 시간(hh:mm:ss)
         self.hour = wx.TextCtrl(self.tb, -1, '', validator=intvalidator.IntValidator(0, 23),
@@ -700,31 +701,30 @@ class CircumFrame(wx.Frame):
         self.tb.AddControl(self.sec)
 
         # 시간-라벨 사이 간격
-        _tb_spacer(12)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, '     '))
 
         # '생시보정:' (다국어)
         self.tb.AddControl(wx.StaticText(self.tb, -1, mtexts.txts.get('Rectification', u'Rectification')))
-        self.tb.AddControl(wx.StaticText(self.tb, -1, ':'))
-        _tb_spacer(6)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, ': '))
 
         # 보정 콤보
         self.recttypes = ('1s', '5s', '10s', '1m', '5m', '10m')
-        self.rectcb = wx.ComboBox(self.tb, -1, self.recttypes[0], size=(64,-1),
+        self.rectcb = wx.ComboBox(self.tb, -1, self.recttypes[0], size=(70,-1),
                                 choices=self.recttypes, style=wx.CB_DROPDOWN|wx.CB_READONLY)
         self.rectcb.SetSelection(0)
         self.tb.AddControl(self.rectcb)
 
         # 콤보-± 간격
-        _tb_spacer(8)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, ' '))
 
         # + / -
         self.btnIncr = wx.Button(self.tb, -1, '+', size=(40,30))
-        self.tb.AddControl(self.btnIncr); _tb_spacer(4)
+        self.tb.AddControl(self.btnIncr)
         self.btnDecr = wx.Button(self.tb, -1, '-', size=(40,30))
         self.tb.AddControl(self.btnDecr)
 
         # ± - 계산 간격
-        _tb_spacer(10)
+        self.tb.AddControl(wx.StaticText(self.tb, -1, '  '))
 
         # 계산(다국어)
         self.btnCalc = wx.Button(self.tb, -1, mtexts.txts.get('Calculate', u'Calculate'), size=(-1,30))

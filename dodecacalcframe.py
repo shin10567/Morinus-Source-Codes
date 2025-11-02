@@ -219,10 +219,10 @@ class DodecaCalcFrame(wx.Frame):
 
         # 라벨들
         st_lon  = wx.StaticText(self.tb, -1, mtexts.txts.get('Longitude', 'Longitude') + ':')
-        st_sign = wx.StaticText(self.tb, -1, mtexts.txts.get('TopicalSign', 'Sign') + ':')
-        st_deg  = wx.StaticText(self.tb, -1, mtexts.txts.get('Degree', 'Degree') + ':')
-        st_min  = wx.StaticText(self.tb, -1, mtexts.txts.get('Minute', 'Minute') + ':')
-        st_sec  = wx.StaticText(self.tb, -1, mtexts.txts.get('Second', 'Second') + ':')
+        st_sign = wx.StaticText(self.tb, -1, mtexts.txts.get('TopicalSign', 'Sign') + ': ')
+        st_deg  = wx.StaticText(self.tb, -1, mtexts.txts.get('Deg', 'Degree') + ': ')
+        st_min  = wx.StaticText(self.tb, -1, mtexts.txts.get('Min', 'Minute') + ': ')
+        st_sec  = wx.StaticText(self.tb, -1, mtexts.txts.get('Sec', 'Second') + ': ')
 
         # 사인 콤보/스핀 (툴바에 직접 AddControl)
         sign_labels = [mtexts.txts.get(n, n) for n in
@@ -262,16 +262,16 @@ class DodecaCalcFrame(wx.Frame):
         for sp in (self.sp_deg, self.sp_min, self.sp_sec):
             _w_specs.append((sp, _fix_width(sp)))
 
-        _tb_spacer(15)  # 프레임 좌측 경계 여백 (툴바 맨 앞에 둬야 유효)
-        self.tb.AddControl(st_lon);  _tb_spacer(12)
-        self.tb.AddControl(st_sign); _tb_spacer(2)
-        self.tb.AddControl(self.ch_sign); _tb_punct(','); _tb_spacer(10)
-        self.tb.AddControl(st_deg);  _tb_spacer(2)
-        self.tb.AddControl(self.sp_deg); _tb_punct(','); _tb_spacer(10)
-        self.tb.AddControl(st_min);  _tb_spacer(2)
-        self.tb.AddControl(self.sp_min); _tb_punct(','); _tb_spacer(10)
-        self.tb.AddControl(st_sec);  _tb_spacer(2)
-        self.tb.AddControl(self.sp_sec); _tb_punct('.'); _tb_spacer(12)
+        _tb_punct('      ')  # 프레임 좌측 경계 여백 (툴바 맨 앞에 둬야 유효)
+        self.tb.AddControl(st_lon); _tb_punct('   '); _tb_spacer(10)
+        self.tb.AddControl(st_sign) 
+        self.tb.AddControl(self.ch_sign); _tb_punct('   '); _tb_spacer(10)
+        self.tb.AddControl(st_deg) 
+        self.tb.AddControl(self.sp_deg); _tb_punct('   '); _tb_spacer(10)
+        self.tb.AddControl(st_min)
+        self.tb.AddControl(self.sp_min); _tb_punct('   '); _tb_spacer(10)
+        self.tb.AddControl(st_sec)
+        self.tb.AddControl(self.sp_sec); _tb_punct('   '); _tb_spacer(10)
         self.tb.AddControl(btn_calc)
 
         self.tb.Realize()
@@ -294,7 +294,7 @@ class DodecaCalcFrame(wx.Frame):
         tb_h = max(30, self.GetToolBar().GetSize().height)
         client_w = self.body.WIDTH + 12
         client_h = self.body.HEIGHT + tb_h + 12
-        self.SetClientSize((max(620, client_w), client_h))
+        self.SetClientSize((max(680, client_w), client_h))
 
     def _on_calc(self, evt):
         sidx = self.ch_sign.GetSelection()
