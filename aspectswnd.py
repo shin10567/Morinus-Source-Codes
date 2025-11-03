@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import math
 import wx
 import os
@@ -58,9 +59,12 @@ class AspectsWnd(commonwnd.CommonWnd):
 		self.fntMorinus = ImageFont.truetype(common.common.symbols, int(4*self.FONT_SIZE/5))
 		self.fntSymbol = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/2))
 		self.fntAspects = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE/2))
-		self.fntText = ImageFont.truetype(common.common.abc, int(2*self.FONT_SIZE/3))
-		self.fntText2 = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/3))
-		self.fntText3 = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/2))
+		#self.fntText = ImageFont.truetype(common.common.abc, int(2*self.FONT_SIZE/3))
+		#self.fntText2 = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/3))
+		#self.fntText3 = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/2))
+		self.fntText = ImageFont.truetype(common.common.abc_ascii, int(2*self.FONT_SIZE/3))
+		self.fntText2 = ImageFont.truetype(common.common.abc_ascii, int(self.FONT_SIZE/3))
+		self.fntText3 = ImageFont.truetype(common.common.abc_ascii, int(self.FONT_SIZE/2))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)
 		self.arsigndiff = (0, -1, -1, 2, -1, 3, 4, -1, -1, -1, 6)
 		self.hidx = (1, 2, 3, 10, 11, 12)
@@ -172,7 +176,12 @@ class AspectsWnd(commonwnd.CommonWnd):
 					if not self.bw:
 						clr = txtclr
 				w,h = draw.textsize(txt, fnt)
-				draw.text((BOR+(i+1)*(self.SPACE+self.SQUARE_SIZE)+(self.SQUARE_SIZE-w)/2, BOR+(self.SQUARE_SIZE+self.SPACE)*(k+1)+self.SQUARE_SIZE-h-self.YOFFSET, self.SQUARE_SIZE), txt, fill=clr, font=fnt)
+				try:
+					bb = draw.textbbox((0,0), txt, font=fnt)
+					h = bb[3] - bb[1]
+				except Exception:
+					pass
+				draw.text((BOR+(i+1)*(self.SPACE+self.SQUARE_SIZE)+(self.SQUARE_SIZE-w)/2, BOR+(self.SQUARE_SIZE+self.SPACE)*(k+1)+self.SQUARE_SIZE - h - self.XOFFSET/2 - 7, self.SQUARE_SIZE), txt, fill=clr, font=fnt)
 				k += 1
 
 		#Planets
@@ -248,7 +257,12 @@ class AspectsWnd(commonwnd.CommonWnd):
 						if not self.bw:
 							clr = txtclr
 					w,h = draw.textsize(txt, fnt)
-					draw.text((x+(self.SQUARE_SIZE+self.SPACE)*ii+(self.SQUARE_SIZE-w)/2, y+(self.SQUARE_SIZE+self.SPACE)*jj+self.SQUARE_SIZE-h-self.YOFFSET), txt, fill=clr, font=fnt)
+					try:
+						bb = draw.textbbox((0,0), txt, font=fnt)
+						h = bb[3] - bb[1]
+					except Exception:
+						pass
+					draw.text((x+(self.SQUARE_SIZE+self.SPACE)*ii+(self.SQUARE_SIZE-w)/2, y+(self.SQUARE_SIZE+self.SPACE)*jj+self.SQUARE_SIZE - h - self.XOFFSET/2 - 7), txt, fill=clr, font=fnt)
 				jj += 1
 			ii += 1
 
@@ -312,7 +326,12 @@ class AspectsWnd(commonwnd.CommonWnd):
 							clr = txtclr
 
 					w,h = draw.textsize(txt, fnt)
-					draw.text((x+(self.SQUARE_SIZE+self.SPACE)*i+(self.SQUARE_SIZE-w)/2, y+(self.SQUARE_SIZE+self.SPACE)*kk+self.SQUARE_SIZE-h-self.YOFFSET), txt, fill=clr, font=fnt)
+					try:
+						bb = draw.textbbox((0,0), txt, font=fnt)
+						h = bb[3] - bb[1]
+					except Exception:
+						pass
+					draw.text((x+(self.SQUARE_SIZE+self.SPACE)*i+(self.SQUARE_SIZE-w)/2, y+(self.SQUARE_SIZE+self.SPACE)*kk+self.SQUARE_SIZE - h - self.XOFFSET/2 - 7), txt, fill=clr, font=fnt)
 					kk += 1
 
 		wxImg = wx.Image(img.size[0], img.size[1])

@@ -204,7 +204,7 @@ class PhasisWnd(commonwnd.CommonWnd):
         self.LINE_HEIGHT  = (self.SPACE + self.FONT_SIZE + self.SPACE)
         # PATCH: info 영역을 2행으로 (세로줄 없음)
         self.INFO_HEIGHT  = self.LINE_HEIGHT
-        self.INFO_ROWS    = 1
+        self.INFO_ROWS    = 2
         self.INFO_BLOCK_H = int(self.INFO_ROWS * self.INFO_HEIGHT)
         # ② 컬럼 폭 (왼쪽 기호 칸은 좁게)
         #    [Planet(기호), Phasis, Time]
@@ -389,12 +389,22 @@ class PhasisWnd(commonwnd.CommonWnd):
         w1, h1 = draw.textsize(txt_info1, self.fntText)
         draw.text((info_x + (info_w - w1)/2, BOR + (row_h - h1)/2),
                 txt_info1, fill=txtclr, font=self.fntText)
+        # 2행: AtmosphericExtinction <k>
+        k, _alt = self._get_extinction_and_altitude()
+        k_txt = u"—" if (k is None) else (u"%.4f" % k)
+        txt_info2 = u"%s %s" % (mtexts.txts.get("AtmosphericExtinction", u"Atmospheric Extinction"), k_txt)
+        w2, h2 = draw.textsize(txt_info2, self.fntText)
+        draw.text((info_x + (info_w - w2)/2, BOR + row_h + (row_h - h2)/2),
+                txt_info2, fill=txtclr, font=self.fntText)
+        head_y = BOR + self.INFO_BLOCK_H
 
         # --- [B] 헤더(Planet/Phasis/Time) ---
-        head_y = BOR + self.INFO_BLOCK_H  # ← info 2행 아래
         draw.rectangle(((BOR, head_y), (BOR + self.TITLE_WIDTH, head_y + self.TITLE_HEIGHT)),
-                    outline=tableclr, fill=self.bkgclr)
-        heads = (mtexts.txts["Planets"], mtexts.txts["Phasis"], mtexts.txts["TimeDays"])
+                            outline=None, fill=self.bkgclr)
+        # 헤더 상단 가로 구분선(Atmospheric Extinction 블록과 표 사이)
+        draw.line((BOR, head_y, BOR + self.TITLE_WIDTH, head_y), fill=tableclr)
+
+        heads = (mtexts.txts['TopicalPlanet'], mtexts.txts["Phasis"], mtexts.txts["TimeDays"])
         col_w = (self.W_SYM, self.W_PHAS, self.W_TIME)
         x = BOR
         for i, htxt in enumerate(heads):
@@ -408,11 +418,13 @@ class PhasisWnd(commonwnd.CommonWnd):
         y0 = head_y + self.TITLE_HEIGHT
         draw.line((x0, y0, x0 + self.TITLE_WIDTH, y0), fill=tableclr)
 
-        # --- [C] 세로 구분선: 헤더 상단부터 표 끝까지 ---
-        top_of_cols = BOR + self.INFO_BLOCK_H
+        # --- [C] 세로 구분선: 헤더 구간 제외(=y0부터), 본문만 그리기 ---
+        top_of_cols = y0                      # 헤더 하단선부터 시작
         table_h     = self.TABLE_HEIGHT
         xv = x0
-        draw.line((xv, top_of_cols, xv, BOR + table_h), fill=tableclr)  # 왼쪽 외곽
+        # 왼쪽 외곽
+        draw.line((xv, top_of_cols, xv, BOR + table_h), fill=tableclr)
+        # 내부 칸막이 + 오른쪽 외곽
         for w in col_w:
             xv += w
             draw.line((xv, top_of_cols, xv, BOR + table_h), fill=tableclr)

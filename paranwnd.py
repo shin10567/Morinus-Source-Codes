@@ -685,7 +685,7 @@ class ParanatellontaWnd(cw.CommonWnd):
         return u"Paran.bmp"
 
     def getTitle(self):
-        return (u"ΔT", mtexts,txts["Planets"], mtexts,txts["FixedStar"], mtexts,txts["Angles"])
+        return (u"ΔT", mtexts,txts['TopicalPlanet'], mtexts,txts["FixedStar"], mtexts,txts["Angles"])
     def refreshBkg(self):
         """
         표 내용을 PIL로 그려 self.buffer(wx.Bitmap)를 만든다.
@@ -792,7 +792,7 @@ class ParanatellontaWnd(cw.CommonWnd):
         )
 
         # --- 헤더 텍스트 ---
-        headers = (u"ΔT",mtexts.txts["Planets"], mtexts.txts["FixedStar"], mtexts.txts["Angles"])
+        headers = (u"ΔT",mtexts.txts['TopicalPlanet'], mtexts.txts["FixedStar"], mtexts.txts["Angles"])
         x = BOR
         for i, h in enumerate(headers):
             w = self.COL_W[i]

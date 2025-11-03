@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import math
 import wx
 import os
@@ -23,6 +24,7 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 
 		self.FONT_SIZE = int(2*18*self.options.tablesize) #Change fontsize to change the size of the table!
 		self.SPACE = self.FONT_SIZE/6
+		self.ORB_Y_NUDGE = int(max(3, self.SPACE/8))  # 오차 숫자를 살짝 '위로' 올릴 양
 		self.LINE_HEIGHT = (self.SPACE+self.FONT_SIZE+self.SPACE)
 		self.LINE_NUM = len(self.chart.fixstars.data)
 		self.CELL_WIDTH = 6*self.FONT_SIZE
@@ -70,7 +72,8 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 		self.fntSymbol = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/2))
 		self.fntAspects = ImageFont.truetype(common.common.symbols, int(3*self.FONT_SIZE/5))
 		self.fntText = ImageFont.truetype(common.common.abc, int(3*self.FONT_SIZE/5))
-		self.fntTextOrb = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/2))
+		#self.fntTextOrb = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE/2))
+		self.fntTextOrb = ImageFont.truetype(common.common.abc_ascii, int(self.FONT_SIZE/2))
 		self.clrs = (self.options.clrdomicil, self.options.clrexal, self.options.clrperegrin, self.options.clrcasus, self.options.clrexil)
 		self.arsigndiff = (0, -1, -1, 2, -1, 3, 4, -1, -1, -1, 6)
 		self.hidx = (1, 2, 3, 10, 11, 12)
@@ -234,9 +237,14 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 						# Print Orb
 						OrbDegree = "%0.1f" % (self.getOrb(degree, lon1, lon2, orb))
 						w,h = draw.textsize(OrbDegree, self.fntTextOrb)
+						try:
+							bb = draw.textbbox((0,0), OrbDegree, font=self.fntTextOrb)
+							h = bb[3] - bb[1]
+						except Exception:
+							pass
 						xx = BOR+self.CELL_WIDTH+self.SPACE+j*(self.SQUARE_SIZE+self.SPACE)
-						yy = BOR+self.TITLE_HEIGHT+self.SPACE+((self.SQUARE_SIZE-h)/1.7)+i*(self.SQUARE_SIZE+self.SPACE)
-						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy+(self.SQUARE_SIZE-h)/2), OrbDegree, fill=clr, font=self.fntTextOrb)
+						yy = BOR + self.TITLE_HEIGHT + self.SPACE + (self.SQUARE_SIZE - h - self.SPACE/2) - self.ORB_Y_NUDGE + i*(self.SQUARE_SIZE + self.SPACE)
+						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy), OrbDegree, fill=clr, font=self.fntTextOrb)
 # ###################################
 		
 
@@ -298,9 +306,14 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 						# Print Orb
 						OrbDegree = "%0.1f" % (self.getOrb(degree, lon1, lon2, orb))
 						w,h = draw.textsize(OrbDegree, self.fntTextOrb)
+						try:
+							bb = draw.textbbox((0,0), OrbDegree, font=self.fntTextOrb)
+							h = bb[3] - bb[1]
+						except Exception:
+							pass
 						xx = BOR+self.CELL_WIDTH+self.SPACE+self.PLANETSOFFS*(self.SQUARE_SIZE+self.SPACE)+(j-skipped)*(self.SQUARE_SIZE+self.SPACE)
-						yy = BOR+self.TITLE_HEIGHT+self.SPACE+((self.SQUARE_SIZE-h)/1.7)+i*(self.SQUARE_SIZE+self.SPACE)
-						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy+(self.SQUARE_SIZE-h)/2), OrbDegree, fill=clr, font=self.fntTextOrb)	
+						yy = BOR + self.TITLE_HEIGHT + self.SPACE + (self.SQUARE_SIZE - h - self.SPACE/2) - self.ORB_Y_NUDGE + i*(self.SQUARE_SIZE + self.SPACE)
+						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy), OrbDegree, fill=clr, font=self.fntTextOrb)	
 # ###################################
 
 		#LoF
@@ -345,9 +358,14 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 						# Print Orb
 						OrbDegree = "%0.1f" % (self.getOrb(degree, lon1, lon2, orb))
 						w,h = draw.textsize(OrbDegree, self.fntTextOrb)
+						try:
+							bb = draw.textbbox((0,0), OrbDegree, font=self.fntTextOrb)
+							h = bb[3] - bb[1]
+						except Exception:
+							pass
 						xx = BOR+self.CELL_WIDTH+self.SPACE+self.LOFOFFS*(self.SQUARE_SIZE+self.SPACE)
-						yy = BOR+self.TITLE_HEIGHT+self.SPACE+((self.SQUARE_SIZE-h)/1.7)+i*(self.SQUARE_SIZE+self.SPACE)
-						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy+(self.SQUARE_SIZE-h)/2), OrbDegree, fill=clr, font=self.fntTextOrb)	
+						yy = BOR + self.TITLE_HEIGHT + self.SPACE + (self.SQUARE_SIZE - h - self.SPACE/2) - self.ORB_Y_NUDGE + i*(self.SQUARE_SIZE + self.SPACE)
+						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy), OrbDegree, fill=clr, font=self.fntTextOrb)	
 # ###################################
 
 		#Houses
@@ -410,9 +428,14 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 							# Print Orb
 							OrbDegree = "%0.1f" % (self.getOrb(degree, lon1, lon2, orb))
 							w,h = draw.textsize(OrbDegree, self.fntTextOrb)
+							try:
+								bb = draw.textbbox((0,0), OrbDegree, font=self.fntTextOrb)
+								h = bb[3] - bb[1]
+							except Exception:
+								pass
 							xx = BOR+self.CELL_WIDTH+self.SPACE+self.HOUSESOFFS*(self.SQUARE_SIZE+self.SPACE)+aroffs[j]*(self.SQUARE_SIZE+self.SPACE)
-							yy = BOR+self.TITLE_HEIGHT+self.SPACE+((self.SQUARE_SIZE-h)/1.7)+i*(self.SQUARE_SIZE+self.SPACE)
-							draw.text((xx+(self.SQUARE_SIZE-w)/2, yy+(self.SQUARE_SIZE-h)/2), OrbDegree, fill=clr, font=self.fntTextOrb)	
+							yy = BOR + self.TITLE_HEIGHT + self.SPACE + (self.SQUARE_SIZE - h - self.SPACE/2) - self.ORB_Y_NUDGE + i*(self.SQUARE_SIZE + self.SPACE)
+							draw.text((xx+(self.SQUARE_SIZE-w)/2, yy), OrbDegree, fill=clr, font=self.fntTextOrb)	
 # ###################################
 
 		wxImg = wx.Image(img.size[0], img.size[1])

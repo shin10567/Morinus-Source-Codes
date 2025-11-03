@@ -10,6 +10,7 @@ Ordering:
 """
 import datetime
 import astrology, planets, util
+import astrology, planets, util, houses, fortune
 
 MINOR_MONTHS = {
     astrology.SE_SATURN: 30,
@@ -64,6 +65,60 @@ def _planet_order(chart, options):
     order = [pairs[(idx+i) % 7][0] for i in range(7)]
     return order
 
+def _planet_order_raw(chart, options):
+    """황도경도 오름차순 정렬(회전 없음). 반환: [행성se_index..]"""
+    pairs = []
+    for p in _seven_classicals():
+        lon = chart.planets.planets[p].data[planets.Planet.LONG]
+        if options.ayanamsha != 0:
+            lon = util.normalize(lon - chart.ayanamsha)
+        pairs.append((p, lon))
+    pairs.sort(key=lambda x: x[1])
+    return [pp for (pp, _) in pairs]
+
+def _planet_after_degree(chart, options, deg):
+    """deg 이후 최초로 나타나는 행성을 반환(없으면 첫 원소)."""
+    pairs = []
+    for p in _seven_classicals():
+        lon = chart.planets.planets[p].data[planets.Planet.LONG]
+        if options.ayanamsha != 0:
+            lon = util.normalize(lon - chart.ayanamsha)
+        pairs.append((p, lon))
+    pairs.sort(key=lambda x: x[1])
+    for (pp, lon) in pairs:
+        if lon >= deg:
+            return pp
+    return pairs[0][0]
+
+def _resolve_start_planet(chart, options, selector):
+    """
+    selector: 'sect' | 'sun'|'moon'|'mercury'|'venus'|'mars'|'jupiter'|'saturn'
+              | 'asc' | 'fortune'
+    반환: astrology.SE_* 정수 (행성)
+    """
+    s = (selector or 'sect').strip().lower()
+    # 1) 섹트
+    if s == 'sect':
+        return astrology.SE_SUN if _is_diurnal(chart) else astrology.SE_MOON
+    # 2) 행성 지정
+    pmap = {
+        'sun': astrology.SE_SUN, 'moon': astrology.SE_MOON,
+        'mercury': astrology.SE_MERCURY, 'venus': astrology.SE_VENUS,
+        'mars': astrology.SE_MARS, 'jupiter': astrology.SE_JUPITER,
+        'saturn': astrology.SE_SATURN
+    }
+    if s in pmap:
+        return pmap[s]
+    # 3) 감응점: ASC, 로트 오브 포츈 → 해당 경도 바로 뒤의 첫 행성
+    if s == 'asc':
+        deg = chart.houses.ascmc2[houses.Houses.ASC][houses.Houses.LON]
+        return _planet_after_degree(chart, options, deg)
+    if s == 'fortune':
+        deg = chart.fortune.fortune[fortune.Fortune.LON]
+        return _planet_after_degree(chart, options, deg)
+    # 안전 폴백
+    return astrology.SE_SUN if _is_diurnal(chart) else astrology.SE_MOON
+
 def _dur_days(level, planet):
     if level == 1:
         return L1_DAYS
@@ -71,7 +126,7 @@ def _dur_days(level, planet):
         return MINOR_MONTHS[planet] * SCHEMATIC_MONTH
     raise ValueError("Unsupported level")
 
-def build_main(chart, options, cycles=2):
+def build_main(chart, options, cycles=2, start_selector='sect'):
     """
     Return interleaved L1/L2 rows for given cycles (default 2).
     Each row: {'level': 1|2, 'planet': se_index, 'start': datetime, 'end': datetime}
@@ -79,6 +134,8 @@ def build_main(chart, options, cycles=2):
     out = []
     t = _chart_datetime(chart)
     order = _planet_order(chart, options)
+    startp = _resolve_start_planet(chart, options, start_selector)
+    order = order[order.index(startp):] + order[:order.index(startp)]
     for c in range(int(cycles)):
         for p in order:
             s = t

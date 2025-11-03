@@ -193,7 +193,8 @@ menutxtseng.update({
 })
 
 
-txtseng = {'HelpDegree':'Must be between 0 and 29',
+txtseng = {'SectLight':'Sect Light',
+'HelpDegree':'Must be between 0 and 29',
 'DDCharts':'Draw Charts', 'DCharts':'Special Charts','TimeLords':'Time Lords',
 'PlanetsPoints':'Planets/Points',
 'HourLord':'Hour Lord',
@@ -248,7 +249,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'Positive':'Positive', 'Negative':'Negative', 'Interm':'Interm.', 'Exact':'Exact', 'Name':'Name', 'Gender':'Gender', 'BC':'BC', 
 'Year':'Year', 'Month':'Month', 'Day':'Day', 'Days':'Days', 'Daylig':'Daylight', 'Sec':'Second', 'Daylight':'Daylight Saving', 'Notes':'Notes', 
 'Pos':'Pos', 'Speeds':'Speeds', 'InLong':'In Longitude', 'InLat':'In Latitude', 'InAU':'In AU', 'Asps':'Asps', 'Ast':'Ast', 'Mid':'Mid', 
-'AODO':'AO/DO(ph)', 'Nodes':'Nodes', 'Parallel':'Parallel', 'Contraparallel':'Contraparallel', 'Planets':'Planets', 'Lunar':'Lunar', 'Male':'Male', 
+'AODO':'AO/DO (PH)', 'Nodes':'Nodes', 'Parallel':'Parallel', 'Contraparallel':'Contraparallel', 'Planets':'Planets', 'Lunar':'Lunar', 'Male':'Male', 
 'Female':'Female', 'SaveChart':'Save the chart as bitmap', 'ChartBW':'Chart in BW', 'Time':'Time', 'Transits':'Transits', 'Revolutions':'Revolutions', 
 'StartingDate':'Starting Date (Midnight, GMT)', 'CouldnotComputeRevolution':'Could not compute revolution!', 'Comparison':'Comparison', 
 'Windows':'Windows', 'SunTransits':'Sun Transits', 'CouldnotComputeTransit':'Could not compute transit!', 'Ascendant':'Ascendant', 
@@ -293,7 +294,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'LFDSunMoon':'Fortuna = Asc+(Sun-Moon) [Diurnal]', 'LFNMoonSun':'Fortuna = Asc+(Moon-Sun) [Nocturnal]', 
 'LFDMoonSun':'Fortuna = Asc+(Moon-Sun) [Diurnal]', 'LFNSunMoon':'Fortuna = Asc+(Sun-Moon) [Nocturnal]',
 'HelpMP':'MP is mundane position', 'MidPoints':'MidPoints', 'MidPoint':'MidPoint', 'NotAvailable':'Not available for BC charts', 
-'FixStars':'Fixed Stars', 'IntermHCS':'Interm. HCs', 'FixStarRef':'1950.01.01 Midnight(GMT)', 'DeselectAll':'Deselect All', 'All':'All', 
+'FixStars':'Fixed Stars', 'IntermHCS':'Interm. HCs', 'FixStarRef':'1950.01.01 Midnight (GMT)', 'DeselectAll':'Deselect All', 'All':'All', 
 'LeftToSelect':'Left to Select', 'Nomencl':'Nomencl.', 'NotFound':'not found', 'NoSelFixStars':'There are no fixed stars selected!', 
 'FixStars2':'Fixed Stars', 'Terms':'Terms', 'Egyptian':'Egyptian', 'Ptolemaic':'Ptolemaic', 'MultiPlanets':'A planet is selected several times', 
 'NOT30':'The sum of the degrees is not equal to 30', 'LoF':'Fortuna', 'Terms2':'Terms', 'ZodAscMCHCsAsProms':'Asc, MC as Promissors', 
@@ -368,7 +369,7 @@ txtseng = {'HelpDegree':'Must be between 0 and 29',
 'HelpDaylight':'Subtracts one hour', 'Daylight':'Daylight Saving',
 # ###############
 'TopicalSyzygy':'Syzygy','TopicalDefault':'Default', 'TopicalConjunction':'Conjunction', 'TopicalOpposition':'Opposition', 
-'TopicalOppositionRadix':'Opposition(Radix)', 'TopicalMoon':'Moon', 'Dozen':'Dozen', 'Pro':'Pro',
+'TopicalOppositionRadix':'Opposition (Radix)', 'TopicalMoon':'Moon', 'Dozen':'Dozen', 'Pro':'Pro',
 'ProfsMainSignificatorsOnly':'Main Significators Only', 'ProfsAll':'All', 'LightOfTheTime':'Light of the Time', 
 'MercuryInVirgo':'Use Exaltation (Mercury in Virgo)', 'TimeSmallerThanBirthTime':'Time can not be smaller than the time of birth!', 
 'HelpApproxDeg':'Must be between 0 and 4', 'MonthlyProfections':'Monthly Profections', 'Steps12':'12 Steps', 'Steps13':'13 Steps', 
@@ -759,6 +760,7 @@ txtshun.update({
 	'Min': u'Perc',
 	'Sec': u'Másodperc'
 })
+txtshun.update({'SectLight': u'Szekta fénye'})
 txtshun.update({
 	'UseAltitude': u'Magasság használata',
 	'PleaseWait': u'Kérem, várjon.',
@@ -1117,6 +1119,7 @@ txtsrus.update({
 	'Min': u'Минута',
 	'Sec': u'Секунда'
 })
+txtsrus.update({'SectLight': u'Светило секты'})
 txtsrus.update({
 	'UseAltitude': u'Использовать высоту',
 	'PleaseWait': u'Пожалуйста, подождите.',
@@ -1475,6 +1478,7 @@ txtsesp.update({
 	'Min': u'Minuto',
 	'Sec': u'Segundo'
 })
+txtsesp.update({'SectLight': u'Luminaria de la secta'})
 txtsesp.update({
 	'UseAltitude': u'Usar altitud',
 	'PleaseWait': u'Por favor, espere.',
@@ -1840,6 +1844,7 @@ txtsita.update({
 	'Min': u'Minuto',
 	'Sec': u'Secondo'
 })
+txtsita.update({'SectLight': u'Luminare della setta'})
 txtsita.update({
 	'UseAltitude': u"Usa l'altitudine",
 	'PleaseWait': u'Attendere, prego.',
@@ -2197,6 +2202,7 @@ txtsfre.update({
 	'Min': u'Minute',
 	'Sec': u'Seconde'
 })
+txtsfre.update({'SectLight': u'Luminaire de secte'})
 txtsfre.update({
 	'UseAltitude': u"Utiliser l'altitude",
 	'PleaseWait': u'Veuillez patienter.',
@@ -2660,7 +2666,7 @@ txtschs.update({
 	'RetrievingZoneOnly': u'请稍候. 正在获取时区.',
 	'RetrievingZoneAlt':  u'请稍候. 正在获取时区和海拔.'
 })
-
+txtschs.update({'SectLight': u'宗派光体'})
 txtschs.setdefault('Years', u'年')
 txtschs.setdefault('Real', u'实际')
 txtschs.setdefault('On', u'开')
@@ -2913,6 +2919,7 @@ txtscht.update({
 	'RetrievingZoneOnly': u'請稍候. 正在取得時區.',
 	'RetrievingZoneAlt':  u'請稍候. 正在取得時區與海拔.'
 })
+txtscht.update({'SectLight': u'宗派光體'})
 txtscht.setdefault('Years', u'年')
 txtscht.setdefault('Real', u'實際')
 txtscht.setdefault('On', u'開')
@@ -3348,6 +3355,7 @@ txtsko.update({
 	'RetrievingZoneOnly': u'잠시만 기다려 주세요. 시간대를 불러오는 중입니다.',
 	'RetrievingZoneAlt':  u'잠시만 기다려 주세요. 시간대와 고도를 불러오는 중입니다.'
 })
+txtsko.update({'SectLight': u'섹트 라이트'})
 txtsko.setdefault('Years', u'년')
 txtsko.setdefault('Real', u'실제 날짜')
 txtsko.setdefault('On', u'켜짐')

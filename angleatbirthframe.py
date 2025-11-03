@@ -9,7 +9,7 @@ class AngleAtBirthFrame(wx.Frame):
     def __init__(self, parent, title, horoscope, options):
         # 시작 크기: 가로 좁게
         wx.Frame.__init__(self, parent, -1, title,
-                          wx.DefaultPosition, wx.Size(480, 200))
+                          wx.DefaultPosition, wx.Size(480, 300))
 
         # 공통 저장 메뉴에서 참조하는 경로 필드(없으면 AttributeError)
         self.fpathimgs = u""

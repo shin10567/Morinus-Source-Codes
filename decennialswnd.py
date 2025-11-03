@@ -17,6 +17,8 @@ class DecWnd(commonwnd.CommonWnd):
         self.SPACE       = self.FONT_SIZE / 2
         self.LINE_HEIGHT = self.SPACE + self.FONT_SIZE + self.SPACE
         self.HEAD_H      = self.LINE_HEIGHT
+        self.INFO_H      = self.LINE_HEIGHT  # 헤더 위 정보행(“Start TopicalPlanet: ..”)
+        self.start_selector = 'sect'         # 기본: 섹트 라이트
 
         # 폰트 (Morinus TTF) — ZR과 동일
         self.fntText     = ImageFont.truetype(common.common.abc,       self.FONT_SIZE)
@@ -37,6 +39,9 @@ class DecWnd(commonwnd.CommonWnd):
         # 마우스 클릭으로 L3/L4 팝업 열기(ZR과 동일 UX)
         self.Bind(wx.EVT_LEFT_UP, self._on_click)
         self._child_frames = []  # 자식 프레임 레퍼런스 유지
+
+    def set_start_selector(self, selector):
+        self.start_selector = (selector or 'sect')
 
     def _rgb(self, col):
         # wx.Colour -> (R,G,B) 또는 이미 튜플이면 그대로
@@ -68,7 +73,7 @@ class DecWnd(commonwnd.CommonWnd):
     def _recalc_sizes(self, nlines):
         BOR = commonwnd.CommonWnd.BORDER
         # self.HEAD_H는 __init__에서 결정됨 (ZR 동일)
-        self.TABLE_H = int(self.HEAD_H + max(1, nlines) * self.LINE_HEIGHT)
+        self.TABLE_H = int(self.INFO_H + self.HEAD_H + max(1, nlines) * self.LINE_HEIGHT)
         self.TITLE_W = sum(self.COL_W)
         self.WIDTH   = int(BOR + self.TITLE_W + BOR)
         self.HEIGHT  = int(BOR + self.TABLE_H + BOR)
@@ -76,14 +81,14 @@ class DecWnd(commonwnd.CommonWnd):
         self.SetScrollRate(commonwnd.CommonWnd.SCROLL_RATE, commonwnd.CommonWnd.SCROLL_RATE)
 
     def compute_and_draw(self):
-        self.rows = dec.build_main(self.chart, self.options, cycles=2)  # L1/L2 only
+        self.rows = dec.build_main(self.chart, self.options, cycles=2, start_selector=self.start_selector)
         self.row_lv = [int(r.get('level', 2)) for r in self.rows]
         self._recalc_sizes(len(self.rows))
         self.drawBkg()
 
     def _row_at(self, y):
         BOR = commonwnd.CommonWnd.BORDER
-        top = BOR + self.HEAD_H
+        top = BOR + self.INFO_H + self.HEAD_H
         if y < top or y >= top + len(self.rows) * self.LINE_HEIGHT:
             return -1
         return int((y - top) // self.LINE_HEIGHT)
@@ -118,8 +123,81 @@ class DecWnd(commonwnd.CommonWnd):
         img  = Image.new('RGB', (self.WIDTH, self.HEIGHT), bkg)
         draw = ImageDraw.Draw(img)
 
-        # ── 헤더 박스 ──
-        head_y = BOR
+        # [A] 정보행: "Start: <기호/텍스트>" — 베이스라인 정렬
+        label = u"%s:" % (mtexts.txts['Start'])
+
+        sel = (self.start_selector or 'sect').lower()
+        is_planet = sel in ('sun','moon','mercury','venus','mars','jupiter','saturn')
+
+        # 왼쪽 라벨/오른쪽 값의 폰트 선택
+        lab_f = self.fntText
+        if is_planet:
+            # 값이 행성 글리프면 심볼 폰트
+            val_f = self.fntMor
+            pmap = {
+                'sun': astrology.SE_SUN, 'moon': astrology.SE_MOON,
+                'mercury': astrology.SE_MERCURY, 'venus': astrology.SE_VENUS,
+                'mars': astrology.SE_MARS, 'jupiter': astrology.SE_JUPITER,
+                'saturn': astrology.SE_SATURN
+            }
+            p = pmap[sel]
+            val_txt = common.common.Planets[p]
+        else:
+            # 값이 텍스트(섹트/Ascendant/LoF)
+            val_f = self.fntText
+            tmap = {
+                'sect': mtexts.txts.get('SectLight', u'Sect Light'),
+                'asc':  mtexts.txts['Ascendant'],
+                'fortune': mtexts.txts['LotOfFortune']
+            }
+            val_txt = tmap.get(sel, tmap['sect'])
+
+        # 색상(본문 규칙과 동일)
+        txt_col = (0,0,0) if self.bw else self._rgb(self.options.clrtexts)
+        if is_planet:
+            if self.bw:
+                glyph_col = (0,0,0)
+            else:
+                glyph_col = self._rgb(self.options.clrindividual[p]) if getattr(self.options,'useplanetcolors',False) else txt_col
+
+        # 가로 배치 계산
+        lw, lh = draw.textsize(label,  lab_f)
+        vw, vh = draw.textsize(val_txt, val_f)
+        gap    = int(self.FONT_SIZE * 0.5)
+        total_w = lw + gap + vw
+        base_x = BOR + (self.TITLE_W - total_w) / 2
+
+        # ── 핵심: 공통 베이스라인 계산 ──
+        # PIL ImageFont의 getmetrics()로 ascent/descents를 구해 둘 텍스트가 같은 베이스라인을 공유하도록 만든다.
+        try:
+            asc1, desc1 = lab_f.getmetrics()
+        except Exception:
+            # 안전 폴백(대략적인 비율)
+            asc1, desc1 = int(0.8*self.FONT_SIZE), int(0.2*self.FONT_SIZE)
+        try:
+            asc2, desc2 = val_f.getmetrics()
+        except Exception:
+            asc2, desc2 = int(0.8*self.FONT_SIZE), int(0.2*self.FONT_SIZE)
+
+        max_asc  = max(asc1, asc2)
+        max_desc = max(desc1, desc2)
+        # 정보행 높이 안에서 (top, bottom) = (baseline-max_asc, baseline+max_desc)가 정확히 중앙에 오도록
+        baseline = BOR + (self.INFO_H - (max_asc + max_desc)) / 2 + max_asc
+
+        # 각 텍스트의 실제 그리기 y(=top)는 baseline - ascent
+        y_lab = baseline - asc1
+        y_val = baseline - asc2
+
+        # 그리기
+        draw.text((base_x, y_lab), label, fill=txt_col, font=lab_f)
+        if is_planet:
+            draw.text((base_x + lw + gap, y_val), val_txt, fill=glyph_col, font=val_f)
+        else:
+            draw.text((base_x + lw + gap, y_val), val_txt, fill=txt_col,   font=val_f)
+
+        # [B] 헤더
+        head_y = BOR + self.INFO_H
+
         draw.rectangle(((BOR, head_y), (BOR + self.TITLE_W, head_y + self.HEAD_H)),
                     outline=None, fill=bkg)
         heads = (u"Lv.", mtexts.txts['TopicalPlanet'], mtexts.txts["Start"], mtexts.txts["Length"])
@@ -136,7 +214,8 @@ class DecWnd(commonwnd.CommonWnd):
         draw.line((x0, y0, x0 + self.TITLE_W, y0), fill=tbl)
 
         # ── 세로선 (헤더 아래부터 표 하단까지) ──
-        top = BOR + self.HEAD_H
+        top = head_y + self.HEAD_H
+
         bot = BOR + self.TABLE_H
         xv  = x0
         draw.line((xv, top, xv, bot), fill=tbl)
@@ -212,6 +291,46 @@ class DecWnd(commonwnd.CommonWnd):
         # wx Bitmap으로 변환
         self.buffer = self._pil_to_bitmap(img)
         self.Refresh(True)
+
+class DecStartDlg(wx.Dialog):
+    """
+    데세니얼 시작 기준 선택 다이얼로그.
+    표시 순서: Sect Light, Sun, Moon, Asc, LotOfFortune, Saturn, Jupiter, Mars, Venus, Mercury
+    반환: 'sect' / 'sun' / 'moon' / 'asc' / 'fortune' / 'saturn' / 'jupiter' / 'mars' / 'venus' / 'mercury'
+    """
+    _TOKENS = ('sect','sun','moon','asc','fortune','saturn','jupiter','mars','venus','mercury')
+
+    def __init__(self, parent):
+        t = u"%s" % (mtexts.txts['Start'])
+        wx.Dialog.__init__(self, parent, title=t)
+        v = wx.BoxSizer(wx.VERTICAL)
+
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        row.Add(wx.StaticText(self, -1, u"%s:" % (mtexts.txts['Start'])),
+                0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+
+        labels = (
+            mtexts.txts.get('SectLight', u'Sect Light'),
+            mtexts.txts['Sun'], mtexts.txts['Moon'],
+            mtexts.txts['Ascendant'], mtexts.txts['LotOfFortune'],
+            mtexts.txts['Saturn'], mtexts.txts['Jupiter'], mtexts.txts['Mars'],
+            mtexts.txts['Venus'], mtexts.txts['Mercury'],
+        )
+        self.cmb = wx.ComboBox(self, -1, choices=list(labels), style=wx.CB_READONLY)
+        self.cmb.SetSelection(0)  # 기본: Sect Light
+        row.Add(self.cmb, 0)
+
+        v.Add(row, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        btns = wx.StdDialogButtonSizer()
+        btns.AddButton(wx.Button(self, wx.ID_OK, mtexts.txts["Compute"]))
+        btns.AddButton(wx.Button(self, wx.ID_CANCEL, mtexts.txts["Cancel"]))
+        btns.Realize()
+        v.Add(btns, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
+        self.SetSizerAndFit(v)
+
+    def get_token(self):
+        idx = int(self.cmb.GetSelection())
+        return self._TOKENS[idx]
 
 class DecennialsFrame(wx.Frame):
     XSIZE = 570

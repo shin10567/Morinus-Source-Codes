@@ -110,7 +110,7 @@ class ZRWnd(commonwnd.CommonWnd):
         draw = ImageDraw.Draw(img)
 
         # [A] info (세로줄 없음): "Start sign: <기호>" → <기호> 클릭으로 팝업
-        label  = mtexts.txts["StartSign"]
+        label  = mtexts.txts["StartSign"] + ':'
         glyph  = self.signs[self.start_sign_idx]  # ← antisciawnd와 같은 소스
         lw, lh = draw.textsize(label, self.fntText)
         gw, gh = draw.textsize(glyph, self.fntMor)
@@ -275,11 +275,11 @@ class ZRStartDlg(wx.Dialog):
         wx.Dialog.__init__(self, parent, title= mtexts.txts["StartSign"])
         v = wx.BoxSizer(wx.VERTICAL)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        row.Add(wx.StaticText(self, -1, mtexts.txts["StartSign"]), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8)
+        row.Add(wx.StaticText(self, -1, mtexts.txts["StartSign"]+':'), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 8)
         self.cmb = wx.ComboBox(self, -1, choices=sign_names, style=wx.CB_READONLY)
         self.cmb.SetSelection(0)
         row.Add(self.cmb, 0)
-        v.Add(row, 0, wx.ALL, 10)
+        v.Add(row, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         btns = wx.StdDialogButtonSizer()
         btns.AddButton(wx.Button(self, wx.ID_OK, mtexts.txts["Compute"]))
         btns.AddButton(wx.Button(self, wx.ID_CANCEL, mtexts.txts["Cancel"])) 

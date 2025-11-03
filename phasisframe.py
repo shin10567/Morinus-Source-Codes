@@ -6,7 +6,7 @@ class PhasisFrame(wx.Frame):
     def __init__(self, parent, title, horoscope, options):
         # 시작 크기: 가로를 좁게, 세로는 고정 최소 이상
         wx.Frame.__init__(self, parent, -1, mtexts.txts["HeliacalRisingsSettings"],
-                          wx.DefaultPosition, wx.Size(450, 320))
+                          wx.DefaultPosition, wx.Size(450, 340))
 
         # CommonWnd "Save as bitmap" 이 참조하는 경로 필드 (없으면 AttributeError)
         self.fpathimgs = u""
