@@ -280,12 +280,25 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 # ###################################
 # Elias v8.0.0 PLANETS
 # ###################################
+		# 보이는 행성 인덱스만 모아서 가시 열 인덱스를 안정적으로 만들기
+		visible_planets = []
+		for p in range(len(common.common.Planets)):
+			if self.options.intables and (
+				(p == astrology.SE_URANUS and not self.options.transcendental[chart.Chart.TRANSURANUS]) or
+				(p == astrology.SE_NEPTUNE and not self.options.transcendental[chart.Chart.TRANSNEPTUNE]) or
+				(p == astrology.SE_PLUTO and not self.options.transcendental[chart.Chart.TRANSPLUTO]) or
+				(p == astrology.SE_MEAN_NODE and not self.options.shownodes) or
+				(p == astrology.SE_TRUE_NODE and not self.options.shownodes)
+			):
+				continue
+			visible_planets.append(p)
+
 		num= len(self.chart.fixstars.data)
 		orb = chart.Chart.def_fixstarsorb
 		for i in range(num):
 			lon1 = self.chart.fixstars.data[i][fixstars.FixStars.LON]
 			orb= self.options.fixstars[self.chart.fixstars.data[i][fixstars.FixStars.NOMNAME]]
-			for j in range(len(common.common.Planets)):
+			for col, j in enumerate(visible_planets):
 				lon2 = self.chart.planets.planets[j].data[planets.Planet.LONG]
 				for numasp in runAspects:
 					degree = chart.Chart.Aspects[numasp]
@@ -299,8 +312,9 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 						if self.bw:
 							clr = (0,0,0)
 						# Print Aspect
-						xx = BOR+self.CELL_WIDTH+self.SPACE-(self.SQUARE_SIZE/5)+self.PLANETSOFFS*(self.SQUARE_SIZE+self.SPACE)+(j-skipped)*(self.SQUARE_SIZE+self.SPACE)
+						xx = BOR+self.CELL_WIDTH+self.SPACE-(self.SQUARE_SIZE/5)+self.PLANETSOFFS*(self.SQUARE_SIZE+self.SPACE)+col*(self.SQUARE_SIZE+self.SPACE)
 						yy = BOR+self.TITLE_HEIGHT+self.SPACE-(self.SQUARE_SIZE/5)+i*(self.SQUARE_SIZE+self.SPACE)
+
 						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy+(self.SQUARE_SIZE-h)/2), txt, fill=clr, font=self.fntAspects)
 						
 						# Print Orb
@@ -311,8 +325,9 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 							h = bb[3] - bb[1]
 						except Exception:
 							pass
-						xx = BOR+self.CELL_WIDTH+self.SPACE+self.PLANETSOFFS*(self.SQUARE_SIZE+self.SPACE)+(j-skipped)*(self.SQUARE_SIZE+self.SPACE)
+						xx = BOR+self.CELL_WIDTH+self.SPACE+self.PLANETSOFFS*(self.SQUARE_SIZE+self.SPACE)+col*(self.SQUARE_SIZE+self.SPACE)
 						yy = BOR + self.TITLE_HEIGHT + self.SPACE + (self.SQUARE_SIZE - h - self.SPACE/2) - self.ORB_Y_NUDGE + i*(self.SQUARE_SIZE + self.SPACE)
+
 						draw.text((xx+(self.SQUARE_SIZE-w)/2, yy), OrbDegree, fill=clr, font=self.fntTextOrb)	
 # ###################################
 
