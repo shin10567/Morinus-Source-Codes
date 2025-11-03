@@ -1038,9 +1038,27 @@ class GraphChart2:
 				clr_hour = self.options.clrindividual[idx_hour]
 			except Exception:
 				clr_hour = clr_lbl
+
 		else:
-			clr_day  = clr_lbl
-			clr_hour = clr_lbl
+			if self.bw:
+				clr_day  = (0,0,0)
+				clr_hour = (0,0,0)
+			else:
+				pal = (self.options.clrdomicil,
+				       self.options.clrexal,
+				       self.options.clrperegrin,
+				       self.options.clrcasus,
+				       self.options.clrexil)
+				try:
+					dign_day = C.dignity(idx_day)
+					clr_day  = pal[dign_day]
+				except Exception:
+					clr_day = clr_lbl
+				try:
+					dign_hour = C.dignity(idx_hour)
+					clr_hour  = pal[dign_hour]
+				except Exception:
+					clr_hour = clr_lbl
 
 		# 출력
 		glyph_day  = common.common.Planets[idx_day]
