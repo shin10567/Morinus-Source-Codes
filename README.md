@@ -1,4 +1,4 @@
-## [9.3.8] Updated Version from 8.1.0 
+## [9.3.9] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -215,3 +215,5 @@
 - Decennials: show start-selection popup on first open
 - Heliacal Risings/Settings: display Atmospheric Extinction
 - Fixed Stars’ Aspects & Aspects: fixed label overlap
+#### 9.3.9
+- Arabic Parts bug fix

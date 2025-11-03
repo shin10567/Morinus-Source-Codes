@@ -245,34 +245,56 @@ class PartsListCtrl(wx.ListCtrl):
 		return False
 
 	def OnRemove(self):
-		if self.currentItem != -1:
-			dlg = wx.MessageDialog(self, mtexts.txts['AreYouSure'], mtexts.txts['Confirm'], wx.YES_NO|wx.ICON_QUESTION)
-			val = dlg.ShowModal()
-			if val == wx.ID_YES:
-				key = self.GetItemData(self.currentItem)
-				name = self.getColumnText(self.currentItem, PartsListCtrl.NAME)
-				self.DeleteItem(self.currentItem)
-				try:
-					self.GetParent().refdeg_by_name.pop(name, None)
-				except:
-					pass
-				try:
-					self.partsdata.pop(key, None)
-					self.parts_codes.pop(key, None)
-					self.parts_refdeg.pop(key, None)
-				except:
-					pass
-				if self.GetItemCount() == 0:
-					self.currentItem = -1
-				elif self.currentItem >= self.GetItemCount():
-					self.currentItem = self.GetItemCount() - 1
-					self.SetItemState(self.currentItem, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-				else:
-					self.SetItemState(self.currentItem, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-				self.changed = True
-				self.removed = True
-				self._renumber_rows()
-			dlg.Destroy()
+		# 실제 선택 행을 우선 사용, 없으면 currentItem 사용
+		try:
+			row = self.GetFirstSelected()
+		except Exception:
+			row = getattr(self, 'currentItem', -1)
+
+		if row is None:
+			row = -1
+		if row == -1:
+			return
+
+		# ★ LoF(#1, 항상 0번째 행) 삭제 금지
+		if row == 0:
+			try:
+				self.GetParent()._show_lof_blocked()
+			except Exception:
+				pass
+			return
+
+		dlg = wx.MessageDialog(self, mtexts.txts['AreYouSure'], mtexts.txts['Confirm'], wx.YES_NO|wx.ICON_QUESTION)
+		val = dlg.ShowModal()
+		if val == wx.ID_YES:
+			key  = self.GetItemData(row)
+			name = self.getColumnText(row, PartsListCtrl.NAME)
+
+			self.DeleteItem(row)
+
+			# 참조 차수 맵/내부 데이터 갱신(있으면)
+			try: self.GetParent().refdeg_by_name.pop(name, None)
+			except: pass
+			try:
+				self.partsdata.pop(key, None)
+				self.parts_codes.pop(key, None)
+				self.parts_refdeg.pop(key, None)
+			except: pass
+
+			# 다음 선택 행 보정
+			cnt = self.GetItemCount()
+			if cnt <= 0:
+				self.currentItem = -1
+			else:
+				nextrow = min(row, cnt-1)
+				self.currentItem = nextrow
+				self.EnsureVisible(nextrow)
+				self.SetItemState(nextrow, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+
+			self.changed = True
+			self.removed = True
+			self._renumber_rows()
+		dlg.Destroy()
 
 	def OnRemoveAll(self):
 		if self.currentItem != -1:
@@ -808,6 +830,16 @@ class ArabicPartsDlg(wx.Dialog):
 		self.li._renumber_rows()
 		self._rebuild_re_choices()
 		self.li.Bind(wx.EVT_LIST_ITEM_SELECTED, self._OnRowSelected)
+		# LoF(#1) 삽입으로 시각적 선택이 #2로 밀리는 문제를 내부 상태와 동기화
+		try:
+			if self.li.GetItemCount() > 1:
+				self.li.currentItem = 1
+				self.li.SetItemState(1, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+				self.li.EnsureVisible(1)
+			else:
+				self.li.currentItem = 0
+		except Exception:
+			pass
 
 		self.refdeg_by_name = {}
 		if options.arabicparts:
@@ -826,6 +858,21 @@ class ArabicPartsDlg(wx.Dialog):
 		self.activeckb.SetValue(True)
 		partssizer.Add(self.activeckb, 0, wx.ALL, 5)
 		self.activeckb.Bind(wx.EVT_CHECKBOX, self.OnToggleActive)
+		# --- 초기 진입 선택/토글 정합성 보정 ---
+		try:
+			cnt = self.li.GetItemCount()
+			if cnt > 1:
+				self.li.currentItem = 1
+				self.li.SetItemState(1, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+				self.li.Focus(1)
+			else:
+				self.li.currentItem = 0
+				self.li.SetItemState(0, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+				self.li.Focus(0)
+			# 선택된 행 기준으로 이름/Diurnal/Active/RE·DE 인라인 모두 동기화
+			self._OnRowSelected(None)
+		except Exception:
+			pass
 
 		mhsizer.Add(partssizer, 0, wx.GROW|wx.ALIGN_LEFT|wx.ALL, 0)
 		mvsizer.Add(mhsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
@@ -866,6 +913,9 @@ class ArabicPartsDlg(wx.Dialog):
 	def OnToggleActive(self, event):
 		row = getattr(self.li, 'currentItem', -1)
 		if row < 0:
+			return
+		# 삭제 직후 유효 범위 가드
+		if row >= self.li.GetItemCount():
 			return
 		# LoF(#1)은 토글 불가: 되돌리고 안내
 		if row == 0:
@@ -1400,6 +1450,15 @@ class ArabicPartsDlg(wx.Dialog):
 		dlg.Destroy()
 
 	def _OnRowSelected(self, event):
+		# 초기 생성 시점에 리스트 선택 이벤트가 먼저 발생할 수 있다.
+		# 아직 active 체크박스가 만들어지지 않았다면 조용히 건너뛴다.
+		if not hasattr(self, 'activeckb'):
+			try:
+				event.Skip()
+			except Exception:
+				pass
+			return
+
 		# 안전한 선택 인덱스 취득
 		i = getattr(self.li, 'currentItem', -1)
 		try:
@@ -1557,6 +1616,15 @@ class ArabicPartsDlg(wx.Dialog):
 		self.li._renumber_rows()
 		self.li.changed = True
 		self.li.removed = True
+		# 삭제 후 포커스/선택을 Fortuna(#1)로 강제하고 UI 상태 동기화
+		try:
+			if self.li.GetItemCount() >= 1:
+				self.li.currentItem = 0
+				self.li.SetItemState(0, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+				self.li.EnsureVisible(0)
+				self._OnRowSelected(None)  # LoF는 Active 항상 ON + 체크박스 비활성로 반영
+		except Exception:
+			pass
 		wx.MessageBox(mtexts.txts.get('RemovedExceptLoF', u'All parts except Fortuna were removed.'),
 					  mtexts.txts.get('Info', u'Information'), wx.OK | wx.ICON_INFORMATION)
 

@@ -118,13 +118,13 @@ class ArabicParts:
             # k: 표시 리스트(LoF 제외)에서 0-based 인덱스
             def _calc_lon_by_k(k, visiting):
                 # 범위 밖이면 LoF로 폴백
-                if k < 0 or k >= len(enabled_idx):
+                if k < 0 or k >= len(ar):
                     return _lof_lon()
                 # 순환 참조 감지 → LoF 폴백
                 if k in visiting:
                     return _lof_lon()
 
-                ii = enabled_idx[k]
+                ii = k
                 # === 아래는 기존 본문과 동일한 계산을 요약 재구성 (A/B/C 만들기) ===
                 A_id, B_id, C_id = ar[ii][ArabicParts.FORMULA]
                 # 공통: RE/REFLORD 참조를 lon으로 바꿔 주는 헬퍼
@@ -414,7 +414,7 @@ class ArabicParts:
                         else:
                             ref -= 1  # R1→parts[0]
                             # FORWARD RE: 앞/뒤 모두 허용, 순환 시 LoF 폴백
-                            lonA = _calc_lon_by_k(ref, {len(self.parts)})
+                            lonA = _calc_lon_by_k(ref, {i})
                             if idA == ArabicParts.REFLORD:
                                 sign = int(lonA/chart.Chart.SIGN_DEG)
                                 lord = -1
@@ -508,7 +508,7 @@ class ArabicParts:
                                     continue
                         else:
                             ref -= 1  # R1→parts[0]
-                            lonB = _calc_lon_by_k(ref, {len(self.parts)})
+                            lonB = _calc_lon_by_k(ref, {i})
                             if idB == ArabicParts.REFLORD:
                                 sign = int(lonB/chart.Chart.SIGN_DEG)
                                 lord = -1
@@ -602,7 +602,7 @@ class ArabicParts:
                                     continue
                         else:
                             ref -= 1  # R1→parts[0]
-                            lonC = _calc_lon_by_k(ref, {len(self.parts)})
+                            lonC = _calc_lon_by_k(ref, {i})
                             if idC == ArabicParts.REFLORD:
                                 sign = int(lonC/chart.Chart.SIGN_DEG)
                                 lord = -1
