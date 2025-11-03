@@ -65,38 +65,39 @@ class CircumWnd(cw.CommonWnd):
         if objidx is None:
             objidx = astrology.SE_SUN  # 안전 폴백
 
-        # 1) 사용자 행성 팔레트(개별색) 최우선
-        #    프로젝트마다 속성명이 다를 수 있어 폭넓게 탐색
-        palettes = []
-        for attr in ('clrplanets','clrindividual','pcolors','planet_colors'):
-            if hasattr(self.options, attr):
-                palettes.append(getattr(self.options, attr))
-        # common 쪽에 전역 팔레트가 있으면 후보에 추가
-        try:
-            if hasattr(common, 'common'):
-                for attr in ('PLANET_COLORS','planet_colors','clrPlanets'):
-                    if hasattr(common.common, attr):
-                        palettes.append(getattr(common.common, attr))
-        except Exception:
-            pass
-
-        for pal in palettes:
+        # 1) 사용자 행성 팔레트(개별색) ― 옵션(useplanetcolors) 켜진 경우에만 사용
+        if bool(getattr(self.options, 'useplanetcolors', False)):
+            # 프로젝트마다 속성명이 다를 수 있어 폭넓게 탐색
+            palettes = []
+            for attr in ('clrplanets','clrindividual','pcolors','planet_colors'):
+                if hasattr(self.options, attr):
+                    palettes.append(getattr(self.options, attr))
+            # common 쪽에 전역 팔레트가 있으면 후보에 추가
             try:
-                if pal is None:
-                    continue
-                # 리스트/튜플 형태
-                if isinstance(pal, (list, tuple)) and 0 <= objidx < len(pal):
-                    c = pal[objidx]
-                    if isinstance(c, (list, tuple)) and len(c) >= 3:
-                        return (int(c[0]), int(c[1]), int(c[2]))
-                # 딕셔너리 형태 (키가 인덱스/이름 둘 다일 수 있음)
-                if isinstance(pal, dict):
-                    key_try = objidx
-                    if key_try in pal and isinstance(pal[key_try], (list, tuple)) and len(pal[key_try]) >= 3:
-                        c = pal[key_try]
-                        return (int(c[0]), int(c[1]), int(c[2]))
+                if hasattr(common, 'common'):
+                    for attr in ('PLANET_COLORS','planet_colors','clrPlanets'):
+                        if hasattr(common.common, attr):
+                            palettes.append(getattr(common.common, attr))
             except Exception:
-                continue
+                pass
+
+            for pal in palettes:
+                try:
+                    if pal is None:
+                        continue
+                    # 리스트/튜플 형태
+                    if isinstance(pal, (list, tuple)) and 0 <= objidx < len(pal):
+                        c = pal[objidx]
+                        if isinstance(c, (list, tuple)) and len(c) >= 3:
+                            return (int(c[0]), int(c[1]), int(c[2]))
+                    # 딕셔너리 형태 (키가 인덱스/이름 둘 다일 수 있음)
+                    if isinstance(pal, dict):
+                        key_try = objidx
+                        if key_try in pal and isinstance(pal[key_try], (list, tuple)) and len(pal[key_try]) >= 3:
+                            c = pal[key_try]
+                            return (int(c[0]), int(c[1]), int(c[2]))
+                except Exception:
+                    continue
 
         # 2) 위 팔레트가 없으면: 존비/엑잘트/페레그린/카수스/엑실 팔레트로 폴백
         try:

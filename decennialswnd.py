@@ -158,7 +158,16 @@ class DecWnd(commonwnd.CommonWnd):
             if self.bw:
                 glyph_col = (0,0,0)
             else:
-                glyph_col = self._rgb(self.options.clrindividual[p]) if getattr(self.options,'useplanetcolors',False) else txt_col
+                if getattr(self.options, 'useplanetcolors', False):
+                    glyph_col = self._rgb(self.options.clrindividual[p])
+                else:
+                    # 존비 팔레트로 폴백
+                    pal = (self.options.clrdomicil,
+                           self.options.clrexal,
+                           self.options.clrperegrin,
+                           self.options.clrcasus,
+                           self.options.clrexil)
+                    glyph_col = self._rgb(pal[self.chart.dignity(p)])
 
         # 가로 배치 계산
         lw, lh = draw.textsize(label,  lab_f)
@@ -238,7 +247,12 @@ class DecWnd(commonwnd.CommonWnd):
                 if getattr(self.options, 'useplanetcolors', False):
                     clrpl = self._rgb(self.options.clrindividual[p])
                 else:
-                    clrpl = txt
+                    pal = (self.options.clrdomicil,
+                           self.options.clrexal,
+                           self.options.clrperegrin,
+                           self.options.clrcasus,
+                           self.options.clrexil)
+                    clrpl = self._rgb(pal[self.chart.dignity(p)])
 
             isL1  = (lvl == 1)
             fTxt  = self.fntText
@@ -480,7 +494,18 @@ class _DecPopupWnd(commonwnd.CommonWnd):
             len_s   = dec.fmt_length(r)
 
             # 색
-            clrpl = (0,0,0) if self.bw else ( self._rgb(self.options.clrindividual[p]) if getattr(self.options,'useplanetcolors',False) else txt )
+            if self.bw:
+                clrpl = (0, 0, 0)
+            else:
+                if getattr(self.options, 'useplanetcolors', False):
+                    clrpl = self._rgb(self.options.clrindividual[p])
+                else:
+                    pal = (self.options.clrdomicil,
+                           self.options.clrexal,
+                           self.options.clrperegrin,
+                           self.options.clrcasus,
+                           self.options.clrexil)
+                    clrpl = self._rgb(pal[self.chart.dignity(p)])
 
             isBold = (lvl == 3)  # L3만 볼드, L4는 보통체
             fTxt  = self.fntTextBold if isBold else self.fntText

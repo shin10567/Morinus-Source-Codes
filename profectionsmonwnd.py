@@ -139,6 +139,33 @@ class ProfectionsMonWnd(commonwnd.CommonWnd):
 					# 기존: if i > 3: clr = tclr
 					if i > 3 and i != ProfectionsMonWnd.HOURLORD:
 						clr = tclr
+			tclr = txtclr  # 기본은 텍스트색
+			if not self.bw:
+				if getattr(self.options, 'useplanetcolors', False):
+					# 개별색 ON: 기존 로직 유지
+					tclr = arclrs[i]
+				else:
+					# 개별색 OFF: 헤더의 '행성 기호' 칸만 존비 팔레트 적용
+					is_planet_col = (i == ProfectionsMonWnd.SUN) or (i == ProfectionsMonWnd.MOON) or (i >= ProfectionsMonWnd.MERCURY)
+					if is_planet_col:
+						if i == ProfectionsMonWnd.SUN:
+							plidx = 0
+						elif i == ProfectionsMonWnd.MOON:
+							plidx = 1
+						else:
+							plidx = i - 6  # MERCURY(8)→2 ... PLUTO(15)→9
+
+						pal = (self.options.clrdomicil,
+							   self.options.clrexal,
+							   self.options.clrperegrin,
+							   self.options.clrcasus,
+							   self.options.clrexil)
+						try:
+							dign = self.chart.dignity(plidx)  # 0..4
+						except Exception:
+							dign = 2
+						tclr = pal[dign]
+
 			w,h = draw.textsize(txt[i], fnt)
 			clr = txtclr
 			if i > 3:
@@ -245,6 +272,24 @@ class ProfectionsMonWnd(commonwnd.CommonWnd):
 						plclr = self.options.clrindividual[plidx]
 					else:
 						plclr = (0, 0, 0) if self.bw else self.options.clrtexts
+					glyph = common.common.Planets[plidx]
+
+					# BW면 흑, 개별색 ON이면 개별색, 아니면 '존비 팔레트'
+					if self.bw:
+						plclr = (0, 0, 0)
+					elif getattr(self.options, 'useplanetcolors', False):
+						plclr = self.options.clrindividual[plidx]
+					else:
+						pal = (self.options.clrdomicil,
+							   self.options.clrexal,
+							   self.options.clrperegrin,
+							   self.options.clrcasus,
+							   self.options.clrexil)
+						try:
+							dign = self.chart.dignity(plidx)  # 0..4
+						except Exception:
+							dign = 2
+						plclr = pal[dign]
 
 					w, h = draw.textsize(glyph, self.fntMorinus)
 					offset_px = (offs[i]-w)/2

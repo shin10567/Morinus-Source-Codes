@@ -644,41 +644,38 @@ class ParanatellontaWnd(cw.CommonWnd):
         self.rows = self._compute_rows()
         self.refreshBkg()
     def _planet_rgb(self, ipl):
-        """사용자 색상(Colors → Use individual colors) 우선, 없으면 폴백."""
+        """사용자 색상(Use individual) 우선, 아니면 존비 팔레트로 폴백."""
         if getattr(self, 'bw', False):
             return self.clTxt
 
-        # Sun..Pluto 인덱스
+        # Sun..Pluto 인덱스 매핑
         mp = {
             astrology.SE_SUN:0, astrology.SE_MOON:1, astrology.SE_MERCURY:2, astrology.SE_VENUS:3, astrology.SE_MARS:4,
             astrology.SE_JUPITER:5, astrology.SE_SATURN:6, astrology.SE_URANUS:7, astrology.SE_NEPTUNE:8, astrology.SE_PLUTO:9
         }
         idx = mp.get(ipl, 0)
 
-        # 1) Morinus 표준: 개별행성색
+        # 1) Use individual 켜짐 → 개별색
         if getattr(self.options, 'useplanetcolors', False) and hasattr(self.options, 'clrindividual'):
-            pal = self.options.clrindividual
             try:
-                return tuple(pal[idx])
+                c = self.options.clrindividual[idx]
+                return (c.Red(), c.Green(), c.Blue()) if hasattr(c, 'Red') else tuple(c)
             except Exception:
                 pass
 
-        # 2) (있다면) 예전 팔레트 호환
-        pal = getattr(self.options, 'clrplanets', None)
-        if pal is None:
-            try:
-                import common
-                pal = getattr(common.common, 'clrplanets', None)
-            except Exception:
-                pal = None
-        if isinstance(pal, (list, tuple)):
-            try:
-                return tuple(pal[idx])
-            except Exception:
-                pass
+        # 2) 폴백: 존비 팔레트
+        pal = (self.options.clrdomicil,
+               self.options.clrexal,
+               self.options.clrperegrin,
+               self.options.clrcasus,
+               self.options.clrexil)
+        try:
+            dign = self.chart.dignity(idx)  # Chart.DOMICIL/EXAL/PEREGRIN/CASUS/EXIL (0..4)
+        except Exception:
+            dign = 2  # PEREGRIN
 
-        # 3) 최후: 텍스트색
-        return self.clTxt
+        c = pal[dign]
+        return (c.Red(), c.Green(), c.Blue()) if hasattr(c, 'Red') else tuple(c)
 
     # --- CommonWnd 필수 구현 ---
     def getExt(self):

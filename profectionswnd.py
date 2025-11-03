@@ -138,20 +138,20 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 	   common.common.Planets[5], common.common.Planets[6], common.common.Planets[7],
 	   common.common.Planets[8], common.common.Planets[9])
 		arclrs = (txtclr, txtclr, txtclr, txtclr, txtclr,
-          self.options.clrindividual[0], self.options.clrindividual[1], txtclr,
-          self.options.clrindividual[2], self.options.clrindividual[3], self.options.clrindividual[4],
-          self.options.clrindividual[5], self.options.clrindividual[6], self.options.clrindividual[7],
-          self.options.clrindividual[8], self.options.clrindividual[9])
+		  self.options.clrindividual[0], self.options.clrindividual[1], txtclr,
+		  self.options.clrindividual[2], self.options.clrindividual[3], self.options.clrindividual[4],
+		  self.options.clrindividual[5], self.options.clrindividual[6], self.options.clrindividual[7],
+		  self.options.clrindividual[8], self.options.clrindividual[9])
 
 		cols = (self.CELL_WIDTH, self.BIG_CELL_WIDTH,  # Age, Date
-        self.BIG_CELL_WIDTH,                   # Asc
-        self.BIG_CELL_WIDTH,                   # MC
-        self.BIG_CELL_WIDTH,                   # Hour Lord  ← (신규)
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Sun, Moon
-        self.BIG_CELL_WIDTH,                       # Fortune
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Merc, Venus, Mars
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Jup, Sat, Uranus
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)                        # Neptune, Pluto
+		self.BIG_CELL_WIDTH,                   # Asc
+		self.BIG_CELL_WIDTH,                   # MC
+		self.BIG_CELL_WIDTH,                   # Hour Lord  ← (신규)
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Sun, Moon
+		self.BIG_CELL_WIDTH,                       # Fortune
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Merc, Venus, Mars
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Jup, Sat, Uranus
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)                        # Neptune, Pluto
 
 		offs = 0
 		for i in range(self.COLUMN_NUM):
@@ -167,6 +167,34 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 					# 기존: if i > 3: clr = tclr
 					if i > 3 and i != ProfectionsWnd.HOURLORD:
 						clr = tclr
+			tclr = txtclr  # 기본은 텍스트색
+			if not self.bw:
+				if getattr(self.options, 'useplanetcolors', False):
+					# 개별색 ON: 기존 로직 유지
+					tclr = arclrs[i]
+				else:
+					# 개별색 OFF: 헤더의 '행성 기호' 칸만 존비 팔레트 적용
+					is_planet_col = (i == ProfectionsWnd.SUN) or (i == ProfectionsWnd.MOON) or (i >= ProfectionsWnd.MERCURY)
+					if is_planet_col:
+						# 헤더 컬럼 인덱스 → 행성 인덱스(0..9: ☉☽☿♀♂♃♄♅♆♇)
+						if i == ProfectionsWnd.SUN:
+							plidx = 0
+						elif i == ProfectionsWnd.MOON:
+							plidx = 1
+						else:
+							plidx = i - 6  # MERCURY(8)→2 ... PLUTO(15)→9
+
+						pal = (self.options.clrdomicil,
+							   self.options.clrexal,
+							   self.options.clrperegrin,
+							   self.options.clrcasus,
+							   self.options.clrexil)
+						try:
+							dign = self.chart.dignity(plidx)  # 0..4
+						except Exception:
+							dign = 2  # Peregrine로 폴백
+						tclr = pal[dign]
+
 			w,h = draw.textsize(txt[i], fnt)
 			clr = txtclr
 			if i > 3:
@@ -192,14 +220,14 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 
 		#vertical lines
 		offs = (self.CELL_WIDTH, self.BIG_CELL_WIDTH,
-        self.BIG_CELL_WIDTH,  # Asc
-        self.BIG_CELL_WIDTH,  # MC
-        self.BIG_CELL_WIDTH,  # Hour Lord  ← (신규)
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Sun, Moon
-        self.BIG_CELL_WIDTH,                       # Fortune
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Merc, Venus, Mars
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Jup, Sat, Uranus
-        self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)                        # Neptune, Pluto
+		self.BIG_CELL_WIDTH,  # Asc
+		self.BIG_CELL_WIDTH,  # MC
+		self.BIG_CELL_WIDTH,  # Hour Lord  ← (신규)
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Sun, Moon
+		self.BIG_CELL_WIDTH,                       # Fortune
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Merc, Venus, Mars
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH,  # Jup, Sat, Uranus
+		self.BIG_CELL_WIDTH, self.BIG_CELL_WIDTH)                        # Neptune, Pluto
 
 		BOR = commonwnd.CommonWnd.BORDER
 		draw.line((x, y, x, y+self.LINE_HEIGHT), fill=clr)
@@ -234,11 +262,19 @@ class ProfectionsWnd(commonwnd.CommonWnd):
 
 					glyph = common.common.Planets[plidx]
 
-					# 사용자 행성색 적용(BW면 흑, 미사용이면 텍스트색)
+					# 사용자 행성색 적용(BW면 흑, 미사용이면 존비 팔레트)
 					if (not self.bw) and getattr(self.options, 'useplanetcolors', False):
 						plclr = self.options.clrindividual[plidx]
 					else:
-						plclr = (0, 0, 0) if self.bw else self.options.clrtexts
+						if self.bw:
+							plclr = (0, 0, 0)
+						else:
+							pal = (self.options.clrdomicil,
+								   self.options.clrexal,
+								   self.options.clrperegrin,
+								   self.options.clrcasus,
+								   self.options.clrexil)
+							plclr = pal[self.chart.dignity(plidx)]
 
 					w, h = draw.textsize(glyph, self.fntMorinus)
 					offset = (offs[i]-w)/2
