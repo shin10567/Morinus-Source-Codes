@@ -1,4 +1,4 @@
-## [9.4.0] Updated Version from 8.1.0 
+## [9.4.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -222,3 +222,8 @@
 - Stars can be displayed under the alias the user selects.
 - If a star has no traditional name, selecting it automatically sets its “Nomencl.” entry as the alias.
 - Reduced label overlap for closely spaced fixed stars.
+#### 9.4.1
+- Angles at Birth parameter: narrowed the input field width; set the valid input range to 1–31.
+- Circumambulations: fixed a bug where the starting age was negative when using the Julian calendar; replaced the minute/second symbols with those used in the Speculum.
+- Status bar (Main Chart, Revolution, Profection, Election, Transit, Sun Transit): replaced “:” with “°” in the latitude/longitude display.
+- Zodiacal Releasing: fixed an issue where chart times near midnight incorrectly used the previous day as the start date.

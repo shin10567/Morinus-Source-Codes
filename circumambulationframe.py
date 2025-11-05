@@ -226,7 +226,7 @@ class CircumWnd(cw.CommonWnd):
             s = int(round((((deg - d) * 60.0) - m) * 60.0))
             if s == 60: s = 0; m += 1
             if m == 60: m = 0; d += 1
-            return (sidx, u"%02d\u00b0%02d\u2032%02d\u2033" % (d, m, s))
+            return (sidx, u"%02d\u00b0%02d\'%02d\"" % (d, m, s))
 
         def _aspect_glyph(a):
             # fixstarsaspectswnd가 쓰는 글리프: common.common.Aspects[...]  :contentReference[oaicite:4]{index=4}

@@ -84,12 +84,10 @@ class ZRWnd(commonwnd.CommonWnd):
 
     # 내부
     def _chart_dt(self):
-        try:
-            return self.chart.time.getDatetime()
-        except:
-            t = self.chart.time
-            return datetime.datetime(int(t.year), int(t.month), int(t.day),
-                                     int(t.hour), int(t.minute), int(getattr(t,'second',0)))
+        t = self.chart.time
+        # origyear/origmonth/origday 가 보존된 원시 입력(역법) 날짜 필드
+        y, m, d = int(t.origyear), int(t.origmonth), int(t.origday)
+        return datetime.datetime(y, m, d, 0, 0, 0)  # 자정 고정
 
     def _recalc_sizes(self, nlines):
         BOR = commonwnd.CommonWnd.BORDER

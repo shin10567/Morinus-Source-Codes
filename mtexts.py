@@ -442,6 +442,7 @@ txtseng.setdefault("AboutTabDevelopers", "Developers")
 txtseng.setdefault('LoFLocked',        u'Fortuna cannot be modified, deleted, or deactivated here!')
 txtseng.setdefault('RemovedExceptLoF', u'All parts except Fortuna were removed.')
 txtseng.setdefault('NoPartsToRemove',  u'No parts to remove (Fortuna is kept.)!')
+txtseng.setdefault('Minutes', 'Minutes')
 
 
 
@@ -805,6 +806,7 @@ txtshun.setdefault("AboutTabDevelopers", u"Fejlesztők")
 txtshun.setdefault('LoFLocked',        u'A Szerencsekerék itt nem módosítható, nem törölhető és nem kapcsolható ki.')
 txtshun.setdefault('RemovedExceptLoF', u'A Szerencsekerék kivételével minden pont törlésre került.')
 txtshun.setdefault('NoPartsToRemove',  u'Nincs törölhető pont (a Szerencsekerék megmarad).')
+txtshun.setdefault('Minutes', u'Percek')
 
 
 menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N', 'HMNewDoc':u'Построить новый гороскоп', 'HMData':u'&Данные\tCtrl+D', 
@@ -1165,6 +1167,7 @@ txtsrus.setdefault("AboutTabDevelopers", u"Разработчики")
 txtsrus.setdefault('LoFLocked',        u'Жребий Фортуны нельзя здесь изменять, удалять или отключать.')
 txtsrus.setdefault('RemovedExceptLoF', u'Удалены все жребии, кроме Жребия Фортуны.')
 txtsrus.setdefault('NoPartsToRemove',  u'Нет жребиев для удаления (Жребий Фортуны сохраняется).')
+txtsrus.setdefault('Minutes', u'Минуты')
 
 
 
@@ -1523,6 +1526,7 @@ txtsesp.setdefault("AboutTabDevelopers", u"Desarrolladores")
 txtsesp.setdefault('LoFLocked',        u'La Parte de Fortuna no puede modificarse, eliminarse ni desactivarse aquí.')
 txtsesp.setdefault('RemovedExceptLoF', u'Se eliminaron todas las partes excepto la Parte de Fortuna.')
 txtsesp.setdefault('NoPartsToRemove',  u'No hay partes para eliminar (se mantiene la Parte de Fortuna).')
+txtsesp.setdefault('Minutes', u'Minutos')
 
 
 
@@ -1889,6 +1893,7 @@ txtsita.setdefault("AboutTabDevelopers", u"Sviluppatori")
 txtsita.setdefault('LoFLocked',        u'La Parte di Fortuna non può essere modificata, eliminata o disattivata qui.')
 txtsita.setdefault('RemovedExceptLoF', u'Sono state rimosse tutte le parti tranne la Parte di Fortuna.')
 txtsita.setdefault('NoPartsToRemove',  u'Nessuna parte da rimuovere (la Parte di Fortuna è mantenuta).')
+txtsita.setdefault('Minutes', u'Minuti')
 
 
 
@@ -2244,6 +2249,7 @@ txtsfre.setdefault("Apply", u"Appliquer")
 txtsfre.setdefault('LoFLocked',        u'La Part de Fortune ne peut pas être modifiée, supprimée ou désactivée ici.')
 txtsfre.setdefault('RemovedExceptLoF', u'Toutes les parts sauf la Part de Fortune ont été supprimées.')
 txtsfre.setdefault('NoPartsToRemove',  u'Aucune part à supprimer (la Part de Fortune est conservée).')
+txtsfre.setdefault('Minutes', u'Minutes')
 
 
 
@@ -2705,6 +2711,7 @@ txtschs.setdefault("AboutTabDevelopers", u"开发者")
 txtschs.setdefault('LoFLocked',        u'此处无法修改、删除或停用福点。')
 txtschs.setdefault('RemovedExceptLoF', u'已删除除福点外的所有点。')
 txtschs.setdefault('NoPartsToRemove',  u'没有可删除的点（保留福点）。')
+txtschs.setdefault('Minutes', u'分钟')
 
 
 txtscht = {'HelpDegree':u'必須在 0 和 29 之間',
@@ -2983,6 +2990,7 @@ txtscht.setdefault("AboutTabDevelopers", u"開發者")
 txtscht.setdefault('LoFLocked',        u'此處無法修改、刪除或停用福點。')
 txtscht.setdefault('RemovedExceptLoF', u'已刪除除福點外的所有點。')
 txtscht.setdefault('NoPartsToRemove',  u'沒有可刪除的點（保留福點）。')
+txtscht.setdefault('Minutes', u'分鐘')
 
 
 
@@ -3394,7 +3402,7 @@ txtsko.setdefault("AboutTabDevelopers", u"개발자")
 txtsko.setdefault('LoFLocked',        u'포르투나는 여기에서 수정, 삭제, 비활성화할 수 없습니다!')
 txtsko.setdefault('RemovedExceptLoF', u'포르투나를 제외한 모든 랏을 삭제했습니다.')
 txtsko.setdefault('NoPartsToRemove',  u'삭제할 랏(아라빅 파츠)이 없습니다(포르투나는 유지됩니다.)!')
-
+txtsko.setdefault('Minutes', u'분')
 
 
 

@@ -211,7 +211,14 @@ def _exact_aspect_hits(lam_start_abs, lam_end_abs, planet_lams, aspects=(0,60,90
     return hits
 
 def _jd_add_years(jd0, years, calflag):
-    return jd0 + years * DAYS_PER_YEAR
+    y, m, d, h = astrology.swe_revjul(jd0, calflag)
+    whole = int(math.floor(years))
+    frac  = years - whole
+    jd_base = astrology.swe_julday(y + whole, m, d, h, calflag)  # 캘린더 보존
+    return jd_base + frac * DAYS_PER_YEAR
+def _years_since_birth(jd, jd_birth):
+    yrs = (jd - jd_birth) / DAYS_PER_YEAR
+    return 0.0 if yrs < 0 else yrs
 
 def calibrate_key_with_anchor(phi, lam_start, lam_end, observed_years):
     """Return key so that ΔOA(rt(phi), lam_start→lam_end) * key == observed_years."""
@@ -304,6 +311,8 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
     lam_cursor = start_lambda
     jd_cursor  = jd0
     idx = i0
+    if jd_cursor < jd0:  # Julian/Gregorian 경계 수치진동 방어
+        jd_cursor = jd0
     if jd_cursor >= jd_limit - 1e-9:
         return
         
@@ -323,6 +332,11 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
         # ★ rows.append에서 쓰일 시작/끝 날짜 + participatings를 먼저 계산
         y0, m0, d0, h0 = astrology.swe_revjul(jd_cursor, calflag)
         y1, m1, d1, h1 = astrology.swe_revjul(jd_next,   calflag)
+        age_start_years = _years_since_birth(jd_cursor, jd0)
+        age_end_years   = _years_since_birth(jd_next,   jd0)
+        # 표시용 날짜는 항상 Gregorian으로 변환 (Julian 출생이라도 음수/역전 방지)
+        gy0, gm0, gd0, _ = astrology.swe_revjul(jd_cursor, astrology.SE_GREG_CAL)
+        gy1, gm1, gd1, _ = astrology.swe_revjul(jd_next,   astrology.SE_GREG_CAL)
 
         participants = []
         if include_participating and planet_lams:
@@ -361,8 +375,10 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
                 'term_ruler_pid': pid,
                 'delta_oa':  rem_doa,
                 'delta_years': remain_years,
-                'date_start': datetime.date(int(y0), int(m0), int(d0)),
-                'date_end':   datetime.date(int(y1), int(m1), int(d1)),  # y1은 jd_limit로 다시 계산해도 OK
+                'date_start': datetime.date(int(gy0), int(gm0), int(gd0)),
+                'age_start': age_start_years,
+                'age_end':   _years_since_birth(jd_limit, jd0),
+                'date_end':   datetime.date(int(gy1), int(gm1), int(gd1)),  # 표시용은 Gregorian
                 'jd_start':  jd_cursor,
                 'jd_end':    jd_limit,
                 'participating': participants
@@ -379,8 +395,10 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
                 'term_ruler_pid': pid,
                 'delta_oa':  delta_oa,
                 'delta_years': delta_year,
-                'date_start': datetime.date(int(y0), int(m0), int(d0)),
-                'date_end':   datetime.date(int(y1), int(m1), int(d1)),
+                'date_start': datetime.date(int(gy0), int(gm0), int(gd0)),
+                'age_start': age_start_years,
+                'age_end':   age_end_years,
+                'date_end':   datetime.date(int(gy1), int(gm1), int(gd1)),
                 'jd_start':  jd_cursor,
                 'jd_end':    jd_next,
                 'participating': participants

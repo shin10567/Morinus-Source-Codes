@@ -3870,7 +3870,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.4.0'
+		info.Version = '9.4.1'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
@@ -4067,7 +4067,7 @@ class MFrame(wx.Frame):
 				ztxt = mtexts.txts['LC']
 			txt = signtxt+str(self.horoscope.time.origyear)+'.'+common.common.months[self.horoscope.time.origmonth-1]+'.'+(str(self.horoscope.time.origday)).zfill(2)+', '+(str(self.horoscope.time.hour)).zfill(2)+':'+(str(self.horoscope.time.minute)).zfill(2)+':'+(str(self.horoscope.time.second)).zfill(2)+ztxt
 			self.SetStatusText(txt, 2)
-			deg_symbol = u':'
+			deg_symbol = u'°'
 			t1 = mtexts.txts['Long']+': '
 			t2 = ', '+mtexts.txts['Lat']+': '
 			dirlontxt = mtexts.txts['E']

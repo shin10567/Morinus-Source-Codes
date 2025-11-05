@@ -189,7 +189,7 @@ class TransitFrame(wx.Frame):
 		)
 
 		# === 오른쪽: Long./Lat. (메인 상태바의 포맷 그대로) ===
-		deg_symbol = u':'  # 메인 차트 상태바는 ':'를 각도 구분자로 씀
+		deg_symbol = u'°'  
 		dir_lon = mtexts.txts['E'] if p.east else mtexts.txts['W']
 		dir_lat = mtexts.txts['N'] if p.north else mtexts.txts['S']
 
