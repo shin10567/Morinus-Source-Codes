@@ -172,9 +172,13 @@ class FixStarsAspectsWnd(commonwnd.CommonWnd):
 		num = len(self.chart.fixstars.data)
 		for i in range(num):
 			self.drawRect(draw, x, y+i*(self.LINE_HEIGHT+self.SPACE), tableclr)
-			name = self.chart.fixstars.data[i][fixstars.FixStars.NAME]
-			if name == '':
-				name = self.chart.fixstars.data[i][fixstars.FixStars.NOMNAME]
+			# 코드(nomname)로 식별하고 표시명은 전역 선호이름으로
+			code = self.chart.fixstars.data[i][fixstars.FixStars.NOMNAME]
+			fallback = self.chart.fixstars.data[i][fixstars.FixStars.NAME]
+			if not fallback:
+				fallback = code
+			name = astrology.display_fixstar_name(code, self.options, fallback)
+
 			w,h = draw.textsize(name, self.fntText)
 			draw.text((x+(self.CELL_WIDTH-w)/2, y+i*(self.LINE_HEIGHT+self.SPACE)+(self.LINE_HEIGHT-h)/2), name, fill=txtclr, font=self.fntText)
 

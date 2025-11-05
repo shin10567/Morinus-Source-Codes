@@ -9,6 +9,7 @@ import mtexts
 import astrology
 import util
 import fixstars
+import json
 
 #import pdb
 
@@ -34,12 +35,10 @@ class FixStars:
         self.jd = astrology.swe_julday(1950, 1, 1, 0.0, astrology.SE_GREG_CAL)	
         self.data = []
 
-        self.fname = os.path.join(self.ephepath, 'fixstars.cat')
+        self.fname = os.path.join(self.ephepath, 'sefstars.txt')
 
-
-    def read(self):
+    def read(self, aliasmap=None):
         res = True
-
         try:
             f = open(self.fname, 'r')
             lines = f.readlines()
@@ -73,8 +72,10 @@ class FixStars:
                     snam = nam.split(DELIMITER)
                     nam = snam[0].strip()
                     nomnam = snam[1].strip()
-                    
+
+                # --- 모든 별칭을 있는 그대로 노출 ---
                 self.data.append(FixStars.FixStar(nam, nomnam, lontxt, lattxt))
+                # ------------------------------------
 
         except IOError:
             res = False
@@ -121,18 +122,61 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
         wx.BeginBusyCursor()
         self.load()
         self.Populate()
+        # 전역 선호이름(코드→표시명) 맵 확보
+        aliasmap = {}
+        try:
+            opts = getattr(self, 'parent', None)
+            opts = getattr(opts, 'options', None)
+            if opts and hasattr(opts, 'fixstarAliasMap') and isinstance(opts.fixstarAliasMap, dict):
+                aliasmap = opts.fixstarAliasMap or {}
+        except Exception:
+            aliasmap = {}
 
         nset = set()
-        items = self.fixstardata.items()
-        for k, v in items:
-            for nomname in names.keys():
-                if v[1] == nomname and nomname not in nset:
-                    if len(nset) >= FixStarListCtrl.MAX_SEL_NUM:
-                        break
+        items = list(self.fixstardata.items())
 
-                    self.CheckItem(k-1)
-                    nset.add(nomname)
-                    
+        # 1) 코드별 선호표시명 맵(부모 options에서 가져온 aliasmap 사용)
+        alias_pref = aliasmap
+
+        remaining = set(names.keys())
+
+        # 1-pass: 선호표시명 우선 매칭
+        for k, v in items:
+            code = v[1]   # nomname(식별 코드)
+            disp = (v[0] or u'').strip()   # 표시명(빈 문자열 가능)
+            if code not in remaining or code not in alias_pref:
+                continue
+            pref = (alias_pref.get(code) or u'').strip()
+
+            # (A) 일반: 표시명이 선호표시명과 정확히 일치
+            if disp == pref and pref != u'':
+                if len(nset) >= FixStarListCtrl.MAX_SEL_NUM:
+                    break
+                self.CheckItem(k-1)
+                nset.add(code)
+                remaining.discard(code)
+                continue
+
+            # (B) 전통명 없음: 선호표시명이 '코드'로 저장된 경우
+            # → 표시명이 빈 행('') 또는 코드와 같은 행을 우선 매칭
+            if pref == code and (disp == u'' or disp == code):
+                if len(nset) >= FixStarListCtrl.MAX_SEL_NUM:
+                    break
+                self.CheckItem(k-1)
+                nset.add(code)
+                remaining.discard(code)
+                continue
+
+        # 2-pass: 남은 코드는 아무 표시명이라도 첫 행을 체크(이전 동작과 동일)
+        for k, v in items:
+            code = v[1]
+            if code in remaining:
+                if len(nset) >= FixStarListCtrl.MAX_SEL_NUM:
+                    break
+                self.CheckItem(k-1)
+                nset.add(code)
+                remaining.remove(code)
+
         wx.EndBusyCursor()
         self.initchecking = False
 
@@ -186,11 +230,26 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 
     def load(self):
         fs = FixStars(self.ephepath)
+
+        # --- [ADD] FixStarsDlg(options)에서 사용자 선호이름 맵 확보 ---
+        aliasmap = None
+        try:
+            opts = getattr(self, 'parent', None)
+            opts = getattr(opts, 'options', None)
+            if opts and hasattr(opts, 'fixstarAliasMap'):
+                aliasmap = opts.fixstarAliasMap
+        except Exception:
+            aliasmap = None
+        # -------------------------------------------------------------
+
         if fs.read():
             idx = 1
+            # fs.data → 리스트 컨트롤 데이터 딕셔너리 채우기
+            self.fixstardata.clear()
             for f in fs.data:
                 self.fixstardata[idx] = (f.name, f.nomname, f.lon, f.lat)
                 idx += 1
+
         else:
             txt = mtexts.txts['FileError']+'('+fs.fname+')'
             dlgm = wx.MessageDialog(self, txt, mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
@@ -205,6 +264,20 @@ class FixStarsDlg(wx.Dialog):
 # ###########################################			
         names = options.fixstars
         self.options = options
+        self.ephepath = ephepath
+        # 전역 별칭 맵 복구(없으면 그냥 통과)
+        try:
+            if not hasattr(self.options, 'fixstarAliasMap') or not isinstance(self.options.fixstarAliasMap, dict):
+                self.options.fixstarAliasMap = {}
+            alias_json = os.path.join(self.ephepath, 'fixstar_aliases.json')
+            if os.path.isfile(alias_json):
+                with open(alias_json, 'r') as _f:
+                    data = json.load(_f)
+                if isinstance(data, dict):
+                    self.options.fixstarAliasMap.update({k: v for k, v in data.items() if isinstance(k, str)})
+        except Exception:
+            pass
+
 # ###########################################
         
         # Instead of calling wx.Dialog.__init__ we precreate the dialog
@@ -305,8 +378,13 @@ class FixStarsDlg(wx.Dialog):
 
         btnOk.SetFocus()
 
-        self.rowrect = self.li.GetItemRect(0)
-        self.li.SetItemState(0, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        # 리스트가 비어있을 수 있으니 가드
+        if self.li.GetItemCount() > 0:
+            self.rowrect = self.li.GetItemRect(0)
+            self.li.SetItemState(0, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        else:
+            # fallback: 행 높이 추정만 잡아둠
+            self.rowrect = wx.Rect(0, 0, 0, self.li.GetCharHeight())
 
 
     def OnDeselectAll(self, event):
@@ -360,10 +438,18 @@ class FixStarsDlg(wx.Dialog):
         changed = False
 
         self.selnames = []
+        self.selnames = []
+        sel_display_by_code = {}   # 코드→표시명
         items = self.li.fixstardata.items()
         for k, v in items:
             if self.li.IsChecked(k-1):
-                self.selnames.append(v[1])
+                code = v[1]
+                disp = (v[0] or u'').strip()
+                # 전통 이름(표시명)이 없으면 nomname(코드)로 별칭을 자동 설정
+                if not disp:
+                    disp = code
+                self.selnames.append(code)          # 코드 저장(식별용)
+                sel_display_by_code[code] = disp    # 표시명 함께 수집
 
         selnamesnum = len(self.selnames)
         namesnum = len(names)
@@ -375,12 +461,30 @@ class FixStarsDlg(wx.Dialog):
                 if self.selnames[i] not in names:
                     changed = True
                     break
-
+        # --- [ADD] 사용자 전역 선호이름(코드→표시명) 항상 갱신 ---
+        try:
+            if not hasattr(self.options, 'fixstarAliasMap') or not isinstance(self.options.fixstarAliasMap, dict):
+                self.options.fixstarAliasMap = {}
+            # 1) 선택 해제된 코드는 제거
+            for _c in list(self.options.fixstarAliasMap.keys()):
+                if _c not in self.selnames:
+                    del self.options.fixstarAliasMap[_c]
+            # 2) 선택된 코드의 표시명은 추가/갱신
+            for _c, _disp in sel_display_by_code.items():
+                self.options.fixstarAliasMap[_c] = _disp
+        except Exception:
+            pass
+        # 별칭 맵을 ephepath에 영구 저장
+        try:
+            alias_json = os.path.join(self.ephepath, 'fixstar_aliases.json')
+            with open(alias_json, 'w') as _f:
+                json.dump(self.options.fixstarAliasMap, _f, ensure_ascii=False, indent=2, sort_keys=True)
+        except Exception:
+            pass
         if changed:
             # 선택된 항성만으로 새 dict 구성
             namesfs = names.copy()
             namesfs.clear()
-
             for i in range(selnamesnum):
                 if self.selnames[i] in names:
                     namesfs[self.selnames[i]] = names[self.selnames[i]]

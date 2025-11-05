@@ -675,11 +675,21 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 							tclr = self.clrs[self.chart.dignity(self.pds.pds[idx].prom2)]
 					draw.text((x+summa+offset+wp+wsp, y+(self.LINE_HEIGHT-hp2)/2), prom2txt, fill=tclr, font=self.fntMorinus)
 				elif self.pds.pds[idx].prom >= primdirs.PrimDir.FIXSTAR:
-					promtxt = self.chart.fixstars.data[self.pds.pds[idx].prom-primdirs.PrimDir.FIXSTAR][fixstars.FixStars.NOMNAME]
+					# 코드(nomname)로 식별하고, 표시는 전역 선호이름을 우선 사용
+					code = self.chart.fixstars.data[self.pds.pds[idx].prom-primdirs.PrimDir.FIXSTAR][fixstars.FixStars.NOMNAME]
+					raw  = self.chart.fixstars.data[self.pds.pds[idx].prom-primdirs.PrimDir.FIXSTAR][fixstars.FixStars.NAME]
+
+					# 옵션이 켜져 있으면 전통명 우선(fallback), 없으면 raw 또는 code
+					fallback = None
 					if self.options.usetradfixstarnamespdlist:
-						tradname = self.chart.fixstars.data[self.pds.pds[idx].prom-primdirs.PrimDir.FIXSTAR][fixstars.FixStars.NAME].strip()
-						if tradname != '':
-							promtxt = tradname
+						trad = (raw or '').strip()
+						if trad:
+							fallback = trad
+					if not fallback:
+						fallback = raw or code
+
+					promtxt = astrology.display_fixstar_name(code, self.options, fallback)
+
 					w,h = draw.textsize(promtxt, self.fntText)
 					draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), promtxt, fill=txtclr, font=self.fntText)
 				elif self.pds.pds[idx].prom == primdirs.PrimDir.LOF:

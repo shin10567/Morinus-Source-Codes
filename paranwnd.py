@@ -18,7 +18,7 @@ SID_RATE = 1.002737909350795  # sidereal hours per UT hour
 ANGLE_TOL_MIN = 2.0   # 분; 앵글 회합 정의의 허용 창(±2분)
 # ---- fixstars.cat fallback ----
 # ---- fixstars.cat fallback with proper motion ----
-PM_UNITS = 'per_century'  # 대부분의 fixstars.cat: RA는 "초/세기", Dec는 "초각/세기"
+PM_UNITS = 'sefstars_masyear' # RA: mas/yr·cos(dec0), Dec: mas/yr (sefstars.txt 기준)
 # 필요시 'per_year' 로 바꾸면 연단위 μ로 처리됨.
 
 _FIXSTAR_CAT_DB = None
@@ -40,13 +40,22 @@ def _load_fixstars_cat():
         import common
         ep = getattr(common.common, 'ephepath', '')
         if ep:
-            paths += [os.path.join(ep, 'fixstars.cat'),
-                      os.path.join(ep, 'SWEP', 'Ephem', 'fixstars.cat')]
+            paths += [
+                os.path.join(ep, 'sefstars.txt'),
+                os.path.join(ep, 'SWEP', 'Ephem', 'sefstars.txt'),
+                os.path.join(ep, 'fixstars.cat'),
+                os.path.join(ep, 'SWEP', 'Ephem', 'fixstars.cat'),
+            ]
+
     except Exception:
         pass
     here = os.path.dirname(__file__)
-    paths += [os.path.join(here, 'SWEP', 'Ephem', 'fixstars.cat'),
-              os.path.join(here, 'fixstars.cat')]
+    paths += [
+        os.path.join(here, 'SWEP', 'Ephem', 'sefstars.txt'),
+        os.path.join(here, 'sefstars.txt'),
+        os.path.join(here, 'SWEP', 'Ephem', 'fixstars.cat'),
+        os.path.join(here, 'fixstars.cat'),
+    ]
 
     db = {}
     for path in paths:
@@ -54,6 +63,7 @@ def _load_fixstars_cat():
             continue
         try:
             with open(path, 'r') as f:
+                is_sef = os.path.basename(path).lower().startswith('sefstars')
                 for line in f:
                     s = line.strip()
                     if not s or s.startswith('#'):
@@ -84,8 +94,14 @@ def _load_fixstars_cat():
                     pm_dec_arcsec = 0.0
                     if len(parts) >= 11:
                         try:
-                            pm_ra_sec = float(parts[9])     # RA: 초(시간) / 세기(또는 연)
-                            pm_dec_arcsec = float(parts[10]) # Dec: 초각 / 세기(또는 연)
+                            if is_sef:
+                                # sefstars.txt: pmRA = mas/yr * cos(dec0), pmDE = mas/yr
+                                pm_ra_sec     = float(parts[9])
+                                pm_dec_arcsec = float(parts[10])
+                            else:
+                                # legacy fixstars.cat: pmRA = 초(시간)/세기(or 년), pmDE = 초각/세기(or 년)
+                                pm_ra_sec     = float(parts[9])
+                                pm_dec_arcsec = float(parts[10])
                         except:
                             pm_ra_sec = 0.0; pm_dec_arcsec = 0.0
                     db[code] = {
@@ -125,10 +141,21 @@ def _apply_proper_motion_j2000(ra_deg, dec_deg, jd_ut, pm_ra_sec, pm_dec_arcsec)
     반환: (ra_pm_deg, dec_pm_deg) — 여전히 J2000 기준 성좌에서의 위치(세차 전)
     """
     years = (jd_ut - 2451545.0)/365.25
-    factor = (years/100.0) if PM_UNITS == 'per_century' else years
-    dRA_deg  = (pm_ra_sec * factor) / 240.0   # 1초(시간) = 15″ = 1/240 도
-    dDE_deg  = (pm_dec_arcsec * factor) / 3600.0
-    ra1 = (ra_deg + dRA_deg) % 360.0
+    if PM_UNITS == 'per_century':
+        factor = years/100.0
+        dRA_deg = (pm_ra_sec * factor) / 240.0                 # 초(시간)→도
+        dDE_deg = (pm_dec_arcsec * factor) / 3600.0            # 초각→도
+    elif PM_UNITS == 'per_year':
+        factor = years
+        dRA_deg = (pm_ra_sec * factor) / 240.0
+        dDE_deg = (pm_dec_arcsec * factor) / 3600.0
+    else:
+        # 'sefstars_masyear': pm_ra_sec = mas/yr * cos(dec0), pm_dec_arcsec = mas/yr
+        factor = years
+        cosd = max(1e-12, math.cos(dec_deg * DEG))
+        dRA_deg = ((pm_ra_sec / 1000.0) / 3600.0) * (factor / cosd)   # (mas→″→deg)/cosδ0
+        dDE_deg = ((pm_dec_arcsec / 1000.0) / 3600.0) * factor        # (mas→″→deg)
+    ra1  = (ra_deg + dRA_deg) % 360.0
     dec1 = max(-90.0, min(90.0, dec_deg + dDE_deg))
     return ra1, dec1
 
@@ -167,19 +194,40 @@ def _auto_h0_deg_for(ipl, *_, **__):
     """기하학적 상승/저녁: 굴절·반지름 무시, 중심점이 ASC에 정확히 걸리는 순간(h=0°)."""
     return 0.0
 
-def _star_display_name(star_id_with_comma, jd_ref):
-    """표시용 이름: Swiss 가능시 Swiss, 아니면 fixstars.cat의 name."""
+def _star_display_name(star_id_with_or_leading_comma, jd_ref, options=None):
+    """표시용 이름: (1) 사용자 선호 별칭 → (2) Swiss → (3) 카탈로그 파일의 name."""
+    # 옵션이 비어있으면 JSON에서 한 번 복구
+    if (not options.fixstarAliasMap) if hasattr(options, 'fixstarAliasMap') else True:
+        import common, os, json
+        alias_json = os.path.join(common.common.ephepath, 'fixstar_aliases.json')
+        if os.path.isfile(alias_json):
+            with open(alias_json, 'r') as _f:
+                _data = json.load(_f)
+            if isinstance(_data, dict):
+                if not hasattr(options, 'fixstarAliasMap') or not isinstance(options.fixstarAliasMap, dict):
+                    options.fixstarAliasMap = {}
+                options.fixstarAliasMap.update({k: v for k, v in _data.items() if isinstance(k, str)})
+
+    # 1) 사용자 선호 별칭(코드→표시명) 우선
+    try:
+        if options and hasattr(options, 'fixstarAliasMap'):
+            code = star_id_with_or_leading_comma.lstrip(',').strip()
+            if code in options.fixstarAliasMap:
+                return options.fixstarAliasMap[code]
+    except Exception:
+        pass
+    # 2) Swiss (성공 시 Swiss가 돌려준 name의 앞부분)
     try:
         if swe is not None:
-            q = star_id_with_comma if star_id_with_comma.startswith(u',') else (u',' + star_id_with_comma)
+            q = star_id_with_or_leading_comma if star_id_with_or_leading_comma.startswith(u',') else (u',' + star_id_with_or_leading_comma)
             xx, name_or_err = swe.fixstar(q)
             if isinstance(name_or_err, (str, unicode if 'unicode' in dir(__builtins__) else str)):
                 return (name_or_err.split(u',')[0]).strip()
     except Exception:
         pass
-    # cat 폴백
+    # 3) cat 폴백
     db = _load_fixstars_cat()
-    return db.get(star_id_with_comma.lstrip(','), {}).get('name', star_id_with_comma.lstrip(','))
+    return db.get(star_id_with_or_leading_comma.lstrip(','), {}).get('name', star_id_with_or_leading_comma.lstrip(','))
 
 def _ra_dec_star_deg_ut(jd_ut, star_name):
     """해당 UT에서 항성의 적경/적위(deg). 우선 Swiss, 실패 시 fixstars.cat(+μ) 폴백."""
@@ -858,14 +906,29 @@ class ParanatellontaWnd(cw.CommonWnd):
 
             # 3) Star Name (텍스트 폰트)
             w = self.COL_W[2]
-            tw, th = draw.textsize(star, self.f_text_bold or self.f_text)
-            px = x + (w - tw)/2
-            py = y + (self.LINE_H - th)/2
+
+            # 폰트 선택 (same+Bold 부재면 가짜 볼드 사용하므로 기본 폰트 유지)
+            font_star = (self.f_text_bold if (same and self.f_text_bold) else self.f_text)
+
+            # 베어링 포함 바운딩 박스로 중앙 정렬 (Pillow 8.0+)
+            try:
+                l, t, r, b = draw.textbbox((0, 0), star, font=font_star)
+                tw, th = (r - l), (b - t)
+                # 셀 가운데에서 '실제 박스'가 중앙에 오도록: -l, -t로 좌상단 보정
+                px = x + (w - tw)/2 - l
+                py = y + (self.LINE_H - th)/2 - t
+            except Exception:
+                # 구형 Pillow 폴백: 기존 방식
+                tw, th = draw.textsize(star, font_star)
+                px = x + (w - tw)/2
+                py = y + (self.LINE_H - th)/2
+
             if same and not self.f_text_bold:
+                # 가짜 볼드: 한 픽셀 우측에 한 번 더 찍기
                 draw.text((px,   py), star, fill=txt, font=self.f_text)
                 draw.text((px+1, py), star, fill=txt, font=self.f_text)
             else:
-                draw.text((px, py), star, fill=txt, font=(self.f_text_bold if same else self.f_text))
+                draw.text((px, py), star, fill=txt, font=font_star)
             x += w
 
             # 4) Angles (텍스트 폰트)
@@ -938,7 +1001,7 @@ class ParanatellontaWnd(cw.CommonWnd):
                     _tr = {'Asc': mtexts.txts['Asc'], 'Dsc': mtexts.txts['Dsc'],
                         'MC': mtexts.txts['MC'],   'IC':  mtexts.txts['IC']}
                     angles_txt = u"%s - %s" % (_tr.get(kindP, kindP), _tr.get(kindS, kindS))
-                    star_disp = _star_display_name(sid, utP)
+                    star_disp = _star_display_name(sid, utP, self.options)
                     same = (kindP == kindS)  # 동일 앵글?
                     rows.append((dtxt, ipl, star_disp, angles_txt, same))
 

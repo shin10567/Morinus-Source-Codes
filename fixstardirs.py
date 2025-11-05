@@ -193,15 +193,23 @@ def _fixstars_cat_paths():
     try:
         ep = getattr(common.common, 'ephepath', '')
         if ep:
-            paths += [os.path.join(ep, 'fixstars.cat'),
-                      os.path.join(ep, 'fixedstars.cat'),
-                      os.path.join(ep, 'SWEP', 'Ephem', 'fixstars.cat')]
+            paths += [
+                os.path.join(ep, 'sefstars.txt'),
+                os.path.join(ep, 'SWEP', 'Ephem', 'sefstars.txt'),
+                os.path.join(ep, 'fixstars.cat'),
+                os.path.join(ep, 'fixedstars.cat'),
+                os.path.join(ep, 'SWEP', 'Ephem', 'fixstars.cat'),
+            ]
     except Exception:
         pass
     here = os.path.dirname(__file__)
-    paths += [os.path.join(here, 'SWEP', 'Ephem', 'fixstars.cat'),
-              os.path.join(here, 'fixstars.cat'),
-              os.path.join(here, 'fixedstars.cat')]
+    paths += [
+        os.path.join(here, 'SWEP', 'Ephem', 'sefstars.txt'),
+        os.path.join(here, 'sefstars.txt'),
+        os.path.join(here, 'SWEP', 'Ephem', 'fixstars.cat'),
+        os.path.join(here, 'fixstars.cat'),
+        os.path.join(here, 'fixedstars.cat'),
+    ]
     # 존재하는 것만
     return [p for p in paths if os.path.isfile(p)]
 
@@ -245,12 +253,24 @@ def _load_fixstars_cat():
                     continue
                 pm_ra_sec = 0.0
                 pm_dec_arcsec = 0.0
-                if len(parts) >= 11:
-                    try:
-                        pm_ra_sec = float(parts[9])
+                try:
+                    # 파일별 단위 판별: sefstars.txt( mas/yr, RA에 cosδ 포함 ) vs legacy( 초/세기, 호초/세기 )
+                    is_sef = os.path.basename(path).lower().startswith('sefstars')
+                    if is_sef:
+                        # parts[9]=pmRA(mas/yr * cosδ0), parts[10]=pmDE(mas/yr)
+                        pm_ra_masy = float(parts[9]) if len(parts) >= 10 else 0.0
+                        pm_de_masy = float(parts[10]) if len(parts) >= 11 else 0.0
+                        # 내부 형식으로 변환:
+                        #   RA:  (mas/yr * cosδ0) → 초(시간)/세기 = ( (mas/yr)/cosδ0 ) / 150
+                        #   Dec:  mas/yr → 호초/세기 = (mas/yr) / 10
+                        cosd = max(1e-12, math.cos(math.radians(dec_deg)))
+                        pm_ra_sec     = (pm_ra_masy / cosd) / 150.0
+                        pm_dec_arcsec = pm_de_masy / 10.0
+                    elif len(parts) >= 11:
+                        pm_ra_sec     = float(parts[9])
                         pm_dec_arcsec = float(parts[10])
-                    except:
-                        pm_ra_sec = 0.0; pm_dec_arcsec = 0.0
+                except:
+                    pm_ra_sec = 0.0; pm_dec_arcsec = 0.0
                 db[code] = {
                     'name': name,
                     'ra_j2000_deg': ra_deg,
@@ -274,11 +294,18 @@ except NameError:
 # --- fixed stars catalog path helper (supports both names) ---
 def _fixstars_cat_path():
     base = getattr(common.common, 'ephepath', '')
-    p1 = os.path.join(base, 'fixstars.cat')     # Morinus가 기본으로 찾는 이름
-    p2 = os.path.join(base, 'fixedstars.cat')   # 배포에 따라 이 이름인 경우도 있음
-    if os.path.exists(p1): return p1
-    if os.path.exists(p2): return p2
+    p0 = os.path.join(base, 'sefstars.txt')
+    p1 = os.path.join(base, 'SWEP', 'Ephem', 'sefstars.txt')
+    p2 = os.path.join(base, 'fixstars.cat')     # legacy
+    p3 = os.path.join(base, 'SWEP', 'Ephem', 'fixstars.cat')   # legacy in SWEP\Ephem
+    p4 = os.path.join(base, 'fixedstars.cat')   # legacy alt
+    if os.path.exists(p0): return p0       # 1) ep\sefstars.txt
+    if os.path.exists(p1): return p1       # 2) ep\SWEP\Ephem\sefstars.txt
+    if os.path.exists(p2): return p2       # 3) legacy
+    if os.path.exists(p3): return p3       # 4) legacy in SWEP\Ephem
+    if os.path.exists(p4): return p4       # 5) legacy alt
     return None
+
 def _cat_all_names_in_order():
     """
     카탈로그의 '첫 컬럼 이름'을 위에서 아래로 그대로 읽어 반환.
@@ -857,6 +884,22 @@ def compute_fixedstar_angle_rows(horoscope, options, age_range=None, direction=N
         if not isinstance(dispname, unicode):
             try: dispname = unicode(dispname)
             except: pass
+        # 옵션이 비어있으면 JSON에서 복구
+        if (not hasattr(options, 'fixstarAliasMap')) or (not isinstance(options.fixstarAliasMap, dict)) or (not options.fixstarAliasMap):
+            import common, os, json
+            alias_json = os.path.join(common.common.ephepath, 'fixstar_aliases.json')
+            if os.path.isfile(alias_json):
+                with open(alias_json, 'r') as _f:
+                    _data = json.load(_f)
+                if isinstance(_data, dict):
+                    options.fixstarAliasMap = dict(_data)
+
+        # [ADD] FixStarsDlg에서 사용자가 고른 표기(코드→표시명 맵)가 있으면 그것을 우선
+        try:
+            if hasattr(options, 'fixstarAliasMap') and code in options.fixstarAliasMap:
+                dispname = options.fixstarAliasMap[code]
+        except Exception:
+            pass
 
         # 출생 RAMC 세트 (MC, IC, AOASC, DODESC)
         ramc, raic, aoasc, dodesc = _ramc_pack(horoscope)

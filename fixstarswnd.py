@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import os
 import chart
@@ -7,6 +8,7 @@ import Image, ImageDraw, ImageFont
 import fixstars
 import util
 import mtexts
+import astrology
 
 
 class FixStarsWnd(commonwnd.CommonWnd):
@@ -116,8 +118,16 @@ class FixStarsWnd(commonwnd.CommonWnd):
 				txt = str(idx+1)+'.'
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
-			elif i == fixstars.FixStars.NAME+OFFS or i == fixstars.FixStars.NOMNAME+OFFS:
-				txt = self.chart.fixstars.data[idx][i-OFFS]
+			elif i == fixstars.FixStars.NAME+OFFS:
+				# Name 열은 코드→전역 선호이름으로 표기
+				code = self.chart.fixstars.data[idx][fixstars.FixStars.NOMNAME]
+				fallback = self.chart.fixstars.data[idx][fixstars.FixStars.NAME] or code
+				txt = astrology.display_fixstar_name(code, self.options, fallback)
+				w,h = draw.textsize(txt, self.fntText)
+				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
+			elif i == fixstars.FixStars.NOMNAME+OFFS:
+				# Nomencl 열은 식별 코드 그대로
+				txt = self.chart.fixstars.data[idx][fixstars.FixStars.NOMNAME]
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 			elif i == fixstars.FixStars.LON+OFFS:

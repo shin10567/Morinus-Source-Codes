@@ -5,15 +5,18 @@ import astrology
 import chart
 import os
 import mtexts
+import common
+import json
+
 # 안전 문자열 변환(내장 unicode 호출 없이)
 _U = type(u'')
 _B = type('')
-# --- Apparent magnitude index from fixstars.cat ---
+# --- Apparent magnitude index from star catalog (prefers sefstars.txt, falls back to fixstars.cat) ---
 _MAG_INDEX = None
 def _load_fixstar_mags():
     """
-    fixstars.cat에서 전통명/약칭 -> 겉보기 등급(=mag) 매핑을 만든다.
-    우선순위: 모듈 폴더/fixstars.cat -> 상위 폴더 -> 현재 작업폴더.
+    sefstars.txt(우선) 또는 fixstars.cat(폴백)에서 전통명/약칭 -> 겉보기 등급(=mag) 매핑을 만든다.
+    우선순위: 모듈/상위/SWEP/Ephem 경로의 sefstars.txt → 동일 경로의 fixstars.cat.
     """
     global _MAG_INDEX
     if _MAG_INDEX is not None:
@@ -24,15 +27,23 @@ def _load_fixstar_mags():
     # 프로젝트 루트 쪽 흔한 위치들도 시도
     try:
         base = os.path.dirname(__file__)
+        # --- sefstars.txt 우선 ---
+        cat_candidates.append(os.path.join(base, "sefstars.txt"))
+        cat_candidates.append(os.path.join(os.path.dirname(base), "sefstars.txt"))
+        cat_candidates.append(os.path.join(base, "SWEP", "Ephem", "sefstars.txt"))
+        cat_candidates.append(os.path.join(os.path.dirname(base), "SWEP", "Ephem", "sefstars.txt"))
+        # --- 레거시 fixstars.cat 폴백 ---
         cat_candidates.append(os.path.join(base, "fixstars.cat"))
         cat_candidates.append(os.path.join(os.path.dirname(base), "fixstars.cat"))
-        # ↓↓↓ 추가: Morinus 기본 배포 경로(SWEP/Ephem)
         cat_candidates.append(os.path.join(base, "SWEP", "Ephem", "fixstars.cat"))
         cat_candidates.append(os.path.join(os.path.dirname(base), "SWEP", "Ephem", "fixstars.cat"))
     except Exception:
         pass
+    # 현재 작업폴더 기준
+    cat_candidates.append("sefstars.txt")
+    cat_candidates.append(os.path.join(os.getcwd(), "SWEP", "Ephem", "sefstars.txt"))
+    # 레거시 폴백
     cat_candidates.append("fixstars.cat")
-    # ↓↓↓ 추가: 현재 작업폴더 기준 SWEP/Ephem도 시도
     cat_candidates.append(os.path.join(os.getcwd(), "SWEP", "Ephem", "fixstars.cat"))
 
     for p in cat_candidates:
@@ -43,7 +54,7 @@ def _load_fixstar_mags():
                     if not line or line.startswith("#"):
                         continue
                     parts = [s.strip() for s in line.split(",")]
-                    # Morinus fixstars.cat에서는 13번 인덱스가 등급
+                    # sefstars.txt / fixstars.cat 공통: 13번째 값이 겉보기 등급(Vmag)
                     if len(parts) < 14:
                         continue
                     try:
@@ -265,6 +276,17 @@ def compute_contacts(horoscope, options, minutes_window=10):
             )
     except:
         pass
+    # 별칭 맵이 비어 있으면 ephepath에서 복구
+    try:
+        if (not hasattr(options, 'fixstarAliasMap')) or (not isinstance(options.fixstarAliasMap, dict)) or (len(options.fixstarAliasMap) == 0):
+            alias_json = os.path.join(common.common.ephepath, 'fixstar_aliases.json')
+            if os.path.isfile(alias_json):
+                with open(alias_json, 'r') as _f:
+                    data = json.load(_f)
+                if isinstance(data, dict):
+                    options.fixstarAliasMap = data
+    except Exception:
+        pass
 
     rows_all = []
     try: rows_all = ch.fixstars.data[:]
@@ -274,6 +296,15 @@ def compute_contacts(horoscope, options, minutes_window=10):
     for row in rows_all:
         if not row: continue
         disp = utext(row[0]).replace(u'\x00',u'').strip()
+        # 코드→선호표시명 적용
+        try:
+            nom_sel = utext(row[1]).replace(u'\x00',u'').strip() if len(row) > 1 else u""
+            if hasattr(options, 'fixstarAliasMap') and isinstance(options.fixstarAliasMap, dict):
+                if nom_sel in options.fixstarAliasMap:
+                    disp = options.fixstarAliasMap[nom_sel]
+        except Exception:
+            pass
+
         if (selected is None) or (disp in selected):
             rows.append(row)
     if not rows:     # 필터로 0개가 되면 전체 사용 (시리우스 누락 방지)
@@ -295,6 +326,14 @@ def compute_contacts(horoscope, options, minutes_window=10):
     for row in rows:
         disp = utext(row[0]).replace(u'\x00',u'').strip()
         nom  = utext(row[1]).replace(u'\x00',u'').strip() if len(row) > 1 else u""
+        # 코드→선호표시명 적용
+        try:
+            if hasattr(options, 'fixstarAliasMap') and isinstance(options.fixstarAliasMap, dict):
+                if nom in options.fixstarAliasMap:
+                    disp = options.fixstarAliasMap[nom]
+        except Exception:
+            pass
+
         mag  = mag_index.get(disp) or mag_index.get(nom)
         mag_str = u"" if (mag is None) else u"{:.2f}".format(mag)
 

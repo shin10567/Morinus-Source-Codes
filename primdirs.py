@@ -1988,10 +1988,22 @@ class PrimDirs:
 			elif pd.prom >= PrimDir.FIXSTAR:
 				formattxt += '%s '
 				promtxt = self.chart.fixstars.data[pd.prom-PrimDir.FIXSTAR][fixstars.FixStars.NOMNAME]
+			elif pd.prom >= PrimDir.FIXSTAR:
+				formattxt += '%s '
+				# 코드(nomname)로 식별, 표시명은 전역 선호이름(없으면 fallback)
+				code = self.chart.fixstars.data[pd.prom-PrimDir.FIXSTAR][fixstars.FixStars.NOMNAME]
+				raw  = self.chart.fixstars.data[pd.prom-PrimDir.FIXSTAR][fixstars.FixStars.NAME]
+
+				# 옵션이 켜져 있으면 전통명 우선으로 fallback 설정
+				fallback = None
 				if self.options.usetradfixstarnamespdlist:
-					tradname = self.chart.fixstars.data[pd.prom-PrimDir.FIXSTAR][fixstars.FixStars.NAME].strip()
-					if tradname != '':
-						promtxt = tradname
+					trad = (raw or '').strip()
+					if trad:
+						fallback = trad
+				if not fallback:
+					fallback = raw or code
+
+				promtxt = astrology.display_fixstar_name(code, self.options, fallback)
 				tuptxt.append(promtxt)
 			elif pd.prom == PrimDir.LOF:
 				formattxt += '%s '

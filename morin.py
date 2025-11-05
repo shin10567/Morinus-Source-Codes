@@ -3870,7 +3870,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.3.9'
+		info.Version = '9.4.0'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
@@ -4103,14 +4103,52 @@ class MFrame(wx.Frame):
 
 	def checkFixStars(self):
 		res = True
-		fname = os.path.join(common.common.ephepath, 'fixstars.cat')
 
-		if not os.path.exists(fname):
-			txt = fname+' '+mtexts.txts['NotFound']
-			dlgm = wx.MessageDialog(self, txt, mtexts.txts['Error'], wx.OK|wx.ICON_INFORMATION)
+		# 고정별 카탈로그 탐색 우선순위:
+		# 1) <ephepath>\sefstars.txt
+		# 2) <ephepath>\SWEP\Ephem\sefstars.txt
+		# 3) <ephepath>\fixstars.cat
+		# 4) <ephepath>\fixedstars.cat
+		# 5) <ephepath>\SWEP\Ephem\fixstars.cat
+		# 6) <ephepath>\SWEP\Ephem\fixedstars.cat
+		base = common.common.ephepath
+		p0 = os.path.join(base, 'sefstars.txt')
+		p1 = os.path.join(base, 'fixstars.cat')
+		p2 = os.path.join(base, 'fixedstars.cat')
+		p3 = os.path.join(base, 'SWEP', 'Ephem', 'sefstars.txt')
+		p4 = os.path.join(base, 'SWEP', 'Ephem', 'fixstars.cat')
+		p5 = os.path.join(base, 'SWEP', 'Ephem', 'fixedstars.cat')
+
+		if   os.path.exists(p0): fname = p0
+		elif os.path.exists(p3): fname = p3
+		elif os.path.exists(p1): fname = p1
+		elif os.path.exists(p2): fname = p2
+		elif os.path.exists(p4): fname = p4
+		elif os.path.exists(p5): fname = p5
+		else:
+			# 아무것도 못 찾았을 때: 시도한 경로들을 안내
+			tried = [p0, p3, p1, p2, p4, p5]
+			txt = (mtexts.txts.get('NotFound', 'Not found') + u':\n' +
+				   u'\n'.join(tried))
+			dlgm = wx.MessageDialog(self, txt, mtexts.txts.get('Error','Error'),
+									wx.OK | wx.ICON_INFORMATION)
 			dlgm.ShowModal()
 			dlgm.Destroy()
 			res = False
+		# --- [ADD] 선호이름 JSON을 옵션에 로드(세션 시작 시 복구) ---
+		try:
+			if not hasattr(self.options, 'fixstarAliasMap') or not isinstance(self.options.fixstarAliasMap, dict):
+				self.options.fixstarAliasMap = {}
+			alias_json = os.path.join(base, 'fixstar_aliases.json')
+			if os.path.isfile(alias_json):
+				import json as _json
+				with open(alias_json, 'r') as _f:
+					_data = _json.load(_f)
+				if isinstance(_data, dict):
+					self.options.fixstarAliasMap.update({k: v for k, v in _data.items() if isinstance(k, str)})
+		except Exception:
+			pass
+		# -------------------------------------------------------------------
 
 		return res
 

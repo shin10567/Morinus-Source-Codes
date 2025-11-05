@@ -1,4 +1,4 @@
-## [9.3.9] Updated Version from 8.1.0 
+## [9.4.0] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -217,3 +217,8 @@
 - Fixed Stars’ Aspects & Aspects: fixed label overlap
 #### 9.3.9
 - Arabic Parts bug fix
+#### 9.4.0
+- Updated the fixed-star catalog data to the latest sefstars.txt.
+- Stars can be displayed under the alias the user selects.
+- If a star has no traditional name, selecting it automatically sets its “Nomencl.” entry as the alias.
+- Reduced label overlap for closely spaced fixed stars.

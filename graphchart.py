@@ -335,7 +335,8 @@ class GraphChart:
 				self.showfss = self.mergefsaspmatrices()
 				fsdata = getattr(getattr(self.chart, 'fixstars', None), 'data', None)
 				if fsdata:
-					self.fsshift = self.arrangefs(fsdata, self.showfss, self.rFixstars)
+					_rText = (self.rOuterLine + self.symbolSize * 0.2)
+					self.fsshift = self.arrangefs(fsdata, self.showfss, _rText)
 					# (있다면) 아래 두 줄도 fsdata가 있을 때만 호출
 					try:
 						self.drawFixstarsLines(self.showfss)
@@ -346,7 +347,8 @@ class GraphChart:
 					# 데이터가 없으면 고정성 블록 전체를 스킵
 					self.fsshift = []
 
-				self.fsyoffs = self.arrangeyfs(self.chart.fixstars.data, self.fsshift, self.showfss, self.rFixstars)
+				_rText = (self.rOuterLine + self.symbolSize * 0.2)
+				self.fsyoffs = self.arrangeyfs(self.chart.fixstars.data, self.fsshift, self.showfss, _rText)
 				self.drawFixstarsLines(self.showfss)
 
 			elif self.options.showfixstars == options.Options.ANTIS:
@@ -1181,10 +1183,10 @@ class GraphChart:
 				clr_hour = (0,0,0)
 			else:
 				pal = (self.options.clrdomicil,
-				       self.options.clrexal,
-				       self.options.clrperegrin,
-				       self.options.clrcasus,
-				       self.options.clrexil)
+					   self.options.clrexal,
+					   self.options.clrperegrin,
+					   self.options.clrcasus,
+					   self.options.clrexil)
 				try:
 					dign_day = C.dignity(idx_day)
 					clr_day  = pal[dign_day]
@@ -1478,31 +1480,39 @@ class GraphChart:
 
 		num = len(showfss)
 		for i in range(num):
-			x = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-self.chart.fixstars.data[showfss[i]][fixstars.FixStars.LON]-self.fsshift[i]))*self.rFixstars
-			y = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-self.chart.fixstars.data[showfss[i]][fixstars.FixStars.LON]-self.fsshift[i]))*self.rFixstars
-			
-			txt = self.chart.fixstars.data[showfss[i]][fixstars.FixStars.NAME]
-			txt.strip()
-			if txt == '':
-				txt = self.chart.fixstars.data[showfss[i]][fixstars.FixStars.NOMNAME]
+			# 각도(수정 반영) → 라벨 반경(AP와 동일 레인)
+			ang = util.normalize(self.chart.houses.ascmc[houses.Houses.ASC]
+								- self.chart.fixstars.data[showfss[i]][fixstars.FixStars.LON]
+								- self.fsshift[i])
+			rad = math.pi + math.radians(ang)
+			r_text = self.rOuterLine + self.symbolSize * 0.2
+
+			# 좌표(세로 스택 오프셋 포함)
+			x = cx + math.cos(rad) * r_text
+			y = cy + math.sin(rad) * r_text + self.fsyoffs[i]
+
+			# 라벨 문자열(전통/스위스 명칭 + 도/분)
+			nom = self.chart.fixstars.data[showfss[i]][fixstars.FixStars.NOMNAME]
+			raw = self.chart.fixstars.data[showfss[i]][fixstars.FixStars.NAME]
+			txt = astrology.display_fixstar_name(nom, self.options, raw)
 
 			fslon = self.chart.fixstars.data[showfss[i]][fixstars.FixStars.LON]
 			if self.options.ayanamsha != 0:
 				fslon -= self.chart.ayanamsha
 				fslon = util.normalize(fslon)
 			(d, m, s) = util.decToDeg(fslon)
-			d = d%chart.Chart.SIGN_DEG
-#			d, m = util.roundDeg(d%chart.Chart.SIGN_DEG, m, s)
-			txt += ' '+str(d)+self.deg_symbol+str(m).zfill(2)+"'"
+			d, m = util.roundDeg(d % chart.Chart.SIGN_DEG, m, s)
+			txt += ' ' + str(d) + self.deg_symbol + str(m).zfill(2) + "'"
 
-			xoffs = 0.0
-			pos = math.degrees(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-self.chart.fixstars.data[showfss[i]][fixstars.FixStars.LON]-self.fsshift[i]))
-			pos = util.normalize(pos)
-			if pos > 90.0 and pos < 270.0:
-				w, h = self.fntText.getsize(txt)
-				xoffs = w
+			# 좌/우 반구 정렬 + 외곽 원(rOuterLine) 밖 유지
+			w, h = self.fntText.getsize(txt)
+			pos = util.normalize(math.degrees(rad))
+			if 90.0 < pos < 270.0:
+				x -= w
+			x, y, _ = self._ensure_text_outside_outer_wheel(rad, x, y, w, h, r_text, pad_px=int(self.symbolSize * 0.10))
 
-			self.draw.text((x-xoffs, y-self.symbolSize/4+self.fsyoffs[i]), txt, fill=clr, font=self.fntText)
+			self.draw.text((x, y - h / 2), txt, fill=clr, font=self.fntText)
+
 
 
 	def drawFixstarsLines(self, showfss):
@@ -2209,16 +2219,30 @@ class GraphChart:
 				x2 = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[i+1]][fixstars.FixStars.LON]-fsshift[i+1]))*rFS
 				y2 = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[i+1]][fixstars.FixStars.LON]-fsshift[i+1]))*rFS
 			
-				txt = fixstrs[showfss[i]][fixstars.FixStars.NAME]
-				(d, m, s) = util.decToDeg(fixstrs[showfss[i]][fixstars.FixStars.LON])
-#				d, m = util.roundDeg(d%chart.Chart.SIGN_DEG, m, s)
-				txt += ' '+str(d)+self.deg_symbol+str(m).zfill(2)+"'"
-				w1, h1 = self.fntText.getsize(txt)
-				txt = fixstrs[showfss[i+1]][fixstars.FixStars.NAME]
-				(d, m, s) = util.decToDeg(fixstrs[showfss[i+1]][fixstars.FixStars.LON])
-#				d, m = util.roundDeg(d%chart.Chart.SIGN_DEG, m, s)
-				txt += ' '+str(d)+self.deg_symbol+str(m).zfill(2)+"'"
-				w2, h2 = self.fntText.getsize(txt)
+				# i 항목 폭
+				nom_i = fixstrs[showfss[i]][fixstars.FixStars.NOMNAME]
+				raw_i = fixstrs[showfss[i]][fixstars.FixStars.NAME]
+				name_i = astrology.display_fixstar_name(nom_i, self.options, raw_i)
+
+				fslon_i = fixstrs[showfss[i]][fixstars.FixStars.LON]
+				if self.options.ayanamsha != 0:
+					fslon_i = util.normalize(fslon_i - self.chart.ayanamsha)
+				(d_i, m_i, s_i) = util.decToDeg(fslon_i)
+				label_i = f"{name_i} {d_i%chart.Chart.SIGN_DEG}{self.deg_symbol}{str(m_i).zfill(2)}'"
+				w1, h1 = self.fntText.getsize(label_i)
+
+				# i+1 항목 폭
+				nom_j = fixstrs[showfss[i+1]][fixstars.FixStars.NOMNAME]
+				raw_j = fixstrs[showfss[i+1]][fixstars.FixStars.NAME]
+				name_j = astrology.display_fixstar_name(nom_j, self.options, raw_j)
+
+				fslon_j = fixstrs[showfss[i+1]][fixstars.FixStars.LON]
+				if self.options.ayanamsha != 0:
+					fslon_j = util.normalize(fslon_j - self.chart.ayanamsha)
+				(d_j, m_j, s_j) = util.decToDeg(fslon_j)
+				label_j = f"{name_j} {d_j%chart.Chart.SIGN_DEG}{self.deg_symbol}{str(m_j).zfill(2)}'"
+				w2, h2 = self.fntText.getsize(label_j)
+
 				while (self.overlap(x1, y1+fsyoffs[i], w1, h1, x2, y2+fsyoffs[i+1], w2, h2)):
 					if not changed:
 						changed = True
@@ -2230,10 +2254,27 @@ class GraphChart:
 					else:
 						fsyoffs[i+1] -= 1.0
 
-					txt = fixstrs[showfss[i]][fixstars.FixStars.NAME]
-					w1, h1 = self.fntText.getsize(txt)
-					txt = fixstrs[showfss[i+1]][fixstars.FixStars.NAME]
-					w2, h2 = self.fntText.getsize(txt)
+					# i 재계산
+					nom_i = fixstrs[showfss[i]][fixstars.FixStars.NOMNAME]
+					raw_i = fixstrs[showfss[i]][fixstars.FixStars.NAME]
+					name_i = astrology.display_fixstar_name(nom_i, self.options, raw_i)
+					fslon_i = fixstrs[showfss[i]][fixstars.FixStars.LON]
+					if self.options.ayanamsha != 0:
+						fslon_i = util.normalize(fslon_i - self.chart.ayanamsha)
+					(d_i, m_i, s_i) = util.decToDeg(fslon_i)
+					label_i = f"{name_i} {d_i%chart.Chart.SIGN_DEG}{self.deg_symbol}{str(m_i).zfill(2)}'"
+					w1, h1 = self.fntText.getsize(label_i)
+
+					# i+1 재계산
+					nom_j = fixstrs[showfss[i+1]][fixstars.FixStars.NOMNAME]
+					raw_j = fixstrs[showfss[i+1]][fixstars.FixStars.NAME]
+					name_j = astrology.display_fixstar_name(nom_j, self.options, raw_j)
+					fslon_j = fixstrs[showfss[i+1]][fixstars.FixStars.LON]
+					if self.options.ayanamsha != 0:
+						fslon_j = util.normalize(fslon_j - self.chart.ayanamsha)
+					(d_j, m_j, s_j) = util.decToDeg(fslon_j)
+					label_j = f"{name_j} {d_j%chart.Chart.SIGN_DEG}{self.deg_symbol}{str(m_j).zfill(2)}'"
+					w2, h2 = self.fntText.getsize(label_j)
 
 			if not changed:
 				break
@@ -2313,18 +2354,47 @@ class GraphChart:
 		y2 = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[f2]][fixstars.FixStars.LON]-fsshift[f2]))*rFS
 
 		#this is different between fixstars and planets
-		w1, h1 = self.symbolSize/2, 3*self.symbolSize/4
-		w2, h2 = self.symbolSize/2, 3*self.symbolSize/4
+		# --- FIXSTARS도 라벨 실제 폭/높이로 겹침 판정(Arabic Parts와 동일 개념) ---
+		def _fs_label_wh(idx):
+			nom = fixstrs[showfss[idx]][fixstars.FixStars.NOMNAME]
+			raw = fixstrs[showfss[idx]][fixstars.FixStars.NAME]
+			name = astrology.display_fixstar_name(nom, self.options, raw)
+			lon  = fixstrs[showfss[idx]][fixstars.FixStars.LON]
+			if self.options.ayanamsha != 0:
+				lon = util.normalize(lon - self.chart.ayanamsha)
+			(d, m, s) = util.decToDeg(lon)
+			label = f"{name} {d % chart.Chart.SIGN_DEG}{self.deg_symbol}{str(m).zfill(2)}'"
+			return self.fntText.getsize(label)
 
-		while (self.overlap(x1, y1, w1, h1, x2, y2, w2, h2)):
+		w1, h1 = _fs_label_wh(f1)
+		w2, h2 = _fs_label_wh(f2)
+
+		def _xy(idx, shift):
+			ang = math.pi + math.radians(self.chart.houses.ascmc[houses.Houses.ASC]
+										- fixstrs[showfss[idx]][fixstars.FixStars.LON]
+										- shift)
+			return (cx + math.cos(ang) * rFS, cy + math.sin(ang) * rFS,
+					util.normalize(math.degrees(ang)))
+
+		x1, y1, pos1 = _xy(f1, fsshift[f1])
+		x2, y2, pos2 = _xy(f2, fsshift[f2])
+		if 90.0 < pos1 < 270.0:
+			x1 -= w1
+		if 90.0 < pos2 < 270.0:
+			x2 -= w2
+
+		while self.overlap(x1, y1, w1, h1, x2, y2, w2, h2):
 			if not forward:
 				fsshift[f1] -= 0.1
 			fsshift[f2] += 0.1
 
-			x1 = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[f1]][fixstars.FixStars.LON]-fsshift[f1]))*rFS
-			y1 = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[f1]][fixstars.FixStars.LON]-fsshift[f1]))*rFS
-			x2 = cx+math.cos(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[f2]][fixstars.FixStars.LON]-fsshift[f2]))*rFS
-			y2 = cy+math.sin(math.pi+math.radians(self.chart.houses.ascmc[houses.Houses.ASC]-fixstrs[showfss[f2]][fixstars.FixStars.LON]-fsshift[f2]))*rFS
+			# 재계산(각도/정렬 포함)
+			x1, y1, pos1 = _xy(f1, fsshift[f1])
+			x2, y2, pos2 = _xy(f2, fsshift[f2])
+			if 90.0 < pos1 < 270.0:
+				x1 -= w1
+			if 90.0 < pos2 < 270.0:
+				x2 -= w2
 
 			if not shifted:
 				shifted = True

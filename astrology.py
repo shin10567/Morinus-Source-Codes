@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sweastrology import *
 
 SE_JUL_CAL = 0
@@ -204,9 +205,62 @@ SE_FNAME_DE404  = "de404.eph"
 SE_FNAME_DE405  = "de405.eph"
 SE_FNAME_DE406  = "de406.eph"
 SE_FNAME_DFT    = SE_FNAME_DE406
-SE_STARFILE     = "fixstars.cat"
+SE_STARFILE     = "sefstars.txt"
+SE_STARFILE_FALLBACKS = ("sefstars.txt", "fixstars.cat", "fixedstars.cat")
 SE_ASTNAMFILE   = "seasnam.txt"
 SE_FICTFILE     = "seorbel.txt"
+# ---- Preferred alias (display name) resolver for fixed stars -----------------
+def ensure_fixstar_alias_loaded(options):
+    """
+    options.fixstarAliasMap 이 비어 있으면 ephepath의 JSON에서 한 번만 복구한다.
+    쓰기는 하지 않는다(저장은 FixStarsDlg에서만).
+    """
+    try:
+        if (options is None) or (hasattr(options, 'fixstarAliasMap') and isinstance(options.fixstarAliasMap, dict) and options.fixstarAliasMap):
+            return
+        # 지연 로드: common / os / json 은 함수 안에서 import (순환참조 방지)
+        import os, json
+        try:
+            import common
+            ephepath = getattr(common.common, 'ephepath', '')
+        except Exception:
+            ephepath = ''
+        if not hasattr(options, 'fixstarAliasMap') or not isinstance(getattr(options, 'fixstarAliasMap', None), dict):
+            options.fixstarAliasMap = {}
+        alias_json = os.path.join(ephepath or os.getcwd(), 'fixstar_aliases.json')
+        if os.path.isfile(alias_json):
+            with open(alias_json, 'r') as _f:
+                data = json.load(_f)
+            if isinstance(data, dict):
+                options.fixstarAliasMap.update({k: v for k, v in data.items() if isinstance(k, str)})
+    except Exception:
+        # 조용히 폴백
+        pass
+
+
+def display_fixstar_name(code, options, fallback_name=None):
+    """
+    고정별 '표시용 이름'을 결정한다.
+      - 식별은 항상 code(nomname).
+      - 1순위: options.fixstarAliasMap[code] (사용자 선호 별칭)
+      - 2순위: fallback_name (호출자가 카탈로그명/Swiss명 등 전달하면 사용)
+      - 3순위: code 그대로
+    이 함수는 쓰기(저장)를 절대 하지 않으며, 비어 있을 때만 JSON을 게으르게 로드한다.
+    """
+    try:
+        ensure_fixstar_alias_loaded(options)
+        if options and hasattr(options, 'fixstarAliasMap') and isinstance(options.fixstarAliasMap, dict):
+            disp = options.fixstarAliasMap.get(code)
+            if disp:
+                return disp
+    except Exception:
+        pass
+    # 호출자가 제공한 카탈로그 기본명 우선 사용
+    if fallback_name:
+        return fallback_name
+    # 마지막 폴백은 code
+    return code
+# ------------------------------------------------------------------------------
 
 # ephemeris path
 # this defines where ephemeris files are expected if the function

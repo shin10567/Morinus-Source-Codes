@@ -25,10 +25,10 @@ class FixStars:
 		self.jd = astrology.swe_julday(1950, 1, 1, 0.0, astrology.SE_GREG_CAL)	
 		self.data = []
 
-		self.fname = os.path.join(self.ephepath, 'fixstars.cat')
+		self.fname = os.path.join(self.ephepath, 'sefstars.txt')
 
 
-	def read(self, names):
+	def read(self, names, aliasmap=None):
 		for n in names:
 			ret, name, dat, serr = astrology.swe_fixstar_ut(','+n, self.jd, 0)
 			nam = name[0].strip()
@@ -38,7 +38,14 @@ class FixStars:
 				snam = nam.split(DELIMITER)
 				nam = snam[0].strip()
 				nomnam = snam[1].strip()
-				
+			# --- [ADD] 사용자 선호표기(코드→표시명) 적용 ---
+			try:
+				if aliasmap and nomnam in aliasmap and aliasmap[nomnam]:
+					nam = aliasmap[nomnam]
+			except Exception:
+				pass
+			# ----------------------------------------------
+
 			self.data.append(FixStars.FixStar(nam, nomnam))
 
 		return True #!?
@@ -94,7 +101,7 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 	def Populate(self):
 		self.InsertColumn(FixStarListCtrl.NUM, '')
 		self.InsertColumn(FixStarListCtrl.NAME, mtexts.txts['Name'])
-		self.InsertColumn(FixStarListCtrl.NOMNAME, mtexts.txts['Nomencl']+'.')
+		self.InsertColumn(FixStarListCtrl.NOMNAME, mtexts.txts['Nomencl'])
 
 		items = self.fixstardata.items()
 		cnt = 0
@@ -139,7 +146,17 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 
 	def load(self, names):
 		fs = FixStars(self.ephepath)
-		if fs.read(names):
+		# --- [ADD] 다이얼로그에 보관된 options에서 aliasmap 확보 ---
+		aliasmap = None
+		try:
+			opts = getattr(self.parent, 'options', None)
+			if opts and hasattr(opts, 'fixstarAliasMap'):
+				aliasmap = opts.fixstarAliasMap
+		except Exception:
+			aliasmap = None
+		# -------------------------------------------------------------
+
+		if fs.read(names, aliasmap):
 			idx = 1
 			for f in fs.data:
 				self.fixstardata[idx] = (f.name, f.nomname)
@@ -164,6 +181,7 @@ class FixStarsPDDlg(wx.Dialog):
 						title=mtexts.txts['FixStars'],
 						style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 		self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+		self.options = options
 		# This next step is the most important, it turns this Python
 		# object into the real wrapper of the dialog (instead of pre)
 		# as far as the wxPython extension is concerned.
