@@ -176,7 +176,7 @@ class AngleAtBirthWnd(commonwnd.CommonWnd):
         r = self.rows[idx]
         is_bold = self._should_bold(r.get('mag'), r.get('dt_min'))
         cells = (
-            u"\u00B1%.1f′" % float(r.get('dt_min', 0.0)),  # Δt: ± 기호 고정
+            u"\u00B1%.1f'" % float(r.get('dt_min', 0.0)),  # Δt: ± 기호 고정
             r.get('star',  u"-"),
             r.get('angle', u"-"),
             r.get('time_str', u"-"),
