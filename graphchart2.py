@@ -1101,7 +1101,7 @@ class GraphChart2:
 
 		# 줄 높이(기존 계수 유지)
 		_, h = self.fntBigText.getsize("Ag")
-		dy = h * 1.2
+		dy = h * 1.1
 
 		hs_txt  = self.hsystem[self.options.hsys]
 		aya_on  = (self.options.ayanamsha != 0)
