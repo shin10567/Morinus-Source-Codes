@@ -160,7 +160,7 @@ def _get_cal_flag(chart, options, jd0):
     # 3) 마지막 안전망
     return astrology.SE_GREG_CAL
 
-USE_ASTRONOMICAL_YEAR = False  # Radix 스타일(음수연도)로 맞추고 싶으면 True
+USE_ASTRONOMICAL_YEAR = True  # Radix 스타일(음수연도)로 맞추고 싶으면 True
 
 def _fmt_astro_date(y, m, d):
     try:
@@ -170,15 +170,16 @@ def _fmt_astro_date(y, m, d):
 
     if y > 0:
         # 서기(연도 1~)
-        return u"%04d.%02d.%02d" % (y, m, d)
+        return u"%d.%02d.%02d" % (y, m, d)
 
     if USE_ASTRONOMICAL_YEAR:
         # Radix와 완전히 동일한 스타일(음수 연도 표기)
-        return u"-%04d.%02d.%02d" % (abs(y), m, d)
+        return u"-%d.%02d.%02d" % (abs(y), m, d)
 
     # 역사적 BC 표기(연도 0 없음): y=0→1 BC, y=-1→2 BC, y=-1633→1634 BC
     bce = 1 - y            # ★ 핵심: -y가 아니라 1 - y
-    return u"%04d.%02d.%02d BC" % (bce, m, d)
+    return u"%d.%02d.%02d BC" % (bce, m, d)
+
 
 class PhasisWnd(commonwnd.CommonWnd):
     """

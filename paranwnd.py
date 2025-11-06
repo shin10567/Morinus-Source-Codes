@@ -188,7 +188,7 @@ def _acos_clip(x):
 def _fmt_deltat_minutes(du_days):
     s = int(round(abs(du_days)*86400.0))
     m, s = divmod(s, 60)
-    return u"±%d'%02d\"" % (m, s)
+    return u"±%2d'%02d\"" % (m, s)
 
 def _auto_h0_deg_for(ipl, *_, **__):
     """기하학적 상승/저녁: 굴절·반지름 무시, 중심점이 ASC에 정확히 걸리는 순간(h=0°)."""

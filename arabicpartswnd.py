@@ -365,9 +365,9 @@ def fmt_decl_deg(val):
 		x = float(val)
 	except:
 		return u""
-	sign = u"-" if x < 0 else u"+"
+	sign = u"-" if x < 0 else u""
 	d, m, s = util.decToDeg(abs(x))
-	return u"%s%d%s%02d'%02d\"" % (sign, d, DEG_SYM, m, s)
+	return u"%s%2d%s%02d'%02d\"" % (sign, d, DEG_SYM, m, s)
 
 def _get_jd_ut(chart):
 	# chart 또는 chart.time에서 JD(UT) 찾기. 없으면 None.

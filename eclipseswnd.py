@@ -77,11 +77,11 @@ class EclipsesWnd(commonwnd.CommonWnd):
 
     def _deg_min_sec_text(self, degfloat):
         d, m, s = eclipses._dms(degfloat)
-        return u"%02d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
+        return u"%d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
 
     def _dodek_text(self, sign_idx, d, m, s):
         # 여기선 직접 포맷만 담당(계산은 eclipses._dodek_from_ecliptic에서 수행)
-        dms = u"%02d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
+        dms = u"%d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
         return dms, self.signs[sign_idx]
 
     def _text(self, draw, xy, s, bold=False, font=None, fill=(0,0,0)):
@@ -241,7 +241,7 @@ class EclipsesWnd(commonwnd.CommonWnd):
             d, m, s = eclipses._dms(within)
 
             # 숫자 + 사인기호
-            lon_dms = u"%02d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
+            lon_dms = u"%d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
 
             w_num, h_num = draw.textsize(lon_dms+u" ", self.fntText)
             w_sig, h_sig = draw.textsize(self.signs[sign_idx], self.fntMorinus)

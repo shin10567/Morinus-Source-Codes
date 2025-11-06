@@ -72,6 +72,23 @@ class ZRWnd(commonwnd.CommonWnd):
         self.row_lv = [int(r.get('level', 2)) for r in self.rows]
         self._recalc_sizes(len(self.rows))
         self.drawBkg()
+    def _strip_year_zeros_ymd(self, s):
+        try:
+            txt = s.decode('utf-8','ignore') if isinstance(s, bytes) else u"%s" % s
+            suffix = u""
+            if u" BC" in txt:
+                core, rest = txt.split(u" BC", 1)
+                suffix = u" BC" + rest
+            else:
+                core = txt
+            parts = core.split(u".", 1)
+            if len(parts) >= 2:
+                y = parts[0]
+                y = u"%d" % int(y)
+                return y + u"." + parts[1] + suffix
+            return txt
+        except:
+            return s
 
     def get_sign_names_for_popup(self):
         # Start 팝업에 보일 이름(텍스트). 없어도 동작하게 안전 폴백.
@@ -150,7 +167,7 @@ class ZRWnd(commonwnd.CommonWnd):
         for r in self.rows:
             lvl  = int(r.get('level',2))
             sign = int(r['sign'])
-            start_s = zr.fmt_date(r['start'])
+            start_s = self._strip_year_zeros_ymd(zr.fmt_date(r['start']))
             len_s   = zr.fmt_length(r)
             cells = (u"L%d"%lvl, self.signs[sign], start_s, len_s)
 
@@ -372,6 +389,23 @@ class ZRDrillWnd(commonwnd.CommonWnd):
 
     def getExt(self):
         return u"ZR.bmp"
+    def _strip_year_zeros_ymd(self, s):
+        try:
+            txt = s.decode('utf-8','ignore') if isinstance(s, bytes) else u"%s" % s
+            suffix = u""
+            if u" BC" in txt:
+                core, rest = txt.split(u" BC", 1)
+                suffix = u" BC" + rest
+            else:
+                core = txt
+            parts = core.split(u".", 1)
+            if len(parts) >= 2:
+                y = parts[0]
+                y = u"%d" % int(y)
+                return y + u"." + parts[1] + suffix
+            return txt
+        except:
+            return s
 
     def _len_d_first(self, start, end):
         try:
@@ -419,7 +453,9 @@ class ZRDrillWnd(commonwnd.CommonWnd):
         y = y0
         for (lvl, sign, start, end) in self.rows:
             length_s = self._len_d_first(start, end)
-            cells = (u"L%d" % lvl, self.signs[int(sign)], zr.fmt_date(start), length_s)
+            cells = (u"L%d" % lvl, self.signs[int(sign)],
+                    getattr(self, "_strip_year_zeros_ymd", lambda x:x)(zr.fmt_date(start)),
+                    length_s)
             isL3  = (lvl == 3)
 
             if isL3:

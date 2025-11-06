@@ -58,6 +58,23 @@ class DecWnd(commonwnd.CommonWnd):
         wx_img = wx.Image(w, h)
         wx_img.SetData(im.tobytes())   # RGB 그대로 주입
         return wx.Bitmap(wx_img)
+    def _strip_year_zeros_ymd(self, s):
+        try:
+            txt = s.decode('utf-8','ignore') if isinstance(s, bytes) else u"%s" % s
+            suffix = u""
+            if u" BC" in txt:
+                core, rest = txt.split(u" BC", 1)
+                suffix = u" BC" + rest
+            else:
+                core = txt
+            parts = core.split(u".", 1)
+            if len(parts) >= 2:
+                y = parts[0]
+                y = u"%d" % int(y)   # ← 앞 0 제거(0이면 '0')
+                return y + u"." + parts[1] + suffix
+            return txt
+        except:
+            return s
 
     def getExt(self):
         return u"Decennials.bmp"
@@ -237,7 +254,7 @@ class DecWnd(commonwnd.CommonWnd):
         for r in self.rows:
             lvl = int(r.get('level', 2))
             p   = int(r['planet'])
-            start_s = dec.fmt_date(r['start'])
+            start_s = self._strip_year_zeros_ymd(dec.fmt_date(r['start']))
             len_s   = dec.fmt_length(r)
 
             # 행성 색
@@ -410,6 +427,24 @@ class _DecPopupWnd(commonwnd.CommonWnd):
         w,h = im.size
         wx_img = wx.Image(w,h); wx_img.SetData(im.tobytes())
         return wx.Bitmap(wx_img)
+    def _strip_year_zeros_ymd(self, s):
+        try:
+            txt = s.decode('utf-8','ignore') if isinstance(s, bytes) else u"%s" % s
+            suffix = u""
+            if u" BC" in txt:
+                core, rest = txt.split(u" BC", 1)
+                suffix = u" BC" + rest
+            else:
+                core = txt
+            parts = core.split(u".", 1)
+            if len(parts) >= 2:
+                y = parts[0]
+                y = u"%d" % int(y)   # ← 앞 0 제거(0이면 '0')
+                return y + u"." + parts[1] + suffix
+            return txt
+        except:
+            return s
+
     # Save As Bitmap 기본 파일명 접미사 (CommonWnd.onSaveAsBitmap에서 사용)
     def getExt(self):
         try:
@@ -490,7 +525,7 @@ class _DecPopupWnd(commonwnd.CommonWnd):
         for r in self.rows:
             lvl = int(r.get('level', self.level))
             p   = int(r['planet'])
-            start_s = dec.fmt_date(r['start'])
+            start_s = self._strip_year_zeros_ymd(dec.fmt_date(r['start']))
             len_s   = dec.fmt_length(r)
 
             # 색

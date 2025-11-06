@@ -399,7 +399,7 @@ class CircumWnd(cw.CommonWnd):
             # 5) Date
             dt = row.get('date', None)
             if isinstance(dt, datetime.date):
-                date_txt = u"%04d.%02d.%02d" % (dt.year, dt.month, dt.day)
+                date_txt = u"%d.%02d.%02d" % (dt.year, dt.month, dt.day)
             else:
                 date_txt = u""
             w = self.W_DATE
@@ -594,7 +594,7 @@ class CircumWnd(cw.CommonWnd):
             # 5) Date (YYYY.MM.DD)
             dt = row.get('date', None)
             if isinstance(dt, datetime.date):
-                date_txt = u"%04d.%02d.%02d" % (dt.year, dt.month, dt.day)
+                date_txt = u"%d.%02d.%02d" % (dt.year, dt.month, dt.day)
             else:
                 date_txt = u""
             w = self.W_DATE
