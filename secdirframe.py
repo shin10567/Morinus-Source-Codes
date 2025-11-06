@@ -214,7 +214,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
     - Ecliptic: 360° 값을 "dd°mm' <사인기호>"로 변환하여 중앙정렬(숫자=f_text, 기호=f_sym로 분리 렌더)
     - 나머지 칸은 텍스트 폰트로 중앙정렬
     """
-    COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Latitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Declination"])
+    COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
 
     ROWS = [
         ("Saturn",      astrology.SE_SATURN),
@@ -338,7 +338,8 @@ class SecProgPosWnd(commonwnd.CommonWnd):
             ddg, dmm, dss = util.decToDeg(abs(dec_deg))
             dec_txt = u"%s%02d°%02d'%02d\"" % (sgn, ddg, dmm, dss)
 
-            self.rows.append((body, (ecl_num, ecl_sign), lat_txt, (dode_num, dode_sign), dec_txt))
+            self.rows.append((body, (ecl_num, ecl_sign), (dode_num, dode_sign), lat_txt, dec_txt))
+
 
     def drawBkg(self):
         BOR = commonwnd.CommonWnd.BORDER
@@ -354,7 +355,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
         head_y = BOR
         draw.rectangle(((BOR, head_y), (BOR + self.TITLE_W, head_y + self.HEAD_H)), fill=bkg)
         x = BOR
-        COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Latitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Declination"])
+        COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
         for i, h in enumerate(COLS):
             tw, th = draw.textsize(h, self.f_text)
             draw.text((x + (self.COL_W[i]-tw)/2, head_y + (self.HEAD_H-th)/2), h, fill=txt, font=self.f_text)
@@ -370,7 +371,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
 
         # [본문]
         y = y0
-        for body, (ecl_num, ecl_sign), lat_txt, (dode_num, dode_sign), dec_txt in self.rows:
+        for body, (ecl_num, ecl_sign), (dode_num, dode_sign), lat_txt, dec_txt in self.rows:
             # 가로 하단선
             draw.line((x0, y + self.LINE_HEIGHT, x0 + self.TITLE_W, y + self.LINE_HEIGHT), fill=tbl)
 
@@ -415,19 +416,19 @@ class SecProgPosWnd(commonwnd.CommonWnd):
                        y + (self.LINE_HEIGHT - gh)/2), ecl_sign, fill=pclr, font=self.f_sym)
             xx += self.COL_W[1]
 
-            # Latitude
-            tw, th = draw.textsize(lat_txt, self.f_text)
-            draw.text((xx + (self.COL_W[2]-tw)/2, y + (self.LINE_HEIGHT-th)/2), lat_txt, fill=pclr, font=self.f_text)
-            xx += self.COL_W[2]
-
             # Dodecatemorion (숫자=f_text + 사인=f_sym 합산 중앙)
             tw, th = draw.textsize(dode_num, self.f_text)
             gw, gh = draw.textsize(dode_sign, self.f_sym)
             total  = tw + int(self.FONT_SIZE*0.35) + gw
-            base_x = xx + (self.COL_W[3] - total)/2
+            base_x = xx + (self.COL_W[2] - total)/2
             draw.text((base_x, y + (self.LINE_HEIGHT-th)/2), dode_num, fill=pclr, font=self.f_text)
             draw.text((base_x + tw + int(self.FONT_SIZE*0.35),
                     y + (self.LINE_HEIGHT-gh)/2), dode_sign, fill=pclr, font=self.f_sym)
+            xx += self.COL_W[2]
+
+            # Latitude
+            tw, th = draw.textsize(lat_txt, self.f_text)
+            draw.text((xx + (self.COL_W[3]-tw)/2, y + (self.LINE_HEIGHT-th)/2), lat_txt, fill=pclr, font=self.f_text)
             xx += self.COL_W[3]
 
             # Declination

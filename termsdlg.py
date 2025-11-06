@@ -201,9 +201,9 @@ class TermsDlg(wx.Dialog):
 				self.Close()
 				self.SetReturnCode(wx.ID_OK)
 			else:
-				txt = mtexts.txts['MultiPlanets']+'('+mtexts.termList[typ]+','+mtexts.signs[i]+')'
+				txt = mtexts.txts['MultiPlanets']+'('+mtexts.termList[typ]+', '+mtexts.signs[i]+').'
 				if errcode == NOT30:
-					txt = mtexts.txts['NOT30']+'('+mtexts.termList[typ]+','+mtexts.signs[i]+')'
+					txt = mtexts.txts['NOT30']+'('+mtexts.termList[typ]+', '+mtexts.signs[i]+').'
 				dlgm = wx.MessageDialog(None, txt, mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 				dlgm.ShowModal()
 				dlgm.Destroy()
