@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 # ##################################
 # Elias V 7.3.0
@@ -39,7 +40,9 @@ class FirdariaWnd(commonwnd.CommonWnd):
 		self.TITLE_WIDTH = (self.SMALL_CELL_WIDTH+self.BIG_CELL_WIDTH)
 		self.SPACE_TITLEY = 0
 
-		self.EXTRA_PERIODS = 3 #Three more planetary periods after year 75
+		#self.EXTRA_PERIODS = 3 #Three more planetary periods after year 75
+		self.EXTRA_PERIODS = planets.Planets.PLANETS_NUM  # 두 번째 풀사이클(≈150년)까지 표시
+
 # ##################################
 # Roberto V 7.3.0		
 		self.LINE_NUM = (planets.Planets.PLANETS_NUM + self.EXTRA_PERIODS)*6 #(planets.Planets.PLANETS_NUM+1)+2 #+2 is the number of the Nodes of the Moon
@@ -121,7 +124,7 @@ class FirdariaWnd(commonwnd.CommonWnd):
 
 		ln = 0
 		starting = self.fird.startdate
-		for index in range(len(planetaryyears) + self.EXTRA_PERIODS):
+		for index in range(2*len(planetaryyears)):
 			aindex = index % len(planetaryyears)
 			planet, years = planetaryyears[aindex]
 			ending = datetime(starting.year + years, starting.month, starting.day)

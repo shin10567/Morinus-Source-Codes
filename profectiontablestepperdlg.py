@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import chart
 import profections
@@ -65,7 +66,7 @@ class ProfectionTableStepperDlg(wx.Dialog):
 
 
 	def onIncrDozen(self, event):
-		if self.age+12 >= 100:
+		if self.age+12 >= 150:
 			return
 		self.age += 12
 		self.btnDecr.Enable(True)
