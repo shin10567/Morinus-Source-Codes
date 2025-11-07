@@ -1,4 +1,4 @@
-## [9.4.3] Updated Version from 8.1.0 
+## [9.4.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -232,3 +232,5 @@
 #### 9.4.3
 - Mundane Fortuna now respects the chart’s day/night status and the Fortuna formula selected under Options → Planets/Points → Arabic Parts.
 - Primary Directions updated to use Mundane Fortuna.
+#### 9.4.4
+- Patched Positions for Date to start at the same time as the main chart.
