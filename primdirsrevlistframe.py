@@ -26,7 +26,7 @@ class PrimDirsRevListFrame(wx.Frame):
 		toend_bmp= wx.ArtProvider.GetBitmap(wx.ART_GO_DOWN, wx.ART_TOOLBAR, tsize)
 
 		self.tb.SetToolBitmapSize(tsize)
-      
+		self.tb.AddControl(wx.StaticText(self.tb, -1, u'   '))
 		self.ID_Start = 10
 		self.tb.AddLabelTool(10, "Start", tostart_bmp, shortHelp=mtexts.txts["Start"], longHelp=mtexts.txts["ToFirstPage"])
 		self.Bind(wx.EVT_TOOL, self.OnStart, id=self.ID_Start)

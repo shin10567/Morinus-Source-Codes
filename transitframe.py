@@ -64,8 +64,8 @@ class TransitFrame(wx.Frame):
 			self.pddirectmenu = self.pdselmenu.Append(self.ID_PDDirect, mtexts.txts['Direct'], '')
 			self.pdconversemenu = self.pdselmenu.Append(self.ID_PDConverse, mtexts.txts['Converse'], '')
 			self.pdbothmenu = self.pdselmenu.Append(self.ID_PDBoth, mtexts.txts['Both'], '')
-			self.pdtoradix = self.pdselmenu.Append(self.ID_PDToRadix, mtexts.txts['PDToRadix'], '', wx.ITEM_CHECK)
-			self.pdtoradix.Enable(False)
+			#self.pdtoradix = self.pdselmenu.Append(self.ID_PDToRadix, mtexts.txts['PDToRadix'], '', wx.ITEM_CHECK)
+			#self.pdtoradix.Enable(False)
 			self.pmenu.Append(self.ID_PrimaryDirections, mtexts.txts['PrimaryDirs'], self.pdselmenu)
 
 		self.pmenu.Append(self.ID_SaveAsBitmap, mtexts.txts['SaveAsBmp'], mtexts.txts['SaveChart'])

@@ -46,14 +46,39 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 			self.ID_PDsInChartInMun = wx.NewId()
 			self.ID_PDsInChartIngress = wx.NewId()
 
-		self.pmenu.Append(self.ID_SaveAsBitmap, mtexts.txts['SaveAsBmp'], mtexts.txts['SaveTable'])
-		self.pmenu.Append(self.ID_SaveAsText, mtexts.txts['SaveAsText'], mtexts.txts['SavePDs'])
-		mbw = self.pmenu.Append(self.ID_BlackAndWhite, mtexts.txts['BlackAndWhite'], mtexts.txts['TableBW'], wx.ITEM_CHECK)
+		#self.pmenu.Append(self.ID_SaveAsBitmap, mtexts.txts['SaveAsBmp'], mtexts.txts['SaveTable'])
+		#self.pmenu.Append(self.ID_SaveAsText, mtexts.txts['SaveAsText'], mtexts.txts['SavePDs'])
+		#mbw = self.pmenu.Append(self.ID_BlackAndWhite, mtexts.txts['BlackAndWhite'], mtexts.txts['TableBW'], wx.ITEM_CHECK)
+		#if chrt.htype == chart.Chart.RADIX:
+			#self.pmenu.Append(self.ID_PDsInChartInZod, mtexts.txts['PDsInChartInZod'], mtexts.txts['PDsInChartInZod'])
+			#self.pmenu.Append(self.ID_PDsInChartInMun, mtexts.txts['PDsInChartInMun'], mtexts.txts['PDsInChartInMun'])
+			#self.pmenu.Append(self.ID_PDsInChartIngress, mtexts.txts['PDsInChartIngress'], mtexts.txts['PDsInChartIngress'])
+		# --- PDs in Chart 하위 메뉴를 먼저 만들고 상단에 배치 ---
 		if chrt.htype == chart.Chart.RADIX:
-			self.pmenu.Append(self.ID_PDsInChartInZod, mtexts.txts['PDsInChartInZod'], mtexts.txts['PDsInChartInZod'])
-			self.pmenu.Append(self.ID_PDsInChartInMun, mtexts.txts['PDsInChartInMun'], mtexts.txts['PDsInChartInMun'])
-			self.pmenu.Append(self.ID_PDsInChartIngress, mtexts.txts['PDsInChartIngress'], mtexts.txts['PDsInChartIngress'])
-		
+			self.pdsmenu = wx.Menu()
+			self.pdsmenu.Append(self.ID_PDsInChartInZod, mtexts.txts['PDsInChartInZod'], mtexts.txts['PDsInChartInZod'])
+			self.pdsmenu.Append(self.ID_PDsInChartInMun, mtexts.txts['PDsInChartInMun'], mtexts.txts['PDsInChartInMun'])
+			self.pdsmenu.Append(self.ID_PDsInChartIngress, mtexts.txts['PDsInChartIngress'], mtexts.txts['PDsInChartIngress'])
+
+			# wx 4.x (Phoenix): AppendSubMenu, 구버전 호환: AppendMenu
+			if hasattr(self.pmenu, "AppendSubMenu"):
+				self.pmenu.AppendSubMenu(self.pdsmenu, mtexts.txts['PDsInChart'])
+			else:
+				self.pmenu.AppendMenu(wx.ID_ANY, mtexts.txts['PDsInChart'], self.pdsmenu)
+
+		# --- Save 하위 메뉴 묶음 ---
+		self.savemenu = wx.Menu()
+		self.savemenu.Append(self.ID_SaveAsBitmap, mtexts.txts['SaveAsBmp'], mtexts.txts['SaveTable'])
+		self.savemenu.Append(self.ID_SaveAsText,  mtexts.txts['SaveAsText'], mtexts.txts['SavePDs'])
+		label_save = mtexts.txts['Save'] if 'Save' in mtexts.txts else u'Save'
+
+		if hasattr(self.pmenu, "AppendSubMenu"):
+			self.pmenu.AppendSubMenu(self.savemenu, label_save)
+		else:
+			self.pmenu.AppendMenu(wx.ID_ANY, label_save, self.savemenu)
+
+		mbw = self.pmenu.Append(self.ID_BlackAndWhite, mtexts.txts['BlackAndWhite'], mtexts.txts['TableBW'], wx.ITEM_CHECK)
+
 		self.Bind(wx.EVT_PAINT, self.OnPaint)
 		self.Bind(wx.EVT_RIGHT_UP, self.onPopupMenu)
 		self.Bind(wx.EVT_MENU, self.onSaveAsBitmap, id=self.ID_SaveAsBitmap)
@@ -209,9 +234,11 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 
 	def onPDsInChartZod(self, event):
 		valid, pdnum = self.getPDNum(event)
-
 		if not valid:
+			dlg = wx.MessageDialog(self, mtexts.txts['PDClickError'], mtexts.txts['Message'], wx.OK|wx.ICON_EXCLAMATION)
+			dlg.ShowModal()
 			return
+
 		idx = self._pd_index(pdnum, len(self.pds.pds))
 		if idx is None:
 			return  
@@ -242,9 +269,11 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 
 	def onPDsInChartMun(self, event):
 		valid, pdnum = self.getPDNum(event)
-
 		if not valid:
+			dlg = wx.MessageDialog(self, mtexts.txts['PDClickError'], mtexts.txts['Message'], wx.OK|wx.ICON_EXCLAMATION)
+			dlg.ShowModal()
 			return
+
 		idx = self._pd_index(pdnum, len(self.pds.pds))
 		if idx is None:
 			return
@@ -278,7 +307,10 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 	def onPDsInChartIngress(self, event):
 		valid, pdnum = self.getPDNum(event)
 		if not valid:
+			dlg = wx.MessageDialog(self, mtexts.txts['PDClickError'], mtexts.txts['Message'], wx.OK|wx.ICON_EXCLAMATION)
+			dlg.ShowModal()
 			return
+
 		idx = self._pd_index(pdnum, len(self.pds.pds))
 		if idx is None:
 			return
@@ -437,6 +469,8 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 
 			pdnum = (self.currpage-1)*2*self.LINE_NUM + self.LINE_NUM*col + rownum
 			return pdnum < len(self.pds.pds), pdnum
+			# (추가) 표 영역 바깥을 클릭한 경우
+		return False, None
 
 	def OnPaint(self, event):
 		dc = wx.BufferedPaintDC(self, self.buffer, wx.BUFFER_VIRTUAL_AREA)
