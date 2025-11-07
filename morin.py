@@ -324,17 +324,17 @@ class MFrame(wx.Frame):
 
 		# Planets/Points
 		self.tplanets = wx.Menu()
-		self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   # Speculum
-		self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc'])     # aspects
-		self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])    # antiscia
-		self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc'])      # mundane fortuna (= Mundane positions)
-		self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])       # 30 deg
+		self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   
+		self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
+		self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])    
+		self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])       
+		self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc']) 
 		self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
+		self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])
 		self.tplanets.Append(self.ID_Speeds,           mtexts.menutxts['TMSpeeds'],           mtexts.menutxts['TMSpeedsDoc'])
-		self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])     # zodiacal parallel
-		self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])     # rise set times
+		self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])     
 		self.tplanets.Append(self.ID_PlanetaryHours,   mtexts.menutxts['TMPlanetaryHours'],   mtexts.menutxts['TMPlanetaryHoursDoc'])
-		self.tplanets.Append(self.ID_Phasis,           mtexts.menutxts['TMPhasis'],           mtexts.menutxts['TMPhasisDoc'])      # heliacal
+		self.tplanets.Append(self.ID_Phasis,           mtexts.menutxts['TMPhasis'],           mtexts.menutxts['TMPhasisDoc'])     
 		self.tplanets.Append(self.ID_Midpoints,        mtexts.menutxts['TMMidpoints'],        mtexts.menutxts['TMMidpointsDoc'])
 		self.tplanets.Append(self.ID_Arabians,         mtexts.menutxts['TMArabianParts'],     mtexts.menutxts['TMArabianPartsDoc'])
 		self.tplanets.Append(self.ID_Eclipses,         mtexts.menutxts['TMEclipses'],         mtexts.menutxts['TMEclipsesDoc'])
@@ -3212,17 +3212,17 @@ class MFrame(wx.Frame):
 
 				# Planets/Points
 				self.tplanets = wx.Menu()
-				self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   # Speculum
-				self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc'])     # aspects
-				self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])    # antiscia
-				self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc'])      # mundane fortuna (= Mundane positions)
-				self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])       # 30 deg
+				self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   
+				self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
+				self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])    
+				self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])       
+				self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc']) 
 				self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
+				self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])
 				self.tplanets.Append(self.ID_Speeds,           mtexts.menutxts['TMSpeeds'],           mtexts.menutxts['TMSpeedsDoc'])
-				self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])     # zodiacal parallel
-				self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])     # rise set times
+				self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])     
 				self.tplanets.Append(self.ID_PlanetaryHours,   mtexts.menutxts['TMPlanetaryHours'],   mtexts.menutxts['TMPlanetaryHoursDoc'])
-				self.tplanets.Append(self.ID_Phasis,           mtexts.menutxts['TMPhasis'],           mtexts.menutxts['TMPhasisDoc'])      # heliacal
+				self.tplanets.Append(self.ID_Phasis,           mtexts.menutxts['TMPhasis'],           mtexts.menutxts['TMPhasisDoc'])     
 				self.tplanets.Append(self.ID_Midpoints,        mtexts.menutxts['TMMidpoints'],        mtexts.menutxts['TMMidpointsDoc'])
 				self.tplanets.Append(self.ID_Arabians,         mtexts.menutxts['TMArabianParts'],     mtexts.menutxts['TMArabianPartsDoc'])
 				self.tplanets.Append(self.ID_Eclipses,         mtexts.menutxts['TMEclipses'],         mtexts.menutxts['TMEclipsesDoc'])
