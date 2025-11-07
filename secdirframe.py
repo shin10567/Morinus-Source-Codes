@@ -11,9 +11,10 @@ import sweastrology as swe
 import planets as pl
 import util
 import math
-# ---------- CommonWnd 표용 유틸 ----------
+import calendar
 import Image, ImageDraw, ImageFont
 import commonwnd
+
 # --- replace this whole function (near the top) ---
 def _load_planet_glyphs(options):
     # Morinus 빌드에 따라 Planets, Planets1/2 이름이 다를 수 있음
@@ -122,17 +123,51 @@ class SecDirFrame(transitframe.TransitFrame):
         return astrology.SE_JUL_CAL if self.chart.time.cal == chart.Time.JULIAN else astrology.SE_GREG_CAL
 
     def _update_age_and_realdate(self):
-        # JD 기반 나이 산출(세컨더리: 1년=1일)
+        # JD들
         birth_jd = self.radix.time.jd
         prog_jd  = self.chart.time.jd
-        age_years_int = int(round(prog_jd - birth_jd))
 
-        # 'Real date' = 출생일 + (정수 나이) * 365.2422
-        real_jd = birth_jd + age_years_int * NAIBOD_YEAR_DAYS
+        # 에피메리스 기준 경과일수(=연수) 분해: 정수년 + 소수(연의 일부)
+        delta_ephem_days = float(prog_jd - birth_jd)
+        # 반올림이 아닌 내림: 경계 부동소수 오차 방지용 epsilon
+        years_passed = int(math.floor(delta_ephem_days + 1e-12))
+        frac_ephem   = max(0.0, delta_ephem_days - years_passed)  # [0,1) 기대
+
+        # 라딕스(출생) UT 시각 앵커 고정
+        nt = self.radix.time
+        try:
+            ut_anchor = float(nt.time)
+        except Exception:
+            ut_anchor = float(nt.hour) + float(nt.minute)/60.0 + float(nt.second)/3600.0
+
+        # 표시용 달력 플래그(입력 차트의 달력 유지)
         calflag = self._calflag_from_chart()
+
+        # 출생년/월/일
+        by, bm, bd, _ = astrology.swe_revjul(birth_jd, calflag)
+
+        # 올해(마지막 생일이 포함된 해)
+        anniv_year = by + years_passed
+
+        # 2/29 출생 → 비윤년엔 2/28로 보정 (윤년 판정은 그레고리 규칙)
+        adj_bd = 28 if (bm == 2 and bd == 29 and not calendar.isleap(anniv_year)) else bd
+
+        # '마지막 생일'의 현실 JD
+        anniv_jd = astrology.swe_julday(anniv_year, bm, adj_bd, ut_anchor, calflag)
+
+        # 올해의 현실 일수(그레고리 윤년 규칙)
+        days_in_year = 366.0 if calendar.isleap(anniv_year) else 365.0
+
+        # 에피메리스 소수(연의 일부) → 현실 날짜의 일수로 스케일
+        remainder_real_days = frac_ephem * days_in_year
+
+        # 최종 ‘Real date’의 JD
+        real_jd = anniv_jd + remainder_real_days
+
+        # 표시값(Y-M-D) 변환
         y, m, d, _ = astrology.swe_revjul(real_jd, calflag)
 
-        # 상태바: 항상 2필드로 강제 재설정(TransitFrame이 바꿔놔도 되돌림)
+        # 상태바(2필드: Age / Real) 보장
         sb = self.GetStatusBar()
         if not sb:
             self.CreateStatusBar(2)
@@ -151,14 +186,15 @@ class SecDirFrame(transitframe.TransitFrame):
         except Exception:
             pass
 
-        # 텍스트 반영
+        # 텍스트 갱신 (Age=정수년, Real=현실 달력 날짜)
+        age_years_int = years_passed
         try:
             self.SetStatusText("%s: %d" % (mtexts.txts['Age'], age_years_int), 0)
             self.SetStatusText("%s: %04d.%02d.%02d" % (mtexts.txts['Real'], y, m, d), 1)
         except Exception:
             pass
 
-        # 타이틀 꼬리표도 동기화
+        # 타이틀 꼬리표 동기화
         base = self.GetTitle()
         tag = " | %s: %d | %s: %04d.%02d.%02d" % (mtexts.txts['Age'], age_years_int, mtexts.txts['Real'], y, m, d)
         marker = " | " + mtexts.txts['Age'] + ":"
@@ -166,7 +202,7 @@ class SecDirFrame(transitframe.TransitFrame):
             base = base.split(marker)[0]
         self.SetTitle(base + tag)
 
-        # idle 훅의 불필요한 재갱신 방지를 위한 시그니처 저장
+        # idle 훅 시그니처
         self._last_status_sig = (age_years_int, y, m, d)
 
     def __init__(self, parent, title, chrt, radix, options):

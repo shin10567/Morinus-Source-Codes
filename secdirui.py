@@ -17,6 +17,7 @@ class SecDirDialog(wx.Dialog):
     def __init__(self, parent, on_calculate, on_step_year=None):
         wx.Dialog.__init__(self, parent, title=mtexts.txts["SecondaryProgressions"],
                            style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
         self.on_calculate = on_calculate
         self.on_step_year = on_step_year
 
@@ -43,10 +44,24 @@ class SecDirDialog(wx.Dialog):
         grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Days"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.day = wx.SpinCtrl(self, wx.ID_ANY, min=1, max=31, initial=1); self.day.SetMinSize((48, -1))
         grid.Add(self.day, 0, 0)
+        # Help texts aligned with PersonalDataDlg
+        try:
+            self.year.SetHelpText(mtexts.txts["HelpYear"])
+            self.month.SetHelpText(mtexts.txts["HelpMonth"])
+            self.day.SetHelpText(mtexts.txts["HelpDay"])
+        except Exception:
+            pass
 
         btns = wx.BoxSizer(wx.HORIZONTAL)
         self.btn_calc = wx.Button(self, wx.ID_ANY, mtexts.txts["Calculate"])
         btn_close     = wx.Button(self, wx.ID_CLOSE, mtexts.txts["Close"])
+        # Button helps
+        try:
+            self.btn_calc.SetHelpText(mtexts.txts["HelpOk"])
+            btn_close.SetHelpText(mtexts.txts["HelpCancel"])
+        except Exception:
+            pass
+
         btns.AddStretchSpacer(1)
         btns.Add(self.btn_calc, 0, 0, 0)
         btns.Add(btn_close, 0, wx.LEFT, 8)

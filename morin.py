@@ -2406,7 +2406,24 @@ class MFrame(wx.Frame):
 			ut_anchor = float(nt.time)
 
 			target_jd = astrology.swe_julday(int(yy), int(mm_), int(dd_), ut_anchor, calflag)
-			age_years = (target_jd - birth_jd) / NAIBOD_YEAR_DAYS
+			# 윤년 규칙 반영: 정수 '년'은 1일, 해당 해의 '일'은 1/365 또는 1/366일로 환산
+			import calendar
+			by, bm, bd, _ = astrology.swe_revjul(birth_jd, calflag)
+			ty, tm, td, _ = astrology.swe_revjul(target_jd, calflag)
+
+			# 마지막 생일이 지난 해
+			anniv_year = ty if (tm, td) >= (bm, bd) else (ty - 1)
+
+			# 2/29 출생자가 비윤년이면 2/28로 처리(다른 정책이면 여기만 조정)
+			anniv_day = 28 if (bm == 2 and bd == 29 and not calendar.isleap(anniv_year)) else bd
+			anniv_jd = astrology.swe_julday(anniv_year, bm, anniv_day, ut_anchor, calflag)
+
+			years_passed   = anniv_year - by
+			days_in_year   = 366.0 if calendar.isleap(anniv_year) else 365.0
+			remainder_days = (target_jd - anniv_jd)
+
+			age_years = years_passed + (remainder_days / days_in_year)
+
 			py, pm, pd, ptime = astrology.swe_revjul(birth_jd + age_years, calflag)
 			ph = int(ptime); pmi = int((ptime - ph) * 60.0 + 1e-6); ps = int(round(((ptime - ph) * 60.0 - pmi) * 60.0))
 			tm = chart.Time(int(py), int(pm), int(pd), ph, pmi, ps, False, nt.cal,

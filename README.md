@@ -234,3 +234,4 @@
 - Primary Directions updated to use Mundane Fortuna.
 #### 9.4.4
 - Patched Positions for Date to start at the same time as the main chart.
+- Added help texts to Positions for Date, reordered fields, and refined calculation precision (Mean Time).
