@@ -295,7 +295,7 @@ class RevolutionsDlg(wx.Dialog):
 				except Exception:
 					self.Close()                    # 혹시 모달이 아닐 경우 안전장치
 			else:
-				dlgm = wx.MessageDialog(self, mtexts.txts['InvalidDate']+' ('+self.year.GetValue()+'.'+self.month.GetValue()+'.'+self.day.GetValue()+'.)', mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+				dlgm = wx.MessageDialog(self, mtexts.txts['InvalidDate']+' ('+self.year.GetValue()+'.'+self.month.GetValue()+'.'+self.day.GetValue()+')', mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 				dlgm.ShowModal()		
 				dlgm.Destroy()
 

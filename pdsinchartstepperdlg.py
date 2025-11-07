@@ -125,7 +125,7 @@ class PDsInChartStepperDlg(wx.Dialog):
 		fgsizer.Add(vsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		self.minutetxt = wx.StaticText(self, -1, mtexts.txts['Minute']+':')
+		self.minutetxt = wx.StaticText(self, -1, mtexts.txts['Min']+':')
 		vsizer.Add(self.minutetxt, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.minute = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(50,-1))
 		self.minute.SetHelpText(mtexts.txts['HelpMin'])
@@ -135,7 +135,7 @@ class PDsInChartStepperDlg(wx.Dialog):
 		fgsizer.Add(vsizer, 0, wx.ALIGN_LEFT|wx.ALL, 5)
 
 		vsizer = wx.BoxSizer(wx.VERTICAL)
-		self.secondtxt = wx.StaticText(self, -1, mtexts.txts['Second']+':')
+		self.secondtxt = wx.StaticText(self, -1, mtexts.txts['Sec']+':')
 		vsizer.Add(self.secondtxt, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.LEFT, 0)
 		self.second = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 59), size=(50,-1))
 		self.second.SetHelpText(mtexts.txts['HelpMin'])
@@ -378,7 +378,7 @@ class PDsInChartStepperDlg(wx.Dialog):
 
 				self.parent.change(pdchart, y, m, d, ho, mi, se, mtexts.typeListDirs[self.options.primarydir], keytxt, txtdir, math.fabs(da))
 			else:
-				dlgm = wx.MessageDialog(None, mtexts.txts['InvalidDate']+' ('+self.year.GetValue()+'.'+self.month.GetValue()+'.'+self.day.GetValue()+'.)', mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+				dlgm = wx.MessageDialog(None, mtexts.txts['InvalidDate']+' ('+self.year.GetValue()+'.'+self.month.GetValue()+'.'+self.day.GetValue()+')', mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 				dlgm.ShowModal()		
 				dlgm.Destroy()
 

@@ -102,7 +102,7 @@ class TransitMonthDlg(wx.Dialog):
 				self.Close()
 				self.SetReturnCode(wx.ID_OK)
 			else:
-				dlgm = wx.MessageDialog(None, mtexts.txts['InvalidDate']+' ('+self.year.GetValue()+'.'+self.month.GetValue()+'.)', mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
+				dlgm = wx.MessageDialog(None, mtexts.txts['InvalidDate']+' ('+self.year.GetValue()+'.'+self.month.GetValue()+')', mtexts.txts['Error'], wx.OK|wx.ICON_EXCLAMATION)
 				dlgm.ShowModal()		
 				dlgm.Destroy()
 
