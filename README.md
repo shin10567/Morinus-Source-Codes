@@ -1,4 +1,4 @@
-## [9.4.2] Updated Version from 8.1.0 
+## [9.4.3] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -229,3 +229,6 @@
 - Zodiacal Releasing: fixed an issue where chart times near midnight incorrectly used the previous day as the start date.
 #### 9.4.2
 - Raised the limit of the Firdaria and Profections tables to 150 years.
+#### 9.4.3
+- Mundane Fortuna now respects the chart’s day/night status and the Fortuna formula selected under Options → Planets/Points → Arabic Parts.
+- Primary Directions updated to use Mundane Fortuna.

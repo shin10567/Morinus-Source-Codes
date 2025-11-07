@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import wx
 import astrology
@@ -8,6 +9,7 @@ import commonwnd
 import Image, ImageDraw, ImageFont
 import util
 import mtexts
+import munfortune
 
 
 class MunPosWnd(commonwnd.CommonWnd):
@@ -113,6 +115,28 @@ class MunPosWnd(commonwnd.CommonWnd):
 			x = BOR
 			y = BOR+self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM)*(self.LINE_HEIGHT)+self.SPACE_ARABIANY
 			draw.rectangle(((x,y),(x+self.TITLE_WIDTH_ARABIAN, y+self.LINE_HEIGHT)), outline=(tableclr), fill=(self.bkgclr))
+			# 옵션(주/야·공식) 반영하여 최신 Mundane Fortune 재계산
+			try:
+				# 섹트(주/야) 판단: 기본은 태양의 abovehorizon 속성 사용
+				abovehor = False
+				try:
+					abovehor = self.chart.planets.planets[astrology.SE_SUN].abovehorizon
+				except Exception:
+					# 혹시 속성이 없으면, 기존 chart에 계산돼 있을 수 있는 값을 시도 (프로젝트 컨벤션에 맞춰 조정)
+					abovehor = getattr(self.chart, 'abovehorizonwithorb', getattr(self.chart, 'abovehorizon', False))
+
+				self.chart.munfortune = munfortune.MundaneFortune(
+					self.options.lotoffortune,
+					self.chart.houses.ascmc2,
+					self.chart.planets,
+					self.chart.obl[0],
+					self.chart.place.lat,
+					abovehor
+				)
+			except Exception:
+				# 재계산 실패 시에도 기존 캐시값으로 그리기 (표 그리기 중단 방지)
+				pass
+
 			self.drawlinelof(draw, x, y, mtexts.txts['MLoF'], self.chart.munfortune.mfortune, tableclr, 0)
 
 		wxImg = wx.Image(img.size[0], img.size[1])

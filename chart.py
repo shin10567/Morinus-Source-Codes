@@ -359,7 +359,7 @@ class Chart:
 # Roberto change  V 7.3.0		
 			self.firdaria = firdaria.Firdaria(self.time.origyear, self.time.origmonth, self.time.origday, self.options, self.abovehorizonwithorb)
 # ###########################################
-			self.munfortune = munfortune.MundaneFortune(self.houses.ascmc2, self.planets, self.obl[0], self.place.lat)
+			self.munfortune = munfortune.MundaneFortune(self.options.lotoffortune, self.houses.ascmc2, self.planets, self.obl[0], self.place.lat, abovehor)
 			self.syzygy = syzygy.Syzygy(self)
 			self.parts = arabicparts.ArabicParts(self.options.arabicparts, self.houses.ascmc, self.planets, self.houses, self.houses.cusps, self.fortune, self.syzygy, self.options)
 			self.fixstars = fixstars.FixStars(self.time.jd, fsflag, self.options.fixstars, self.obl[0])

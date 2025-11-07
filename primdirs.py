@@ -191,10 +191,12 @@ class PrimDirs:
 			# Fortune(LoF)을 전역 옵션으로 갱신한 '바로 다음'에 munfortune도 갱신
 			try:
 				self.chart.munfortune = munfortune.MundaneFortune(
-					self.chart.houses.ascmc2,   # ascmc2
-					self.chart.planets,         # pls
-					self.chart.obl[0],          # obl
-					self.chart.place.lat        # placelat
+					opts.lotoffortune,
+					self.chart.houses.ascmc2,
+					self.chart.planets,
+					self.chart.obl[0],
+					self.chart.place.lat,
+					abovehor
 				)
 			except Exception:
 				pass
@@ -308,10 +310,12 @@ class PrimDirs:
 				# Fortune(LoF)을 전역 옵션으로 갱신한 '바로 다음'에 munfortune도 갱신
 				try:
 					self.chart.munfortune = munfortune.MundaneFortune(
+						opts.lotoffortune,
 						self.chart.houses.ascmc2,
 						self.chart.planets,
 						self.chart.obl[0],
-						self.chart.place.lat
+						self.chart.place.lat,
+						abovehor
 					)
 				except Exception:
 					pass
