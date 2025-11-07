@@ -2402,7 +2402,9 @@ class MFrame(wx.Frame):
 
 		def make_progressed_chart(yy, mm_, dd_):
 			# 현실 날짜 → age → 진행차트 + 진행(점성술) 날짜
-			ut_anchor = float(nt.hour) + float(nt.minute)/60.0 + float(nt.second)/3600.0
+			# 라딕스의 UT 시각을 그대로 앵커로 사용 (타임존/Mean/Local 모드와 무관하게 일관)
+			ut_anchor = float(nt.time)
+
 			target_jd = astrology.swe_julday(int(yy), int(mm_), int(dd_), ut_anchor, calflag)
 			age_years = (target_jd - birth_jd) / NAIBOD_YEAR_DAYS
 			py, pm, pd, ptime = astrology.swe_revjul(birth_jd + age_years, calflag)
@@ -3870,7 +3872,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.4.3'
+		info.Version = '9.4.4'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

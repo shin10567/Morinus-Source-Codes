@@ -217,16 +217,16 @@ class SecProgPosWnd(commonwnd.CommonWnd):
     COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
 
     ROWS = [
-        ("Saturn",      astrology.SE_SATURN),
-        ("Jupiter",     astrology.SE_JUPITER),
-        ("Mars",        astrology.SE_MARS),
-        ("Sun",         astrology.SE_SUN),
-        ("Venus",       astrology.SE_VENUS),
-        ("Mercury",     astrology.SE_MERCURY),
-        ("Moon",        astrology.SE_MOON),
-        ("Uranus",      astrology.SE_URANUS),
-        ("Neptune",     astrology.SE_NEPTUNE),
-        ("Pluto",       astrology.SE_PLUTO),
+        ("Sun",        astrology.SE_SUN),
+        ("Moon",       astrology.SE_MOON),
+        ("Mercury",    astrology.SE_MERCURY),
+        ("Venus",      astrology.SE_VENUS),
+        ("Mars",       astrology.SE_MARS),
+        ("Jupiter",    astrology.SE_JUPITER),
+        ("Saturn",     astrology.SE_SATURN),
+        ("Uranus",     astrology.SE_URANUS),
+        ("Neptune",    astrology.SE_NEPTUNE),
+        ("Pluto",      astrology.SE_PLUTO),
         ("NorthNode",  getattr(astrology, "SE_TRUE_NODE", astrology.SE_MEAN_NODE)),
     ]
 
@@ -309,20 +309,20 @@ class SecProgPosWnd(commonwnd.CommonWnd):
 
             # Ecliptic: 숫자(DMS) + 사인 기호 분리
             si, d, m, s = _deg360_to_sign_dms(lon)
-            ecl_num  = u"%02d°%02d'%02d\"" % (d, m, s)
+            ecl_num  = u"%0d°%02d'%02d\"" % (d, m, s)
             ecl_sign = self.signs[si]
 
             # Latitude(+/−dd°mm'ss")
-            sign = u'+' if lat >= 0 else u'-'
             ld, lm, ls = util.decToDeg(abs(lat))
-            lat_txt = u"%s%02d°%02d'%02d\"" % (sign, ld, lm, ls)
+            lat_deg_txt = (u"-" + (u"%2d" % ld)) if (lat < 0) else (u"%d" % ld)
+            lat_txt = lat_deg_txt + u"°%02d'%02d\"" % (lm, ls)
 
             # Dodecatemorion → sign + DMS
             x = lon % 360.0
             sign_idx = int(x // 30); intra = x - sign_idx * 30.0
             dode = (sign_idx * 30.0 + intra * 12.0) % 360.0
             si2, d2, m2, s2 = _deg360_to_sign_dms(dode)
-            dode_num  = u"%02d°%02d'%02d\"" % (d2, m2, s2)
+            dode_num  = u"%0d°%02d'%02d\"" % (d2, m2, s2)
             dode_sign = self.signs[si2]
 
             # Declination (ecliptic→equatorial)
@@ -334,9 +334,9 @@ class SecProgPosWnd(commonwnd.CommonWnd):
                 lam = math.radians(lon); bet = math.radians(lat)
                 sin_dec = math.sin(bet)*math.cos(er) + math.cos(bet)*math.sin(er)*math.sin(lam)
                 dec_deg = math.degrees(math.asin(max(-1.0, min(1.0, sin_dec))))
-            sgn = u'+' if dec_deg >= 0 else u'-'
             ddg, dmm, dss = util.decToDeg(abs(dec_deg))
-            dec_txt = u"%s%02d°%02d'%02d\"" % (sgn, ddg, dmm, dss)
+            dec_deg_txt = (u"-" + (u"%2d" % ddg)) if (dec_deg < 0) else (u"%d" % ddg)
+            dec_txt = dec_deg_txt + u"°%02d'%02d\"" % (dmm, dss)
 
             self.rows.append((body, (ecl_num, ecl_sign), (dode_num, dode_sign), lat_txt, dec_txt))
 
