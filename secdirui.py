@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import wx
 import mtexts
+import rangechecker
+import intvalidator
 
 class SecDirDialog(wx.Dialog):
     """
@@ -34,19 +36,36 @@ class SecDirDialog(wx.Dialog):
 
         # (Growable 열 제거: 입력칸이 가로로 퍼지지 않게)
         grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Year"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.year = wx.SpinCtrl(self, wx.ID_ANY, min=-5000, max=5000, initial=2000); self.year.SetMinSize((60, -1))
+        checker = rangechecker.RangeChecker()
+        _rnge = 5000 if checker.isExtended() else 3000
+        self.year = wx.SpinCtrl(self, wx.ID_ANY, min=-_rnge, max=_rnge, initial=2000)
+        self._yr_limit = _rnge       # ← 아라빅파츠dlg처럼 내부 한계값을 보관
+        self.year.SetMinSize((60, -1))
         grid.Add(self.year, 0, 0)
 
         grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Month"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.month = wx.SpinCtrl(self, wx.ID_ANY, min=1, max=12, initial=1); self.month.SetMinSize((48, -1))
         grid.Add(self.month, 0, 0)
 
-        grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Days"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self, wx.ID_ANY, mtexts.txts["Day"]+":"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.day = wx.SpinCtrl(self, wx.ID_ANY, min=1, max=31, initial=1); self.day.SetMinSize((48, -1))
         grid.Add(self.day, 0, 0)
+        # --- ArabicPartsDlg 패턴: 스핀/텍스트 즉시 검증 ---
+        self._year_prev = self.year.GetValue()
+        self.year.Bind(wx.EVT_SPINCTRL, self._on_year_spin)
+        self.year.Bind(wx.EVT_TEXT,     self._on_year_text)
+
+        self._month_prev = self.month.GetValue()
+        self.month.Bind(wx.EVT_SPINCTRL, lambda e: self._on_bound_spin(self.month, 1, 12, e))
+        self.month.Bind(wx.EVT_TEXT,     lambda e: self._on_bound_text(self.month, 1, 12, e))
+
+        self._day_prev = self.day.GetValue()
+        self.day.Bind(wx.EVT_SPINCTRL,   lambda e: self._on_bound_spin(self.day, 1, 31, e))
+        self.day.Bind(wx.EVT_TEXT,       lambda e: self._on_bound_text(self.day, 1, 31, e))
+
         # Help texts aligned with PersonalDataDlg
         try:
-            self.year.SetHelpText(mtexts.txts["HelpYear"])
+            self.year.SetHelpText(mtexts.txts["HelpYear"] if _rnge == 5000 else mtexts.txts["HelpYear2"])
             self.month.SetHelpText(mtexts.txts["HelpMonth"])
             self.day.SetHelpText(mtexts.txts["HelpDay"])
         except Exception:
@@ -71,7 +90,7 @@ class SecDirDialog(wx.Dialog):
         root.Add(title, 0, wx.ALL, 8)
 
         hdr = wx.BoxSizer(wx.HORIZONTAL)
-        hdr.Add(self.lbl_age,  0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 12)
+        hdr.Add(self.lbl_age,  0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 20)
         hdr.Add(self.lbl_prog, 0, wx.ALIGN_CENTER_VERTICAL)
         root.Add(hdr,  0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 8)
 
@@ -93,7 +112,7 @@ class SecDirDialog(wx.Dialog):
            progressed_tuple: (Y,M,D) progressed astrologic date to display (optional)
         """
         try:
-            self.lbl_age.SetLabel(mtexts.txts["Age"]+": %d," % int(age_int))
+            self.lbl_age.SetLabel(mtexts.txts["Age"]+": %d, " % int(age_int))
         except Exception:
             pass
         try:
@@ -115,9 +134,39 @@ class SecDirDialog(wx.Dialog):
         return  # compatibility no-op
 
     def _on_calc(self, evt):
+        # 입력 필드에서 현재 값 취득
         y = int(self.year.GetValue())
         m = int(self.month.GetValue())
         d = int(self.day.GetValue())
+
+        # profdlg와 같은 범위/도움말 규칙을 따름
+        checker = rangechecker.RangeChecker()
+        _rnge = 5000 if checker.isExtended() else 3000
+
+        # Year 범위 검사 → RangeError
+        if y < -_rnge or y > _rnge:
+            wx.MessageBox(mtexts.txts['RangeError'], mtexts.txts['Error'],
+                          wx.OK | wx.ICON_EXCLAMATION, self)
+            return
+
+        # 실제 존재하는 날짜인지 검사 → InvalidDate
+        # (2월 윤년 규칙: Gregorian, profdlg와 동일 판정)
+        if m in (1, 3, 5, 7, 8, 10, 12):
+            _mdays = 31
+        elif m == 2:
+            _mdays = 29 if self._is_leap_greg(y) else 28
+        else:
+            _mdays = 30
+
+        if d < 1 or d > _mdays:
+            wx.MessageBox(
+                mtexts.txts['InvalidDate'] + ' (%d.%d.%d)' % (y, m, d),
+                mtexts.txts['Error'],
+                wx.OK | wx.ICON_EXCLAMATION,
+                self
+            )
+            return
+
         if callable(self.on_calculate):
             try:
                 self.on_calculate(y, m, d)
@@ -137,6 +186,64 @@ class SecDirDialog(wx.Dialog):
 
     def _on_close_click(self, evt):
         self._safe_close()
+    # --- ArabicPartsDlg 스타일: RangeError 메시지 + 경계 클램프 ---
+    def _ShowRangeErrorAndClamp(self, spin, lo, hi, msgkey='RangeError'):
+        wx.MessageBox(mtexts.txts.get(msgkey, u'Range error'),
+                      mtexts.txts.get('Error',   u'Information'),
+                      wx.OK | wx.ICON_EXCLAMATION, self)
+        try:
+            v = int(spin.GetValue())
+        except Exception:
+            v = lo
+        if v < lo: v = lo
+        if v > hi: v = hi
+        spin.SetValue(v)
+        wx.CallAfter(spin.SetFocus)
+
+    def _on_year_spin(self, evt):
+        try:
+            y_new = evt.GetInt() if hasattr(evt, 'GetInt') else int(self.year.GetValue())
+        except Exception:
+            y_new = int(self.year.GetValue())
+        lim = getattr(self, '_yr_limit', 3000)
+        if y_new < -lim or y_new > lim:
+            self._ShowRangeErrorAndClamp(self.year, -lim, lim, 'RangeError')
+            evt.Skip(False); return
+        self._year_prev = y_new
+        evt.Skip()
+
+    def _on_year_text(self, evt):
+        s = evt.GetString() if hasattr(evt, 'GetString') else str(self.year.GetValue())
+        try:
+            y_new = int(s) if s.strip() != u'' else int(self.year.GetValue())
+        except Exception:
+            evt.Skip(); return
+        lim = getattr(self, '_yr_limit', 3000)
+        if y_new < -lim or y_new > lim:
+            self._ShowRangeErrorAndClamp(self.year, -lim, lim, 'RangeError')
+            return
+        evt.Skip()
+
+    def _on_bound_spin(self, spin, lo, hi, evt):
+        try:
+            v = evt.GetInt() if hasattr(evt, 'GetInt') else int(spin.GetValue())
+        except Exception:
+            v = lo
+        if v < lo or v > hi:
+            self._ShowRangeErrorAndClamp(spin, lo, hi, 'RangeError')
+            evt.Skip(False); return
+        evt.Skip()
+
+    def _on_bound_text(self, spin, lo, hi, evt):
+        s = evt.GetString() if hasattr(evt, 'GetString') else str(spin.GetValue())
+        try:
+            v = int(s) if s.strip() != u'' else int(spin.GetValue())
+        except Exception:
+            evt.Skip(); return
+        if v < lo or v > hi:
+            self._ShowRangeErrorAndClamp(spin, lo, hi, 'RangeError')
+            return
+        evt.Skip()
 
     # Helpers
     def _is_leap_greg(self, y):

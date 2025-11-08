@@ -273,6 +273,19 @@ class DodecaCalcFrame(wx.Frame):
         self.tb.AddControl(st_sec)
         self.tb.AddControl(self.sp_sec); _tb_punct('   '); _tb_spacer(10)
         self.tb.AddControl(btn_calc)
+        # --- ArabicPartsDlg 패턴: 스핀/텍스트 즉시 검증 ---
+        # Degree(0..29), Minute(0..59), Second(0..59)
+        self._deg_prev = self.sp_deg.GetValue()
+        self.sp_deg.Bind(wx.EVT_SPINCTRL, lambda e: self._on_bound_spin(self.sp_deg, 0, 29, e))
+        self.sp_deg.Bind(wx.EVT_TEXT,     lambda e: self._on_bound_text(self.sp_deg, 0, 29, e))
+
+        self._min_prev = self.sp_min.GetValue()
+        self.sp_min.Bind(wx.EVT_SPINCTRL, lambda e: self._on_bound_spin(self.sp_min, 0, 59, e))
+        self.sp_min.Bind(wx.EVT_TEXT,     lambda e: self._on_bound_text(self.sp_min, 0, 59, e))
+
+        self._sec_prev = self.sp_sec.GetValue()
+        self.sp_sec.Bind(wx.EVT_SPINCTRL, lambda e: self._on_bound_spin(self.sp_sec, 0, 59, e))
+        self.sp_sec.Bind(wx.EVT_TEXT,     lambda e: self._on_bound_text(self.sp_sec, 0, 59, e))
 
         self.tb.Realize()
         # ──────────────────────────────────────────────────────────────
@@ -302,3 +315,52 @@ class DodecaCalcFrame(wx.Frame):
         m = self.sp_min.GetValue()
         s = self.sp_sec.GetValue()
         self.body.set_input(sidx, d, m, s)
+        # 최종 가드(계산 직전)도 한 번 더 검사: 아라빅파츠 패턴 유지
+        if d < 0 or d > 29:
+            self._ShowRangeErrorAndClamp(self.sp_deg, 0, 29, 'RangeError')
+            return
+        if m < 0 or m > 59:
+            self._ShowRangeErrorAndClamp(self.sp_min, 0, 59, 'RangeError')
+            return
+        if s < 0 or s > 59:
+            self._ShowRangeErrorAndClamp(self.sp_sec, 0, 59, 'RangeError')
+            return
+
+    # --- ArabicPartsDlg 스타일: RangeError 메시지 + 경계 클램프 ---
+    def _ShowRangeErrorAndClamp(self, spin, lo, hi, msgkey='RangeError'):
+        # 메시지 키/타이틀은 아라빅파츠dlg와 동일 사용
+        wx.MessageBox(mtexts.txts.get(msgkey, u'Range error'),
+                      mtexts.txts.get('Error',   u'Information'),
+                      wx.OK | wx.ICON_EXCLAMATION, self)
+        # 입력값 읽고 근접 경계로 클램프
+        try:
+            v = int(spin.GetValue())
+        except Exception:
+            v = lo
+        if v < lo: v = lo
+        if v > hi: v = hi
+        spin.SetValue(v)
+        wx.CallAfter(spin.SetFocus)
+
+    def _on_bound_spin(self, spin, lo, hi, evt):
+        try:
+            v = evt.GetInt() if hasattr(evt, 'GetInt') else int(spin.GetValue())
+        except Exception:
+            v = lo
+        if v < lo or v > hi:
+            self._ShowRangeErrorAndClamp(spin, lo, hi, 'RangeError')
+            evt.Skip(False); return
+        evt.Skip()
+
+    def _on_bound_text(self, spin, lo, hi, evt):
+        # 텍스트 편집 중에도 즉시 검사 (아라빅파츠dlg 패턴)
+        s = evt.GetString() if hasattr(evt, 'GetString') else str(spin.GetValue())
+        try:
+            v = int(s) if s.strip() != u'' else int(spin.GetValue())
+        except Exception:
+            # 숫자화 실패 시에는 사용자가 계속 입력하도록 통과
+            evt.Skip(); return
+        if v < lo or v > hi:
+            self._ShowRangeErrorAndClamp(spin, lo, hi, 'RangeError')
+            return
+        evt.Skip()

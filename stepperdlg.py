@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import wx
 import mtexts
 import secdir
@@ -5,6 +6,15 @@ import chart
 
 
 class StepperDlg(wx.Dialog):
+
+	def _is_outside_ephem(self, y, m, d):
+		# 에피메리스 상 유효 범위: 0001-01-01 ≤ date ≤ 5000-12-31
+		if y < 1 or (y == 1 and (m, d) < (1, 1)):
+			return True
+		if y > 5000 or (y == 5000 and (m, d) > (12, 31)):
+			return True
+		return False
+
 	def __init__(self, parent, chrt, age, direct, soltime, options, caption):
 		wx.Dialog.__init__(self, parent, -1, mtexts.txts['SecondaryDirs'], pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.DEFAULT_DIALOG_STYLE|wx.STAY_ON_TOP)
 
@@ -37,7 +47,7 @@ class StepperDlg(wx.Dialog):
 		vsizer.Add(hsizer, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
 		dayssizer.Add(vsizer, 0, wx.ALIGN_CENTER|wx.TOP, 5)
-        
+		
 		mvsizer.Add(dayssizer, 0, wx.ALIGN_CENTER)
 
 		btnsizer = wx.StdDialogButtonSizer()
@@ -66,6 +76,7 @@ class StepperDlg(wx.Dialog):
 
 
 	def onIncr(self, event):
+		prev_age = self.age
 		self.age += 1
 		self.daytxt.SetValue(str(self.age))
 		direct = True
@@ -77,11 +88,23 @@ class StepperDlg(wx.Dialog):
 		y, m, d, hour, minute, second = sdir.compute()
 
 		time = chart.Time(y, m, d, hour, minute, second, False, self.chart.time.cal, self.zt, self.chart.time.plus, self.zh, self.zm, False, self.chart.place, False)
+		# 범위 검사 선행
+		if self._is_outside_ephem(y, m, d):
+			# ← 요청사항: Days(=self.age)와 표시값까지 이전 상태로 원복
+			self.age = prev_age
+			self.daytxt.SetValue(str(self.age))
+			wx.MessageBox(mtexts.txts['RangeError2'], mtexts.txts['Error'],
+						  wx.OK | wx.ICON_EXCLAMATION, self)
+			return
+
+		time = chart.Time(y, m, d, hour, minute, second, False, self.chart.time.cal, self.zt, self.chart.time.plus, self.zh, self.zm, False, self.chart.place, False)
 		chrt = chart.Chart(self.chart.name, self.chart.male, time, self.chart.place, chart.Chart.TRANSIT, '', self.options, False)
+
 		self.parent.change(chrt, self.caption)
 
 
 	def onDecr(self, event):
+		prev_age = self.age
 		self.age -= 1
 		self.daytxt.SetValue(str(self.age))
 		direct = True
@@ -92,8 +115,16 @@ class StepperDlg(wx.Dialog):
 		sdir = secdir.SecDir(self.chart, age, direct, self.soltime)
 		y, m, d, hour, minute, second = sdir.compute()
 
+		if self._is_outside_ephem(y, m, d):
+			self.age = prev_age
+			self.daytxt.SetValue(str(self.age))
+			wx.MessageBox(mtexts.txts['RangeError2'], mtexts.txts['Error'],
+						  wx.OK | wx.ICON_EXCLAMATION, self)
+			return
+
 		time = chart.Time(y, m, d, hour, minute, second, False, self.chart.time.cal, self.zt, self.chart.time.plus, self.zh, self.zm, False, self.chart.place, False)
 		chrt = chart.Chart(self.chart.name, self.chart.male, time, self.chart.place, chart.Chart.TRANSIT, '', self.options, False)
+
 		self.parent.change(chrt, self.caption)
 
 
