@@ -187,7 +187,18 @@ class SecDirFrame(transitframe.TransitFrame):
             pass
 
         # 텍스트 갱신 (Age=정수년, Real=현실 달력 날짜)
-        age_years_int = years_passed
+        # Age는 스테퍼/초기 설정과 동일 기준(출생 UT 앵커)으로 산출
+        # 출생일을 '출생 UT 앵커 시각'으로 고정한 JD를 만들고, 그로부터의 경과일수를 반올림
+        by2, bm2, bd2, _ = astrology.swe_revjul(birth_jd, calflag)
+        birth_anchor_jd = astrology.swe_julday(by2, bm2, bd2, ut_anchor, calflag)
+        delta_anchor_days = prog_jd - birth_anchor_jd
+
+        # 경계 부동소수/솔라타임 흔들림 흡수: 가장 가까운 정수로
+        if delta_anchor_days >= 0:
+            age_years_int = int(math.floor(delta_anchor_days + 0.5))
+        else:
+            age_years_int = int(math.ceil(delta_anchor_days - 0.5))
+
         try:
             self.SetStatusText("%s: %d" % (mtexts.txts['Age'], age_years_int), 0)
             self.SetStatusText("%s: %04d.%02d.%02d" % (mtexts.txts['Real'], y, m, d), 1)
