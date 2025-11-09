@@ -236,4 +236,27 @@
 - Patched Positions for Date to start at the same time as the main chart.
 - Added help texts to Positions for Date, reordered fields, and refined calculation precision (Mean Time).
 #### 9.4.5
-- Circumambulations starting date bug fix.
+- Circumambulations starting date bug fix. 
+
+--------------------------------------------------------------------------------------------------------------------------
+
+#### I am not a developer by trade. I was simply one of the Morinus users who felt inconveniences while using the program.
+
+#### I therefore improved parts that personally felt inconvenient and added features I needed. As I am an ordinary user with no programming background, most of the code was generated with the help of AI tools.
+
+#### Watching new features land in Morinus was rewarding; however, my ambition grew into a compulsion to make a “perfect” program. At some point the project began to eclipse its original purpose, and I felt that the time and energy I was investing had exceeded my limits.
+
+#### The AI I rely on has also started to show its limitations. There’s still a lot I would like to do and fix, but it increasingly seems beyond what I can reasonably resolve.
+
+### Therefore, I believe my role ends here.
+
+#### This is an open-source program. If you have added a feature or fixed a bug(and your changes do not significantly alter previous behavior) please email me the files. You are also welcome to open a new repository of your own.
+
+#### If you send files, I may review them and, if appropriate, publish an update; if an update is released, I’ll include developer credits in the form you prefer.
+
+### Bug reports and simple requests will not be accepted.
+
+#### Known issues
+- Error when applying ayanamsa in Circumambulations
+- Error when applying ayanamsa in Revolutions
+- Error when applying ayanamsa in the Arabic Parts degree-reference feature
