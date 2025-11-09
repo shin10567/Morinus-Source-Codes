@@ -54,6 +54,7 @@ class SecDirDialog(wx.Dialog):
         self._year_prev = self.year.GetValue()
         self.year.Bind(wx.EVT_SPINCTRL, self._on_year_spin)
         self.year.Bind(wx.EVT_TEXT,     self._on_year_text)
+        self._year0_guard = False
 
         self._month_prev = self.month.GetValue()
         self.month.Bind(wx.EVT_SPINCTRL, lambda e: self._on_bound_spin(self.month, 1, 12, e))
@@ -90,9 +91,11 @@ class SecDirDialog(wx.Dialog):
         root.Add(title, 0, wx.ALL, 8)
 
         hdr = wx.BoxSizer(wx.HORIZONTAL)
-        hdr.Add(self.lbl_age,  0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 20)
+        hdr.Add(self.lbl_age,  0, wx.ALIGN_CENTER_VERTICAL)
+        hdr.AddSpacer(24)
         hdr.Add(self.lbl_prog, 0, wx.ALIGN_CENTER_VERTICAL)
-        root.Add(hdr,  0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 8)
+
+        root.Add(hdr,  0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 8)
 
         root.Add(grid, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 8)  # EXPAND 제거
         root.Add(btns, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 8)
@@ -148,7 +151,6 @@ class SecDirDialog(wx.Dialog):
             wx.MessageBox(mtexts.txts['RangeError'], mtexts.txts['Error'],
                           wx.OK | wx.ICON_EXCLAMATION, self)
             return
-
         # 실제 존재하는 날짜인지 검사 → InvalidDate
         # (2월 윤년 규칙: Gregorian, profdlg와 동일 판정)
         if m in (1, 3, 5, 7, 8, 10, 12):
@@ -186,6 +188,9 @@ class SecDirDialog(wx.Dialog):
 
     def _on_close_click(self, evt):
         self._safe_close()
+    def _clear_year0_guard(self):
+        self._year0_guard = False
+
     # --- ArabicPartsDlg 스타일: RangeError 메시지 + 경계 클램프 ---
     def _ShowRangeErrorAndClamp(self, spin, lo, hi, msgkey='RangeError'):
         wx.MessageBox(mtexts.txts.get(msgkey, u'Range error'),
@@ -205,10 +210,21 @@ class SecDirDialog(wx.Dialog):
             y_new = evt.GetInt() if hasattr(evt, 'GetInt') else int(self.year.GetValue())
         except Exception:
             y_new = int(self.year.GetValue())
-        lim = getattr(self, '_yr_limit', 3000)
-        if y_new < -lim or y_new > lim:
-            self._ShowRangeErrorAndClamp(self.year, -lim, lim, 'RangeError')
+        # Year 0 금지 (메시지는 한 번만)
+        if y_new == 0:
+            if not getattr(self, '_year0_guard', False):
+                self._year0_guard = True
+                wx.MessageBox(mtexts.txts['RangeError'], mtexts.txts['Error'],
+                              wx.OK | wx.ICON_EXCLAMATION, self)
+                wx.CallAfter(self._clear_year0_guard)
+
+            try:
+                prev = int(getattr(self, '_year_prev', 1))
+            except Exception:
+                prev = 1
+            self.year.SetValue(-1 if prev < 0 else 1)
             evt.Skip(False); return
+
         self._year_prev = y_new
         evt.Skip()
 
@@ -218,10 +234,22 @@ class SecDirDialog(wx.Dialog):
             y_new = int(s) if s.strip() != u'' else int(self.year.GetValue())
         except Exception:
             evt.Skip(); return
-        lim = getattr(self, '_yr_limit', 3000)
-        if y_new < -lim or y_new > lim:
-            self._ShowRangeErrorAndClamp(self.year, -lim, lim, 'RangeError')
+        # Year 0 금지 (메시지는 한 번만)
+        if y_new == 0:
+            if not getattr(self, '_year0_guard', False):
+                self._year0_guard = True
+                wx.MessageBox(mtexts.txts['RangeError'], mtexts.txts['Error'],
+                              wx.OK | wx.ICON_EXCLAMATION, self)
+                wx.CallAfter(self._clear_year0_guard)
+
+            try:
+                prev = int(getattr(self, '_year_prev', 1))
+            except Exception:
+                prev = 1
+            self.year.SetValue(-1 if prev < 0 else 1)
             return
+        self._year_prev = y_new
+
         evt.Skip()
 
     def _on_bound_spin(self, spin, lo, hi, evt):

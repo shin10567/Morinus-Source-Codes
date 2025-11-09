@@ -10,6 +10,49 @@ ASPECTS = (0, 60, 90, 120, 180)
 DEFAULT_KEY_Y_PER_DEG = 1.0  # years per equatorial degree (OA)
 DAYS_PER_YEAR = 365.2421897
 
+def _gregorian_date_in_radix_zone(jd, chrt):
+    """
+    표시용 날짜를 라딕스의 민법(현지) 시각대(TZ + DST)에 맞춰 반환.
+    Morinus: plus(동경=+), zh(시간), zm(분), daylightsaving(썸머타임) 기준.
+    """
+    tz_hours = 0.0
+    dst_hours = 0.0
+    t = getattr(chrt, 'time', None)
+    if t is not None:
+        # 우선순위 1: Morinus 고유 필드(plus, zh, zm, daylightsaving)
+        try:
+            if hasattr(t, 'plus') and hasattr(t, 'zh') and hasattr(t, 'zm'):
+                base = float(getattr(t, 'zh', 0.0)) + float(getattr(t, 'zm', 0.0)) / 60.0
+                sign = 1.0 if bool(getattr(t, 'plus', True)) else -1.0   # 동경=+, 서경=-
+                tz_hours = sign * base
+            if bool(getattr(t, 'daylightsaving', False)):
+                dst_hours = 1.0
+        except Exception:
+            pass
+        # 우선순위 2: 다른 프로젝트 변형 필드들(가능하면 활용, 없으면 0 유지)
+        if tz_hours == 0.0:
+            for name in ('zone', 'tz', 'utcoff', 'utc_offset'):
+                v = getattr(t, name, None)
+                if v is not None:
+                    try:
+                        tz_hours = float(v)
+                        break
+                    except Exception:
+                        pass
+        if dst_hours == 0.0:
+            for name in ('dst', 'DST'):
+                v = getattr(t, name, None)
+                if v is not None:
+                    try:
+                        dst_hours = float(v)
+                        break
+                    except Exception:
+                        pass
+
+    off_days = (tz_hours + dst_hours) / 24.0
+    gY, gM, gD, _ = astrology.swe_revjul(jd + off_days + 1e-9, astrology.SE_GREG_CAL)
+    return datetime.date(int(gY), int(gM), int(gD))
+
 _ASTROSEEK_CANDIDATES = [
     os.path.join(os.path.dirname(__file__), "data", "rt_0p5.txt"),
     os.path.join(os.path.dirname(__file__), "rt_0p5.txt"),
@@ -86,19 +129,40 @@ def _interp_rt12(phi):
 def _sign_index(lmb):
     return int((lmb % 360.0) // 30.0)
 
-def _delta_oa_by_rt(rt12, lam1, lam2):
-    if lam2 < lam1:
-        lam2 += 360.0
-    cur, end, s = lam1, lam2, 0.0
-    while cur < end - 1e-12:
-        si = _sign_index(cur)
-        sign_end = (math.floor(cur/30.0)+1)*30.0
-        step = min(sign_end, end) - cur
-        s += rt12[si] * (step / 30.0)
-        cur += step
-    return s
+def _delta_oa_by_rt(rt12, lam1, lam2, ayan=0.0, gran_deg=0.0):
+    import math
+    a_t = lam1 + ayan
+    b_t = lam2 + ayan
+    if b_t < a_t:
+        b_t += 360.0
 
-def _term_edges_deg(options):
+    cur_t = a_t
+    end_t = b_t
+    s = 0.0
+    eps = 1e-12
+
+    while cur_t + eps < end_t:
+        # 현재 트로피컬 사인 경계
+        si = _sign_index(cur_t)
+        k_next = math.floor((cur_t + eps) / 30.0) + 1
+        sign_end_t = 30.0 * k_next
+
+        # 선택적: 0.5° 같은 세분 격자 경계
+        if gran_deg and gran_deg > 0.0:
+            gk = math.floor((cur_t + eps) / gran_deg) + 1
+            grid_end_t = gran_deg * gk
+            step_end = min(sign_end_t, grid_end_t, end_t)
+        else:
+            step_end = min(sign_end_t, end_t)
+
+        step_t = step_end - cur_t
+        s += rt12[si] * (step_t / 30.0)
+        cur_t = step_end
+
+    return max(0.0, s)
+
+def _term_edges_deg(options, ayan=0.0):
+
     """Return [(lam_start, lam_end, ruler_pid, sign_idx)] over 0..360°.
 
     - Morinus 옵션의 terms 구조가 환경에 따라
@@ -110,7 +174,10 @@ def _term_edges_deg(options):
     sel = getattr(options, "selterm", 0)
     terms = options.terms[sel]    # [12][n][planet_id, value]
 
-    lam0 = 0.0  # 각 사인의 시작 경도 0,30,60,…
+    # 텀 경계는 이미 시데리얼 좌표계(0,30,60…°)에서 생성해야 한다.
+    # 상위 레벨에서 아야남샤 보정이 끝났으므로 여기서는 추가 평행이동을 하지 않는다.
+    lam0 = 0.0
+
     for sign in range(12):
         rows = terms[sign]
         # value 후보를 한 번에 뽑기
@@ -162,9 +229,22 @@ def _term_edges_deg(options):
     # 시작경도 기준 정렬 보장
     edges.sort(key=lambda x: x[0])
     return edges
+def _sidereal_offset_deg(chrt, options):
+    """
+    시데리얼 모드일 때 사용할 아야남샤(°)를 반환.
+    options.ayanamsha == 0 이면 트로피컬이므로 0.0 반환.
+    chart.Chart.create()에서 chrt.ayanamsha 가 세팅되므로 우선 사용.
+    """
+    try:
+        if getattr(options, 'ayanamsha', 0) != 0:
+            return float(getattr(chrt, 'ayanamsha', 0.0)) or 0.0
+    except Exception:
+        pass
+    return 0.0
 
 def _planet_longitudes(chart_obj, options):
     pls = {}
+    ayan = _sidereal_offset_deg(chart_obj, options)
     pmap = [
         (astrology.SE_SUN,  mtexts.txts.get('Sun','Sun')),
         (astrology.SE_MOON, mtexts.txts.get('Moon','Moon')),
@@ -181,7 +261,10 @@ def _planet_longitudes(chart_obj, options):
     if options.transcendental[chart.Chart.TRANSPLUTO]:
         pmap.append((astrology.SE_PLUTO, mtexts.txts.get('Pluto','Pluto')))
     for pid, label in pmap:
-        pls[label] = chart_obj.planets.planets[pid].data[0]
+        lam = chart_obj.planets.planets[pid].data[0]
+        if ayan:
+            lam = (lam - ayan) % 360.0
+        pls[label] = lam
     return pls
 
 def _exact_aspect_hits(lam_start_abs, lam_end_abs, planet_lams, aspects=(0,60,90,120,180)):
@@ -220,10 +303,12 @@ def _years_since_birth(jd, jd_birth):
     yrs = (jd - jd_birth) / DAYS_PER_YEAR
     return 0.0 if yrs < 0 else yrs
 
-def calibrate_key_with_anchor(phi, lam_start, lam_end, observed_years):
+def calibrate_key_with_anchor(phi, lam_start, lam_end, observed_years, ayan=0.0):
+
     """Return key so that ΔOA(rt(phi), lam_start→lam_end) * key == observed_years."""
-    rt12 = _interp_rt12(phi)
-    doa  = _delta_oa_by_rt(rt12, lam_start%360.0, lam_end%360.0)
+    rt12 = _interp_rt12(phi)    
+    doa  = _delta_oa_by_rt(rt12, lam_start%360.0, lam_end%360.0, ayan)
+
     if doa <= 0.0:
         return DEFAULT_KEY_Y_PER_DEG
     return float(observed_years) / doa
@@ -247,11 +332,12 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
     """
     if start_lambda is None:
         start_lambda = chrt.houses.ascmc[houses.Houses.ASC]
-    start_lambda = float(start_lambda) % 360.0
+    ayan = _sidereal_offset_deg(chrt, options)
+    start_lambda = (float(start_lambda) - ayan) % 360.0
 
     phi = chrt.place.lat
     rt12 = _interp_rt12(phi)
-    edges = _term_edges_deg(options)
+    edges = _term_edges_deg(options, ayan)
 
     calflag = astrology.SE_GREG_CAL
     if chrt.time.cal == chart.Time.JULIAN:
@@ -270,62 +356,74 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
     rows = []
     planet_lams = _planet_longitudes(chrt, options) if include_participating else {}
 
-    # 기존 ring 생성/탐색 블록 전체 삭제하고 ↓로 교체
-    edges1 = _term_edges_deg(options)          # 이미 start로 정렬돼 있음
-    start_mod = start_lambda % 360.0
+    # 텀 경계 생성 + 정렬(시데리얼 경계는 -ayan 만큼 평행이동되어 있음)
+    edges1 = sorted(edges, key=lambda t: t[0])  # edges는 위에서 _term_edges_deg(options, ayan)
 
+    # start_lambda(0..360)를 경계가 놓인 '절대 링'으로 올림/내림
+    base0 = edges1[0][0]  # 첫 경계의 절대 시작도수(예: 337°)
+    start_abs = start_lambda
+    while start_abs < base0 - 1e-9:
+        start_abs += 360.0
+    while start_abs >= base0 + 360.0 - 1e-9:
+        start_abs -= 360.0
+
+    # 포함 세그먼트 찾기: a ≤ start_abs < b
     i0 = None
     for idx, (a, b, _, _) in enumerate(edges1):
-        if (a - 1e-9) <= start_mod < (b - 1e-9):
-            i0 = idx
-            break
-    if i0 is None:
-        for idx, (a, b, _, _) in enumerate(edges1):
-            if abs(start_mod - b) <= 1e-9:
-                i0 = (idx + 1) % len(edges1)
-                break
-    if i0 is None:
-        i0 = min(range(len(edges1)), key=lambda i: ((edges1[i][1] - start_mod) % 360.0))
-
-    # 0..360° 구간을 a(시작경도) 기준으로 정렬
-    edges1 = sorted(edges, key=lambda t: t[0])
-    start_mod = start_lambda % 360.0
-
-    # 포함 세그먼트 찾기 (우선)
-    i0 = None
-    for idx, (a, b, _, _) in enumerate(edges1):
-        if (a - 1e-9) <= start_mod < (b - 1e-9):
+        if (a - 1e-9) <= start_abs < (b - 1e-9):
             i0 = idx
             break
     # 경계선(==b)에 정확히 걸려 있으면 다음 세그먼트로
     if i0 is None:
         for idx, (a, b, _, _) in enumerate(edges1):
-            if abs(start_mod - b) <= 1e-9:
+            if abs(start_abs - b) <= 1e-9:
                 i0 = (idx + 1) % len(edges1)
                 break
-    # 그래도 못 찾으면: start_mod 이후 첫 b(없으면 0)
+    # 그래도 못 찾으면: start_abs 이후 첫 b(없으면 0)
     if i0 is None:
-        i0 = min(range(len(edges1)), key=lambda i: ((edges1[i][1] - start_mod) % 360.0))
+        i0 = min(range(len(edges1)), key=lambda i: ((edges1[i][1] - start_abs) % 360.0))
+
 
     # 진행 루프 (edges1을 원형으로 순회)
-    lam_cursor = start_lambda
+    lam_cursor = start_abs
+
     jd_cursor  = jd0
     idx = i0
-    if jd_cursor < jd0:  # Julian/Gregorian 경계 수치진동 방어
+    if jd_cursor < jd0:
         jd_cursor = jd0
     if jd_cursor >= jd_limit - 1e-9:
-        return
+        return rows
+
         
     for _ in range(max_rows):
         a, b, pid, _sign_ignored = edges1[idx]
         seg_start = lam_cursor
         seg_end   = b
 
-        delta_oa = _delta_oa_by_rt(rt12, seg_start, seg_end)
+        delta_oa = _delta_oa_by_rt(rt12, seg_start, seg_end, ayan)
         if delta_oa <= 1e-9:
+            # ★ 0길이 구간이라도 '텀 진입 시점'이 UI에 보이도록 마커 행을 추가한다.
+            g0 = _gregorian_date_in_radix_zone(jd_cursor, chrt)
+            rows.append({
+                'lam_start': seg_start % 360.0,                   # 표시용: 시데리얼 그대로
+                'lam_end':   seg_end   % 360.0,
+                'sign_idx':  _sign_index(seg_start),              # 시데리얼 사인 인덱스
+                'term_ruler_pid': pid,
+                'delta_oa':  0.0,
+                'delta_years': 0.0,
+                'date_start': g0,
+                'age_start': _years_since_birth(jd_cursor, jd0),
+                'age_end':   _years_since_birth(jd_cursor, jd0),
+                'date_end':  g0,
+                'jd_start':  jd_cursor,
+                'jd_end':    jd_cursor,
+                'participating': []
+            })
+            # 다음 세그먼트로 진행
             lam_cursor = seg_end
             idx = (idx + 1) % len(edges1)
             continue
+
         delta_year = delta_oa * key
         jd_next    = _jd_add_years(jd_cursor, delta_year, calflag)
 
@@ -335,28 +433,29 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
         age_start_years = _years_since_birth(jd_cursor, jd0)
         age_end_years   = _years_since_birth(jd_next,   jd0)
         # 표시용 날짜는 항상 Gregorian으로 변환 (Julian 출생이라도 음수/역전 방지)
-        gy0, gm0, gd0, _ = astrology.swe_revjul(jd_cursor, astrology.SE_GREG_CAL)
-        gy1, gm1, gd1, _ = astrology.swe_revjul(jd_next,   astrology.SE_GREG_CAL)
+        g0 = _gregorian_date_in_radix_zone(jd_cursor, chrt)
+        g1 = _gregorian_date_in_radix_zone(jd_next,   chrt)
 
         participants = []
         if include_participating and planet_lams:
             hits = _exact_aspect_hits(seg_start, seg_end, planet_lams)
             for L, label, A in hits:
-                doa = _delta_oa_by_rt(rt12, seg_start, L)
+                doa = _delta_oa_by_rt(rt12, seg_start, L, ayan)
+
                 yrs = doa * key
                 jd  = _jd_add_years(jd_cursor, yrs, calflag)
                 if jd > jd_limit + 1e-9:
                     continue
-                yy, mm, dd, hh = astrology.swe_revjul(jd, calflag)
+                gP = _gregorian_date_in_radix_zone(jd, chrt)
                 participants.append({
-                    'lam':   L % 360.0,
+                    'lam':   L % 360.0,            # 표시용: 시데리얼 그대로
                     'lam_abs': L,
                     'planet': label,
                     'aspect': A,
                     'doa':   doa,
                     'years': yrs,
                     'jd':    jd,
-                    'date':  datetime.date(int(yy), int(mm), int(dd))
+                    'date':  gP
                 })
 
         # ★ 150세 컷: 부분 구간으로 잘라 1줄 추가하고 종료
@@ -364,21 +463,27 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
             remain_years = max(0.0, (jd_limit - jd_cursor) / DAYS_PER_YEAR)
             rem_doa = remain_years / max(key, 1e-12)
 
-            sign_from_start = int(((seg_start % 360.0) // 30.0))
-            rt_sign = rt12[sign_from_start]
+            # 표시용 사인 인덱스(시데리얼)과, RT 선택용 사인 인덱스(트로피컬)를 분리
+            sign_from_start_sid = _sign_index(seg_start)           # 시데리얼(표시)
+            sign_from_start_tro = _sign_index(seg_start + ayan)    # 트로피컬(RT용)
+
+            rt_sign = rt12[sign_from_start_tro]
             lam_end_cap = seg_start + (rem_doa / max(rt_sign, 1e-12)) * 30.0
 
+            # 표시용 date_end는 컷 시점(jd_limit)을 라딕스 민법 시각대 기준으로
+            gCut = _gregorian_date_in_radix_zone(jd_limit, chrt)
+
             rows.append({
-                'lam_start': seg_start % 360.0,
+                'lam_start': seg_start   % 360.0,
                 'lam_end':   lam_end_cap % 360.0,
-                'sign_idx':  sign_from_start,
+                'sign_idx':  sign_from_start_sid,
                 'term_ruler_pid': pid,
                 'delta_oa':  rem_doa,
                 'delta_years': remain_years,
-                'date_start': datetime.date(int(gy0), int(gm0), int(gd0)),
+                'date_start':  g0,
                 'age_start': age_start_years,
                 'age_end':   _years_since_birth(jd_limit, jd0),
-                'date_end':   datetime.date(int(gy1), int(gm1), int(gd1)),  # 표시용은 Gregorian
+                'date_end':    gCut,
                 'jd_start':  jd_cursor,
                 'jd_end':    jd_limit,
                 'participating': participants
@@ -387,18 +492,18 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
 
         else:
             # 정상 케이스: 한 텀 전체를 행으로 추가
-            sign_from_start = int(((seg_start % 360.0) // 30.0))  # 0=Aries .. 11=Pisces
+            sign_from_start = _sign_index(seg_start)               # 시데리얼(표시)
             rows.append({
-                'lam_start': seg_start % 360.0,
+                'lam_start': seg_start % 360.0,                    # 표시용: 시데리얼 그대로
                 'lam_end':   seg_end   % 360.0,
                 'sign_idx':  sign_from_start,
                 'term_ruler_pid': pid,
                 'delta_oa':  delta_oa,
                 'delta_years': delta_year,
-                'date_start': datetime.date(int(gy0), int(gm0), int(gd0)),
+                'date_start': g0,
                 'age_start': age_start_years,
                 'age_end':   age_end_years,
-                'date_end':   datetime.date(int(gy1), int(gm1), int(gd1)),
+                'date_end':   g1,
                 'jd_start':  jd_cursor,
                 'jd_end':    jd_next,
                 'participating': participants

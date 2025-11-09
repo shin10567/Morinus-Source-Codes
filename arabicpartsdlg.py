@@ -1682,7 +1682,7 @@ class ArabicPartsDlg(wx.Dialog):
 
 	def _ShowRangeErrorAndClamp(self, spin):
 		wx.MessageBox(mtexts.txts.get('RangeError', u'Range error'),
-					mtexts.txts.get('Info', u'Information'),
+					mtexts.txts.get('Error', u'Information'),
 					wx.OK | wx.ICON_EXCLAMATION)
 		try:
 			# 범위 밖이면 가장 가까운 값으로

@@ -208,8 +208,7 @@ class CircumWnd(cw.CommonWnd):
     def set_data(self, dist_rows):
         # 출생일(그레고리안 변환)  → 나이 계산용
         jd0   = getattr(self.chart.time, 'jd', None)
-        y, m, d, _ = astrology.swe_revjul(jd0, astrology.SE_GREG_CAL) if jd0 else (None, None, None, None)
-        born = datetime.date(y, m, d) if (y and m and d) else None
+        born = ca._gregorian_date_in_radix_zone(jd0, self.chart) if jd0 else None
 
         def _age_of(dt):
             if isinstance(dt, datetime.date) and born:

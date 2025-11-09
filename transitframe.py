@@ -183,7 +183,7 @@ class TransitFrame(wx.Frame):
 		left_txt = (
 			f"{signtxt}{t.origyear}."
 			f"{month_name}."
-			f"{str(t.origday).zfill(2)}. "
+			f"{str(t.origday).zfill(2)}, "
 			f"{str(t.hour).zfill(2)}:{str(t.minute).zfill(2)}:{str(t.second).zfill(2)}"
 			f"{ztxt}"
 		)
