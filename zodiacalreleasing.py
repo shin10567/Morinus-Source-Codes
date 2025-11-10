@@ -74,7 +74,7 @@ def _stream_sublevel(parent_start, parent_end, parent_start_sign, level):
             break
     return rows
 
-def build_main(start_dt, start_sign_idx, years_horizon=120):
+def build_main(start_dt, start_sign_idx, years_horizon=150):
     """
     Build main table rows: interleaved L1 + L2 (L2 within each L1 interval).
     Returns a list of rows with 'level' in {1,2}.

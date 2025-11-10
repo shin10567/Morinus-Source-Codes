@@ -68,7 +68,7 @@ class ZRWnd(commonwnd.CommonWnd):
         self.start_sign_idx = int(idx)
 
     def compute_and_draw(self):
-        self.rows = zr.build_main(self._chart_dt(), self.start_sign_idx, years_horizon=120)
+        self.rows = zr.build_main(self._chart_dt(), self.start_sign_idx, years_horizon=150)
         self.row_lv = [int(r.get('level', 2)) for r in self.rows]
         self._recalc_sizes(len(self.rows))
         self.drawBkg()
