@@ -242,19 +242,17 @@
 
 --------------------------------------------------------------------------------------------------------------------------
 
-#### I am not a developer by trade. I was simply one of the Morinus users who felt inconveniences while using the program.
+#### I’m not a developer by trade; I was simply a Morinus user who felt inconveniences while using the program.
 
-#### I therefore improved parts that personally felt inconvenient and added features I needed. As I am an ordinary user with no programming background, most of the code was generated with the help of AI tools.
+#### I addressed a few of those personal inconveniences and added features I needed. As I have no programming background, most of the code was generated with the help of AI tools.
 
-#### Watching new features land in Morinus was rewarding; however, my ambition grew into a compulsion to make a “perfect” program. At some point the project began to eclipse its original purpose, and I felt that the time and energy I was investing had exceeded my limits.
-
-#### The AI I rely on has also started to show its limitations. There’s still a lot I would like to do and fix, but it increasingly seems beyond what I can reasonably resolve.
+#### Watching new features land in Morinus was satisfying, but the AI I rely on has started to show its limits. There’s still much I’d like to add or fix, yet it now feels beyond what I can reasonably handle.
 
 ### Therefore, I believe my role ends here.
 
-#### This is an open-source program. If you have added a feature or fixed a bug, You are welcome to open a new repository of your own.
+#### This is an open-source program. If you’ve added a feature or fixed a bug, you’re welcome to start a new repository or fork the project; ideally without significantly altering existing behavior.
 
-#### Known issues
+### Known issues
 - Error when applying ayanamsa in Circumambulations
 - Error when applying ayanamsa in Revolutions
-- Error when applying ayanamsa in the Arabic Parts degree-reference feature
+- Error when applying ayanamsa in the Arabic Parts (degree reference) feature
