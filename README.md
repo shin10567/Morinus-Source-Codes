@@ -252,11 +252,7 @@
 
 ### Therefore, I believe my role ends here.
 
-#### This is an open-source program. If you have added a feature or fixed a bug(and your changes do not significantly alter previous behavior) please email me the files. You are also welcome to open a new repository of your own.
-
-#### If you send files, I may review them and, if appropriate, publish an update; if an update is released, I’ll include developer credits in the form you prefer.
-
-### Bug reports and simple requests will not be accepted.
+#### This is an open-source program. If you have added a feature or fixed a bug, You are welcome to open a new repository of your own.
 
 #### Known issues
 - Error when applying ayanamsa in Circumambulations
