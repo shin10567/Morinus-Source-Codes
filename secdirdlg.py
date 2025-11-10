@@ -35,9 +35,9 @@ class SecondaryDirsDlg(wx.Dialog):
 		#Age
 		sage =wx.StaticBox(self, label=mtexts.txts['Age'])
 		agesizer = wx.StaticBoxSizer(sage, wx.VERTICAL)
-		self.age = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 100), size=(40,-1))
+		self.age = wx.TextCtrl(self, -1, '', validator=intvalidator.IntValidator(0, 999), size=(40,-1))
 		agesizer.Add(self.age, 0, wx.ALIGN_CENTER|wx.ALL, 5)
-		self.age.SetMaxLength(2)
+		self.age.SetMaxLength(3)
 
 		mhsizer.Add(agesizer, 1, wx.GROW|wx.ALIGN_LEFT|wx.LEFT, 0)
 
