@@ -243,7 +243,7 @@ def _ra_dec_star_deg_ut(jd_ut, star_name):
     if not q.startswith(u','):
         q = u',' + q
     try:
-        xx, _ = swe.fixstar_ut(q, jd_ut, iflag)
+        ret,serr, xx,abc = swe.swe_fixstar_ut(q, jd_ut, iflag)
         return xx[0], xx[1]
     except Exception:
         # sefstars.txt 없는 경우 등 → fixstars.cat(+μ) 폴백

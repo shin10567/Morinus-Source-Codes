@@ -1,4 +1,4 @@
-## [9.4.5] Updated Version from 8.1.0 
+## [9.4.6] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -237,6 +237,8 @@
 - Added help texts to Positions for Date, reordered fields, and refined calculation precision (Mean Time).
 #### 9.4.5
 - Circumambulations starting date bug fix. 
+#### 9.4.6
+- Paranatellonta bug fix
 
 --------------------------------------------------------------------------------------------------------------------------
 
