@@ -326,10 +326,10 @@ class MFrame(wx.Frame):
 		self.tplanets = wx.Menu()
 		self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   
 		self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
-		self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])    
-		self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])       
-		self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc']) 
+		self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])        
 		self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
+		self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])   
+		self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc']) 
 		self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])
 		self.tplanets.Append(self.ID_Speeds,           mtexts.menutxts['TMSpeeds'],           mtexts.menutxts['TMSpeedsDoc'])
 		self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])     
@@ -3214,10 +3214,10 @@ class MFrame(wx.Frame):
 				self.tplanets = wx.Menu()
 				self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   
 				self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
-				self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])    
-				self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])       
-				self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc']) 
+				self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])          
 				self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
+				self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc']) 
+				self.tplanets.Append(self.ID_Aspects,          mtexts.menutxts['TMAspects'],          mtexts.menutxts['TMAspectsDoc']) 
 				self.tplanets.Append(self.ID_ZodPars,          mtexts.menutxts['TMZodPars'],          mtexts.menutxts['TMZodParsDoc'])
 				self.tplanets.Append(self.ID_Speeds,           mtexts.menutxts['TMSpeeds'],           mtexts.menutxts['TMSpeedsDoc'])
 				self.tplanets.Append(self.ID_RiseSet,          mtexts.menutxts['TMRiseSet'],          mtexts.menutxts['TMRiseSetDoc'])     
@@ -3889,7 +3889,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.4.6'
+		info.Version = '9.4.7'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
