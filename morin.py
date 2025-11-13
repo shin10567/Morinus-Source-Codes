@@ -325,7 +325,6 @@ class MFrame(wx.Frame):
 		# Planets/Points
 		self.tplanets = wx.Menu()
 		self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   
-		self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
 		self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])        
 		self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
 		self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc'])   
@@ -372,6 +371,7 @@ class MFrame(wx.Frame):
 		self.tpd = wx.Menu()
 		self.tpd.Append(self.ID_PrimaryDirs,        mtexts.menutxts['TMPrimaryDirs'],        mtexts.menutxts['TMPrimaryDirsDoc'])
 		self.tpd.Append(self.ID_FixStarAngleDirs,   mtexts.menutxts['TMFixStarAngleDirs'],   mtexts.menutxts['TMFixStarAngleDirsDoc'])
+		self.tpd.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
 		self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
 		self.mtable.Append(self.ID_PrimaryDirsMenu, mtexts.txts['PrimaryDirs'], self.tpd)
 
@@ -3212,8 +3212,7 @@ class MFrame(wx.Frame):
 
 				# Planets/Points
 				self.tplanets = wx.Menu()
-				self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])   
-				self.tplanets.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc']) 
+				self.tplanets.Append(self.ID_Positions,        mtexts.menutxts['TMPositions'],        mtexts.menutxts['TMPositionsDoc'])    
 				self.tplanets.Append(self.ID_Antiscia,         mtexts.menutxts['TMAntiscia'],         mtexts.menutxts['TMAntisciaDoc'])          
 				self.tplanets.Append(self.ID_Dodecatemoria,    mtexts.menutxts['TMDodecatemoria'],    mtexts.menutxts['TMDodecatemoriaDoc'])
 				self.tplanets.Append(self.ID_Strip,            mtexts.menutxts['TMStrip'],            mtexts.menutxts['TMStripDoc']) 
@@ -3260,6 +3259,7 @@ class MFrame(wx.Frame):
 				self.tpd = wx.Menu()
 				self.tpd.Append(self.ID_PrimaryDirs,        mtexts.menutxts['TMPrimaryDirs'],        mtexts.menutxts['TMPrimaryDirsDoc'])
 				self.tpd.Append(self.ID_FixStarAngleDirs,   mtexts.menutxts['TMFixStarAngleDirs'],   mtexts.menutxts['TMFixStarAngleDirsDoc'])
+				self.tpd.Append(self.ID_MunPos,           mtexts.menutxts['TMMunPos'],           mtexts.menutxts['TMMunPosDoc'])
 				self.tpd.Append(self.ID_CustomerSpeculum,   mtexts.menutxts['TMCustomerSpeculum'],   mtexts.menutxts['TMCustomerSpeculumDoc'])
 				self.mtable.Append(self.ID_PrimaryDirsMenu, mtexts.txts['PrimaryDirs'], self.tpd)
 
@@ -3889,7 +3889,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.4.7'
+		info.Version = '9.4.8'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
