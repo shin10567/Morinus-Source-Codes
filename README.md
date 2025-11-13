@@ -1,4 +1,4 @@
-## [9.4.6] Updated Version from 8.1.0 
+## [9.4.7] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -239,6 +239,8 @@
 - Circumambulations starting date bug fix. 
 #### 9.4.6
 - Paranatellonta bug fix
+#### 9.4.7
+- "Show Traditional Names of Fixed Stars in PD-List" bug fix
 
 --------------------------------------------------------------------------------------------------------------------------
 
