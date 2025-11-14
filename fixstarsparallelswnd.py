@@ -409,29 +409,28 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         w, h = draw.textsize(sym, fontL)
         draw.text((x + (self.SMALL_CELL_WIDTH - w)//2, y + (self.LINE_HEIGHT - h)//2),
                 sym, fill=iconclr, font=fontL)
-        # 2) point decl (first decl column) + 행 볼드 결정
+
+        # 2) point decl (first decl column) + "행(매치)별" 볼드 판단
         pdecl = self._points.get(point_key, None)
         matches = self._compute_matches(pdecl)
 
-        row_bold = False
-        for _code, _name, sdecl, _mag in matches:
-            if pdecl is not None and sdecl is not None and (pdecl * sdecl) >= 0.0:
-                if _degdiff(pdecl, sdecl) <= self._bold_orb_deg(_mag):
-                    row_bold = True
-                    break
+        def _is_bold_row(p, s, m):
+            return (p is not None and s is not None and (p * s) >= 0.0 and (_degdiff(p, s) <= self._bold_orb_deg(m)))
 
         txt_decl_pt = self._fmt_decl(pdecl)
-        font_decl_pt = self.fntTextBold if row_bold else self.fntText
-        w,h = draw.textsize(txt_decl_pt, font_decl_pt)
-        draw.text((x + offs[1] + (self.CELL_WIDTH - w)/2, y + (self.LINE_HEIGHT - h)/2),
-                  txt_decl_pt, fill=txtclr, font=font_decl_pt)
 
-        # 3) fixed stars matches (within 15′ and same sign)
-        #    If multiple matches, we print first on this line, push subsequent ones as extra lines underneath.
+        # 첫 번째 매치 기준으로 1행째 볼드 여부 결정
+        row_bold_first = _is_bold_row(pdecl, matches[0][2], matches[0][3]) if matches else False
+        font_decl_pt_first = self.fntTextBold if row_bold_first else self.fntText
+        w,h = draw.textsize(txt_decl_pt, font_decl_pt_first)
+        draw.text((x + offs[1] + (self.CELL_WIDTH - w)/2, y + (self.LINE_HEIGHT - h)/2),
+                  txt_decl_pt, fill=txtclr, font=font_decl_pt_first)
 
         if matches:
             first, rest = matches[0], matches[1:]
-            self._draw_star_cols(draw, x, y, first, pdecl, row_bold)
+            # 첫 행: 첫 매치의 볼드 여부로 렌더
+            self._draw_star_cols(draw, x, y, first, pdecl, row_bold_first)
+
             # stack others
             y0 = y
             for m in rest:
@@ -448,14 +447,19 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
                 wL, hL = draw.textsize(sym, fontL)
                 draw.text((x + (self.SMALL_CELL_WIDTH - wL)//2, y0 + (self.LINE_HEIGHT - hL)//2),
                         sym, fill=iconclr, font=fontL)
+                row_bold_m = _is_bold_row(pdecl, m[2], m[3])
+                font_decl_pt_m = self.fntTextBold if row_bold_m else self.fntText
 
                 # (추가) 포인트 적위 반복 표시(행 볼드 규칙 적용)
-                wD, hD = draw.textsize(txt_decl_pt, font_decl_pt)
+                wD, hD = draw.textsize(txt_decl_pt, font_decl_pt_m)
+
                 draw.text((x + offs[1] + (self.CELL_WIDTH - wD)/2, y0 + (self.LINE_HEIGHT - hD)/2),
-                        txt_decl_pt, fill=txtclr, font=font_decl_pt)
+                        txt_decl_pt, fill=txtclr, font=font_decl_pt_m)
+
 
                 # 항성 이름/적위
-                self._draw_star_cols(draw, x, y0, m, pdecl, row_bold)
+                self._draw_star_cols(draw, x, y0, m, pdecl, row_bold_m)
+
 
 
             return y0 + self.LINE_HEIGHT
