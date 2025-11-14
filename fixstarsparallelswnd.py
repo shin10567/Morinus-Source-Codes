@@ -376,9 +376,10 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
             if _degdiff(pdecl, sdecl) <= (15.0/60.0):
                 mag = self._star_mag(code, name_sw)
                 res.append((code, disp, sdecl, mag))
-        # keep sorted by absolute orb
+        # keep sorted by absolute orb, but show only the nearest one
         res.sort(key=lambda x: _degdiff(pdecl, x[2]))
-        return res
+        return res[:1]
+
 
     # ---------- presentation helpers ----------
     def _fmt_decl(self, val):
