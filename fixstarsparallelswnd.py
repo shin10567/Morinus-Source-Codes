@@ -14,8 +14,14 @@ import commonwnd
 import Image, ImageDraw, ImageFont
 import mtexts
 import util
+import re
 
 ARCSEC = 3600.0
+def _normkey(s):
+    try:
+        return re.sub(r'[^0-9A-Za-z]+', '', s).upper()
+    except Exception:
+        return (s or '').upper()
 
 def _absdeg(x): return abs(x)
 def _degdiff(a, b): return abs(a - b)
@@ -93,6 +99,12 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         # color setup
         self.tableclr = (0,0,0) if self.bw else self.options.clrtable
         self.textclr  = (0,0,0) if self.bw else self.options.clrtexts
+        # sefstars.txt에서 밝기 인덱스 우선 로딩(실패해도 무시)
+        self._sef_mag_index = {}
+        try:
+            self._sef_mag_index = self._build_sefstars_mag_index()
+        except Exception:
+            self._sef_mag_index = {}
 
         # precompute star magnitudes map by code (lazy on demand)
         self._mag_cache = {}
@@ -123,6 +135,57 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         # For height estimate we conservatively allocate one line per point; drawing handles multi-matches by stacking extra lines.
         # To avoid dynamic resize flicker, keep this simple: allocate Npoints * max(1, avg matches). We'll stick to 1; wx scroll handles overflow.
         return len(self._point_order())
+    def _build_sefstars_mag_index(self):
+        """
+        sefstars.txt에서 [표준명 → mag] 맵을 구축.
+        위치는 여러 후보 경로를 순차적으로 탐색.
+        """
+        idx = {}
+        candidates = [
+            os.path.join(os.getcwd(), 'sefstars.txt'),
+            os.path.join(os.path.dirname(__file__), 'sefstars.txt'),
+            os.path.join(os.path.dirname(getattr(astrology, '__file__', __file__)), 'sefstars.txt'),
+            os.path.join('se', 'sefstars.txt'),
+            os.path.join('data', 'sefstars.txt'),
+        ]
+        path = None
+        for p in candidates:
+            try:
+                if os.path.exists(p):
+                    path = p
+                    break
+            except Exception:
+                pass
+        if not path:
+            return idx
+
+        with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                s = line.strip()
+                if not s or s[:1] in ('#', ';', '*'):
+                    continue
+                # 세미콜론/탭 우선 분리, 없으면 연속 공백 분리
+                parts = [t.strip() for t in re.split(r'[;\t]+', s) if t.strip()]
+                if not parts:
+                    continue
+                # 첫 필드를 노미널 코드로 간주(대소문자 무시 키)
+                nom = parts[0].strip()
+                # 나머지에서 '소수점 포함'하고 -3~10 사이 값 중 하나를 mag로 채택
+                # (RA/Dec 소수와 충돌 가능성은 작게, 그래도 실패하면 스킵)
+                mag = None
+                rest = ' '.join(parts[1:])
+                for tok in re.split(r'[\s,]+', rest):
+                    try:
+                        if '.' in tok:
+                            v = float(tok)
+                            if -3.0 <= v <= 10.0:
+                                mag = v
+                                break
+                    except Exception:
+                        pass
+                if mag is not None:
+                    idx[nom.upper()] = mag
+        return idx
 
     def _point_order(self):
         # Angles first, then planets, nodes, fortuna
@@ -191,6 +254,47 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         pts['LOF'] = fort.fortune[fortune.Fortune.DECL]
 
         return pts
+    def _star_mag_from_sef_or_fallback(self, code, fallback_name=None):
+        """
+        1) sefstars.txt 인덱스에서 우선 조회(코드/표시명 정규화 키 모두 시도)
+        2) 실패 시 기존 카탈로그 조회로 폴백
+        """
+        key = (code or fallback_name or '').strip()
+        if not key:
+            return None
+
+        # 캐시
+        cache_key = ('SEF', key)
+        if cache_key in self._mag_cache:
+            return self._mag_cache[cache_key]
+
+        # 1) SEF 인덱스 우선
+        mag = None
+        if self._sef_mag_index:
+            mag = self._sef_mag_index.get((code or '').upper())
+            if mag is None and fallback_name:
+                mag = self._sef_mag_index.get((fallback_name or '').upper())
+            # 이름 정규화 키로도 한 번 더 시도
+            if mag is None:
+                nk = _normkey(code or '')
+                mag = self._sef_mag_index.get(nk)
+            if mag is None and fallback_name:
+                nk = _normkey(fallback_name or '')
+                mag = self._sef_mag_index.get(nk)
+
+        # 2) 폴백: 기존 generic lookup
+        if mag is None:
+            try:
+                _ra, _dc, mag, _frame = fixstars._cat_lookup_equ_generic(code or fallback_name or '')
+            except Exception:
+                try:
+                    from fixstardirs import _cat_lookup_equ_generic as _cat
+                    _ra, _dc, mag, _frame = _cat(code or fallback_name or '')
+                except Exception:
+                    mag = None
+
+        self._mag_cache[cache_key] = mag
+        return mag
 
     # ---------- magnitude & bold threshold ----------
     def _star_mag(self, code, fallback_name=None):
@@ -402,7 +506,7 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
             if pdecl * sdecl < 0:
                 continue
             if _degdiff(pdecl, sdecl) <= (15.0/60.0):
-                mag = self._star_mag(code, name_sw)
+                mag = self._star_mag_from_sef_or_fallback(code, name_sw)
                 res.append((code, disp, sdecl, mag))
         # keep sorted by absolute orb
         res.sort(key=lambda x: _degdiff(pdecl, x[2]))

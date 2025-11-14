@@ -84,6 +84,15 @@ class ArabicParts:
         except Exception:
             pass
         return (0,0,0)
+    def _deg_abs_to_internal(self, absdeg, opts):
+        """0..359 절대도수(현재 황도 기준)를 내부 경도(트로피컬)로 변환."""
+        try:
+            lon = float(absdeg) % 360.0
+        except Exception:
+            lon = 0.0
+        if getattr(opts, 'ayanamsha', 0) != 0:
+            lon = util.normalize(lon + opts.ayanamsha)  # sidereal → tropical
+        return lon
 
     def __init__(self, ar, ascmc, pls, hs, cusps, fort, syz, opts): #ar is from options
         if ar == None:
@@ -198,7 +207,7 @@ class ArabicParts:
                                     lord = pid
                             lonA = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
                         else:
-                            lonA = val
+                            lonA = self._deg_abs_to_internal(val, opts)
                     else:
                         # RE / REFLORD
                         refA, refB, refC = self._get_refordeg_triplet(ar[ii])
@@ -250,7 +259,7 @@ class ArabicParts:
                                     lord = pid
                             lonB = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
                         else:
-                            lonB = val
+                            lonB = self._deg_abs_to_internal(val, opts)
                     else:
                         refA, refB, refC = self._get_refordeg_triplet(ar[ii])
                         lonB = _re_resolve(B_id, (refA, refB, refC)[1])
@@ -301,7 +310,7 @@ class ArabicParts:
                                     lord = pid
                             lonC = pls.planets[lord].data[planets.Planet.LONG] if lord != -1 else _lof_lon()
                         else:
-                            lonC = val
+                            lonC = self._deg_abs_to_internal(val, opts)
                     else:
                         refA, refB, refC = self._get_refordeg_triplet(ar[ii])
                         lonC = _re_resolve(C_id, (refA, refB, refC)[2])
@@ -381,9 +390,9 @@ class ArabicParts:
                         # DEG / DEGLORD
                         refA, refB, refC = self._get_refordeg_triplet(ar[i])
                         ref = (refA, refB, refC)[0]
-                        lonA = float(ref) % 360.0
+                        val = float(ref) % 360.0
                         if idA == ArabicParts.DEGLORD:
-                            sign = int(lonA/chart.Chart.SIGN_DEG)
+                            sign = int(val/chart.Chart.SIGN_DEG)
                             lord = -1
                             for pid in range(astrology.SE_SATURN+1):
                                 if opts.dignities[pid][0][sign]:
@@ -392,6 +401,8 @@ class ArabicParts:
                                 lonA = pls.planets[lord].data[planets.Planet.LONG]
                             else:
                                 continue
+                        else:
+                            lonA = self._deg_abs_to_internal(val, opts)
                     else:
                         # RE / REFLORD  ── R0 = LoF, R1..RN = 기존 parts[0..N-1]
                         refA, refB, refC = self._get_refordeg_triplet(ar[i])
@@ -477,9 +488,9 @@ class ArabicParts:
                     elif idB < ArabicParts.RE:
                         refA, refB, refC = self._get_refordeg_triplet(ar[i])
                         ref = (refA, refB, refC)[1]
-                        lonB = float(ref) % 360.0
+                        val = float(ref) % 360.0
                         if idB == ArabicParts.DEGLORD:
-                            sign = int(lonB/chart.Chart.SIGN_DEG)
+                            sign = int(val/chart.Chart.SIGN_DEG)
                             lord = -1
                             for pid in range(astrology.SE_SATURN+1):
                                 if opts.dignities[pid][0][sign]:
@@ -488,6 +499,8 @@ class ArabicParts:
                                 lonB = pls.planets[lord].data[planets.Planet.LONG]
                             else:
                                 continue
+                        else:
+                            lonB = self._deg_abs_to_internal(val, opts)
                     else:
                         # RE / REFLORD  ── R0 = LoF, R1..RN
                         refA, refB, refC = self._get_refordeg_triplet(ar[i])
@@ -571,9 +584,9 @@ class ArabicParts:
                     elif idC < ArabicParts.RE:
                         refA, refB, refC = self._get_refordeg_triplet(ar[i])
                         ref = (refA, refB, refC)[2]
-                        lonC = float(ref) % 360.0
+                        val = float(ref) % 360.0
                         if idC == ArabicParts.DEGLORD:
-                            sign = int(lonC/chart.Chart.SIGN_DEG)
+                            sign = int(val/chart.Chart.SIGN_DEG)
                             lord = -1
                             for pid in range(astrology.SE_SATURN+1):
                                 if opts.dignities[pid][0][sign]:
@@ -582,6 +595,8 @@ class ArabicParts:
                                 lonC = pls.planets[lord].data[planets.Planet.LONG]
                             else:
                                 continue
+                        else:
+                            lonC = self._deg_abs_to_internal(val, opts)
                     else:
                         # RE / REFLORD  ── R0 = LoF, R1..RN
                         refA, refB, refC = self._get_refordeg_triplet(ar[i])
@@ -634,10 +649,12 @@ class ArabicParts:
                 for p in range(astrology.SE_SATURN+1):
                     score = 0
                     scoretxt = ''
-                    if opts.ayanamsha != 0:
-                        tmplon = util.normalize(tmplon-opts.ayanamsha)
+                    testlon = tmplon
+                    if getattr(opts, 'ayanamsha', 0) != 0:
+                        testlon = util.normalize(testlon - opts.ayanamsha)
 
-                    s, st, sh = self.getData(opts, p, tmplon, fort.abovehorizon)
+                    s, st, sh = self.getData(opts, p, testlon, fort.abovehorizon)
+
                     score += s
                     scoretxt += st
 
