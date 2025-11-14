@@ -109,6 +109,15 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         return u'_FixStarParallels'
 
     # ---------- geometry helpers ----------
+    def _total_row_count(self):
+        # 각 포인트마다: 매치가 0이면 1행, n개면 n행
+        total = 0
+        for key in self._point_order():
+            pdecl = self._points.get(key, None)
+            matches = self._compute_matches(pdecl)
+            total += max(1, len(matches))
+        return total
+
     def _row_count(self):
         # header + each point as one row with possibly multiple star matches -> we draw point once then matched stars stacked
         # For height estimate we conservatively allocate one line per point; drawing handles multi-matches by stacking extra lines.
@@ -214,6 +223,13 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
     # ---------- drawing ----------
     def Draw(self):
         BOR = commonwnd.CommonWnd.BORDER
+        # (추가) 동적 높이 계산: 추가 매치로 생기는 행까지 반영
+        total_rows = self._total_row_count()
+        header_h = self.LINE_HEIGHT
+        self.TABLE_HEIGHT = header_h + total_rows * self.LINE_HEIGHT
+        self.HEIGHT = int(2 * BOR + self.TABLE_HEIGHT)
+        self.SetVirtualSize((self.WIDTH, self.HEIGHT))
+
         img = Image.new('RGB', (int(self.WIDTH), int(self.HEIGHT)), (255,255,255) if self.bw else self.options.clrbackground)
         draw = ImageDraw.Draw(img)
 
@@ -320,11 +336,23 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
                 draw.line((x, y0+self.LINE_HEIGHT, x+self.TABLE_WIDTH, y0+self.LINE_HEIGHT), fill=self.tableclr)
                 for i in range(1, len(offs)-1):
                     draw.line((x+sum(offs[:i+1]), y0, x+sum(offs[:i+1]), y0+self.LINE_HEIGHT), fill=self.tableclr)
-                # empty left + point decl reused visually as ditto mark(“)
-                self._draw_star_cols(draw, x, y0, m, pdecl, row_bold)
                 # left/right outer borders for the stacked line
                 draw.line((x, y0, x, y0+self.LINE_HEIGHT), fill=self.tableclr)
                 draw.line((x+self.TABLE_WIDTH, y0, x+self.TABLE_WIDTH, y0+self.LINE_HEIGHT), fill=self.tableclr)
+
+                # (추가) 왼쪽 심볼 반복 표시
+                wL, hL = draw.textsize(sym, fontL)
+                draw.text((x + (self.SMALL_CELL_WIDTH - wL)//2, y0 + (self.LINE_HEIGHT - hL)//2),
+                        sym, fill=iconclr, font=fontL)
+
+                # (추가) 포인트 적위 반복 표시(행 볼드 규칙 적용)
+                wD, hD = draw.textsize(txt_decl_pt, font_decl_pt)
+                draw.text((x + offs[1] + (self.CELL_WIDTH - wD)/2, y0 + (self.LINE_HEIGHT - hD)/2),
+                        txt_decl_pt, fill=txtclr, font=font_decl_pt)
+
+                # 항성 이름/적위
+                self._draw_star_cols(draw, x, y0, m, pdecl, row_bold)
+
 
             return y0 + self.LINE_HEIGHT
         else:
@@ -376,10 +404,9 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
             if _degdiff(pdecl, sdecl) <= (15.0/60.0):
                 mag = self._star_mag(code, name_sw)
                 res.append((code, disp, sdecl, mag))
-        # keep sorted by absolute orb, but show only the nearest one
+        # keep sorted by absolute orb
         res.sort(key=lambda x: _degdiff(pdecl, x[2]))
-        return res[:1]
-
+        return res
 
     # ---------- presentation helpers ----------
     def _fmt_decl(self, val):
