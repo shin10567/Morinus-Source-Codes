@@ -86,6 +86,7 @@ import zodparsframe
 import stripframe
 import fixstarsframe
 import fixstarsaspectsframe
+import fixstarsparallelsframe
 import hoursframe
 import midpointsframe
 import aspectsframe
@@ -248,6 +249,7 @@ class MFrame(wx.Frame):
 		self.ID_Eclipses = 186
 		self.ID_Decennials = 187
 		self.ID_FixStarAngleDirs = 185  # Angular directions of fixed stars
+		self.ID_FixStarsParallels = 188
 		#Charts-menu
 		self.ID_Transits, self.ID_Revolutions, self.ID_SunTransits, self.ID_SecondaryDirs, self.ID_Elections, self.ID_SquareChart, self.ID_ProfectionsChart, self.ID_MundaneChart = range(140, 148)
 		self.ID_SecProgMenu = 5000  # Secondary progressions (submenu header)
@@ -353,6 +355,7 @@ class MFrame(wx.Frame):
 		self.tfixed = wx.Menu()
 		self.tfixed.Append(self.ID_FixStars,        mtexts.menutxts['TMFixStars'],        mtexts.menutxts['TMFixStarsDoc'])
 		self.tfixed.Append(self.ID_FixStarsAsps,    mtexts.menutxts['TMFixStarsAsps'],    mtexts.menutxts['TMFixStarsAspsDoc'])
+		self.tfixed.Append(self.ID_FixStarsParallels, mtexts.menutxts['TMFixStarsParallels'], mtexts.menutxts['TMFixStarsParallelsDoc'])
 		self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
 		self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
 		self.mtable.Append(self.ID_FixedStarsMenu, mtexts.txts['FixStars'], self.tfixed)
@@ -548,6 +551,7 @@ class MFrame(wx.Frame):
 		self.Bind(wx.EVT_MENU, self.onAspects, id=self.ID_Aspects)
 		self.Bind(wx.EVT_MENU, self.onFixStars, id=self.ID_FixStars)
 		self.Bind(wx.EVT_MENU, self.onFixStarsAsps, id=self.ID_FixStarsAsps)
+		self.Bind(wx.EVT_MENU, self.onFixStarsParallels, id=self.ID_FixStarsParallels)
 		self.Bind(wx.EVT_MENU, self.onMidpoints, id=self.ID_Midpoints)
 		self.Bind(wx.EVT_MENU, self.onRiseSet, id=self.ID_RiseSet)
 		self.Bind(wx.EVT_MENU, self.onSpeeds, id=self.ID_Speeds)
@@ -635,6 +639,7 @@ class MFrame(wx.Frame):
 			(wx.ACCEL_CTRL, ord('5'),  self.ID_FixStarAngleDirs),
 			(wx.ACCEL_NORMAL, wx.WXK_F5, self.ID_Misc),
 			(wx.ACCEL_CTRL, ord('6'),  self.ID_Eclipses),
+			(wx.ACCEL_CTRL, ord('8'),  self.ID_FixStarsParallels),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F4, self.ID_SecProgChart),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F5, self.ID_Elections),
 	(wx.ACCEL_CTRL | wx.ACCEL_SHIFT, wx.WXK_F9, self.ID_SecProgPositions),
@@ -1474,6 +1479,23 @@ class MFrame(wx.Frame):
 			fixstarsaspsfr = fixstarsaspectsframe.FixStarsAspectsFrame(self, self.title, self.horoscope, self.options)
 			fixstarsaspsfr.Show(True)
 
+	def onFixStarsParallels(self, event):
+		# Windows에서 가속키 사용 시 EVT_MENU_CLOSE가 누락되는 케이스 정합
+		if wx.Platform == '__WXMSW__' and not self.splash:
+			self.handleStatusBar(True)
+
+		if not self.splash:
+			if not self.checkFixStars():
+				return
+			if len(self.options.fixstars) == 0:
+				dlgm = wx.MessageDialog(self, mtexts.txts['NoSelFixStars'], '', wx.OK|wx.ICON_INFORMATION)
+				dlgm.ShowModal()
+				dlgm.Destroy()
+				return
+
+			wait = wx.BusyCursor()
+			fr = fixstarsparallelsframe.FixStarsParallelsFrame(self, self.title, self.horoscope, self.options)
+			fr.Show(True)
 
 	def onPlanetaryHours(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
@@ -3241,6 +3263,7 @@ class MFrame(wx.Frame):
 				self.tfixed = wx.Menu()
 				self.tfixed.Append(self.ID_FixStars,        mtexts.menutxts['TMFixStars'],        mtexts.menutxts['TMFixStarsDoc'])
 				self.tfixed.Append(self.ID_FixStarsAsps,    mtexts.menutxts['TMFixStarsAsps'],    mtexts.menutxts['TMFixStarsAspsDoc'])
+				self.tfixed.Append(self.ID_FixStarsParallels, mtexts.menutxts['TMFixStarsParallels'], mtexts.menutxts['TMFixStarsParallelsDoc'])
 				self.tfixed.Append(self.ID_Paranatellonta,  mtexts.menutxts['TMParanatellonta'],  mtexts.menutxts['TMParanatellontaDoc'])
 				self.tfixed.Append(self.ID_AngleAtBirth,    mtexts.menutxts['TMAngleAtBirth'],    mtexts.menutxts['TMAngleAtBirthDoc'])
 				self.mtable.Append(self.ID_FixedStarsMenu, mtexts.txts['FixStars'], self.tfixed)
@@ -3431,6 +3454,7 @@ class MFrame(wx.Frame):
 				self.Bind(wx.EVT_MENU, self.onAspects, id=self.ID_Aspects)
 				self.Bind(wx.EVT_MENU, self.onFixStars, id=self.ID_FixStars)
 				self.Bind(wx.EVT_MENU, self.onFixStarsAsps, id=self.ID_FixStarsAsps)
+				self.Bind(wx.EVT_MENU, self.onFixStarsParallels, id=self.ID_FixStarsParallels)
 				self.Bind(wx.EVT_MENU, self.onMidpoints, id=self.ID_Midpoints)
 				self.Bind(wx.EVT_MENU, self.onRiseSet, id=self.ID_RiseSet)
 				self.Bind(wx.EVT_MENU, self.onSpeeds, id=self.ID_Speeds)
@@ -3889,7 +3913,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.4.8'
+		info.Version = '9.4.9'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())
