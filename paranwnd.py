@@ -1009,8 +1009,19 @@ class ParanatellontaWnd(cw.CommonWnd):
             s = txt.replace(u"±", u"").replace(u'"', u'').split(u"'")
             m = int(s[0]); ss = int(s[1])
             return m + ss/60.0
+        # 중복(같은 별표시명·같은 각쌍) 압축: |Δt|가 더 작은 한 건만 유지
+        uniq = {}
+        for row in rows:
+            dtxt, ipl2, star_disp2, angles2, same2 = row
+            key = (ipl2, star_disp2, angles2)
+            # 처음 보거나, 기존보다 |Δt|가 더 작으면 교체
+            if (key not in uniq) or (_abs_minutes(dtxt) < _abs_minutes(uniq[key][0])):
+                uniq[key] = row
+        rows = list(uniq.values())
+
         rows.sort(key=lambda r: _abs_minutes(r[0]))
         return rows
+
 
     def _glyph_for(self, ipl):
         # swe 상수 → pglyph 인덱스

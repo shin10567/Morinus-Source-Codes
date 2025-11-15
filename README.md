@@ -1,4 +1,4 @@
-## [9.4.9] Updated Version from 8.1.0 
+## [9.5.0] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -245,7 +245,8 @@
 - In fact, Placidus did not change the formula for the Mundane Fortuna according to day and night, and always used the Moon’s declination. Therefore, it is not appropriate for the Mundane Fortuna formula to vary by day/night, and the previous update that introduced such a change has been reverted.
 #### 9.4.9
 - Added "Fixed Star Parallels": Shows declination parallels with fixed stars within 15 arc minutes before and after.
-
+#### 9.5.0
+- Paranatellonta bug fix
 
 --------------------------------------------------------------------------------------------------------------------------
 
