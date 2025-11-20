@@ -1,4 +1,4 @@
-## [9.5.0] Updated Version from 8.1.0 
+## [9.5.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -246,6 +246,8 @@
 #### 9.4.9
 - Added "Fixed Star Parallels": Shows declination parallels with fixed stars within 15 arc minutes before and after.
 #### 9.5.0
+- Paranatellonta bug fix
+#### 9.5.1
 - Paranatellonta bug fix
 
 --------------------------------------------------------------------------------------------------------------------------

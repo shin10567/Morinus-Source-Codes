@@ -16,7 +16,8 @@ except ImportError:
 DEG = math.pi/180.0
 SID_RATE = 1.002737909350795  # sidereal hours per UT hour
 ANGLE_TOL_MIN = 2.0   # 분; 앵글 회합 정의의 허용 창(±2분)
-# ---- fixstars.cat fallback ----
+ANGLE_SOLVER_TOL_MIN = 0.01   # 분; 각시각 역산 수렴 한계
+
 # ---- fixstars.cat fallback with proper motion ----
 PM_UNITS = 'sefstars_masyear' # RA: mas/yr·cos(dec0), Dec: mas/yr (sefstars.txt 기준)
 # 필요시 'per_year' 로 바꾸면 연단위 μ로 처리됨.
@@ -238,7 +239,7 @@ def _ra_dec_star_deg_ut(jd_ut, star_name):
         base_str = str         # py3
     if swe is None:
         return _ra_dec_star_deg_ut_from_cat(jd_ut, star_name)
-    iflag = astrology.SEFLG_SWIEPH | astrology.SEFLG_TRUEPOS | astrology.SEFLG_EQUATORIAL
+    iflag = astrology.SEFLG_SWIEPH | astrology.SEFLG_EQUATORIAL
     q = star_name if isinstance(star_name, base_str) else (u"%s" % star_name)
     if not q.startswith(u','):
         q = u',' + q
@@ -306,7 +307,7 @@ def _sunrise_sunset_for_local_day_geometric(Y, M, D, tz_hours, lon_deg, lat_deg,
                 lst_target = _norm24(alpha_h + H0_deg/15.0)
             lst_now = _lst(ut, lon_deg)
             dt_h = ((lst_target - lst_now) % 24.0) / SID_RATE
-            if abs(dt_h) < (0.25/60.0):  # <15초면 수렴
+            if abs(dt_h) < (ANGLE_SOLVER_TOL_MIN/60.0):  # <15초면 수렴
                 break
             ut += dt_h/24.0
         return ut
@@ -382,7 +383,7 @@ def _angle_times_planet_in(lon_deg, lat_deg, ipl, t0_ut, t1_ut, alt_m=0.0, max_i
                     ut = None; break
                 lst_now = _lst(ut, lon_deg)
                 dt_h = ((lst_tgt - lst_now) % 24.0) / SID_RATE
-                if abs(dt_h) < (0.25/60.0):
+                if abs(dt_h) < (ANGLE_SOLVER_TOL_MIN/60.0):
                     break
                 ut += dt_h/24.0
             if ut is not None and (t0_ut <= ut < t1_ut):
@@ -416,7 +417,7 @@ def _angle_time_star_near(jd_guess, lon_deg, lat_deg, star_name_with_or_leading_
                 ut = None; break
             lst_now = _lst(ut, lon_deg)
             dt_h = ((lst_tgt - lst_now) % 24.0) / SID_RATE
-            if abs(dt_h) < (0.25/60.0):
+            if abs(dt_h) < (ANGLE_SOLVER_TOL_MIN/60.0):
                 break
             ut += dt_h/24.0
         if ut is None:
@@ -463,7 +464,7 @@ def _rise_times_planet_in(lon_deg, lat_deg, ipl, t0_ut, t1_ut,
             lst_target = _norm24(alpha_h - H0_deg/15.0)
             lst_now = _lst(ut, lon_deg)
             dt_h = ((lst_target - lst_now) % 24.0) / SID_RATE
-            if abs(dt_h) < (0.25/60.0):
+            if abs(dt_h) < (ANGLE_SOLVER_TOL_MIN/60.0):
                 break
             ut += dt_h/24.0
         if ut is not None and (t0_ut <= ut < t1_ut):
@@ -506,7 +507,7 @@ def _sunrise_span_for_local_day(Y, M, D, tz_hours, lon_deg, lat_deg, alt_m=0.0, 
             lst_target = _norm24(alpha_h - H0_deg/15.0)
             lst_now = _lst(ut, lon_deg)
             dt_h = ((lst_target - lst_now) % 24.0) / SID_RATE
-            if abs(dt_h) < (0.25/60.0): break
+            if abs(dt_h) < (ANGLE_SOLVER_TOL_MIN/60.0): break
             ut += dt_h/24.0
         return ut
 
