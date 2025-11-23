@@ -1,4 +1,4 @@
-## [9.5.1] Updated Version from 8.1.0 
+## [9.5.2] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -249,6 +249,8 @@
 - Paranatellonta bug fix
 #### 9.5.1
 - Paranatellonta bug fix
+#### 9.5.2
+- Changed the method for computing apparent magnitudes of fixed stars (now using swe_fixstar_mag).
 
 --------------------------------------------------------------------------------------------------------------------------
 

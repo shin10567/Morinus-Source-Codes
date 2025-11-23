@@ -254,10 +254,12 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         pts['LOF'] = fort.fortune[fortune.Fortune.DECL]
 
         return pts
+        
     def _star_mag_from_sef_or_fallback(self, code, fallback_name=None):
         """
-        1) sefstars.txt 인덱스에서 우선 조회(코드/표시명 정규화 키 모두 시도)
-        2) 실패 시 기존 카탈로그 조회로 폴백
+        0) Swiss Ephemeris swe_fixstar_mag() 결과를 우선 사용
+        1) 실패 시 sefstars.txt 인덱스 조회(코드/표시명 정규화 키 모두 시도)
+        2) 그래도 실패하면 기존 카탈로그 lookup으로 폴백
         """
         key = (code or fallback_name or '').strip()
         if not key:
@@ -268,19 +270,66 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
         if cache_key in self._mag_cache:
             return self._mag_cache[cache_key]
 
-        # 1) SEF 인덱스 우선
         mag = None
-        if self._sef_mag_index:
-            mag = self._sef_mag_index.get((code or '').upper())
-            if mag is None and fallback_name:
-                mag = self._sef_mag_index.get((fallback_name or '').upper())
+
+        # 0) Swiss Ephemeris swe_fixstar_mag 우선
+        ids = []
+        for s in (code, fallback_name):
+            if not s:
+                continue
+            try:
+                t = u"%s" % (s,)
+            except Exception:
+                t = s
+            try:
+                t = t.replace(u'\x00', u'').strip()
+            except Exception:
+                t = u"%s" % (t,)
+                t = t.strip()
+            if t and t not in ids:
+                ids.append(t)
+
+        for sid in ids:
+            # Swiss는 "이름"과 ",이름" 두 형태 모두 받아들이는 경우가 있으므로 둘 다 시도
+            for query in (sid, u"," + sid):
+                try:
+                    res = astrology.swe_fixstar_mag(query)
+                except Exception:
+                    res = None
+
+                cand_mag = None
+                if isinstance(res, (int, float)):
+                    cand_mag = float(res)
+                elif isinstance(res, (list, tuple)):
+                    for v in res:
+                        try:
+                            fv = float(v)
+                        except Exception:
+                            continue
+                        # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도) 안에서만 채택
+                        if -15.0 < fv < 20.0:
+                            cand_mag = fv
+                            break
+
+                if cand_mag is not None and cand_mag < 998.0:
+                    mag = cand_mag
+                    break
+            if mag is not None:
+                break
+
+        # 1) sefstars.txt 인덱스 조회
+        if mag is None and self._sef_mag_index:
+            m = self._sef_mag_index.get((code or '').upper())
+            if m is None and fallback_name:
+                m = self._sef_mag_index.get((fallback_name or '').upper())
             # 이름 정규화 키로도 한 번 더 시도
-            if mag is None:
+            if m is None:
                 nk = _normkey(code or '')
-                mag = self._sef_mag_index.get(nk)
-            if mag is None and fallback_name:
+                m = self._sef_mag_index.get(nk)
+            if m is None and fallback_name:
                 nk = _normkey(fallback_name or '')
-                mag = self._sef_mag_index.get(nk)
+                m = self._sef_mag_index.get(nk)
+            mag = m
 
         # 2) 폴백: 기존 generic lookup
         if mag is None:

@@ -89,6 +89,60 @@ def utext(x):
             return u"%s" % (x,)
     except Exception:
         return u"%s" % (x,)
+def _get_fixstar_mag(nom, name, mag_index=None):
+    """
+    Swiss Ephemeris swe_fixstar_mag()를 우선 사용하고,
+    실패하거나 사용할 수 없는 경우 로컬 카탈로그 인덱스로 폴백한다.
+    nom/name: NUL 제거·strip된 유니코드 문자열.
+    """
+    # Swiss 쿼리용 후보 식별자: 코드(약칭) 우선, 그 뒤 표시명
+    ids = []
+    for s in (nom, name):
+        try:
+            s = utext(s).replace(u'\x00', u'').strip()
+        except Exception:
+            s = u"%s" % (s,)
+        if s and s not in ids:
+            ids.append(s)
+
+    # 1) Swiss Ephemeris: swe_fixstar_mag (래퍼 반환 형식이 환경마다 다를 수 있어 방어적으로 처리)
+    for sid in ids:
+        for query in (sid, u"," + sid):
+            try:
+                res = astrology.swe_fixstar_mag(query)
+            except Exception:
+                res = None
+
+            mag = None
+            if isinstance(res, (int, float)):
+                mag = float(res)
+            elif isinstance(res, (list, tuple)):
+                for v in res:
+                    try:
+                        fv = float(v)
+                    except Exception:
+                        continue
+                    # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도)만 허용
+                    if -15.0 < fv < 20.0:
+                        mag = fv
+                        break
+
+            if mag is not None and mag < 998.0:
+                return mag
+
+    # 2) 폴백: sefstars.txt / fixstars.cat 인덱스
+    try:
+        if mag_index is None:
+            mag_index = _load_fixstar_mags()
+        for sid in ids:
+            if sid in mag_index:
+                mag = mag_index.get(sid)
+                if mag is not None and mag < 998.0:
+                    return mag
+    except Exception:
+        pass
+
+    return None
 
 import builtins
 
@@ -321,12 +375,15 @@ def compute_contacts(horoscope, options, minutes_window=10):
     out = []
     rank = {"MC":0,"IC":1,"Asc":2,"Dsc":3}
 
-    mag_index = _load_fixstar_mags()  # ← 추가
+    # 고정별 등급: Swiss Ephemeris swe_fixstar_mag를 우선 사용하고, 실패 시 카탈로그 인덱스로 폴백
+    mag_index = _load_fixstar_mags()
 
     for row in rows:
-        disp = utext(row[0]).replace(u'\x00',u'').strip()
-        nom  = utext(row[1]).replace(u'\x00',u'').strip() if len(row) > 1 else u""
-        # 코드→선호표시명 적용
+        name_raw = utext(row[0]).replace(u'\x00',u'').strip()
+        nom      = utext(row[1]).replace(u'\x00',u'').strip() if len(row) > 1 else u""
+        disp     = name_raw
+
+        # 코드→선호표시명 적용(표시 전용, Swiss 검색에는 name_raw/nom 사용)
         try:
             if hasattr(options, 'fixstarAliasMap') and isinstance(options.fixstarAliasMap, dict):
                 if nom in options.fixstarAliasMap:
@@ -334,7 +391,7 @@ def compute_contacts(horoscope, options, minutes_window=10):
         except Exception:
             pass
 
-        mag  = mag_index.get(disp) or mag_index.get(nom)
+        mag = _get_fixstar_mag(nom, name_raw, mag_index)
         mag_str = u"" if (mag is None) else u"{:.2f}".format(mag)
 
         ra_deg, dec_deg = _radec_from_row(row, jd0)
