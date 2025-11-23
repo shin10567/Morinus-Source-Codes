@@ -293,25 +293,19 @@ class FixStarsParallelsWnd(commonwnd.CommonWnd):
             # Swiss는 "이름"과 ",이름" 두 형태 모두 받아들이는 경우가 있으므로 둘 다 시도
             for query in (sid, u"," + sid):
                 try:
-                    res = astrology.swe_fixstar_mag(query)
+                    ret, st, mag_val, serr = astrology.swe_fixstar_mag(query)
                 except Exception:
-                    res = None
+                    mag_val = None
 
                 cand_mag = None
-                if isinstance(res, (int, float)):
-                    cand_mag = float(res)
-                elif isinstance(res, (list, tuple)):
-                    for v in res:
-                        try:
-                            fv = float(v)
-                        except Exception:
-                            continue
-                        # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도) 안에서만 채택
-                        if -15.0 < fv < 20.0:
-                            cand_mag = fv
-                            break
+                if mag_val is not None:
+                    try:
+                        cand_mag = float(mag_val)
+                    except Exception:
+                        cand_mag = None
 
-                if cand_mag is not None and cand_mag < 998.0:
+                # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도) 안에서만 채택
+                if cand_mag is not None and -15.0 < cand_mag < 20.0 and cand_mag < 998.0:
                     mag = cand_mag
                     break
             if mag is not None:

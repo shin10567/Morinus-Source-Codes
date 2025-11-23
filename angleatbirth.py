@@ -105,29 +105,22 @@ def _get_fixstar_mag(nom, name, mag_index=None):
         if s and s not in ids:
             ids.append(s)
 
-    # 1) Swiss Ephemeris: swe_fixstar_mag (래퍼 반환 형식이 환경마다 다를 수 있어 방어적으로 처리)
     for sid in ids:
         for query in (sid, u"," + sid):
             try:
-                res = astrology.swe_fixstar_mag(query)
+                ret, st, mag_val, serr = astrology.swe_fixstar_mag(query)
             except Exception:
-                res = None
+                mag_val = None
 
             mag = None
-            if isinstance(res, (int, float)):
-                mag = float(res)
-            elif isinstance(res, (list, tuple)):
-                for v in res:
-                    try:
-                        fv = float(v)
-                    except Exception:
-                        continue
-                    # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도)만 허용
-                    if -15.0 < fv < 20.0:
-                        mag = fv
-                        break
+            if mag_val is not None:
+                try:
+                    mag = float(mag_val)
+                except Exception:
+                    mag = None
 
-            if mag is not None and mag < 998.0:
+            # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도)만 허용
+            if mag is not None and -15.0 < mag < 20.0 and mag < 998.0:
                 return mag
 
     # 2) 폴백: sefstars.txt / fixstars.cat 인덱스
