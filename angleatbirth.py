@@ -106,22 +106,27 @@ def _get_fixstar_mag(nom, name, mag_index=None):
             ids.append(s)
 
     for sid in ids:
-        for query in (sid, u"," + sid):
+        query = sid
+        try:
+            ret, st, mag_val, serr = astrology.swe_fixstar_mag(',' + query)
+        except Exception:
+            mag_val = None
+
+        mag = None
+        if mag_val is not None:
             try:
-                ret, st, mag_val, serr = astrology.swe_fixstar_mag(query)
+                if isinstance(mag_val, (list, tuple)):
+                    raw = mag_val[0] if len(mag_val) > 0 else None
+                else:
+                    raw = mag_val
+                if raw is not None:
+                    mag = float(raw)
             except Exception:
-                mag_val = None
+                mag = None
 
-            mag = None
-            if mag_val is not None:
-                try:
-                    mag = float(mag_val)
-                except Exception:
-                    mag = None
-
-            # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도)만 허용
-            if mag is not None and -15.0 < mag < 20.0 and mag < 998.0:
-                return mag
+        # 고정별 겉보기 등급의 일반적인 범위(-5~+15 정도)만 허용
+        if mag is not None and -15.0 < mag < 20.0 and mag < 998.0:
+            return mag
 
     # 2) 폴백: sefstars.txt / fixstars.cat 인덱스
     try:
