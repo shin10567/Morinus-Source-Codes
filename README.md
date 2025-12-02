@@ -1,4 +1,4 @@
-## [9.5.2] Updated Version from 8.1.0 
+## [9.5.3] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -251,18 +251,14 @@
 - Paranatellonta bug fix
 #### 9.5.2
 - Changed the method for computing apparent magnitudes of fixed stars (now using swe_fixstar_mag).
+#### 9.5.3
+- Total, annular, and hybrid solar eclipses and total lunar eclipses that are closest before and after the chart time are now shown in bold.
 
 --------------------------------------------------------------------------------------------------------------------------
 
 #### I’m not a developer by trade; I was simply a Morinus user who felt inconveniences while using the program.
 
 #### I addressed a few of those personal inconveniences and added features I needed. As I have no programming background, most of the code was generated with the help of AI tools.
-
-#### Watching new features land in Morinus was satisfying, but the AI I rely on has started to show its limits. There’s still much I’d like to add or fix, yet it now feels beyond what I can reasonably handle.
-
-### Therefore, I believe my role ends here.
-
-#### This is an open-source program. If you’ve added a feature or fixed a bug, you’re welcome to start a new repository or fork the project; ideally without significantly altering existing behavior.
 
 ### Known issues
 - Error when applying ayanamsa in Circumambulations

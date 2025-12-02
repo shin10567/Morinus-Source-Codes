@@ -460,9 +460,8 @@ def _solar_fallback(jd_from, jd_to):
         ev.dodek_deg = Ld; ev.dodek_sign = s2
         ev.dodek_d, ev.dodek_m, ev.dodek_s = d2, m2, s2sec
         ev.saros = u'—'
-        ev.bold = bool(rf_best & (astrology.SE_ECL_TOTAL |
-                                  astrology.SE_ECL_ANNULAR |
-                                  astrology.SE_ECL_ANNULAR_TOTAL))
+        # bold 여부는 find_eclipses_around()에서 출생시각 기준으로 한 번에 결정
+        ev.bold = False
         out.append(ev)
     return out
 
@@ -531,7 +530,8 @@ def _lunar(jd_from, jd_to):
             ev.dodek_deg = Ld; ev.dodek_sign = s2
             ev.dodek_d, ev.dodek_m, ev.dodek_s = d2, m2, s2sec
             ev.saros = u'—'
-            ev.bold = bool(retflag & LUNAR_BOLD_FLAGS)
+            # bold 여부는 find_eclipses_around()에서 출생시각 기준으로 한 번에 결정
+            ev.bold = False
             out.append(ev)
 
         jd = tmax + 0.01
@@ -594,9 +594,39 @@ def find_eclipses_around(chart):
             else:
                 dedup.append(ev)
 
+    # --- 여기서부터 bold 대상 결정 로직 추가 ---
+
+    # 1) 일단 전부 bold 해제
+    for ev in dedup:
+        ev.bold = False
+
+    # 2) 메이저 타입 필터: Solar = Total/Hybrid/Annular, Lunar = Total
+    def _is_major(ev):
+        rf = int(ev.retflag) if not isinstance(ev.retflag, (list, tuple)) else int(ev.retflag[0])
+        if ev.is_solar:
+            _kind, is_major, _prio = _classify_solar_from_retflag(rf)
+            return is_major   # TOTAL / ANNULAR / HYBRID만 True
+        else:
+            _kind, is_major, _prio = _classify_lunar_from_retflag(rf)
+            return is_major   # TOTAL만 True
+
+    majors = [ev for ev in dedup if _is_major(ev)]
+
+    if majors:
+        # 출생 시각 jd0 기준으로 직전/직후 메이저 일·월식 선택
+        prevs = [ev for ev in majors if ev.jdut <= jd0]
+        nexts = [ev for ev in majors if ev.jdut >= jd0]
+
+        prev_ev = max(prevs, key=lambda e: e.jdut) if prevs else None
+        next_ev = min(nexts, key=lambda e: e.jdut) if nexts else None
+
+        if prev_ev is not None:
+            prev_ev.bold = True
+        if next_ev is not None and next_ev is not prev_ev:
+            next_ev.bold = True
+
     return dedup
 
-    return allv
 
 def _tz_offset_hours(chart):
     """

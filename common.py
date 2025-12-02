@@ -14,7 +14,7 @@ class Common:
 		self.abc_bold = os.path.join('Res', 'FreeSansBold.ttf')
 		# 숫자 전용(라틴) 폰트: 언어 설정(CJK)과 무관하게 항상 FreeSans로 강제
 		self.abc_ascii = os.path.join('Res', 'FreeSans.ttf')
-
+		self.freesans_bold = os.path.join('Res', 'FreeSansBold.ttf')
 		# 프라이빗 폰트 등록: 이 프로세스에서만 파일의 폰트를 쓸 수 있게 함
 		try:
 			import ctypes
@@ -32,6 +32,7 @@ class Common:
 			AddFontResourceExW(_abs(self.symbols).decode('mbcs'), FR_PRIVATE, None)
 			AddFontResourceExW(_abs(self.abc).decode('mbcs'),     FR_PRIVATE, None)
 			AddFontResourceExW(_abs(self.abc_ascii).decode('mbcs'),     FR_PRIVATE, None)
+			AddFontResourceExW(_abs(self.freesans_bold).decode('mbcs'), FR_PRIVATE, None)
 		except Exception as _e:
 			# 실패해도 앱은 계속 동작하도록 무시 (원인 추적 필요하면 print)
 			pass

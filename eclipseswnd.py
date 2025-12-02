@@ -36,10 +36,65 @@ class EclipsesWnd(commonwnd.CommonWnd):
 
         # 폰트/기호
         self.fntMorinus = ImageFont.truetype(common.common.symbols, int(self.FONT_SIZE))
+        # UI 기본 텍스트 폰트 (다국어용)
         self.fntText    = ImageFont.truetype(common.common.abc, int(self.FONT_SIZE))
-        self.fntTextBold = None  # 볼드 미사용 고정
+        try:
+            # 조디악 릴리징과 동일하게 abc_bold 사용 (실제 Bold TTF)
+            self.fntTextBold = ImageFont.truetype(common.common.abc_bold, int(self.FONT_SIZE))
+        except Exception:
+            # abc_bold 없으면 일반 폰트로 폴백
+            self.fntTextBold = self.fntText
+
+        # ----------------------------------------------------------
+        # 경도/도데카 숫자용 영어폰트
+        #   - 기본: abc_ascii (없으면 UI 폰트)
+        #   - Bold: res/freesansbold.ttf 를 최우선 사용
+        # ----------------------------------------------------------
+        try:
+            self.fntAscii = ImageFont.truetype(common.common.abc_ascii, int(self.FONT_SIZE))
+        except Exception:
+            # 없는 빌드에서는 기본 텍스트 폰트 재사용
+            self.fntAscii = self.fntText
+
+        # ascii 전용 Bold 폰트
+        self.fntAsciiBold = None
+
+        # 1순위: res/freesansbold.ttf
+        self.fntFreeSansBold = None
+        try:
+            resfolder = getattr(common.common, 'resfolder', None)
+            if resfolder:
+                fsb_path = os.path.join(resfolder, 'freesansbold.ttf')
+                if os.path.exists(fsb_path):
+                    self.fntFreeSansBold = ImageFont.truetype(fsb_path, int(self.FONT_SIZE))
+        except Exception:
+            self.fntFreeSansBold = None
+
+        if self.fntFreeSansBold is not None:
+            # 경도/도데카 Bold 는 무조건 FreeSansBold 사용
+            self.fntAsciiBold = self.fntFreeSansBold
+        else:
+            # 2순위: abc_ascii_bold (빌드에 있을 때)
+            try:
+                ascii_bold_path = getattr(common.common, 'abc_ascii_bold', None)
+                if ascii_bold_path:
+                    self.fntAsciiBold = ImageFont.truetype(ascii_bold_path, int(self.FONT_SIZE))
+            except Exception:
+                self.fntAsciiBold = None
+
+        # 그래도 없으면 그냥 일반 ascii 폰트 재사용
+        if self.fntAsciiBold is None:
+            self.fntAsciiBold = self.fntAscii
+
+        # >>> Eclipses: 경도/도데카 Bold 숫자는 common.freesans_bold를 강제 사용 <<<
+        try:
+            self.fntAsciiBold = ImageFont.truetype(common.common.freesans_bold, int(self.FONT_SIZE))
+        except Exception:
+            # FreeSansBold 로드 실패 시 기존 설정 유지
+            pass
 
         self.signs = common.common.Signs1 if self.options.signs else common.common.Signs2
+
         # 아야남샤(시데럴) 사용 여부: 옵션 키 존재/값 기반으로 유연 탐지
         self._ayan_enabled = bool(getattr(self.options, 'ayanamsha', 0) or
                                   getattr(self.options, 'ayanamsa', 0) or
@@ -85,9 +140,42 @@ class EclipsesWnd(commonwnd.CommonWnd):
         return dms, self.signs[sign_idx]
 
     def _text(self, draw, xy, s, bold=False, font=None, fill=(0,0,0)):
-        # 볼드 완전 비활성: 항상 한 번만 그린다
+        """
+        공용 텍스트 출력 헬퍼.
+        - Morinus 심볼(별자리, 행성 등): bold=True이면 두 번 찍는 가짜 볼드
+        - 영어 숫자/각도(abc_ascii): bold=True이면 fntAsciiBold 사용
+        - 일반 텍스트(다국어 UI): bold=True이면 fntTextBold 사용
+        """
         if font is None:
             font = self.fntText
+
+        # 1) 사인/행성 기호: Morinus 심볼 폰트 → 가짜 볼드(두 번 찍기)
+        if bold and font is self.fntMorinus:
+            x, y = xy
+            draw.text((x+1, y), s, fill=fill, font=font)
+            draw.text((x,   y), s, fill=fill, font=font)
+            return
+
+        # 2) 영어 숫자/각도용 폰트: abc_ascii 계열
+        if hasattr(self, 'fntAscii') and font is self.fntAscii:
+            if bold:
+                # ① abc_ascii_bold → ② res/freesansbold.ttf → ③ 기본 ascii
+                local_font = getattr(self, 'fntAsciiBold', None)
+                if not local_font:
+                    local_font = getattr(self, 'fntFreeSansBold', None) or self.fntAscii
+                draw.text(xy, s, fill=fill, font=local_font)
+                return
+            else:
+                draw.text(xy, s, fill=fill, font=font)
+                return
+
+        # 3) 나머지 일반 텍스트: 다국어 UI용 폰트 + Bold
+        if bold:
+            try:
+                font = self.fntTextBold or font
+            except AttributeError:
+                font = font
+
         draw.text(xy, s, fill=fill, font=font)
 
     def _ayan_deg(self, jdut):
@@ -243,17 +331,33 @@ class EclipsesWnd(commonwnd.CommonWnd):
             # 숫자 + 사인기호
             lon_dms = u"%d%s%02d'%02d\"" % (d, self.deg_symbol, m, s)
 
-            w_num, h_num = draw.textsize(lon_dms+u" ", self.fntText)
+            # 숫자는 영어폰트(abc_ascii), 사인기호는 Morinus 심볼
+            num_font       = getattr(self, 'fntAscii', self.fntText)
+            bold_num_font  = getattr(self, 'fntAsciiBold', num_font)
+
+            # 실제 그릴 폰트(볼드 여부에 따라 선택)
+            draw_num_font = bold_num_font if ev.bold else num_font
+
+            w_num, h_num = draw.textsize(lon_dms+u" ", draw_num_font)
             w_sig, h_sig = draw.textsize(self.signs[sign_idx], self.fntMorinus)
             total_w = w_num + w_sig
             base_x = colx + (self.colw[2]-total_w)//2
-            # 숫자
-            self._text(draw, (base_x, rowy + (self.LINE_HEIGHT-h_num)//2), lon_dms+u" ",
-                    bold=ev.bold, font=self.fntText, fill=txtclr)
 
-            # 사인기호(볼드면 두 번 찍기 규칙 적용)
-            self._text(draw, (base_x + w_num, rowy + (self.LINE_HEIGHT-h_sig)//2),
-                    self.signs[sign_idx], bold=ev.bold, font=self.fntMorinus, fill=txtclr)
+            # 숫자 (경도 DMS) – 여기서만 직접 FreeSansBold/AsciiBold 사용
+            draw.text(
+                (base_x, rowy + (self.LINE_HEIGHT-h_num)//2),
+                lon_dms+u" ",
+                fill=txtclr,
+                font=draw_num_font
+            )
+
+            # 사인기호(볼드면 두 번 찍기 규칙 적용, Morinus 심볼 폰트 유지)
+            self._text(draw,
+                       (base_x + w_num, rowy + (self.LINE_HEIGHT-h_sig)//2),
+                       self.signs[sign_idx],
+                       bold=ev.bold,
+                       font=self.fntMorinus,
+                       fill=txtclr)
 
             colx += self.colw[2]
 
@@ -269,14 +373,32 @@ class EclipsesWnd(commonwnd.CommonWnd):
                 dodek_sign, dd, mm, ss = self._dodek_from_lon(Lsid)
 
             dms_txt, sign_sym = self._dodek_text(dodek_sign, dd, mm, ss)
-            w_num, h_num = draw.textsize(dms_txt+u" ", self.fntText)
+
+            # 도데카 숫자도 영어폰트(abc_ascii) 사용
+            num_font       = getattr(self, 'fntAscii', self.fntText)
+            bold_num_font  = getattr(self, 'fntAsciiBold', num_font)
+            draw_num_font  = bold_num_font if ev.bold else num_font
+
+            w_num, h_num = draw.textsize(dms_txt+u" ", draw_num_font)
             w_sig, h_sig = draw.textsize(sign_sym, self.fntMorinus)
             total_w = w_num + w_sig
             base_x = colx + (self.colw[3]-total_w)//2
-            self._text(draw, (base_x, rowy + (self.LINE_HEIGHT-h_num)//2),
-                    dms_txt+u" ", bold=ev.bold, font=self.fntText, fill=txtclr)
-            self._text(draw, (base_x + w_num, rowy + (self.LINE_HEIGHT-h_sig)//2),
-                    sign_sym, bold=ev.bold, font=self.fntMorinus, fill=txtclr)
+
+            # 숫자 (도데카 DMS)
+            draw.text(
+                (base_x, rowy + (self.LINE_HEIGHT-h_num)//2),
+                dms_txt+u" ",
+                fill=txtclr,
+                font=draw_num_font
+            )
+
+            # 사인 기호
+            self._text(draw,
+                       (base_x + w_num, rowy + (self.LINE_HEIGHT-h_sig)//2),
+                       sign_sym,
+                       bold=ev.bold,
+                       font=self.fntMorinus,
+                       fill=txtclr)
 
             colx += self.colw[3]
 
