@@ -35,21 +35,27 @@ class MunPosWnd(commonwnd.CommonWnd):
 		self.COLUMN_NUM = 1
 
 		self.SPACE_ARABIANY = self.LINE_HEIGHT
-		self.LINE_NUM_ARABIAN = 1
+		self.LINE_NUM_ARABIAN = 2      # 헤더 1줄 + Mundane Fortuna 1줄
 		self.COLUMN_NUM_ARABIAN = 4
 
 		self.SMALL_CELL_WIDTH = 3*self.FONT_SIZE
 		self.CELL_WIDTH = 8*self.FONT_SIZE
+		# Mundane Fortuna: 일반 CELL_WIDTH보다 약간 넓은 칸 사용
+		self.CELL_WIDTH_MUNFORTUNE = int(self.CELL_WIDTH * 1.2)
+
 		self.TITLE_HEIGHT = self.LINE_HEIGHT
 		self.TITLE_WIDTH = self.COLUMN_NUM*self.CELL_WIDTH
-		self.TITLE_WIDTH_ARABIAN = (self.COLUMN_NUM_ARABIAN+1)*self.CELL_WIDTH
+		self.TITLE_WIDTH_ARABIAN = (self.COLUMN_NUM_ARABIAN+1)*self.CELL_WIDTH_MUNFORTUNE
+
 		self.SPACE_TITLEY = 0
 		self.TABLE_WIDTH = (self.SMALL_CELL_WIDTH+self.COLUMN_NUM*(self.CELL_WIDTH))
 		self.TABLE_WIDTH_ARABIAN = self.TABLE_WIDTH
 		self.TABLE_HEIGHT_ARABIAN = 0
 		if not self.options.intables or (self.options.intables and self.options.showlof):
-			self.TABLE_WIDTH_ARABIAN = (self.CELL_WIDTH+self.COLUMN_NUM_ARABIAN*(self.CELL_WIDTH))
+			# Mundane Fortuna 테이블은 전용 폭 사용
+			self.TABLE_WIDTH_ARABIAN = self.TITLE_WIDTH_ARABIAN
 			self.TABLE_HEIGHT_ARABIAN = (self.SPACE_ARABIANY+self.LINE_NUM_ARABIAN*self.LINE_HEIGHT)
+
 		self.TABLE_HEIGHT = (self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM)*(self.LINE_HEIGHT)+self.TABLE_HEIGHT_ARABIAN)
 	
 		self.WIDTH = int(commonwnd.CommonWnd.BORDER+self.TABLE_WIDTH_ARABIAN+commonwnd.CommonWnd.BORDER)
@@ -114,7 +120,8 @@ class MunPosWnd(commonwnd.CommonWnd):
 		if not self.options.intables or (self.options.intables and self.options.showlof):
 			x = BOR
 			y = BOR+self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM)*(self.LINE_HEIGHT)+self.SPACE_ARABIANY
-			draw.rectangle(((x,y),(x+self.TITLE_WIDTH_ARABIAN, y+self.LINE_HEIGHT)), outline=(tableclr), fill=(self.bkgclr))
+			# 헤더 1줄 + Mundane Fortuna 1줄 전체 박스
+			draw.rectangle(((x,y),(x+self.TITLE_WIDTH_ARABIAN, y+2*self.LINE_HEIGHT)), outline=(tableclr), fill=(self.bkgclr))
 			# 옵션(주/야·공식) 반영하여 최신 Mundane Fortune 재계산
 			try:
 				# 섹트(주/야) 판단: 기본은 태양의 abovehorizon 속성 사용
@@ -137,7 +144,10 @@ class MunPosWnd(commonwnd.CommonWnd):
 				# 재계산 실패 시에도 기존 캐시값으로 그리기 (표 그리기 중단 방지)
 				pass
 
-			self.drawlinelof(draw, x, y, mtexts.txts['MLoF'], self.chart.munfortune.mfortune, tableclr, 0)
+			# 상단 헤더(황경 / 황위 / 적경 / 적위)
+			self.drawheaderlof(draw, x, y, tableclr)
+			# 그 아래 실제 Mundane Fortuna 값
+			self.drawlinelof(draw, x, y+self.LINE_HEIGHT, mtexts.txts['MLoF'], self.chart.munfortune.mfortune, tableclr, 0)
 
 		wxImg = wx.Image(img.size[0], img.size[1])
 		wxImg.SetData(img.tobytes())
@@ -177,13 +187,57 @@ class MunPosWnd(commonwnd.CommonWnd):
 
 			summa += offs[i]
 
+	def drawheaderlof(self, draw, x, y, clr):
+		"""Header row for Mundane Fortuna (lon/lat/RA/decl)."""
+		# 헤더 하단 가로선만 그림 (세로선 없음)
+		draw.line((x, y+self.LINE_HEIGHT, x+self.TABLE_WIDTH_ARABIAN, y+self.LINE_HEIGHT), fill=clr)
+
+		offs = (0,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE)
+
+		summa = 0
+		txtclr = (0, 0, 0)
+		if not self.bw:
+			txtclr = self.options.clrtexts
+
+		for i in range(self.COLUMN_NUM_ARABIAN+1+1):  # +1 is the leftmost column
+			# 헤더에서는 세로선 그리지 않음
+
+			key = None
+			if i == 2:
+				key = 'Longitude'
+			elif i == 3:
+				key = 'Latitude'
+			elif i == 4:
+				key = 'Rectascension'
+			elif i == 5:
+				key = 'Declination'
+
+			if key is not None:
+				txt = mtexts.txts[key]
+				w, h = draw.textsize(txt, self.fntText)
+				draw.text((x+summa+(offs[i]-w)/2,
+						   y+(self.LINE_HEIGHT-h)/2),
+						  txt, fill=txtclr, font=self.fntText)
+
+			summa += offs[i]
+
 
 	def drawlinelof(self, draw, x, y, name, data, clr, idx):
 		#bottom horizontal line
 		draw.line((x, y+self.LINE_HEIGHT, x+self.TABLE_WIDTH_ARABIAN, y+self.LINE_HEIGHT), fill=clr)
 
-		#vertical lines
-		offs = (0, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH, self.CELL_WIDTH)
+		#vertical lines (Mundane Fortuna는 전용 폭 사용)
+		offs = (0,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE,
+				self.CELL_WIDTH_MUNFORTUNE)
 
 		BOR = commonwnd.CommonWnd.BORDER
 		summa = 0
