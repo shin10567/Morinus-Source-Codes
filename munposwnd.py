@@ -121,7 +121,7 @@ class MunPosWnd(commonwnd.CommonWnd):
 			x = BOR
 			y = BOR+self.TITLE_HEIGHT+self.SPACE_TITLEY+(self.LINE_NUM)*(self.LINE_HEIGHT)+self.SPACE_ARABIANY
 			# 헤더 1줄 + Mundane Fortuna 1줄 전체 박스
-			draw.rectangle(((x,y),(x+self.TITLE_WIDTH_ARABIAN, y+2*self.LINE_HEIGHT)), outline=(tableclr), fill=(self.bkgclr))
+			draw.rectangle(((x,y),(x+self.TITLE_WIDTH_ARABIAN, y+2*self.LINE_HEIGHT)), fill=(self.bkgclr))
 			# 옵션(주/야·공식) 반영하여 최신 Mundane Fortune 재계산
 			try:
 				# 섹트(주/야) 판단: 기본은 태양의 abovehorizon 속성 사용
@@ -189,8 +189,21 @@ class MunPosWnd(commonwnd.CommonWnd):
 
 	def drawheaderlof(self, draw, x, y, clr):
 		"""Header row for Mundane Fortuna (lon/lat/RA/decl)."""
-		# 헤더 하단 가로선만 그림 (세로선 없음)
-		draw.line((x, y+self.LINE_HEIGHT, x+self.TABLE_WIDTH_ARABIAN, y+self.LINE_HEIGHT), fill=clr)
+		# 헤더: 맨 위 가로선은 Longitude 칸부터 시작, 좌측(MLoF 칸) 헤더 테두리는 없음
+		lon_x = x + self.CELL_WIDTH_MUNFORTUNE
+		right_x = x + self.TABLE_WIDTH_ARABIAN
+
+		# top border (from Longitude header)
+		draw.line((lon_x, y, right_x, y), fill=clr)
+
+		# separator just left of Longitude (요구: Longitude 바로 왼쪽 구분선)
+		draw.line((lon_x, y, lon_x, y+self.LINE_HEIGHT), fill=clr)
+
+		# right border for header row (외곽 우측은 유지)
+		draw.line((right_x, y, right_x, y+self.LINE_HEIGHT), fill=clr)
+
+		# header bottom border (기존처럼 유지)
+		draw.line((x, y+self.LINE_HEIGHT, right_x, y+self.LINE_HEIGHT), fill=clr)
 
 		offs = (0,
 				self.CELL_WIDTH_MUNFORTUNE,

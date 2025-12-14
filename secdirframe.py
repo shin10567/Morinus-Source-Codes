@@ -261,7 +261,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
     - Ecliptic: 360° 값을 "dd°mm' <사인기호>"로 변환하여 중앙정렬(숫자=f_text, 기호=f_sym로 분리 렌더)
     - 나머지 칸은 텍스트 폰트로 중앙정렬
     """
-    COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
+    COLS = (mtexts.txts["TopicalPlanet"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
 
     ROWS = [
         ("Sun",        astrology.SE_SUN),
@@ -402,7 +402,7 @@ class SecProgPosWnd(commonwnd.CommonWnd):
         head_y = BOR
         draw.rectangle(((BOR, head_y), (BOR + self.TITLE_W, head_y + self.HEAD_H)), fill=bkg)
         x = BOR
-        COLS = (mtexts.txts["Planets"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
+        COLS = (mtexts.txts["TopicalPlanet"], mtexts.txts["Longitude"], mtexts.txts["Dodecatemorion"], mtexts.txts["Latitude"], mtexts.txts["Declination"])
         for i, h in enumerate(COLS):
             tw, th = draw.textsize(h, self.f_text)
             draw.text((x + (self.COL_W[i]-tw)/2, head_y + (self.HEAD_H-th)/2), h, fill=txt, font=self.f_text)
