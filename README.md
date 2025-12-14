@@ -1,4 +1,4 @@
-## [9.5.3] Updated Version from 8.1.0 
+## [9.5.4] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -253,6 +253,8 @@
 - Changed the method for computing apparent magnitudes of fixed stars (now using swe_fixstar_mag).
 #### 9.5.3
 - Total, annular, and hybrid solar eclipses and total lunar eclipses that are closest before and after the chart time are now shown in bold.
+#### 9.5.4
+- Added a header row for Mundane Fortuna, Updated the header in "Positions for Date"
 
 --------------------------------------------------------------------------------------------------------------------------
 
