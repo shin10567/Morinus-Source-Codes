@@ -109,6 +109,46 @@ class DecWnd(commonwnd.CommonWnd):
         if y < top or y >= top + len(self.rows) * self.LINE_HEIGHT:
             return -1
         return int((y - top) // self.LINE_HEIGHT)
+    def _l2_row_for_l1(self, l1_index, l1_row):
+        """L1 행을 클릭했을 때, 같은 시작점의 첫 L2(보통 바로 다음 줄)를 찾아 반환한다.
+        (ZR처럼 L1을 눌러도 L2와 동일한 팝업이 뜨게 하기 위함)
+        """
+        try:
+            s = l1_row.get('start')
+            p = int(l1_row.get('planet', -1))
+        except Exception:
+            s = None
+            p = -1
+
+        # 1) 일반 케이스: L1 다음 줄이 같은 시작의 L2
+        try:
+            if l1_index + 1 < len(self.rows):
+                r = self.rows[l1_index + 1]
+                if int(r.get('level', 0)) == 2:
+                    if (s is None or r.get('start') == s) and int(r.get('planet', -2)) == p:
+                        return r
+        except Exception:
+            pass
+
+        # 2) L1 블록 안에서 시작점이 같은 L2를 탐색(다음 L1을 만나면 중단)
+        for j in range(l1_index + 1, len(self.rows)):
+            r = self.rows[j]
+            lv = int(r.get('level', 0))
+            if lv == 1:
+                break
+            if lv == 2:
+                if s is None or r.get('start') == s:
+                    return r
+
+        # 3) 그래도 없으면, 같은 L1 블록의 첫 L2라도 반환
+        for j in range(l1_index + 1, len(self.rows)):
+            r = self.rows[j]
+            lv = int(r.get('level', 0))
+            if lv == 1:
+                break
+            if lv == 2:
+                return r
+        return None
 
     def _on_click(self, event):
         pos = event.GetPosition()
@@ -118,7 +158,16 @@ class DecWnd(commonwnd.CommonWnd):
             return
         row = self.rows[ri]
         lvl = int(row.get('level', 2))
+
+        # ZR UX처럼: L1을 눌러도 해당 구간의 L2(첫 L2)와 동일한 팝업을 연다.
+        if lvl == 1:
+            l2row = self._l2_row_for_l1(ri, row)
+            if l2row is not None:
+                row = l2row
+                lvl = 2
+
         if lvl == 2:
+
             # L2 → L3+L4 합본 팝업(발렌스식)
             parent_fr = self.GetTopLevelParent() or self.GetParent()
             fr = DecPopupFrame(parent_fr, self.chart, self.options, self.mainfr, parent_row=row, level=34,
