@@ -232,16 +232,17 @@ def _radec_from_row(row, jd_ut):
             return None
 
     # 1) RA/Dec 우선 사용
+    # Morinus FixStars(FixStars.RA/DECL)는 swe_cotrans 결과로 '도(deg)' 단위임.
+    # 여기서 hour/rad 자동변환을 해버리면 RA가 0~24도인 항성들이 오검출/누락된다.
     ra  = row[4]
     dec = row[5]
     if ra is not None and dec is not None:
-        if abs(dec) <= 1.8:   # rad → deg
-            dec *= RAD
-        if ra <= 7.0:         # rad → deg(대강)
-            ra  *= RAD
-        if 0.0 <= ra <= 24.0: # hour → deg
-            ra *= 15.0
-        return ra, dec
+        try:
+            ra  = float(utext(ra).replace(u'\x00', u'').strip())
+            dec = float(utext(dec).replace(u'\x00', u'').strip())
+        except Exception:
+            return None, None
+        return norm360(ra), dec
 
     # 2) 없으면 (λ,β) → (RA,Dec)
     lam = row[2]
@@ -419,19 +420,18 @@ def compute_contacts(horoscope, options, minutes_window=10):
         t_mc = _nearest_transit_deg(jd0,  ra_deg, lon)
         t_ic = _nearest_transit_deg(jd0, ra180,  lon)
 
-        _, az_mc, _ = _altaz_from_radec(ra_deg, dec_deg, t_mc, lat, lon)
-        _, az_ic, _ = _altaz_from_radec(ra_deg, dec_deg, t_ic, lat, lon)
-        label_mc = _label_meridian_by_az(az_mc)   # 남중이면 MC, 북중이면 IC
-        label_ic = _label_meridian_by_az(az_ic)
+        # MC/IC는 남중/북중(Az) 라벨링이 아니라 상중천/하중천(자오선 통과) 기준으로 기록한다.
+        # Algol처럼 적위가 큰 항성은 상중천이어도 북쪽으로 자오선 통과할 수 있어,
+        # Az로 MC/IC를 나누면 MC 탐지가 누락될 수 있다.
         dmc = abs(t_mc - jd0) * 1440.0
         dic = abs(t_ic - jd0) * 1440.0
 
-        if dmc <= minutes_window + 1e-6 and label_mc == "MC":
+        if dmc <= minutes_window + 1e-6:
             out.append(dict(star=disp, angle="MC", mag=mag, mag_str=mag_str,
                             time_str=_fmt_time_chart_local(ch, t_mc),
                             dt_min=dmc))
 
-        if dic <= minutes_window + 1e-6 and label_ic == "IC":
+        if dic <= minutes_window + 1e-6:
             out.append(dict(star=disp, angle="IC", mag=mag, mag_str=mag_str,
                             time_str=_fmt_time_chart_local(ch, t_ic),
                             dt_min=dic))
