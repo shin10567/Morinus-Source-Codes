@@ -296,7 +296,7 @@ txtseng = {'SectLight':'Sect Light',
 'LFDMoonSun':'Fortuna = Asc+(Moon-Sun) [Diurnal]', 'LFNSunMoon':'Fortuna = Asc+(Sun-Moon) [Nocturnal]',
 'HelpMP':'MP is mundane position', 'MidPoints':'MidPoints', 'MidPoint':'MidPoint', 'NotAvailable':'Not available for BC charts', 
 'FixStars':'Fixed Stars', 'IntermHCS':'Interm. HCs', 'FixStarRef':'1950.01.01 Midnight (GMT)', 'DeselectAll':'Deselect All', 'All':'All', 
-'LeftToSelect':'Left to Select', 'Nomencl':'Nomencl.', 'NotFound':'not found', 'NoSelFixStars':'There are no fixed stars selected!', 
+'LeftToSelect':'Left to Select', 'Nomencl':'Nomenclature', 'NotFound':'not found', 'NoSelFixStars':'There are no fixed stars selected!', 
 'FixStars2':'Fixed Stars', 'Terms':'Terms', 'Egyptian':'Egyptian', 'Ptolemaic':'Ptolemaic', 'MultiPlanets':'A planet is selected several times ', 
 'NOT30':'The sum of the degrees is not equal to 30 ', 'LoF':'Fortuna', 'Terms2':'Terms', 'ZodAscMCHCsAsProms':'Asc, MC as Promissors', 
 'Antiscia':'Antiscia', 'ContraAntiscia':'Contraantiscia', 'Antiscion':'Antiscion', 'Contraantiscion':'Contraantiscion', 
@@ -444,7 +444,8 @@ txtseng.setdefault('LoFLocked',        u'Fortuna cannot be modified, deleted, or
 txtseng.setdefault('RemovedExceptLoF', u'All parts except Fortuna were removed.')
 txtseng.setdefault('NoPartsToRemove',  u'No parts to remove (Fortuna is kept.)!')
 txtseng.setdefault('Minutes', 'Minutes')
-txtseng.setdefault('MagAbbr', u'Mag.')
+txtseng.setdefault('MagAbbr', u'Magnitude')
+
 
 
 menutxtshun = {'MHoroscope':u'&Horoszkóp', 'HMNew':u'&Új\tCtrl+U', 'HMNewDoc':u'Új horoszkóp készítése', 'HMData':u'&Adatok\tCtrl+A', 
@@ -811,7 +812,8 @@ txtshun.setdefault('LoFLocked',        u'A Szerencsekerék itt nem módosíthat�
 txtshun.setdefault('RemovedExceptLoF', u'A Szerencsekerék kivételével minden pont törlésre került.')
 txtshun.setdefault('NoPartsToRemove',  u'Nincs törölhető pont (a Szerencsekerék megmarad).')
 txtshun.setdefault('Minutes', u'Percek')
-txtshun.setdefault('MagAbbr', u'Mag.')
+txtshun.setdefault('MagAbbr', u'Magnitúdó')
+
 
 menutxtsrus = {'MHoroscope':u'&Гороскоп', 'HMNew':u'&Новый\tCtrl+N', 'HMNewDoc':u'Построить новый гороскоп', 'HMData':u'&Данные\tCtrl+D', 
 'HMDataDoc':u'Открыть гороскоп из базы',
@@ -1175,7 +1177,8 @@ txtsrus.setdefault('LoFLocked',        u'Жребий Фортуны нельз�
 txtsrus.setdefault('RemovedExceptLoF', u'Удалены все жребии, кроме Жребия Фортуны.')
 txtsrus.setdefault('NoPartsToRemove',  u'Нет жребиев для удаления (Жребий Фортуны сохраняется).')
 txtsrus.setdefault('Minutes', u'Минуты')
-txtsrus.setdefault('MagAbbr', u'Mag.')
+txtsrus.setdefault('MagAbbr', u'Звёздная величина')
+
 
 
 menutxtsesp = {'MHoroscope':u'&Horóscopo', 'HMNew':u'&Nuevo\tCtrl+N', 'HMNewDoc':u'Crear una Nuevo Horóscopo', 'HMData':u'&Datos\tCtrl+D', 
@@ -1536,7 +1539,8 @@ txtsesp.setdefault('LoFLocked',        u'La Parte de Fortuna no puede modificars
 txtsesp.setdefault('RemovedExceptLoF', u'Se eliminaron todas las partes excepto la Parte de Fortuna.')
 txtsesp.setdefault('NoPartsToRemove',  u'No hay partes para eliminar (se mantiene la Parte de Fortuna).')
 txtsesp.setdefault('Minutes', u'Minutos')
-txtsesp.setdefault('MagAbbr', u'Mag.')
+txtsesp.setdefault('MagAbbr', u'Magnitud')
+
 
 
 menutxtsita = {'MHoroscope':u'&Oroscopo',
@@ -1906,7 +1910,8 @@ txtsita.setdefault('LoFLocked',        u'La Parte di Fortuna non può essere mod
 txtsita.setdefault('RemovedExceptLoF', u'Sono state rimosse tutte le parti tranne la Parte di Fortuna.')
 txtsita.setdefault('NoPartsToRemove',  u'Nessuna parte da rimuovere (la Parte di Fortuna è mantenuta).')
 txtsita.setdefault('Minutes', u'Minuti')
-txtsita.setdefault('MagAbbr', u'Mag.')
+txtsita.setdefault('MagAbbr', u'Magnitudine')
+
 
 
 menutxtsfre = {'MHoroscope':u'&Thème', 'HMNew':u'&Nouveau\tCtrl+N', 'HMNewDoc':u'Créer un nouveau thème', 'HMData':u'&Données\tCtrl+D', 
@@ -2265,7 +2270,8 @@ txtsfre.setdefault('LoFLocked',        u'La Part de Fortune ne peut pas être mo
 txtsfre.setdefault('RemovedExceptLoF', u'Toutes les parts sauf la Part de Fortune ont été supprimées.')
 txtsfre.setdefault('NoPartsToRemove',  u'Aucune part à supprimer (la Part de Fortune est conservée).')
 txtsfre.setdefault('Minutes', u'Minutes')
-txtsfre.setdefault('MagAbbr', u'Mag.')
+txtsfre.setdefault('MagAbbr', u'Magnitude')
+
 
 
 menutxtschs = {'MHoroscope':'(&H)星盘',

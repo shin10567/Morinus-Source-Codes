@@ -1,4 +1,4 @@
-## [9.5.6] Updated Version from 8.1.0 
+## [9.5.7] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -257,9 +257,10 @@
 - Added a header row for Mundane Fortuna, Updated the header in "Positions for Date"
 #### 9.5.5
 - Added an apparent magnitude column to Fixed Star Positions
-
 #### 9.5.6
 - Angles at Birth bug fix
+#### 9.5.7
+- Fixed Star Positions changes "Magnitude" Column
 
 --------------------------------------------------------------------------------------------------------------------------
 

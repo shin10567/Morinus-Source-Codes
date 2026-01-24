@@ -193,7 +193,7 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
         for key, data in items:
             cnt += 1
             index = self.InsertStringItem(sys.maxsize, data[0])
-            self.SetItem(index, FixStarListCtrl.NUM, str(cnt)+'.')
+            self.SetItem(index, FixStarListCtrl.NUM, str(cnt)+'')
             self.SetItem(index, FixStarListCtrl.NAME, data[0])
             self.SetItem(index, FixStarListCtrl.NOMNAME, data[1])
             self.SetItem(index, FixStarListCtrl.LON, data[2])
@@ -202,7 +202,7 @@ class FixStarListCtrl(wx.ListCtrl, limchecklistctrlmixin.LimCheckListCtrlMixin):
 
         self.SetColumnWidth(FixStarListCtrl.NUM, 60)
         self.SetColumnWidth(FixStarListCtrl.NAME, 120)
-        self.SetColumnWidth(FixStarListCtrl.NOMNAME, 80)
+        self.SetColumnWidth(FixStarListCtrl.NOMNAME, 90)
         self.SetColumnWidth(FixStarListCtrl.LON, 105)
         self.SetColumnWidth(FixStarListCtrl.LAT, 80)
 

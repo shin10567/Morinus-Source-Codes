@@ -25,7 +25,7 @@ class FixStarsWnd(commonwnd.CommonWnd):
 		self.SMALL_CELL_WIDTH = 3*self.FONT_SIZE
 		self.BIG_CELL_WIDTH = 10*self.FONT_SIZE
 		self.CELL_WIDTH = 8*self.FONT_SIZE
-		self.MAG_CELL_WIDTH = self.SMALL_CELL_WIDTH
+		self.MAG_CELL_WIDTH = self.CELL_WIDTH
 
 		self.COLUMN_NUM = 7
 		self.TITLE_HEIGHT = self.LINE_HEIGHT
@@ -127,7 +127,7 @@ class FixStarsWnd(commonwnd.CommonWnd):
 				d,m,s = util.decToDeg(self.chart.fixstars.data[idx][datai])
 
 			if i == 1:
-				txt = str(idx+1)+'.'
+				txt = str(idx+1)+''
 				w,h = draw.textsize(txt, self.fntText)
 				draw.text((x+summa+(offs[i]-w)/2, y+(self.LINE_HEIGHT-h)/2), txt, fill=txtclr, font=self.fntText)
 
