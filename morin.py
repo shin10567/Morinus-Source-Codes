@@ -2460,6 +2460,36 @@ class MFrame(wx.Frame):
 					fr._posfordate_closebound = True
 			except Exception:
 				pass
+		def _ensure_posfordate_stack():
+			"""항상: 메인(라딕스) < Positions-for-Date 차트 < 팝업 다이얼로그"""
+			# (재진입 방지) Raise가 다시 EVT_ACTIVATE를 유발할 수 있음
+			if getattr(self, "_posfordate_stack_guard", False):
+				return
+			self._posfordate_stack_guard = True
+			try:
+				try:
+					if hasattr(self, "_posfordate_fr") and self._posfordate_fr:
+						self._posfordate_fr.Raise()
+				except Exception:
+					pass
+				try:
+					if hasattr(self, "_secui_dlg") and self._secui_dlg:
+						self._secui_dlg.Raise()
+				except Exception:
+					pass
+			finally:
+				self._posfordate_stack_guard = False
+
+		def _bind_secui_stack(dlg):
+			try:
+				if dlg and not getattr(dlg, "_posfordate_stackbound", False):
+					try:
+						dlg.SetWindowStyleFlag(dlg.GetWindowStyleFlag() | wx.FRAME_FLOAT_ON_PARENT)
+					except Exception:
+						pass
+					dlg._posfordate_stackbound = True
+			except Exception:
+				pass
 		def _apply(yy, mm_, dd_):
 			# Calculate → 동일 프레임 갱신(차트로)
 			try:
@@ -2496,36 +2526,31 @@ class MFrame(wx.Frame):
 						pass
 					self._posfordate_fr.Raise()
 				else:
+					try:
+						wx.CallAfter(_ensure_posfordate_stack)
+					except Exception:
+						pass
 					# 없으면 새로 생성
 					self._posfordate_fr = secdirframe.SecDirFrame(self, title, prg, self.horoscope, self.options)
 					_bind_posfordate_frame_close(self._posfordate_fr)
 					self._posfordate_fr.Show(True)
 					self._posfordate_fr.Raise()
-
+					try:
+						wx.CallAfter(_ensure_posfordate_stack)
+					except Exception:
+						pass
 			except Exception as e:
 				try:
 					wx.MessageBox(u"Positions for Date chart error (Calculate): %s" % e, mtexts.txts['PositionForDate'])
 				except:
 					pass
-		# 다이얼로그 열기 (모델리스)
-		try:
-			if hasattr(self, "_secui_dlg") and self._secui_dlg:
-				# 기존 것이 있으면 그냥 앞으로
-				self._secui_dlg.Show(True)
-				self._secui_dlg.Raise()
-			else:
-				self._secui_dlg = secdirui.SecDirDialog(self, _apply, None)
-				try:
-					self._secui_dlg.CenterOnParent()
-				except Exception:
-					pass
-				self._secui_dlg.Show(True)
-				self._secui_dlg.Raise()
-		except Exception:
-			self._secui_dlg = secdirui.SecDirDialog(self, _apply, None)
-			self._secui_dlg.Show(True)
-			self._secui_dlg.Raise()
-		# 0세 차트 즉시 띄우기 (입력 기본값 = 네이탈 원래 날짜)
+			# Calculate 후에도 스택 유지
+			try:
+				wx.CallAfter(_ensure_posfordate_stack)
+			except Exception:
+				pass
+			return
+		# 0세 차트 먼저 계산 (입력 기본값 = 네이탈 원래 날짜)
 		try:
 			by, bm, bd = nt.origyear, nt.origmonth, nt.origday
 			age0i, age0, (ppy, ppm, ppd), prg0 = posfordate.make_progressed_chart_by_real_date(
@@ -2535,12 +2560,6 @@ class MFrame(wx.Frame):
 			by, bm, bd = nt.origyear, nt.origmonth, nt.origday
 			age0i, age0, (ppy, ppm, ppd), prg0 = 0, 0.0, (nt.origyear, nt.origmonth, nt.origday), self.horoscope
 
-		# 라벨/입력 초기화
-		try:
-			self._secui_dlg.set_snapshot(int(age0i), (by, bm, bd), (ppy, ppm, ppd))
-		except Exception:
-			pass
-
 		# (선택) 예전 표 창이 열려있으면 닫기
 		try:
 			if hasattr(self, "_secprog_tbl") and self._secprog_tbl:
@@ -2549,13 +2568,15 @@ class MFrame(wx.Frame):
 		except Exception:
 			pass
 
-		# 차트 프레임 생성/갱신
+		# 차트 프레임 생성/갱신 (먼저 차트를 띄우고)
 		try:
 			title0 = _caption_for(prg0)
 			if not hasattr(self, "_posfordate_fr") or not self._posfordate_fr:
 				self._posfordate_fr = secdirframe.SecDirFrame(self, title0, prg0, self.horoscope, self.options)
 				_bind_posfordate_frame_close(self._posfordate_fr)
-				self._posfordate_fr.Show(True); self._posfordate_fr.Raise()
+				self._posfordate_fr.Show(True)
+				wx.CallAfter(self._posfordate_fr.Raise)
+				wx.CallAfter(self._posfordate_fr.SetFocus)
 			else:
 				self._posfordate_fr.change(prg0, title0)
 				_bind_posfordate_frame_close(self._posfordate_fr)
@@ -2565,19 +2586,66 @@ class MFrame(wx.Frame):
 						self._posfordate_fr._update_age_and_realdate()
 				except Exception:
 					pass
-				self._posfordate_fr.Raise()
-				try:
-					if self._secui_dlg:
-						self._secui_dlg.Show(True)
-						self._secui_dlg.Raise()
-				except Exception:
-					pass
+				wx.CallAfter(self._posfordate_fr.Raise)
+				wx.CallAfter(self._posfordate_fr.SetFocus)
 		except Exception as e:
 			try:
 				wx.MessageBox(u"Positions for Date chart error (initial): %s" % e, mtexts.txts['PositionForDate'])
 			except:
 				pass
 
+		# 다이얼로그 열기 (모델리스) — 부모를 '새 차트 프레임'으로 두고, 항상 차트 위로
+		def _open_secui():
+			parent_for_dlg = self._posfordate_fr if (hasattr(self, "_posfordate_fr") and self._posfordate_fr) else self
+			self._secui_dlg = secdirui.SecDirDialog(parent_for_dlg, _apply, None)
+			_bind_secui_stack(self._secui_dlg)
+			try:
+				self._secui_dlg.CenterOnParent()
+			except Exception:
+				pass
+			self._secui_dlg.Show(True)
+
+		try:
+			need_new = (not hasattr(self, "_secui_dlg") or not self._secui_dlg)
+			if not need_new:
+				try:
+					# 예전 패치로 '메인 프레임'을 부모로 잡아버린 경우 → 메인이 튀어올라 새 차트를 덮음
+					if hasattr(self, "_posfordate_fr") and self._posfordate_fr:
+						if self._secui_dlg.GetParent() != self._posfordate_fr:
+							try:
+								self._secui_dlg.Destroy()
+							except Exception:
+								pass
+							self._secui_dlg = None
+							need_new = True
+				except Exception:
+					need_new = True
+
+			if need_new:
+				_open_secui()
+			else:
+				_bind_secui_stack(self._secui_dlg)
+				self._secui_dlg.Show(True)
+		except Exception:
+			try:
+				if hasattr(self, "_secui_dlg") and self._secui_dlg:
+					self._secui_dlg.Destroy()
+			except Exception:
+				pass
+			self._secui_dlg = None
+			_open_secui()
+
+		# 라벨/입력 초기화(다이얼로그 생성 이후)
+		try:
+			self._secui_dlg.set_snapshot(int(age0i), (by, bm, bd), (ppy, ppm, ppd))
+		except Exception:
+			pass
+
+		# 최종 스택: 메인 < 새 차트 < 팝업
+		try:
+			wx.CallAfter(_ensure_posfordate_stack)
+		except Exception:
+			pass
 	def onElections(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
 		if wx.Platform == '__WXMSW__' and not self.splash:
