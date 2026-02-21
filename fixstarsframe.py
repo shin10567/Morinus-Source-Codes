@@ -4,7 +4,7 @@ import fixstarswnd
 
 class FixStarsFrame(wx.Frame):
 	def __init__(self, parent, title, chrt, options):
-		wx.Frame.__init__(self, parent, -1, title, wx.DefaultPosition, wx.Size(900, 500))
+		wx.Frame.__init__(self, parent, -1, title, wx.DefaultPosition, wx.Size(735, 800))
 
 		sw = fixstarswnd.FixStarsWnd(self, chrt, options, parent)
 		

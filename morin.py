@@ -2415,115 +2415,168 @@ class MFrame(wx.Frame):
 		if self.splash:
 			return
 
-		import astrology, chart, util
+		import posfordate
 
-		NAIBOD_YEAR_DAYS = 365.2422
 		nt = self.horoscope.time
-		birth_jd = nt.jd
-		calflag = astrology.SE_JUL_CAL if nt.cal == chart.Time.JULIAN else astrology.SE_GREG_CAL
 
-		def make_progressed_chart(yy, mm_, dd_):
-			# 현실 날짜 → age → 진행차트 + 진행(점성술) 날짜
-			# 라딕스의 UT 시각을 그대로 앵커로 사용 (타임존/Mean/Local 모드와 무관하게 일관)
-			ut_anchor = float(nt.time)
-
-			target_jd = astrology.swe_julday(int(yy), int(mm_), int(dd_), ut_anchor, calflag)
-			# 윤년 규칙 반영: 정수 '년'은 1일, 해당 해의 '일'은 1/365 또는 1/366일로 환산
-			import calendar
-			by, bm, bd, _ = astrology.swe_revjul(birth_jd, calflag)
-			ty, tm, td, _ = astrology.swe_revjul(target_jd, calflag)
-
-			# 마지막 생일이 지난 해
-			anniv_year = ty if (tm, td) >= (bm, bd) else (ty - 1)
-
-			# 2/29 출생자가 비윤년이면 2/28로 처리(다른 정책이면 여기만 조정)
-			anniv_day = 28 if (bm == 2 and bd == 29 and not calendar.isleap(anniv_year)) else bd
-			anniv_jd = astrology.swe_julday(anniv_year, bm, anniv_day, ut_anchor, calflag)
-
-			years_passed   = anniv_year - by
-			days_in_year   = 366.0 if calendar.isleap(anniv_year) else 365.0
-			remainder_days = (target_jd - anniv_jd)
-
-			age_years = years_passed + (remainder_days / days_in_year)
-
-			py, pm, pd, ptime = astrology.swe_revjul(birth_jd + age_years, calflag)
-			ph = int(ptime); pmi = int((ptime - ph) * 60.0 + 1e-6); ps = int(round(((ptime - ph) * 60.0 - pmi) * 60.0))
-			tm = chart.Time(int(py), int(pm), int(pd), ph, pmi, ps, False, nt.cal,
-							chart.Time.GREENWICH, True, 0, 0, False, self.horoscope.place, False)
-			prg = chart.Chart(self.horoscope.name, self.horoscope.male, tm, self.horoscope.place,
-							chart.Chart.TRANSIT, '', self.options, False)
-			return age_years, (int(py), int(pm), int(pd)), prg
-
-		def _apply(yy, mm_, dd_):
-			# Calculate → 동일 프레임 갱신
+		def _caption_for(chrt):
+			# 타이틀: "Positions for Date (진행날짜 ...)" 형태로
+			t = chrt.time
 			try:
-				age_years, (py, pm, pd), prg = make_progressed_chart(yy, mm_, dd_)
-				# 라벨 갱신
+				base = self.title.replace(mtexts.txts['Radix'], mtexts.txts['PositionForDate'])
+			except Exception:
+				base = self.title
+			return base.replace(
+				mtexts.txts['PositionForDate'],
+				mtexts.txts['PositionForDate']+' ('+str(t.year)+'.'+common.common.months[t.month-1]+'.'+str(t.day)+' '+
+				str(t.hour)+':'+str(t.minute).zfill(2)+':'+str(t.second).zfill(2)+')',
+				1
+			)
+		def _on_posfordate_frame_close(evt):
+			# 차트 창을 닫으면 secdirui도 같이 닫는다
+			try:
+				if hasattr(self, "_secui_dlg") and self._secui_dlg:
+					try:
+						self._secui_dlg.Destroy()
+					except Exception:
+						pass
+					self._secui_dlg = None
+			except Exception:
+				pass
+
+			# 프레임 레퍼런스도 정리 (죽은 핸들 방지)
+			try:
+				self._posfordate_fr = None
+			except Exception:
+				pass
+
+			evt.Skip()
+
+		def _bind_posfordate_frame_close(fr):
+			# 중복 Bind 방지
+			try:
+				if fr and not getattr(fr, "_posfordate_closebound", False):
+					fr.Bind(wx.EVT_CLOSE, _on_posfordate_frame_close)
+					fr._posfordate_closebound = True
+			except Exception:
+				pass
+		def _apply(yy, mm_, dd_):
+			# Calculate → 동일 프레임 갱신(차트로)
+			try:
+				age_int, age_years, (py, pm, pd), prg = posfordate.make_progressed_chart_by_real_date(
+					self.horoscope, self.options, yy, mm_, dd_
+				)
+
+				# 라벨/입력 갱신: 정수 나이 = age_int (반올림 금지)
 				try:
-					self._secui_dlg.set_snapshot(int(round(age_years)), (int(yy), int(mm_), int(dd_)), (int(py), int(pm), int(pd)))
+					self._secui_dlg.set_snapshot(int(age_int), (int(yy), int(mm_), int(dd_)), (int(py), int(pm), int(pd)))
 				except Exception:
 					pass
-				# 표 갱신
-				if hasattr(self, "_secprog_tbl") and self._secprog_tbl:
-					self._secprog_tbl.change_chart(prg)
-				else:
-					title = self.title.replace(mtexts.txts['Radix'], u"Positions for Date")
-					self._secprog_tbl = secdirframe.SecProgPosTableFrame(self, title, prg, buddy_dlg=self._secui_dlg)
-					self._secprog_tbl.Show(True); self._secprog_tbl.Raise()
-			except Exception as e:
+
+				# (선택) 예전 표 창이 열려있으면 닫아버림
 				try:
-					wx.MessageBox(u"Positions table error (Calculate): %s" % e, u"Positions for date")
-				except:
+					if hasattr(self, "_secprog_tbl") and self._secprog_tbl:
+						self._secprog_tbl.Destroy()
+						self._secprog_tbl = None
+				except Exception:
 					pass
 
-		# 다이얼로그 열기 (모델리스)
-		self._secui_dlg = secdirui.SecDirDialog(self, _apply, None)
+				title = _caption_for(prg)
 
-		# 0세 표 즉시 띄우기 (입력 기본값 = 네이탈 원래 날짜). 실패해도 '네이탈 차트'로 최소한 표는 뜨게.
+				if hasattr(self, "_posfordate_fr") and self._posfordate_fr:
+					# 기존 프레임이 있으면 갱신
+					self._posfordate_fr.change(prg, title)
+					_bind_posfordate_frame_close(self._posfordate_fr)
+					# change()가 타이틀을 건드릴 수 있어 확실히 덮어쓰기
+					try:
+						self._posfordate_fr.SetTitle(title)
+						if hasattr(self._posfordate_fr, "_update_age_and_realdate"):
+							self._posfordate_fr._update_age_and_realdate()
+					except Exception:
+						pass
+					self._posfordate_fr.Raise()
+				else:
+					# 없으면 새로 생성
+					self._posfordate_fr = secdirframe.SecDirFrame(self, title, prg, self.horoscope, self.options)
+					_bind_posfordate_frame_close(self._posfordate_fr)
+					self._posfordate_fr.Show(True)
+					self._posfordate_fr.Raise()
+
+			except Exception as e:
+				try:
+					wx.MessageBox(u"Positions for Date chart error (Calculate): %s" % e, mtexts.txts['PositionForDate'])
+				except:
+					pass
+		# 다이얼로그 열기 (모델리스)
+		try:
+			if hasattr(self, "_secui_dlg") and self._secui_dlg:
+				# 기존 것이 있으면 그냥 앞으로
+				self._secui_dlg.Show(True)
+				self._secui_dlg.Raise()
+			else:
+				self._secui_dlg = secdirui.SecDirDialog(self, _apply, None)
+				try:
+					self._secui_dlg.CenterOnParent()
+				except Exception:
+					pass
+				self._secui_dlg.Show(True)
+				self._secui_dlg.Raise()
+		except Exception:
+			self._secui_dlg = secdirui.SecDirDialog(self, _apply, None)
+			self._secui_dlg.Show(True)
+			self._secui_dlg.Raise()
+		# 0세 차트 즉시 띄우기 (입력 기본값 = 네이탈 원래 날짜)
 		try:
 			by, bm, bd = nt.origyear, nt.origmonth, nt.origday
-			age0, (ppy, ppm, ppd), prg0 = make_progressed_chart(by, bm, bd)
+			age0i, age0, (ppy, ppm, ppd), prg0 = posfordate.make_progressed_chart_by_real_date(
+				self.horoscope, self.options, by, bm, bd
+			)
 		except Exception:
-			age0, (ppy, ppm, ppd), prg0 = 0, (nt.origyear, nt.origmonth, nt.origday), self.horoscope
+			by, bm, bd = nt.origyear, nt.origmonth, nt.origday
+			age0i, age0, (ppy, ppm, ppd), prg0 = 0, 0.0, (nt.origyear, nt.origmonth, nt.origday), self.horoscope
 
 		# 라벨/입력 초기화
 		try:
-			self._secui_dlg.set_snapshot(int(round(age0)), (by, bm, bd), (ppy, ppm, ppd))
+			self._secui_dlg.set_snapshot(int(age0i), (by, bm, bd), (ppy, ppm, ppd))
 		except Exception:
 			pass
 
-		# 표가 없으면 생성, 있으면 갱신
+		# (선택) 예전 표 창이 열려있으면 닫기
 		try:
-			title0 = self.title.replace(mtexts.txts['Radix'], u"Positions for Date")
-			if not hasattr(self, "_secprog_tbl") or not self._secprog_tbl:
-				# ★ 최초 생성 때부터 팝업을 짝으로 넘김
-				self._secprog_tbl = secdirframe.SecProgPosTableFrame(
-					self, title0, prg0, buddy_dlg=self._secui_dlg
-				)
-				# (선택) 과거 방식 호환: link_dialog로도 연결해 둔다
-				try:
-					self._secprog_tbl.link_dialog(self._secui_dlg)
-				except Exception:
-					pass
-				self._secprog_tbl.Show(True); self._secprog_tbl.Raise()
-			else:
-				self._secprog_tbl.change_chart(prg0)
-				# ★ 혹시 과거에 buddy가 비어 만들어졌다면 여기서라도 연결
-				try:
-					if getattr(self._secprog_tbl, "_buddy_dlg", None) is None:
-						self._secprog_tbl._buddy_dlg = self._secui_dlg
-					# (선택) link_dialog로도 보강
-					self._secprog_tbl.link_dialog(self._secui_dlg)
-				except Exception:
-					pass
+			if hasattr(self, "_secprog_tbl") and self._secprog_tbl:
+				self._secprog_tbl.Destroy()
+				self._secprog_tbl = None
+		except Exception:
+			pass
 
+		# 차트 프레임 생성/갱신
+		try:
+			title0 = _caption_for(prg0)
+			if not hasattr(self, "_posfordate_fr") or not self._posfordate_fr:
+				self._posfordate_fr = secdirframe.SecDirFrame(self, title0, prg0, self.horoscope, self.options)
+				_bind_posfordate_frame_close(self._posfordate_fr)
+				self._posfordate_fr.Show(True); self._posfordate_fr.Raise()
+			else:
+				self._posfordate_fr.change(prg0, title0)
+				_bind_posfordate_frame_close(self._posfordate_fr)
+				try:
+					self._posfordate_fr.SetTitle(title0)
+					if hasattr(self._posfordate_fr, "_update_age_and_realdate"):
+						self._posfordate_fr._update_age_and_realdate()
+				except Exception:
+					pass
+				self._posfordate_fr.Raise()
+				try:
+					if self._secui_dlg:
+						self._secui_dlg.Show(True)
+						self._secui_dlg.Raise()
+				except Exception:
+					pass
 		except Exception as e:
 			try:
-				wx.MessageBox(u"Positions table error (initial): %s" % e, u"Positions for Date")
+				wx.MessageBox(u"Positions for Date chart error (initial): %s" % e, mtexts.txts['PositionForDate'])
 			except:
 				pass
-
-		self._secui_dlg.Show(True)
 
 	def onElections(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
@@ -3913,7 +3966,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.5.7'
+		info.Version = '9.5.8'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

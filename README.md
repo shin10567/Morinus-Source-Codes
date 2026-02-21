@@ -1,4 +1,4 @@
-## [9.5.7] Updated Version from 8.1.0 
+## [9.5.8] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -261,6 +261,8 @@
 - Angles at Birth bug fix
 #### 9.5.7
 - Fixed Star Positions changes "Magnitude" Column
+#### 9.5.8
+- "Positions for Date" now shows in chart form 
 
 --------------------------------------------------------------------------------------------------------------------------
 
