@@ -1997,8 +1997,26 @@ class MFrame(wx.Frame):
 
 				t1, t2, t3, t4, t5, t6 = revs.t[0], revs.t[1], revs.t[2], revs.t[3], revs.t[4], revs.t[5]
 				if result:
-					if self.options.ayanamsha != 0 and self.revdlg.typecb.GetCurrentSelection() == 0:
-						t1, t2, t3, t4, t5, t6 = self.calcPrecNutCorrectedSolar(revs) #y, m, d, hour, min, sec
+					if self.options.ayanamsha != 0:
+						sel = self.revdlg.typecb.GetCurrentSelection()
+						pid = None
+						if sel == revolutions.Revolutions.SOLAR:
+							pid = astrology.SE_SUN
+						elif sel == revolutions.Revolutions.LUNAR:
+							pid = astrology.SE_MOON
+						elif sel == revolutions.Revolutions.MERCURY:
+							pid = astrology.SE_MERCURY
+						elif sel == revolutions.Revolutions.VENUS:
+							pid = astrology.SE_VENUS
+						elif sel == revolutions.Revolutions.MARS:
+							pid = astrology.SE_MARS
+						elif sel == revolutions.Revolutions.JUPITER:
+							pid = astrology.SE_JUPITER
+						elif sel == revolutions.Revolutions.SATURN:
+							pid = astrology.SE_SATURN
+
+						if pid is not None:
+							t1, t2, t3, t4, t5, t6 = self.calcPrecNutCorrectedRevolution(revs, pid)
 
 					dlg = timespacedlg.TimeSpaceDlg(self, mtexts.txts['Revolutions'], self.options.langid)
 					ti = (t1, t2, t3, t4, t5, t6, chart.Time.GREGORIAN, chart.Time.GREENWICH, 0, 0)
@@ -2014,7 +2032,16 @@ class MFrame(wx.Frame):
 						direc = dlg.placerbE.GetValue()
 						hemis = dlg.placerbN.GetValue()
 						place = chart.Place(dlg.birthplace.GetValue(), int(dlg.londeg.GetValue()), int(dlg.lonmin.GetValue()), 0, direc, int(dlg.latdeg.GetValue()), int(dlg.latmin.GetValue()), 0, hemis, 0)#the same as for the transits
-
+						# ★ 리턴 place 확정 후 2차 보정(특히 topocentric+달에서 각분 잔차 제거)
+						if self.options.ayanamsha != 0 and pid is not None:
+							try:
+								t1, t2, t3, t4, t5, t6 = self.calcPrecNutCorrectedRevolution(
+									revs, pid,
+									topo_place=place,
+									seed=(t1, t2, t3, t4, t5, t6)
+								)
+							except Exception:
+								pass
 						plus = True
 						if dlg.pluscb.GetCurrentSelection() == 1:
 							plus = False
@@ -2074,8 +2101,8 @@ class MFrame(wx.Frame):
 
 								y, m, d, hh, mi, ss = revs2.t[0], revs2.t[1], revs2.t[2], revs2.t[3], revs2.t[4], revs2.t[5]
 								try:
-									if self.options.ayanamsha != 0 and self.revdlg.typecb.GetCurrentSelection() == 0:
-										y, m, d, hh, mi, ss = self.calcPrecNutCorrectedSolar(revs2)
+									if self.options.ayanamsha != 0:
+										y, m, d, hh, mi, ss = self.calcPrecNutCorrectedRevolution(revs2, astrology.SE_SUN)
 								except Exception:
 									pass
 
@@ -2162,6 +2189,11 @@ class MFrame(wx.Frame):
 									return
 
 								y, m, d, hh, mi, ss = revs2.t[0], revs2.t[1], revs2.t[2], revs2.t[3], revs2.t[4], revs2.t[5]
+								try:
+									if self.options.ayanamsha != 0:
+										y, m, d, hh, mi, ss = self.calcPrecNutCorrectedRevolution(revs2, astrology.SE_MOON)
+								except Exception:
+									pass
 								time2 = chart.Time(y, m, d, hh, mi, ss, False,
 												self.horoscope.time.cal, chart.Time.GREENWICH,
 												self._rev_ctx['plus'], 0, 0, False, self._rev_ctx['place'], False)
@@ -2232,50 +2264,164 @@ class MFrame(wx.Frame):
 				pass
 			self.revdlg = None
 
-	def calcPrecNutCorrectedSolar(self, revs):
+	def calcPrecNutCorrectedRevolution(self, revs, planet_id, topo_place=None, seed=None):
 		"""
-		Sidereal Solar Return finder:
-		- Swiss Ephemeris를 시데럴 플래그로 직접 호출해
-		'트랜짓 태양(시데럴) 경도 == 네이탈 태양(시데럴) 경도'를 만족하는 JD를
-		뉴턴 방식으로 수렴 계산한다.
-		- 별도의 세차/넛테이션 보정이 필요 없으므로 1°대 잔여 오차를 제거.
+		Ayanamsha ON 리턴 정밀 보정(공통):
+		- sid_lon = trop_lon - ayanamsha_ut(jd)
+		- sid_speed = trop_speed - d(ayanamsha)/dt
+		- (중요) topocentric일 때:
+		  * 네이틀 목표각은 네이틀 place(출생지)로 계산
+		  * 리턴(탐색) 쪽은 topo_place(리턴 다이얼로그에서 고른 place)로 계산
+		- 마지막은 '정수 초'에서 |오차|가 최소가 되도록 스냅(달은 더 넓게)
 		"""
-		# 1) 초기 JD: 기존 compute()가 준 결과를 시드로 사용
-		time0 = chart.Time(revs.t[0], revs.t[1], revs.t[2], revs.t[3], revs.t[4], revs.t[5],
-						False, self.horoscope.time.cal, chart.Time.GREENWICH,
-						False, 0, 0, False, self.horoscope.place, False)
+		place_nat = self.horoscope.place
+		place_trn = topo_place if topo_place is not None else place_nat
+
+		# 1) 시작 JD(시드)
+		if seed is not None:
+			sy, sm, sd, sh, smin, ss = seed
+		else:
+			sy, sm, sd, sh, smin, ss = revs.t[0], revs.t[1], revs.t[2], revs.t[3], revs.t[4], revs.t[5]
+
+		time0 = chart.Time(
+			int(sy), int(sm), int(sd), int(sh), int(smin), int(ss),
+			False, self.horoscope.time.cal, chart.Time.GREENWICH,
+			False, 0, 0, False, place_trn, False
+		)
 		jd = time0.jd
 
-		# 2) 시데럴 계산 플래그
-		pflag = (astrology.SEFLG_SWIEPH |
-				astrology.SEFLG_SPEED  |
-				astrology.SEFLG_SIDEREAL)
+		# 2) sid-mode는 ayanamsha_ut 계산을 위해서만 세팅(우린 lon 자체는 tropical로 계산)
+		astrology.swe_set_sid_mode(self.options.ayanamsha-1, 0, 0)
 
-		# 3) 네이탈 시데럴 태양 경도
-		nat_jd = self.horoscope.time.jd
-		serr, dat_nat = astrology.swe_calc_ut(nat_jd, astrology.SE_SUN, pflag)
-		nat_lon_sid = util.normalize(dat_nat[0])
+		pflag = (astrology.SEFLG_SWIEPH | astrology.SEFLG_SPEED)
+		if self.options.topocentric:
+			pflag |= astrology.SEFLG_TOPOCTR
 
-		# 4) 수렴 루프
-		#    공차는 1e-6도(≈0.0036")로 충분히 타이트
-		diff = 1.0
-		while abs(diff) > 1e-6:
-			serr, dat = astrology.swe_calc_ut(jd, astrology.SE_SUN, pflag)
-			trn_lon_sid = util.normalize(dat[0])
-			trn_vel     = dat[3]  # deg/day
+		def _wrap180(x):
+			return (x + 180.0) % 360.0 - 180.0
 
-			# 차이가 -180~+180에 들도록 정규화
-			diff = nat_lon_sid - trn_lon_sid
-			if abs(diff) > 180.0:
-				diff -= util.sgn(diff) * 360.0
+		def _sid_lon_vel(jd_ut, pl):
+			# topocentric은 호출 시점(place)에 맞춰 세팅
+			if self.options.topocentric:
+				astrology.swe_set_topo(pl.lon, pl.lat, pl.altitude)
 
-			# 뉴턴 보정: ΔJD = Δλ / (dλ/dt)
-			jd += (diff / trn_vel)
+			serr, dat = astrology.swe_calc_ut(jd_ut, planet_id, pflag)
+			lon_trop = util.normalize(dat[0])
+			vel_trop = dat[3]  # deg/day
 
-		# 5) JD → (Y,M,D,h,m,s)
+			ay = astrology.swe_get_ayanamsa_ut(jd_ut)
+			eps = 0.5  # days
+			ay_p = astrology.swe_get_ayanamsa_ut(jd_ut + eps)
+			ay_m = astrology.swe_get_ayanamsa_ut(jd_ut - eps)
+			ay_rate = _wrap180(ay_p - ay_m) / (2.0 * eps)
+
+			lon_sid = util.normalize(lon_trop - ay)
+			vel_sid = vel_trop - ay_rate
+			return lon_sid, vel_sid
+
+		# 3) 네이틀 목표(네이틀 place 기준 고정)
+		nat_lon_sid, _ = _sid_lon_vel(self.horoscope.time.jd, place_nat)
+
+		def _f(jd_ut):
+			# 탐색은 리턴 place 기준
+			lon_sid, _ = _sid_lon_vel(jd_ut, place_trn)
+			return _wrap180(nat_lon_sid - lon_sid)
+
+		# 4) Newton (클램프 포함)
+		diff = _f(jd)
+		for _ in range(80):
+			if abs(diff) <= 1e-10:
+				break
+			_, vel_sid = _sid_lon_vel(jd, place_trn)
+			if abs(vel_sid) < 1e-7:
+				break
+
+			step = diff / vel_sid  # days
+			if step > 30.0:
+				step = 30.0
+			elif step < -30.0:
+				step = -30.0
+
+			jd += step
+			diff = _f(jd)
+
+		# 5) 폴백: 브라켓+이분법
+		if abs(diff) > 1e-8:
+			_, vel_sid = _sid_lon_vel(jd, place_trn)
+			span = 2.0 if abs(vel_sid) >= 0.3 else 40.0
+
+			lo = jd - span
+			hi = jd + span
+			flo = _f(lo)
+			fhi = _f(hi)
+
+			for _ in range(12):
+				if flo * fhi < 0.0:
+					break
+				span *= 2.0
+				lo = jd - span
+				hi = jd + span
+				flo = _f(lo)
+				fhi = _f(hi)
+
+			if flo * fhi < 0.0:
+				for _ in range(100):
+					mid = (lo + hi) / 2.0
+					fmid = _f(mid)
+					if abs(fmid) <= 1e-10:
+						jd = mid
+						break
+					if flo * fmid <= 0.0:
+						hi = mid
+						fhi = fmid
+					else:
+						lo = mid
+						flo = fmid
+					jd = (lo + hi) / 2.0
+
+		# 6) 정수 초 스냅(달은 넓게)
+		_, vel_sid = _sid_lon_vel(jd, place_trn)
+		if planet_id == astrology.SE_MOON:
+			W = 900   # 달은 topocentric/수치 잔차 대비(±15분)
+		elif abs(vel_sid) < 0.05:
+			W = 1200
+		elif abs(vel_sid) < 0.3:
+			W = 300
+		else:
+			W = 60
+
+		jd0 = round(jd * 86400.0) / 86400.0
+		best_jd = jd0
+		best_abs = abs(_f(best_jd))
+		for dt in range(-W, W + 1):
+			jd_try = jd0 + (dt / 86400.0)
+			v = abs(_f(jd_try))
+			if v < best_abs:
+				best_abs = v
+				best_jd = jd_try
+		jd = best_jd
+
+		# 7) JD → YMDHMS
 		y, m, d, hour = astrology.swe_revjul(jd, astrology.SE_GREG_CAL)
-		h, mi, s = util.decToDeg(hour)
-		return int(y), int(m), int(d), h, mi, s
+		total = int(round(hour * 3600.0))
+		if total >= 24 * 3600:
+			total -= 24 * 3600
+			y, m, d = util.incrDay(int(y), int(m), int(d))
+		elif total < 0:
+			total += 24 * 3600
+			y, m, d = util.decrDay(int(y), int(m), int(d))
+
+		hh = total // 3600
+		total %= 3600
+		mi = total // 60
+		ss = total % 60
+
+		return int(y), int(m), int(d), int(hh), int(mi), int(ss)
+
+
+	def calcPrecNutCorrectedSolar(self, revs):
+		# 기존 호환: Solar는 generic을 호출
+		return self.calcPrecNutCorrectedRevolution(revs, astrology.SE_SUN)
 
 	def onSunTransits(self, event):
 		#Because on Windows the EVT_MENU_CLOSE event is not sent in case of accelerator-keys
@@ -4034,7 +4180,7 @@ class MFrame(wx.Frame):
 # Elias -  V 8.0.5
 # Roberto - V 7.4.4-804
 
-		info.Version = '9.5.8'
+		info.Version = '9.5.9'
 # ###########################################
 		info.Copyright = mtexts.txts['FreeSoft']
 		info.Description = mtexts.txts['Description']+str(astrology.swe_version())

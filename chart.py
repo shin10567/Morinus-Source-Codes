@@ -361,7 +361,7 @@ class Chart:
 # ###########################################
 			self.munfortune = munfortune.MundaneFortune(self.options.lotoffortune, self.houses.ascmc2, self.planets, self.obl[0], self.place.lat, abovehor)
 			self.syzygy = syzygy.Syzygy(self)
-			self.parts = arabicparts.ArabicParts(self.options.arabicparts, self.houses.ascmc, self.planets, self.houses, self.houses.cusps, self.fortune, self.syzygy, self.options)
+			self.parts = arabicparts.ArabicParts(self.options.arabicparts, self.houses.ascmc, self.planets, self.houses, self.houses.cusps, self.fortune, self.syzygy, self.options, self.ayanamsha)
 			self.fixstars = fixstars.FixStars(self.time.jd, fsflag, self.options.fixstars, self.obl[0])
 			self.midpoints = midpoints.MidPoints(self.planets)
 			# 차트의 시간 설정을 그대로 따른다 (ZONE / GREENWICH / LMT / LAT)
@@ -465,7 +465,7 @@ class Chart:
 	def calcArabicParts(self):
 		if self.full:
 			del self.parts
-			self.parts = arabicparts.ArabicParts(self.options.arabicparts, self.houses.ascmc, self.planets, self.houses, self.houses.cusps, self.fortune, self.syzygy, self.options)
+			self.parts = arabicparts.ArabicParts(self.options.arabicparts, self.houses.ascmc, self.planets, self.houses, self.houses.cusps, self.fortune, self.syzygy, self.options, self.ayanamsha)
 
 
 	def calcAntiscia(self):

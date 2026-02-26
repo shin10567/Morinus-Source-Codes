@@ -14,7 +14,39 @@ import chart
 import intvalidator
 import rangechecker
 import datetime, math
+import primdirs
+def _circum_years_per_deg_from_options(options):
+    """
+    Circumambulations는 'years per OA degree' 형태의 정적 키를 기대한다.
+    - options.circumkey가 있으면 그 값을 최우선으로 사용
+    - 없으면 PrimDirs 정적 키(pdboid/cardan/ptolemy/customer)를 따라간다
+    """
+    # 0) 명시 오버라이드(있으면 그대로)
+    v = getattr(options, 'circumkey', None)
+    if v is not None:
+        try:
+            return float(v)
+        except Exception:
+            pass
 
+    # 1) PrimDirs 정적 키 사용 (Morinus 기본 pdkeys=Naibod)
+    try:
+        # Customer key: deg/year -> years/deg로 뒤집기
+        if getattr(options, 'pdkeys', None) == primdirs.PrimDirs.CUSTOMER:
+            deg  = float(getattr(options, 'pdkeydeg', 0.0))
+            minu = float(getattr(options, 'pdkeymin', 0.0))
+            sec  = float(getattr(options, 'pdkeysec', 0.0))
+            deg_per_year = deg + minu/60.0 + sec/3600.0
+            return (1.0/deg_per_year) if deg_per_year else 1.0
+
+        pdkeys = getattr(options, 'pdkeys', None)
+        if pdkeys is not None:
+            return float(primdirs.PrimDirs.staticData[pdkeys][primdirs.PrimDirs.COEFF])
+    except Exception:
+        pass
+
+    # 2) 폴백: Ptolemy
+    return 1.0
 # ====== UI Wnd (FixStarsWnd 스타일) ======
 class CircumWnd(cw.CommonWnd):
 
@@ -143,7 +175,7 @@ class CircumWnd(cw.CommonWnd):
     """
     def __init__(self, parent, horoscope, options, mainfr=None, id=-1, size=wx.DefaultSize):
         cw.CommonWnd.__init__(self, parent, horoscope, options, id, size)
-        self.key = float(getattr(self.options, 'circumkey', 1.0))  # 입력창 없이 기본값 사용
+        self.key = _circum_years_per_deg_from_options(self.options)
         self.chart   = horoscope
         self.options = options
         self.mainfr  = mainfr
@@ -625,7 +657,7 @@ class CircumFrame(wx.Frame):
         wx.Frame.__init__(self, parent, -1, t, wx.DefaultPosition, wx.Size(850, 520))
         self.horoscope = horoscope
         self.options   = options
-        self.key       = key
+        self.key       = _circum_years_per_deg_from_options(self.options)
         self.rows_n    = rows
 
         panel = wx.Panel(self)

@@ -1,4 +1,4 @@
-## [9.5.8] Updated Version from 8.1.0 
+## [9.5.9] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -263,14 +263,13 @@
 - Fixed Star Positions changes "Magnitude" Column
 #### 9.5.8
 - "Positions for Date" now shows in chart form 
+#### 9.5.9
+- Circumambulation: The distribution key value can now be changed from the Primary Key. This may cause differences compared to Astro-Seek.
+- Fixed an error that occurred when applying ayanamsha in Revolution.
+- Fixed an error where the Arabic Parts degree reference did not apply ayanamsha correctly (it previously kept calculating from the tropical reference).
 
 --------------------------------------------------------------------------------------------------------------------------
 
 #### I’m not a developer by trade; I was simply a Morinus user who felt inconveniences while using the program.
 
 #### I addressed a few of those personal inconveniences and added features I needed. As I have no programming background, most of the code was generated with the help of AI tools.
-
-### Known issues
-- Error when applying ayanamsa in Circumambulations
-- Error when applying ayanamsa in Revolutions
-- Error when applying ayanamsa in the Arabic Parts (degree reference) feature

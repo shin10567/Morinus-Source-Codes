@@ -91,10 +91,18 @@ class ArabicParts:
         except Exception:
             lon = 0.0
         if getattr(opts, 'ayanamsha', 0) != 0:
-            lon = util.normalize(lon + opts.ayanamsha)  # sidereal → tropical
+            # opts.ayanamsha 는 "선택된 아야남샤 종류"(정수)이고,
+            # 실제 보정값(도 단위)은 chart.ayanamsha 로부터 전달받은 self._ayanamsha_deg 를 사용해야 한다.
+            lon = util.normalize(lon + self._ayanamsha_deg)  # sidereal → tropical
         return lon
 
-    def __init__(self, ar, ascmc, pls, hs, cusps, fort, syz, opts): #ar is from options
+    def __init__(self, ar, ascmc, pls, hs, cusps, fort, syz, opts, ayanamsha_deg=0.0): #ar is from options
+        # chart.ayanamsha(도 단위) 보정값. (opts.ayanamsha != 0 인 경우에만 의미 있음)
+        try:
+            self._ayanamsha_deg = float(ayanamsha_deg) % 360.0
+        except Exception:
+            self._ayanamsha_deg = 0.0
+
         if ar == None:
             self.parts = None
         else:
@@ -651,7 +659,7 @@ class ArabicParts:
                     scoretxt = ''
                     testlon = tmplon
                     if getattr(opts, 'ayanamsha', 0) != 0:
-                        testlon = util.normalize(testlon - opts.ayanamsha)
+                        testlon = util.normalize(testlon - self._ayanamsha_deg)
 
                     s, st, sh = self.getData(opts, p, testlon, fort.abovehorizon)
 

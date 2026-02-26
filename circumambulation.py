@@ -6,6 +6,8 @@ import os, math, datetime
 import io 
 import astrology, chart, houses, mtexts
 import mtexts
+import primdirs
+
 ASPECTS = (0, 60, 90, 120, 180)
 DEFAULT_KEY_Y_PER_DEG = 1.0  # years per equatorial degree (OA)
 DAYS_PER_YEAR = 365.2421897
@@ -128,7 +130,46 @@ def _interp_rt12(phi):
 
 def _sign_index(lmb):
     return int((lmb % 360.0) // 30.0)
+def _oa_rising_deg_unwrapped(lon_deg, phi_deg, eps_deg):
+    """Rising OA(°) for ecliptic longitude lon_deg (tropical), latitude phi_deg, obliquity eps_deg.
+    Unwrap so lon+360 -> OA+360.
+    """
+    k = math.floor(lon_deg / 360.0)
+    lon0 = lon_deg - 360.0 * k
 
+    lon = math.radians(lon0)
+    phi = math.radians(phi_deg)
+    eps = math.radians(eps_deg)
+
+    # RA/Dec of ecliptic point (β=0)
+    ra = math.atan2(math.sin(lon) * math.cos(eps), math.cos(lon))
+    if ra < 0:
+        ra += 2.0 * math.pi
+    dec = math.asin(math.sin(eps) * math.sin(lon))
+
+    # semi-diurnal arc: cos(H) = -tan(phi)*tan(dec)
+    x = -math.tan(phi) * math.tan(dec)
+    if x <= -1.0:
+        H = math.pi
+    elif x >= 1.0:
+        H = 0.0
+    else:
+        H = math.acos(x)
+
+    oa = (ra - H) % (2.0 * math.pi)
+    return math.degrees(oa) + 360.0 * k
+
+
+def _delta_oa_exact(phi_deg, lam1_sid, lam2_sid, ayan_deg, eps_deg):
+    """Exact ΔOA using OA difference. lam*_sid are your internal longitudes; +ayan -> tropical."""
+    lon1 = lam1_sid + ayan_deg
+    lon2 = lam2_sid + ayan_deg
+    if lon2 < lon1:
+        lon2 += 360.0
+
+    oa1 = _oa_rising_deg_unwrapped(lon1, phi_deg, eps_deg)
+    oa2 = _oa_rising_deg_unwrapped(lon2, phi_deg, eps_deg)
+    return max(0.0, oa2 - oa1)
 def _delta_oa_by_rt(rt12, lam1, lam2, ayan=0.0, gran_deg=0.0):
     import math
     a_t = lam1 + ayan
@@ -241,6 +282,41 @@ def _sidereal_offset_deg(chrt, options):
     except Exception:
         pass
     return 0.0
+def _ayan_ut(jd_ut, options):
+    """Return ayanamsha(°) for given jd_ut if sidereal mode is on, else 0.0.
+
+    NOTE:
+    - Swiss Ephemeris sidereal mode is global, so set it here to be safe.
+    - We intentionally use *_ut variants everywhere in this module.
+    """
+    try:
+        if getattr(options, 'ayanamsha', 0) != 0:
+            astrology.swe_set_sid_mode(int(options.ayanamsha) - 1, 0, 0)
+            return float(astrology.swe_get_ayanamsa_ut(float(jd_ut)))
+    except Exception:
+        pass
+    return 0.0
+
+def _solve_segment_time(rt12, lam1_sid, lam2_sid, jd_start, key, calflag, options, iters=4):
+    # Initial guess: use ayanamsha at segment start
+    ay = _ayan_ut(jd_start, options)
+    delta_oa = _delta_oa_by_rt(rt12, lam1_sid, lam2_sid, ay)
+    delta_years = delta_oa * key
+    jd_end = _jd_add_years(jd_start, delta_years, calflag)
+
+    # Fixed-point iteration: ay depends on jd_end; jd_end depends on ay.
+    for _ in range(max(0, int(iters) - 1)):
+        ay2 = _ayan_ut(jd_end, options)
+        delta_oa2 = _delta_oa_by_rt(rt12, lam1_sid, lam2_sid, ay2)
+        delta_years2 = delta_oa2 * key
+        jd_end2 = _jd_add_years(jd_start, delta_years2, calflag)
+
+        if abs(jd_end2 - jd_end) < 1e-7 and abs(ay2 - ay) < 1e-7:
+            ay, delta_oa, delta_years, jd_end = ay2, delta_oa2, delta_years2, jd_end2
+            break
+        ay, delta_oa, delta_years, jd_end = ay2, delta_oa2, delta_years2, jd_end2
+
+    return delta_oa, delta_years, jd_end, ay
 
 def _planet_longitudes(chart_obj, options):
     pls = {}
@@ -294,11 +370,8 @@ def _exact_aspect_hits(lam_start_abs, lam_end_abs, planet_lams, aspects=(0,60,90
     return hits
 
 def _jd_add_years(jd0, years, calflag):
-    y, m, d, h = astrology.swe_revjul(jd0, calflag)
-    whole = int(math.floor(years))
-    frac  = years - whole
-    jd_base = astrology.swe_julday(y + whole, m, d, h, calflag)  # 캘린더 보존
-    return jd_base + frac * DAYS_PER_YEAR
+    return jd0 + float(years) * DAYS_PER_YEAR
+
 def _years_since_birth(jd, jd_birth):
     yrs = (jd - jd_birth) / DAYS_PER_YEAR
     return 0.0 if yrs < 0 else yrs
@@ -332,12 +405,14 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
     """
     if start_lambda is None:
         start_lambda = chrt.houses.ascmc[houses.Houses.ASC]
-    ayan = _sidereal_offset_deg(chrt, options)
-    start_lambda = (float(start_lambda) - ayan) % 360.0
+    # Birth ayanamsha is used only to place the radix ASC into sidereal longitudes.
+    # Per-segment timing may still use time-varying ayanamsha (see _solve_segment_time).
+    ayan_birth = _sidereal_offset_deg(chrt, options)
+    start_lambda = (float(start_lambda) - ayan_birth) % 360.0
 
     phi = chrt.place.lat
     rt12 = _interp_rt12(phi)
-    edges = _term_edges_deg(options, ayan)
+    edges = _term_edges_deg(options, ayan_birth)
 
     calflag = astrology.SE_GREG_CAL
     if chrt.time.cal == chart.Time.JULIAN:
@@ -400,7 +475,9 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
         seg_start = lam_cursor
         seg_end   = b
 
-        delta_oa = _delta_oa_by_rt(rt12, seg_start, seg_end, ayan)
+        delta_oa, delta_year, jd_next, ayan_used = _solve_segment_time(
+            rt12, seg_start, seg_end, jd_cursor, key, calflag, options
+        )
         if delta_oa <= 1e-9:
             # ★ 0길이 구간이라도 '텀 진입 시점'이 UI에 보이도록 마커 행을 추가한다.
             g0 = _gregorian_date_in_radix_zone(jd_cursor, chrt)
@@ -424,9 +501,6 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
             idx = (idx + 1) % len(edges1)
             continue
 
-        delta_year = delta_oa * key
-        jd_next    = _jd_add_years(jd_cursor, delta_year, calflag)
-
         # ★ rows.append에서 쓰일 시작/끝 날짜 + participatings를 먼저 계산
         y0, m0, d0, h0 = astrology.swe_revjul(jd_cursor, calflag)
         y1, m1, d1, h1 = astrology.swe_revjul(jd_next,   calflag)
@@ -440,10 +514,9 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
         if include_participating and planet_lams:
             hits = _exact_aspect_hits(seg_start, seg_end, planet_lams)
             for L, label, A in hits:
-                doa = _delta_oa_by_rt(rt12, seg_start, L, ayan)
-
-                yrs = doa * key
-                jd  = _jd_add_years(jd_cursor, yrs, calflag)
+                doa, yrs, jd, _ay_hit = _solve_segment_time(
+                    rt12, seg_start, L, jd_cursor, key, calflag, options
+                )
                 if jd > jd_limit + 1e-9:
                     continue
                 gP = _gregorian_date_in_radix_zone(jd, chrt)
@@ -465,7 +538,8 @@ def compute_distributions(chrt, options, start_lambda=None, key=DEFAULT_KEY_Y_PE
 
             # 표시용 사인 인덱스(시데리얼)과, RT 선택용 사인 인덱스(트로피컬)를 분리
             sign_from_start_sid = _sign_index(seg_start)           # 시데리얼(표시)
-            sign_from_start_tro = _sign_index(seg_start + ayan)    # 트로피컬(RT용)
+            ayan_cap = _ayan_ut(jd_limit, options)
+            sign_from_start_tro = _sign_index(seg_start + ayan_cap)    # 트로피컬(RT용)
 
             rt_sign = rt12[sign_from_start_tro]
             lam_end_cap = seg_start + (rem_doa / max(rt_sign, 1e-12)) * 30.0
