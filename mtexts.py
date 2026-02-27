@@ -3441,7 +3441,7 @@ Versions up to 6.2 edited by Robert Nagy\n\
 \n\
 Version 7.X.X - 2013 - edited by Roberto Luporini\n\
 Version 8.X.X - 2013 - edited by Elías D. Molins\n\
-Version 9.X.X - 2025 - edited by Shin10567 / James Ren\n\n\
+Version 9.X.X - 2025 - edited by Shin Ji-Hyeon / James Ren\n\n\
 This program is free software: you can redistribute it and/or modify\n\
 it under the terms of the GNU General Public License as published by\n\
 the Free Software Foundation, either version 3 of the License, or\n\
@@ -3460,7 +3460,7 @@ Versions up to 6.2 edited by Robert Nagy\n\
 \n\
 Version 7.X.X - 2013 - edited by Roberto Luporini\n\
 Version 8.X.X - 2013 - edited by Elías D. Molins\n\
-Version 9.X.X - 2025 - edited by Shin10567 / James Ren\n\n\
+Version 9.X.X - 2025 - edited by Shin Ji-Hyeon / James Ren\n\n\
 Ez a program szabad szoftver; terjeszthetõ illetve módosítható a\n\
 Free Software Foundation által kiadott GNU General Public License\n\
 dokumentumában leírtak; akár a licenc 3-as, akár (tetszõleges) késõbbi\n\
@@ -3480,7 +3480,7 @@ Versions up to 6.2 edited by Robert Nagy\n\
 \n\
 Version 7.X.X - 2013 - edited by Roberto Luporini\n\
 Version 8.X.X - 2013 - edited by Elías D. Molins\n\
-Version 9.X.X - 2025 - edited by Shin10567 / James Ren\n\n\
+Version 9.X.X - 2025 - edited by Shin Ji-Hyeon / James Ren\n\n\
 This program is free software: you can redistribute it and/or modify\n\
 it under the terms of the GNU General Public License as published by\n\
 the Free Software Foundation, either version 3 of the License, or\n\
@@ -3499,7 +3499,7 @@ Versions up to 6.2 edited by Robert Nagy\n\
 \n\
 Version 7.X.X - 2013 - editada por Roberto Luporini\n\
 Version 8.X.X - 2013 - editada por Elías D. Molins\n\
-Version 9.X.X - 2025 - editada por Shin10567 / James Ren\n\n\
+Version 9.X.X - 2025 - editada por Shin Ji-Hyeon / James Ren\n\n\
 This program is free software: you can redistribute it and/or modify\n\
 it under the terms of the GNU General Public License as published by\n\
 the Free Software Foundation, either version 3 of the License, or\n\
@@ -3518,7 +3518,7 @@ Versioni fino alla 6.2 a cura di Robert Nagy\n\
 \n\
 Versione 7.X.X - 2013 - a cura di Roberto Luporini\n\
 Versione 8.X.X - 2013 - a cura di Elías D. Molins\n\
-Versione 9.X.X - 2025 - a cura di Shin10567 / James Ren\n\n\
+Versione 9.X.X - 2025 - a cura di Shin Ji-Hyeon / James Ren\n\n\
 Questo è un software gratuito: si può ridistribuire e/o modificare.\n\
 E'sotto le condizioni della Licenza Generale Pubblica GNU come pubblicata\n\
 dalla Free Software Foundation, sia la versione 3 della Licenza sia\n\
@@ -3537,7 +3537,7 @@ Jusqu'à la version 6.2 réalisation Robert Nagy\n\
 \n\
 Versions 7.X.X - 2013 - réalisation Roberto Luporini\n\
 Versions 8.X.X - 2013 - réalisation Elías D. Molins\n\
-Versions 9.X.X - 2025 - réalisation Shin10567 / James Ren\n\n\
+Versions 9.X.X - 2025 - réalisation Shin Ji-Hyeon / James Ren\n\n\
 Ce programme est un logiciel libre: vous pouvez le redistribuer et/ou le modifier\n\
 selon les termes de la Licence Publique Générale GNU publiée par\n\
 la Free Software Foundation, soit la version 3 de cette licence, ou\n\
@@ -3555,7 +3555,7 @@ Copyright (C) 2008-2012 罗伯特·纳吉 (robert.pluto@gmail.com)\n\
 \n\
 版本 7.X.X - 2013 - 由罗伯托·卢波里尼编辑\n\
 版本 8.X.X - 2013 - 由埃利亚斯·D·莫林斯编辑\n\
-版本 9.X.X - 2025 - 由Shin10567 / James Ren编辑\n\n\
+版本 9.X.X - 2025 - 由申知玹 / James Ren编辑\n\n\
 本程序是自由软件:您可以根据自由软件基金会发布的GNU通用公\n\
 共许可证的条款对其进行重新分发和/或修改，可以是许可证的第3\n\
 版，也可以是(根据您的选择)任何更高版本。                            \n\n\
@@ -3571,7 +3571,7 @@ Copyright (C) 2008-2012 羅伯特·納吉 (robert.pluto@gmail.com)\n\
 \n\
 版本 7.X.X - 2013 - 由羅伯托·盧波裡尼編輯\n\
 版本 8.X.X - 2013 - 由埃利亞斯·D·莫林斯編輯\n\
-版本 9.X.X - 2025 - 由Shin10567 / James Ren編輯\n\n\
+版本 9.X.X - 2025 - 由申知玹 / James Ren編輯\n\n\
 本程序是自由軟件:您可以根據自由軟件基金會發布的GNU通用公\n\
 共許可證的條款對其進行重新分發和/或修改，可以是許可證的第3\n\
 版，也可以是(根據您的選擇)任何更高版本。                            \n\n\
@@ -3587,7 +3587,7 @@ Copyright (C) 2008-2012 로베르트 너지 (robert.pluto@gmail.com)\n\
 \n\
 버전 7.X.X - 2013 - 편집: 로베르토 루포리니\n\
 버전 8.X.X - 2013 - 편집: 엘리아스 D. 몰린스\n\
-버전 9.X.X - 2025 - 편집: Shin10567 / 제임스 런\n\n\
+버전 9.X.X - 2025 - 편집: 신지현 / 제임스 런\n\n\
 이 프로그램은 무료 소프트웨어입니다. 귀하는 이를 재배포하거나 수정할 수 있으며,\n\
 그 경우 무료 소프트웨어 재단(Free Software Foundation)이 공표한 GNU 일반 공중 사용 허가서(GPL)\n\
 3판 또는 (귀하의 선택에 따라) 그 이후 판의 조항을 따릅니다.\n\n\
