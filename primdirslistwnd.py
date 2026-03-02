@@ -135,11 +135,16 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 		self.PopupMenu(self.pmenu, event.GetPosition())
 
 	def _pd_index(self, pdnum, total):
-		"""선택 번호(pdnum)를 0-based 정수 인덱스로 정규화. 실패 시 None."""
+		"""pdnum을 0-based 인덱스로 정규화. 실패 시 None.
+		- 이 테이블 클릭(getPDNum 경로)에서 들어오는 int는 0-based로 취급
+		- 그 외(str/float 등)는 표시용 번호일 수 있어 1-based로 우선 취급(단, 0은 0-based)
+		"""
+		pdnum_orig = pdnum
 		try:
 			# bytes → str
 			if isinstance(pdnum, bytes):
 				pdnum = pdnum.decode('utf-8', 'ignore')
+
 			# str일 수 있음: "12", "12.0", "No. 12", "12."
 			if isinstance(pdnum, str):
 				m = re.search(r'\d+', pdnum)
@@ -147,25 +152,31 @@ class PrimDirsListWnd(wx.ScrolledWindow):
 					return None
 				val = int(m.group(0))
 			elif isinstance(pdnum, float):
-				# 12.0 같은 정수형 float
 				val = int(round(pdnum))
 			else:
 				val = int(pdnum)
 		except Exception:
 			return None
 
-		# 1-based로 들어온 경우 보정
-		# 고친 코드: 1 <= val <= total 이면 1-based로 보고 0-based로 보정
-		if 1 <= val <= total:
-			idx = val - 1
-		else:
-			idx = val
+		if total <= 0:
+			return None
 
-		if 0 <= idx < total:
-			return idx
-		# 흔한 한 칸 오프바이원 보정
-		if 1 <= val <= total and 0 <= (val - 1) < total:
+		# int 입력(테이블 클릭)은 0-based가 기본
+		if isinstance(pdnum_orig, int) and not isinstance(pdnum_orig, bool):
+			if 0 <= val < total:
+				return val
+			# 혹시 1-based가 들어오는 예외 케이스만 보정
+			if 1 <= val <= total:
+				return val - 1
+			return None
+
+		# 그 외(str/float)는 1-based로 우선 해석(단, 0은 0-based)
+		if val == 0:
+			return 0
+		if 1 <= val <= total:
 			return val - 1
+		if 0 <= val < total:
+			return val
 		return None
 
 

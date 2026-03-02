@@ -1,4 +1,4 @@
-## [9.5.9] Updated Version from 8.1.0 
+## [9.6.0] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -267,6 +267,8 @@
 - Circumambulation: The distribution key value can now be changed from the Primary Key. This may cause differences compared to Astro-Seek.
 - Fixed an error that occurred when applying ayanamsha in Revolution.
 - Fixed an error where the Arabic Parts degree reference did not apply ayanamsha correctly (it previously kept calculating from the tropical reference).
+#### 9.6.0
+- PDs in Chart bug fix
 
 --------------------------------------------------------------------------------------------------------------------------
 
