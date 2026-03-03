@@ -1,4 +1,4 @@
-## [9.6.0] Updated Version from 8.1.0 
+## [9.6.1] Updated Version from 8.1.0 
 
 ### Fixed / Safeguards
 - Firdaria: disabled for BC-era charts to prevent wrong results/crashes.
@@ -269,6 +269,8 @@
 - Fixed an error where the Arabic Parts degree reference did not apply ayanamsha correctly (it previously kept calculating from the tropical reference).
 #### 9.6.0
 - PDs in Chart bug fix
+#### 9.6.1
+- Eclipses bug fix
 
 --------------------------------------------------------------------------------------------------------------------------
 

@@ -540,10 +540,14 @@ def _lunar(jd_from, jd_to):
 
 
 def find_eclipses_around(chart):
-    # chart.time을 안전하게 JD로
-    y = chart.time.year; m = chart.time.month; d = chart.time.day
-    h = chart.time.hour + chart.time.minute/60.0 + chart.time.second/3600.0
-    jd0 = astrology.swe_julday(y, m, d, h, _calflag(chart))
+    # chart.time.jd는 표준시/서머타임 보정이 끝난 UT 기준 JD이므로 재조립하지 말고 그대로 사용
+    try:
+        jd0 = float(chart.time.jd)
+    except Exception:
+        # 혹시 모를 방어(특수 객체): year/month/day + time(UT decimal hour)로만 재구성
+        y = chart.time.year; m = chart.time.month; d = chart.time.day
+        h = float(getattr(chart.time, 'time', 0.0))
+        jd0 = astrology.swe_julday(y, m, d, h, _calflag(chart))
 
     span = 365.0
     jd_from = jd0 - span
