@@ -272,8 +272,3 @@
 #### 9.6.1
 - Eclipses bug fix
 
---------------------------------------------------------------------------------------------------------------------------
-
-#### I’m not a developer by trade; I was simply a Morinus user who felt inconveniences while using the program.
-
-#### I addressed a few of those personal inconveniences and added features I needed. As I have no programming background, most of the code was generated with the help of AI tools.
